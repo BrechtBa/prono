@@ -6,7 +6,6 @@ if(array_key_exists('knockoutstage',$_POST)){
 	// in pronostiek invullen
 	if($prono){
 		for($i=49;$i<=64;$i++){
-			if
 			if($_POST['match'.$i.'_score1']==''){
 				$score1 = -1;
 			}
@@ -73,7 +72,6 @@ if($prono){
 	if( time()>$phase1_end && time()<$phase2_end ){
 		$eight_enabled   = 1*$enabled;
 		$fillindate = date('d M Y, H:i',$phase2_end);
-		$fillinstr = "8e finales";
 		$enabled_str = "";
 	}
 	else{
@@ -82,7 +80,6 @@ if($prono){
 	if( time()>$phase2_end && time()<$phase3_end ){
 		$quarter_enabled = 1*$enabled;
 		$fillindate = date('d M Y, H:i',$phase3_end);
-		$fillinstr = "Kwartfinales";
 		$enabled_str = "";
 	}
 	else{
@@ -91,7 +88,6 @@ if($prono){
 	if( time()>$phase3_end && time()<$phase4_end ){
 		$semi_enabled    = 1*$enabled;
 		$fillindate = date('d M Y, H:i',$phase4_end);
-		$fillinstr = "Halve finales";
 		$enabled_str = "";
 	}
 	else{
@@ -100,7 +96,6 @@ if($prono){
 	if( time()>$phase4_end && time()<$phase5_end ){
 		$final_enabled   = 1*$enabled;
 		$fillindate = date('d M Y, H:i',$phase5_end);
-		$fillinstr = "";
 		$enabled_str = "";
 	}
 	else{
@@ -118,7 +113,7 @@ else{
 
 
 if($prono && $fillindate){
-	echo "<p>$fillinstr in te vullen voor $fillindate</p>";
+	echo "<p>In te vullen voor $fillindate</p>";
 }
 echo "
 		<h2>Eliminatie fase</h2>

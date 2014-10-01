@@ -68,17 +68,7 @@
 			if($row['password'] == $pass){
 				$_SESSION['login'] = 1;
 				$_SESSION['userid'] = $row['id'];
-					
-				if($row['paid'] != 1 && time()>$phase1_end){
-					echo "<article>
-							<h1>Je moet nog betalen!</h1>
-							<h1> Gelieve dit zo snel mogelijk in orde te maken!</h1>
-						  </article>";
-					echo "<meta http-equiv='refresh' content='10; URL=index.php?page=pronostiek'>";
-				}
-				else{
-					echo "<meta http-equiv='refresh' content='0; URL=index.php?page=pronostiek'>";
-				}
+				echo "<meta http-equiv='refresh' content='0; URL=index.php?page=pronostiek'>";
 			}
 			else{
 				echo "Verkeer paswoord";

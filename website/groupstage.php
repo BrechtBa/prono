@@ -78,14 +78,14 @@ echo "
 		<h2>Groepsfase</h2>
 		<form class='prono' name='groupstage' action='index.php?page=$page' method='post'>";
 
-for($i=1;$i<=$groups;$i++){
+for($group=1;$group<=$groups;$i++){
 	echo "
 			<div class='group'>
 				<h3>Groep $group_name[$i]</h3>";
+				
+				display_group_matches($group,$enabled,$userid);
+				display_group_winners($group,$enabled,$userid);
 
-	print_group_matches($i,$enabled,$prono);
-	print_group_winners($i,$enabled,$prono);
-	
 	echo "
 			</div>";		
 }

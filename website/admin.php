@@ -36,22 +36,17 @@ else{
 	}
 	if(array_key_exists('edituser',$_POST)){
 		///////////////////////////////////////////////////////////////////////////////
-		// Edit users
+		// Remove users
 		///////////////////////////////////////////////////////////////////////////////
 		
 		$query = "SELECT * FROM wk_users";
 		$result = mysql_query($query) or die('Error: ' . mysql_error());
 		while($row = mysql_fetch_array($result)){
 			$id = $row['id'];
-			$paid = 0;
-			if($_POST['paid'.$id]){
-				$paid = 1;
-				//$query_remove = "DELETE FROM wk_users WHERE id=$id";
-				//$result_remove = mysql_query($query_remove) or die('Error: ' . mysql_error());
+			if($_POST['remove_user'.$id]){
+				$query_remove = "DELETE FROM wk_users WHERE id=$id";
+				$result_remove = mysql_query($query_remove) or die('Error: ' . mysql_error());
 			}
-			$query_update = "UPDATE wk_users SET paid=$paid WHERE id=$id";
-			$result_update = mysql_query($query_update) or die('Error: ' . mysql_error());
-				
 		}
 	}
 	if(array_key_exists('editteams',$_POST)){
@@ -108,8 +103,8 @@ else{
 				<h1>Wedstijden aanpassen</h1>
 				<form class='prono' name='editmatch' action='index.php?page=admin' method='post'>
 					<div class='table table_heading'>
-						<div class='tiny'>Nr</div>
-						<div class='small'>Round</div>
+						<div class='small'>Match nr</div>
+						<div class='small'>Ronde</div>
 						<div class='small'>Team 1</div>
 						<div class='small'>Team 2</div>
 						<div class='small'>Datum</div>
@@ -130,7 +125,7 @@ else{
 		echo "
 		
 					<div class='table'>
-						<div class='tiny'>".$row['id']."</div>
+						<div class='small'>".$row['id']."</div>
 						<div class='small'>".$row['stage']."</div>
 						<div class='small'>";	
 		echo_select_list('match'.$row['id'].'_team1',1,array_merge((array)"",$team_name),array_merge((array)-1,range(1,count($team_name))),$row['team1']);
@@ -158,12 +153,7 @@ else{
 				<form class='prono' name='edituser' action='index.php?page=admin' method='post'>
 					<div class='table table_heading'>
 						<div class='wide'>Naam</div>
-						<div class='small'>Betaald</div>
-						<div class='tiny'>Grp</div>
-						<div class='tiny'>8e</div>
-						<div class='tiny'>4e</div>
-						<div class='tiny'>2e</div>
-						<div class='tiny'>fin</div>
+						<div class='small'>Remove</div>
 						<div class='small'></div>
 					</div>";
 					
@@ -171,38 +161,19 @@ else{
 	$result = mysql_query($query) or die('Error: ' . mysql_error());
 	// echo user 1 without remove button
 	$row = mysql_fetch_array($result);
-	$checked_str = "";
-	if($row['paid']){
-		$checked_str = "checked";
-	}
-	
 	echo "
 					<div class='table'>
 						<div class='wide'>".$row['username']."</div>
-						<div class='small'><input type='checkbox' name='paid".$row['id']."' value=1 $checked_str></div>
-						<div class='tiny'>". groupstage_filled_in($row['id']) ."</div>
-						<div class='tiny'>". stage_filled_in($row['id'],'eight') ."</div>
-						<div class='tiny'>". stage_filled_in($row['id'],'quarter') ."</div>
-						<div class='tiny'>". stage_filled_in($row['id'],'semi') ."</div>
-						<div class='tiny'>". stage_filled_in($row['id'],'final') ."</div>
+						<div class='small'></div>
 						<div class='small'><a href='print_pronostiek.php?userid=".$row['id']."' target='_blank'>print</a></div>
 					</div>";
 					
 	while($row = mysql_fetch_array($result)) {
-	$checked_str = "";
-	if($row['paid']){
-		$checked_str = "checked";
-	}
-	
+		
 		echo "
 					<div class='table'>
 						<div class='wide'>".$row['username']."</div>
-						<div class='small'><input type='checkbox' name='paid".$row['id']."' value=1 $checked_str></div>
-						<div class='tiny'>". groupstage_filled_in($row['id']) ."</div>
-						<div class='tiny'>". stage_filled_in($row['id'],'eight') ."</div>
-						<div class='tiny'>". stage_filled_in($row['id'],'quarter') ."</div>
-						<div class='tiny'>". stage_filled_in($row['id'],'semi') ."</div>
-						<div class='tiny'>". stage_filled_in($row['id'],'final') ."</div>
+						<div class='small'><input type='checkbox' name='remove_user".$row['id']."' value=1></div>
 						<div class='small'><a href='print_pronostiek.php?userid=".$row['id']."' target='_blank'>print</a></div>
 					</div>";
 	}		

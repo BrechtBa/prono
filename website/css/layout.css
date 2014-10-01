@@ -92,8 +92,6 @@ article.print form.prono div.submit input{
 }
 
 div.table{
-	margin-left: auto;
-	margin-right: auto;
 	width: 80%;
 	height: 25px;
 }
@@ -101,14 +99,12 @@ div.table div{
 	display: inline-block;
 }
 div.table div.wide{
-	width: 35%;
+	width: 30%;
 }
 div.table div.small{
 	width: 15%;
 }
-div.table div.tiny{
-	width: 5%;
-}
+
 /***************************************/
 /*         Narrow screen               */
 /***************************************/

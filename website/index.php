@@ -3,9 +3,9 @@
 	
 	// functions
 	include('data/mysql.php');
-	include('data/functions_print.php');
+	include('data/functions_display.php');
 	include('data/functions_prono.php');
-	include('data/teams.php');
+	include('data/competition_data.php');
 	
 	if(array_key_exists('page',$_GET)){
 		$page = $_GET['page'];
