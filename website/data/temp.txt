@@ -1,0 +1,45 @@
+echo "
+	<script type='text/javascript'>
+
+	</script>";
+	
+	
+	
+	
+	$(function () {
+				$('#container').highcharts({
+					chart: {
+						zoomType: 'x',
+						spacingRight: 20
+					},
+					title: {
+						text: '$title'
+					},
+					xAxis: {
+						type: 'datetime',
+						maxZoom: 14 * 24 * 3600000, // fourteen days
+						title: {
+							text: null
+						}
+					},
+					yAxis: {
+						title: {
+							text: '$unit'
+						}
+					},
+					tooltip: {
+						shared: true
+					},
+					legend: {
+						enabled: false
+					},
+					series: [{
+						name: '$title',
+						pointInterval: 24 * 3600 * 1000,
+						pointStart: Date.UTC(2006, 0, 01),
+						data: [
+						1,2,3,5,3,7,9,2
+						]
+					}]
+				});
+			});
