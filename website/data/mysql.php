@@ -1,9 +1,9 @@
 <?php
 
 $db_host = 'localhost';
-$db_username = 'lapanza_user';
-$db_password = 'suz500';
-$db_database = 'db_lapanza';
+$db_username = 'pronouser';
+$db_password = 'pronopass';
+$db_database = 'pronodatabase';
 
 $db_connection = mysql_pconnect("$location","$db_username","$db_password");
 if (!$db_connection) die ("Could not connect MySQL");
