@@ -3,7 +3,7 @@
 echo "
 		<h1>
 			
-			3 Fasen WK 2014 PORNOSTIEK
+			3 Fasen WK 2014 PRONOSTIEK
 		</h1>
 		<nav>
 			<ul>

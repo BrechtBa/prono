@@ -6,37 +6,37 @@ if(!$_SESSION['login']){
 }
 else{
 	///////////////////////////////////////////////////////////////////////////////
-	// Pronostiek weergeven
+	// Display prono
 	///////////////////////////////////////////////////////////////////////////////
+	$round_enabled = array_fill (0 , count($phase_end_time) , 0 );
 	
 	$enabled = 0;
 	$enabled_str = "disabled";
-	if( time()<$phase1_end ){
-		$enabled = 1;
+	if( time()<$phase_end_time[0] ){
+		$round_enabled[0] = 1;
 		$enabled_str = "";
 	}
 	
-	// Deel 1 ////////////////////////////////////////////////////////////////////
+	// Part 1 ////////////////////////////////////////////////////////////////////
 	echo "
 			<article>
 				<form class='prono' name='part1' action='index.php?page=$page' method='post'>
 					<h1>Pronostiek Deel 1</h1>
-					<p>In te vullen voor ".date('d M Y, H:i',$phase1_end)."</p>
+					<p>In te vullen voor ".date('d M Y, H:i',$phase_end_time[0])."</p>
 					<h2>Groepsfase</h2>";
 
 	for($group=1;$group<=$groups;$group++){
 		echo "
 					<div class='group'>
-						<h3>Groep $group_name[$group]</h3>";
+						<h1>Groep $group_name[$group]</h1>";
 						display_group_matches($group,$enabled,$userid);
 						display_group_winners($group,$enabled,$userid);
-
 		echo "
 					</div>";		
 	}
 	echo "
 					<div class=ko1>
-						Ploegen in de Kwartfinales:<br>";
+						<h1>Ploegen in de Kwartfinales:</h1>";
 						display_team_selection("quarter_team1",$enabled);
 						display_team_selection("quarter_team2",$enabled);
 						display_team_selection("quarter_team3",$enabled);
@@ -45,29 +45,25 @@ else{
 						display_team_selection("quarter_team6",$enabled);
 						display_team_selection("quarter_team7",$enabled);
 						display_team_selection("quarter_team8",$enabled);
-
 	echo "     
 					</div>
 					<div class=ko1>
-						Ploegen in de Halve finales:<br>";					
+						<h1>Ploegen in de Halve finales:</h1>";					
 						display_team_selection("semi_team1",$enabled);
 						display_team_selection("semi_team2",$enabled);
 						display_team_selection("semi_team3",$enabled);
-						display_team_selection("semi_team4",$enabled);
-				
+						display_team_selection("semi_team4",$enabled);	
 	echo "     
 					</div>
 					<div class=ko1>
-						Ploegen in de Finale:<br>";
+						<h1>Ploegen in de Finale:</h1>";
 						display_team_selection("final_team1",$enabled);
 						display_team_selection("final_team2",$enabled);
-
 	echo "     
 					</div>
 					<div class=ko1>
-						Wereldkampioen:<br>";
+						<h1>Wereldkampioen:</h1>";
 						display_team_selection("winner",$enabled);
-
 	echo "     
 					</div>";
 	
@@ -75,51 +71,29 @@ else{
 					<div class='submit'><input type='submit' value='Verzenden' name='part1' $enabled_str></div>
 				</form>
 			</article>";
+			
+			
 	// Deel 2 ////////////////////////////////////////////////////////////////////
 	
 	// check which part is enabled
 	$enabled_str = "disabled";
+	$fillindate = "";
 	if($userid>0){
-		if( time()>$phase1_end && time()<$phase2_end ){
-			$eight_enabled   = 1;
-			$fillindate = date('d M Y, H:i',$phase2_end);
-			$enabled_str = "";
-		}
-		else{
-			$eight_enabled = 0;
-		}
-		if( time()>$phase2_end && time()<$phase3_end ){
-			$quarter_enabled = 1;
-			$fillindate = date('d M Y, H:i',$phase3_end);
-			$enabled_str = "";
-		}
-		else{
-			$quarter_enabled = 0;
-		}
-		if( time()>$phase3_end && time()<$phase4_end ){
-			$semi_enabled    = 1;
-			$fillindate = date('d M Y, H:i',$phase4_end);
-			$enabled_str = "";
-		}
-		else{
-			$semi_enabled = 0;
-		}
-		if( time()>$phase4_end && time()<$phase5_end ){
-			$final_enabled   = 1;
-			$fillindate = date('d M Y, H:i',$phase5_end);
-			$enabled_str = "";
-		}
-		else{
-			$final_enabled = 0;
+		for($i=1;$i<count($phase_end_time);$i++){
+		
+			if( time()>$phase_end_time[$i-1] && time()<$phase_end_time[$i] ){
+				$round_enabled[$i]   = 1;
+				$fillindate = $phase_end_time[$i];
+				$enabled_str = "";
+			}
+		
 		}
 	}
 	else{
-		$eight_enabled   = 1;
-		$quarter_enabled = 1;
-		$semi_enabled    = 1;
-		$final_enabled   = 1;
-		
-		$enabled_str = "";
+		for($i=1;$i<count($phase_end_time);$i++){
+			$round_enabled[$i]   = 1;
+			$enabled_str = "";
+		}
 	}
 	// Display
 	echo "			
@@ -131,22 +105,22 @@ else{
 	echo "		
 					<div class='ko'>		
 						<div class='ko_stage'>";
-							display_knockout_match('eight',49,$eight_enabled,$userid);
-							display_knockout_match('eight',50,$eight_enabled,$userid);
-							display_knockout_match('eight',53,$eight_enabled,$userid);
-							display_knockout_match('eight',54,$eight_enabled,$userid);
+							display_knockout_match('eight',49,$round_enabled[1],$userid);
+							display_knockout_match('eight',50,$round_enabled[1],$userid);
+							display_knockout_match('eight',53,$round_enabled[1],$userid);
+							display_knockout_match('eight',54,$round_enabled[1],$userid);
 
 		echo "
 						</div>
 						<div class='ko_stage'>";							
-							display_knockout_match('quarter',57,$quarter_enabled,$userid);
+							display_knockout_match('quarter',57,$round_enabled[2],$userid);
 	echo "
 							<div class=ko_empty></div>";
-							display_knockout_match('quarter',58,$quarter_enabled,$userid);						
+							display_knockout_match('quarter',58,$round_enabled[2],$userid);						
 	echo "
 						</div>
 						<div class='ko_stage'>";
-							display_knockout_match('semi',61,$semi_enabled,$userid);
+							display_knockout_match('semi',61,$round_enabled[3],$userid);
 	echo "
 						</div>
 						<div class='ko_stage'>";
@@ -154,33 +128,33 @@ else{
 							<div class=ko_empty></div>
 							<div class=ko_empty></div>
 							<div class=ko_empty></div>";			
-							display_knockout_match('final',64,$final_enabled,$userid);
+							display_knockout_match('final',64,$round_enabled[4],$userid);
 	echo "
 							<div class=ko_empty></div>";
-							display_knockout_match('final',63,$final_enabled,$userid);
+							display_knockout_match('final',63,$round_enabled[4],$userid);
 
 						
 	echo "
 						</div>
 						<div class='ko_stage'>";
-							display_knockout_match('semi',62,$semi_enabled,$userid);
+							display_knockout_match('semi',62,$round_enabled[3],$userid);
 
 	echo "
 						</div>
 						<div class='ko_stage'>";							
-							display_knockout_match('quarter',59,$quarter_enabled,$userid);
+							display_knockout_match('quarter',59,$round_enabled[2],$userid);
 	echo "
 							<div class=ko_empty></div>";
-							display_knockout_match('quarter',60,$quarter_enabled,$userid);
+							display_knockout_match('quarter',60,$round_enabled[2],$userid);
 
 
 	echo "
 						</div>
 						<div class='ko_stage'>";
-							display_knockout_match('eight',51,$eight_enabled,$userid);
-							display_knockout_match('eight',52,$eight_enabled,$userid);
-							display_knockout_match('eight',55,$eight_enabled,$userid);
-							display_knockout_match('eight',56,$eight_enabled,$userid);
+							display_knockout_match('eight',51,$round_enabled[1],$userid);
+							display_knockout_match('eight',52,$round_enabled[1],$userid);
+							display_knockout_match('eight',55,$round_enabled[1],$userid);
+							display_knockout_match('eight',56,$round_enabled[1],$userid);
 
 	echo "
 						</div>
