@@ -84,7 +84,8 @@ if($prono){
 }
 else{
 	if($admin){
-		// admin			
+		// admin
+		$enabled = 1;
 	}
 	else{
 		// result
