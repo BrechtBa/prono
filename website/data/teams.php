@@ -1,9 +1,4 @@
-<?php
-// team names
-$teams = 32;
-$teamspergroup = 4;
-$groups = 8;
-			
+<?php		
 // get team names and codes from database and put in array
 $query = "SELECT * FROM wk_teams";
 $result = mysql_query($query) or die('Error: ' . mysql_error());
@@ -36,11 +31,8 @@ $default_team1_str = array_merge($default_team1_str ,array("W61"));
 $default_team2_str = array_merge($default_team2_str ,array("W62"));
 
 // prono end phases
-$phase1_end = strtotime("2014/06/12 20:59");
-$phase2_end = strtotime("2014/06/28 17:59");
-$phase3_end = strtotime("2014/07/04 17:59");
-$phase4_end = strtotime("2014/07/08 21:59");
-$phase5_end = strtotime("2014/07/12 21:59");
+$phase_end_time = [strtotime("2014/06/12 20:59"),strtotime("2014/06/28 17:59"),strtotime("2014/07/04 17:59"),strtotime("2014/07/08 21:59"),strtotime("2014/07/12 21:59")];
+
 
 
 
