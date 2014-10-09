@@ -1,16 +1,16 @@
 <?php
 
-$enabled = 0;
+// Create handlers that define sub page behaviour
 $prono = 0;
 
 echo "
-				<article>
-					<h1>Resultaten</h1>";
+			<article>
+				<h1>Resultaten</h1>";
 
-
-		include('groupstage.php');
-		include('knockoutstage.php');
+		include('data/groupstage.php');
+		
+		include('data/knockoutstage.php');
 					
 echo "
-				</article>";
+			</article>";
 ?>
