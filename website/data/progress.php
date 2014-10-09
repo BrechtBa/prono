@@ -7,6 +7,7 @@
 // prono:  used to fill in the guess of all users: $enabled = 1
 // disp:   used to show the user guesses         : $enabled = 0
 
+$enabled = $round_enabled[0];
 $enabled_str = "";
 
 if($enabled){
@@ -22,6 +23,7 @@ $query  = "SELECT * FROM wk_users WHERE id='$userid'";
 $result = mysql_query($query) or die('Error: ' . mysql_error());
 $row = mysql_fetch_array($result);
 	
+// which teams make it to the knockout stages
 echo "
 					<div class=ko1>
 						<h1>Ploegen in de Kwartfinales:</h1>";	
@@ -58,5 +60,30 @@ echo "
 						
 echo "     
 					</div>";
+					
+					
+// what will be the total number of goals
+$number_str = '';
+if($row['total_goals']>=0){
+	$number_str = $row['total_goals'];
+}
+
+echo "
+					<div class=ko1>
+						Totaal aantal goals:<br>
+						<input name='number' value='$number_str' $enabled_str>
+					</div>";
+			
+
+// in which round is the home team sent home				
+echo "
+			<div class=ko1>
+				Hoe ver geraken de Rode Duivels:<br>";
+					
+echo_select_list('ranking',$enabled,array("","Groepsfase","8e finale"," Kwartfinale","Halve finale","Finale","Wereldkampioen"),array(-1,17,9,5,3,2,1),$row['home_team_ranking']);
+echo "
+			</div>";
+
+			
 					
 ?>

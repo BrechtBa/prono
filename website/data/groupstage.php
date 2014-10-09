@@ -70,7 +70,7 @@ if(array_key_exists('groupstage',$_POST)){
 // admin:  used to fill in the actual scores     : $prono = 0, $admin = 1;
 // result: used to display the actual scores     : $prono = 0
 
-
+$enabled = $round_enabled[0];
 $enabled_str = "";
 
 if($prono){
