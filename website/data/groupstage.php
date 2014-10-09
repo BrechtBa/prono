@@ -64,7 +64,7 @@ if(array_key_exists('groupstage',$_POST)){
 ///////////////////////////////////////////////////////////////////////////////
 // Display Groupstage
 ///////////////////////////////////////////////////////////////////////////////
-// There are 3 groupstage versions all handled by this file
+// There are 4 groupstage versions all handled by this file
 // prono:  used to fill in the guess of all users: $prono = 1, $enabled = 1 , $admin = 0;
 // disp:   used to show the guessed scores       : $prono = 1, $enabled = 0
 // admin:  used to fill in the actual scores     : $prono = 0, $admin = 1;
@@ -72,12 +72,10 @@ if(array_key_exists('groupstage',$_POST)){
 
 
 $enabled_str = "";
-$finaldate_str = "";
 
 if($prono){
 	if($enabled){
 		// prono
-		$finaldate_str = "<p>In te vullen voor ".date('d M Y, H:i',$phase_end_time[0])."</p>"
 	}
 	else{
 		// disp
@@ -86,8 +84,7 @@ if($prono){
 }
 else{
 	if($admin){
-		// admin
-			
+		// admin			
 	}
 	else{
 		// result
@@ -98,9 +95,7 @@ else{
 
 // echo the content
 echo "
-		$finaldate_str
-		<h2>Groepsfase</h2>
-		<form class='prono' name='groupstage' action='index.php?page=$page' method='post'>";
+					<h2>Groepsfase</h2>";
 
 		
 		
@@ -112,8 +107,8 @@ while($row_group = mysql_fetch_array($result_group)){
 	$groupid = $row_group['id'];
 	
 	echo "
-			<div class='group'>
-				<h3>Groep $group_name[$groupid]</h3>";
+					<div class='group'>
+						<h3>Groep $group_name[$groupid]</h3>";
 				
 ///////////////////////////////////////////////////////////////////////////////				
 // echo all matches in the group 
@@ -164,19 +159,19 @@ while($row_group = mysql_fetch_array($result_group)){
 		
 		// display match
 		echo "
-				<div>
-					<div class='group_team_left'>
-						$team1_name_str
-					</div>
-					<div class='group_center'>
-						<img src='figures/flags/$team1_code_str.png'>
-						$input_score1_str - $input_score2_str
-						<img src='figures/flags/$team2_code_str.png'>
-					</div>
-					<div class='group_team_right'>
-						$team2_name_str
-					</div>
-				</div>"; 		
+						<div>
+							<div class='group_team_left'>
+								$team1_name_str
+							</div>
+							<div class='group_center'>
+								<img src='figures/flags/$team1_code_str.png'>
+								$input_score1_str - $input_score2_str
+								<img src='figures/flags/$team2_code_str.png'>
+							</div>
+							<div class='group_team_right'>
+								$team2_name_str
+							</div>
+						</div>"; 		
 	}
 	
 ///////////////////////////////////////////////////////////////////////////////	
@@ -202,37 +197,30 @@ while($row_group = mysql_fetch_array($result_group)){
 	
 	// echo groupwinner and groupsecond
 	echo "
-				<div class='groupwinner'>
-					Groepswinnaar:";
+						<div class='groupwinner'>
+							Groepswinnaar:";
 	if($prono || $admin){
 		echo_select_list("group".$groupid."_winner",$enabled,array_merge((array)"",$team_name_range),array_merge((array)-1,$team_id_range),$groupwinner);				
 	}
 	else{
-		echo "<div>$groupwinner</div>"
+		echo "
+							<div>$groupwinner</div>"
 	}
 	echo "
-				</div>
-				<div class='groupwinner'>
-					Groepstweede:";
+						</div>
+						<div class='groupwinner'>
+							Groepstweede:";
 	if($prono || $admin){
 		echo_select_list("group".$groupid."_second",$enabled,array_merge((array)"",$team_name_range),array_merge((array)-1,$team_id_range),$groupsecond);
 	}
 	else{
-		echo "<div>$groupsecond</div>"
+		echo "
+							<div>$groupsecond</div>"
 	}
 	
 	echo "
-				</div>
-			</div>";
+						</div>
+					</div>";
 }
 
-if($prono || $admin){
-	// echo submit button
-	echo "
-			<div class='submit'>
-				<input type='submit' value='Verzenden' name='groupstage' $enabled_str>
-			</div>";
-}
-echo "
-		</form>";
 ?>

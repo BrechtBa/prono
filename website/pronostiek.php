@@ -44,43 +44,7 @@ else{
 				</form>
 			</article>";
 			
-/*
-	echo "
-					<div class=ko1>
-						<h1>Ploegen in de Kwartfinales:</h1>";
-						display_team_selection("quarter_team1",$enabled);
-						display_team_selection("quarter_team2",$enabled);
-						display_team_selection("quarter_team3",$enabled);
-						display_team_selection("quarter_team4",$enabled);
-						display_team_selection("quarter_team5",$enabled);
-						display_team_selection("quarter_team6",$enabled);
-						display_team_selection("quarter_team7",$enabled);
-						display_team_selection("quarter_team8",$enabled);
-	echo "     
-					</div>
-					<div class=ko1>
-						<h1>Ploegen in de Halve finales:</h1>";					
-						display_team_selection("semi_team1",$enabled);
-						display_team_selection("semi_team2",$enabled);
-						display_team_selection("semi_team3",$enabled);
-						display_team_selection("semi_team4",$enabled);	
-	echo "     
-					</div>
-					<div class=ko1>
-						<h1>Ploegen in de Finale:</h1>";
-						display_team_selection("final_team1",$enabled);
-						display_team_selection("final_team2",$enabled);
-	echo "     
-					</div>
-					<div class=ko1>
-						<h1>Wereldkampioen:</h1>";
-						display_team_selection("winner",$enabled);
-	echo "     
-					</div>";
-	
-
-*/		
-			
+		
 	///////////////////////////////////////////////////////////////////////////////
 	// Part 2
 	///////////////////////////////////////////////////////////////////////////////
