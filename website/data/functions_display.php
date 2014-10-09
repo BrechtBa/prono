@@ -1,121 +1,7 @@
 <?php
 
-// file contains World Cup print functions
+// file contains prono display functions
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function print_group_matches($group,$enabled,$prono){
-	global $team_name;
-	global $team_code;
-	global $group_name;
-	global $teamspergroup;
-	global $userid;
-	
-	$enabled_str = "disabled";
-	if($enabled){
-		$enabled_str = "";
-	}
-	
-	$query = "SELECT * FROM wk_match WHERE stage=$group";
-	$result = mysql_query($query) or die('Error: ' . mysql_error());
-	
-	while($row = mysql_fetch_array($result)) {
-		
-		if($prono){
-			$query_prono  = "SELECT * FROM wk_users WHERE id='$userid'";
-			$result_prono = mysql_query($query_prono) or die('Error: ' . mysql_error());
-			$row_prono = mysql_fetch_array($result_prono);
-
-			
-			$score1 = $row_prono['match'.$row['id'].'_score1'];
-			$score2 = $row_prono['match'.$row['id'].'_score2'];
-			
-			
-		}
-		else{
-			$score1 = $row['score1'];
-			$score2 = $row['score2'];
-		}
-		// create score strings
-		$score1_str = get_score_str($score1);
-		$score2_str = get_score_str($score2);
-
-		// convert team numbers to names
-		$team1_str = get_team_str($row['team1'],$row['id'],1);
-		$team2_str = get_team_str($row['team2'],$row['id'],0);
-		
-		
-		// match weergeven
-		echo "
-				<div>
-					<div class='group_team_left'>$team1_str</div>
-					<div class='group_center'><img src='figures/flags/".$team_code[(int)$row['team1']].".png'> <input type='text' name='match".$row[id]."_score1' value='$score1_str' $enabled_str> - <input type='text' name='match".$row[id]."_score2' value='$score2_str' $enabled_str> <img src='figures/flags/".$team_code[(int)$row['team2']].".png'></div>
-					<div class='group_team_right'>$team2_str</div>
-				</div>"; 
-	}
-}	
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function print_group_winners($group,$enabled,$prono){
-	global $team_name;
-	global $team_code;
-	global $group_name;
-	global $teamspergroup;
-	global $userid;
-	
-	$enabled_str = "disabled";
-	if($enabled){
-		$enabled_str = "";
-	}
-	
-	if($prono){
-		// pronostiek result is given
-		$query  = "SELECT * FROM wk_users WHERE id='$userid'";
-		$result = mysql_query($query) or die('Error: ' . mysql_error());
-		$row = mysql_fetch_array($result);
-		
-		$groupwinner = $row['group'.$group.'_winner']; 
-		$groupsecond = $row['group'.$group.'_second'];
-	}
-	else{
-	
-		$query  = "SELECT * FROM wk_groups WHERE id='$group'";
-		$result = mysql_query($query) or die('Error: ' . mysql_error());
-		$row = mysql_fetch_array($result);
-		
-		$groupwinner = $row['winner']; 
-		$groupsecond = $row['second'];		
-
-	}
-	
-	$query  = "SELECT * FROM wk_teams WHERE grp=$group";
-	$result = mysql_query($query) or die('Error: ' . mysql_error());
-	$i = 0;
-	while($row = mysql_fetch_array($result)){
-		$i++;
-		$team_id_range[$i] = $row['id'];
-		$team_name_range[$i] = $row['name']; 
-	}
-	
-	echo "
-				<div class='groupwinner'>
-					Groepswinnaar:";
-	
-	echo_select_list("group".$group."_winner",$enabled,array_merge((array)"",$team_name_range),array_merge((array)-1,$team_id_range),$groupwinner);				
-			
-	echo "
-				</div>
-				<div class='groupwinner'>
-					Groepstweede:";
-
-	echo_select_list("group".$group."_second",$enabled,array_merge((array)"",$team_name_range),array_merge((array)-1,$team_id_range),$groupsecond);
-	
-	echo "
-				</div>";
-}	
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -282,24 +168,37 @@ function print_matches($enabled){
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function get_team_str($team,$match,$home){
+function get_team_name($team,$match,$home){
 	global $team_name;
 	global $default_team1_str;
 	global $default_team2_str;
 	
 	if($team>0){
-		$team_str = $team_name[$team];
+		$team_name_str = $team_name[$team];
 	}
 	else{
 		if($home){
-			$team_str = $default_team1_str[$match-1];
+			$team_name_str = $default_team1_str[$match-1];
 		}
 		else{
-			$team_str = $default_team2_str[$match-1];
+			$team_name_str = $default_team2_str[$match-1];
 		}
 	}
 	
 	return $team_str;
+}
+function get_team_code($team){
+	global $team_code;
+	
+	if($team>0){
+		$team_code_str = $team_code[$team];
+		//team_code[(int)$row['team1']]
+	}
+	else{
+		$team_code_str = "";
+	}
+
+	return $team_code_str;
 }
 function get_score_str($score){
 	$score_str = "";
