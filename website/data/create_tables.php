@@ -5,11 +5,11 @@ if($_SESSION['userid']==1){
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// teams
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	mysql_query("DROP TABLE wk_teams") or die('Error: ' . mysql_error());
-	$query = "CREATE TABLE wk_teams(id TINYINT AUTO_INCREMENT PRIMARY KEY,name VARCHAR(128),code VARCHAR(128),grp TINYINT)";
+	//mysql_query("DROP TABLE wk_teams") or die('Error: ' . mysql_error());
+	$query = "CREATE TABLE IF NOT EXISTS wk_teams(id TINYINT AUTO_INCREMENT PRIMARY KEY,name VARCHAR(128),code VARCHAR(128),grp TINYINT)";
 	$result = mysql_query($query) or die('Error: ' . mysql_error());
 
-	//2014 data
+	// World cup 2014 data
 	$query = "INSERT INTO wk_teams (name,code,grp) VALUES ('Brazili&euml;','BRA',1)";
 	$result = mysql_query($query) or die('Error: ' . mysql_error());
 	$query = "INSERT INTO wk_teams (name,code,grp) VALUES ('Kroati&euml;','CRO',1)";
@@ -85,8 +85,8 @@ if($_SESSION['userid']==1){
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// groups
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	mysql_query("DROP TABLE wk_groups") or die('Error: ' . mysql_error());
-	$query = "CREATE TABLE wk_groups(id TINYINT AUTO_INCREMENT PRIMARY KEY,name VARCHAR(128),winner TINYINT DEFAULT '-1',second TINYINT DEFAULT '-1')";
+	//mysql_query("DROP TABLE wk_groups") or die('Error: ' . mysql_error());
+	$query = "CREATE TABLE IF NOT EXISTS wk_groups(id TINYINT AUTO_INCREMENT PRIMARY KEY,name VARCHAR(128),winner TINYINT DEFAULT '-1',second TINYINT DEFAULT '-1')";
 	$result = mysql_query($query) or die('Error: ' . mysql_error());
 
 	$query = "REPLACE INTO wk_groups (id,name) VALUES (1,'A')";
@@ -122,8 +122,8 @@ if($_SESSION['userid']==1){
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// matches
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	mysql_query("DROP TABLE wk_match") or die('Error: ' . mysql_error());
-	$query = "CREATE TABLE wk_match(id TINYINT AUTO_INCREMENT PRIMARY KEY,stage VARCHAR(128),date DATETIME DEFAULT '0000-00-00 00:00:00',team1 TINYINT DEFAULT '-1',team2 TINYINT DEFAULT '-1',score1 TINYINT DEFAULT '-1',score2 TINYINT DEFAULT '-1',score1p TINYINT DEFAULT '-1',score2p TINYINT DEFAULT '-1')";
+	//mysql_query("DROP TABLE wk_match") or die('Error: ' . mysql_error());
+	$query = "CREATE TABLE IF NOT EXISTS wk_match(id TINYINT AUTO_INCREMENT PRIMARY KEY,stage VARCHAR(128),date DATETIME DEFAULT '0000-00-00 00:00:00',team1 TINYINT DEFAULT '-1',team2 TINYINT DEFAULT '-1',score1 TINYINT DEFAULT '-1',score2 TINYINT DEFAULT '-1',score1p TINYINT DEFAULT '-1',score2p TINYINT DEFAULT '-1')";
 	$result = mysql_query($query) or die('Error: ' . mysql_error());
 
 	// match definitions
@@ -164,18 +164,13 @@ if($_SESSION['userid']==1){
 		$query = "REPLACE INTO wk_match(id,stage) VALUES (". $match .",'eight')";
 		$result = mysql_query($query) or die('Error: ' . mysql_error());
 	}
-	$default_team1_str = array_merge($default_team1_str ,array("1A","1C","1B","1D","1E","1G","1F","1H"));
-	$default_team2_str = array_merge($default_team2_str ,array("2B","2D","2A","2C","2F","2H","2E","2G"));
-
+	
 	for($i=1;$i<=$groups/2;$i++){
 		$match++;
 		$query = "REPLACE INTO wk_match(id,stage) VALUES (". $match.",'quarter')";
 		$result = mysql_query($query) or die('Error: ' . mysql_error());
 		
 	}
-	$default_team1_str = array_merge($default_team1_str ,array("W49","W53","W51","W55"));
-	$default_team2_str = array_merge($default_team2_str ,array("W50","W54","W52","W56"));
-
 
 	for($i=1;$i<=$groups/4;$i++){
 		$match++;
@@ -198,7 +193,7 @@ if($_SESSION['userid']==1){
 	// users
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//mysql_query("DROP TABLE wk_users") or die('Error: ' . mysql_error());
-	$query = "CREATE TABLE wk_users(id INT AUTO_INCREMENT PRIMARY KEY,username VARCHAR(128),password VARCHAR(128),paid TINYINT";
+	$query = "CREATE TABLE IF NOT EXISTS wk_users(id INT AUTO_INCREMENT PRIMARY KEY,username VARCHAR(128),password VARCHAR(128),paid TINYINT";
 
 	for($i=1;$i<=64;$i++){
 		$query = $query.",match".$i."_score1 TINYINT DEFAULT '-1', match".$i."_score2 TINYINT DEFAULT '-1'";
@@ -225,6 +220,6 @@ if($_SESSION['userid']==1){
 	$query = $query.",home_team_ranking TINYINT DEFAULT '-1'";
 
 	$query = $query.")";
-	//$result = mysql_query($query) or die('Error: ' . mysql_error());
+	$result = mysql_query($query) or die('Error: ' . mysql_error());
 }
 ?>
