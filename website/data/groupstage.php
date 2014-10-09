@@ -79,7 +79,7 @@ if($prono){
 	}
 	else{
 		// disp
-		$enabled_str = "disabled";
+		$enabled_str = "readonly";
 	}
 }
 else{
@@ -88,7 +88,7 @@ else{
 	}
 	else{
 		// result
-		$enabled_str = "disabled";
+		$enabled_str = "readonly";
 	}
 }
 

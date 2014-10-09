@@ -15,7 +15,7 @@ if($enabled){
 }
 else{
 	// disp
-	$enabled_str = "disabled";
+	$enabled_str = "readonly";
 }
 
 // get user data

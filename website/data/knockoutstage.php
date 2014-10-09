@@ -63,135 +63,83 @@ if(array_key_exists('knockoutstage',$_POST)){
 
 
 ///////////////////////////////////////////////////////////////////////////////
-// Knockoutstage weergeven
+// Display knockoutstage
 ///////////////////////////////////////////////////////////////////////////////
-$enabled_str = "disabled";
-$fillindate = 0;
-
-if($prono){
-	if( time()>$phase1_end && time()<$phase2_end ){
-		$eight_enabled   = 1*$enabled;
-		$fillindate = date('d M Y, H:i',$phase2_end);
-		$enabled_str = "";
-	}
-	else{
-		$eight_enabled = 0;
-	}
-	if( time()>$phase2_end && time()<$phase3_end ){
-		$quarter_enabled = 1*$enabled;
-		$fillindate = date('d M Y, H:i',$phase3_end);
-		$enabled_str = "";
-	}
-	else{
-		$quarter_enabled = 0;
-	}
-	if( time()>$phase3_end && time()<$phase4_end ){
-		$semi_enabled    = 1*$enabled;
-		$fillindate = date('d M Y, H:i',$phase4_end);
-		$enabled_str = "";
-	}
-	else{
-		$semi_enabled = 0;
-	}
-	if( time()>$phase4_end && time()<$phase5_end ){
-		$final_enabled   = 1*$enabled;
-		$fillindate = date('d M Y, H:i',$phase5_end);
-		$enabled_str = "";
-	}
-	else{
-		$final_enabled = 0;
-	}
-}
-else{
-	$eight_enabled   = 1*$enabled;
-	$quarter_enabled = 1*$enabled;
-	$semi_enabled    = 1*$enabled;
-	$final_enabled   = 1*$enabled;
-	
-	$enabled_str = "";
-}
+// There are 4 groupstage versions all handled by this file
+// prono:  used to fill in the guess of all users: $prono = 1, $enabled = [array with 1 or 0] , $admin = 0;
+// disp:   used to show the guessed scores       : $prono = 1, $enabled = [all zero array]
+// admin:  used to fill in the actual scores     : $prono = 0, $admin = 1;
+// result: used to display the actual scores     : $prono = 0
 
 
-if($prono && $fillindate){
-	echo "<p>In te vullen voor $fillindate</p>";
-}
-echo "
-		<h2>Eliminatie fase</h2>
-		<form class='prono' name='knockoutstage' action='index.php?page=$page' method='post'>";
-
-echo "		
-			<div class='ko'>";			
-echo "
-				<div class='ko_stage'>";
-
-print_knockout_match('eight',49,$eight_enabled,$prono);
-print_knockout_match('eight',50,$eight_enabled,$prono);
-print_knockout_match('eight',53,$eight_enabled,$prono);
-print_knockout_match('eight',54,$eight_enabled,$prono);
 
 echo "
-				</div>
-				<div class='ko_stage'>";
-														
-print_knockout_match('quarter',57,$quarter_enabled,$prono);
-echo "
-					<div class=ko_empty></div>";
+					<h2>Eliminatie fase</h2>	
+						<div class='ko'>
+							<div class='ko_stage'>";
 
-print_knockout_match('quarter',58,$quarter_enabled,$prono);						
+display_knockout_match('eight',49,$enabled[1],$prono);
+display_knockout_match('eight',50,$enabled[1],$prono);
+display_knockout_match('eight',53,$enabled[1],$prono);
+display_knockout_match('eight',54,$enabled[1],$prono);
+
 echo "
-				</div>
-				<div class='ko_stage'>";
+							</div>
+							<div class='ko_stage'>";
+																	
+display_knockout_match('quarter',57,$enabled[2],$prono);
+echo "
+								<div class=ko_empty></div>";
+
+display_knockout_match('quarter',58,$enabled[2],$prono);						
+echo "
+							</div>
+							<div class='ko_stage'>";
 					
-print_knockout_match('semi',61,$semi_enabled,$prono);
+display_knockout_match('semi',61,$enabled[3],$prono);
 echo "
-				</div>
-				<div class='ko_stage'>";
+							</div>
+							<div class='ko_stage'>";
 echo "
-					<div class=ko_empty></div>
-					<div class=ko_empty></div>
-					<div class=ko_empty></div>";			
+								<div class=ko_empty></div>
+								<div class=ko_empty></div>
+								<div class=ko_empty></div>";			
 
-print_knockout_match('final',64,$final_enabled,$prono);
+display_knockout_match('final',64,$enabled[4],$prono);
 echo "
-					<div class=ko_empty></div>";
+								<div class=ko_empty></div>";
 
-print_knockout_match('final',63,$final_enabled,$prono);
+display_knockout_match('final',63,$enabled[4],$prono);
 
 						
 echo "
-				</div>
-				<div class='ko_stage'>";
+							</div>
+							<div class='ko_stage'>";
 					
-print_knockout_match('semi',62,$semi_enabled,$prono);
+display_knockout_match('semi',62,$enabled[3],$prono);
 
 echo "
-				</div>
-				<div class='ko_stage'>";
+							</div>
+							<div class='ko_stage'>";
 													
-print_knockout_match('quarter',59,$quarter_enabled,$prono);
+display_knockout_match('quarter',59,$enabled[2],$prono);
 echo "
-					<div class=ko_empty></div>";
+								<div class=ko_empty></div>";
 						
-print_knockout_match('quarter',60,$quarter_enabled,$prono);
+display_knockout_match('quarter',60,$enabled[2],$prono);
 
 
 echo "
-				</div>
-				<div class='ko_stage'>";
+							</div>
+							<div class='ko_stage'>";
 					
-print_knockout_match('eight',51,$eight_enabled,$prono);
-print_knockout_match('eight',52,$eight_enabled,$prono);
-print_knockout_match('eight',55,$eight_enabled,$prono);
-print_knockout_match('eight',56,$eight_enabled,$prono);
+display_knockout_match('eight',51,$enabled[1],$prono);
+display_knockout_match('eight',52,$enabled[1],$prono);
+display_knockout_match('eight',55,$enabled[1],$prono);
+display_knockout_match('eight',56,$enabled[1],$prono);
 
 echo "
-				</div>
-			</div>";
-if($prono || $enabled){
-	echo "
-			<div class='submit'><input type='submit' value='Verzenden' name='knockoutstage' $enabled_str></div>";
-}
-echo "
-		</form>";
-				
+							</div>
+						</div>";
+
 ?>
