@@ -7,6 +7,7 @@
 
 		// Create handlers that define sub page behaviour
 		$prono = 1;
+		$admin = 0;
 		
 		// Create date strings if required
 		$finaldate_part1 = "";

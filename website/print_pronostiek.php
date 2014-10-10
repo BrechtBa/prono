@@ -9,7 +9,7 @@
 	echo "
 <html>
 	<head>
-		<title>3 fasen WK Pornostiek</title>
+		<title>3 fasen WK Pronostiek</title>
 
 		<meta charset='utf-8'/>
 		<meta name='viewport' content='width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=1.3, minimum-scale=1' />
@@ -45,6 +45,7 @@
 				<h1>$username Pronostiek Deel 1</h1>";
 	
 		$prono = 1;
+		$admin = 0;
 		$round_enabled = array_fill (0 , count($phase_end_time) , 0 );
 		
 		include('data/groupstage.php');				

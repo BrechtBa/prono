@@ -21,7 +21,7 @@
 	echo "
 <html>
 	<head>
-		<title>3 fasen WK Pornostiek</title>
+		<title>3 fasen WK Pronostiek</title>
 
 		<meta charset='utf-8'/>
 		<meta name='viewport' content='width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=1.3, minimum-scale=1' />
