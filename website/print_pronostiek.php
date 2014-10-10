@@ -2,20 +2,10 @@
 	session_start();
 
 	include('data/mysql.php');
-	include('data/functions_print.php');
+	include('data/functions_display.php');
 	include('data/functions_prono.php');
 	include('data/teams.php');
-
-	$userid=$_GET['userid'];
 	
-	$query = "SELECT * FROM wk_users WHERE ID=$userid";
-	$result = mysql_query($query) or die('Error: ' . mysql_error());
-	$row = mysql_fetch_array($result);
-	$username = $row['username'];
-	
-	///////////////////////////////////////////////////////////////////////////////
-	// Pronostiek weergeven
-	///////////////////////////////////////////////////////////////////////////////
 	echo "
 <html>
 	<head>
@@ -35,32 +25,42 @@
 		<link rel='stylesheet' type='text/css' href='css/wk.css'/>
 		<link rel='stylesheet' type='text/css' href='css/main.css'/>
 	</head>
-	<body onload='window.print()'>
+	<body onload='window.print()'>";
+
+	if(array_key_exists('userid',$_GET)){
+		$query = "SELECT * FROM wk_users WHERE id=".$_GET['userid'];
+	}
+	else{
+		$query = "SELECT * FROM wk_users";
+	}
+
+	$userresult = mysql_query($query) or die('Error: ' . mysql_error());	
+	while($userrow = mysql_fetch_array($userresult)){
+
+		$userid   = $userrow['id'];
+		$username = $userrow['username'];
+		
+		echo "
 			<article class='print'>
 				<h1>$username Pronostiek Deel 1</h1>";
 	
-	$prono = 1;
-	$enabled = 0;
-	if( time()<$phase1_end ){
-		$enabled = 1;
-	}
-	
-	
-	include('groupstage.php');
-
-	include('knockout_teams.php');
-	
-	echo "			
+		$prono = 1;
+		$round_enabled = array_fill (0 , count($phase_end_time) , 0 );
+		
+		include('data/groupstage.php');				
+		
+		include('data/progress.php');
+		
+		echo "			
 				<h1>$username Pronostiek Deel 2</h1>";
 				
-	$enabled = 1;			
-	include('knockoutstage.php');
-				
-	echo "
-				<form class='prono' name='print_pronostiek' action='print_pronostiek.php' target='_blank' method='post'>
-					<div class='submit'><input type='submit' value='Print pronostiek'></div>
-				</form>
+		include('knockoutstage.php');
+					
+		echo "
 			</article>
+			<p style='page-break-before: always'></p>";
+	}
+	echo "
 	</body>
 </html>";
 					

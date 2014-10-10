@@ -74,6 +74,12 @@ $enabled = $round_enabled[0];
 $enabled_str = "";
 
 if($prono){
+
+	// get scores the user submitted
+	$query_prono  = "SELECT * FROM wk_users WHERE id='$userid'";
+	$result_prono = mysql_query($query_prono) or die('Error: ' . mysql_error());
+	$row_prono = mysql_fetch_array($result_prono);
+		
 	if($enabled){
 		// prono
 	}
@@ -116,20 +122,13 @@ while($row_group = mysql_fetch_array($result_group)){
 ///////////////////////////////////////////////////////////////////////////////
 	$query_match = "SELECT * FROM wk_match WHERE stage=$groupid";
 	$result_match = mysql_query($query_match) or die('Error: ' . mysql_error());
-	
-	if($prono){
-		// get scores the user submitted
-		$query_prono  = "SELECT * FROM wk_users WHERE id='$userid'";
-		$result_prono = mysql_query($query_prono) or die('Error: ' . mysql_error());
-		$row_prono = mysql_fetch_array($result_prono);
-	}
-
-	while($row_match = mysql_fetch_array($result_match)) {
+	while($row_match = mysql_fetch_array($result_match)){
 		$matchid = $row_match['id'];
 		
 		if($prono){
 			$score1 = $row_prono['match'.$row_match['id'].'_score1'];
 			$score2 = $row_prono['match'.$row_match['id'].'_score2'];
+		}
 		else{
 			$score1 = $row_match['score1'];
 			$score2 = $row_match['score2'];
@@ -181,6 +180,7 @@ while($row_group = mysql_fetch_array($result_group)){
 	if($prono){
 		$groupwinner = $row_prono['group'.$group.'_winner']; 
 		$groupsecond = $row_prono['group'.$group.'_second'];
+	}
 	else{
 		$groupwinner = $row_group['winner']; 
 		$groupsecond = $row_group['second'];

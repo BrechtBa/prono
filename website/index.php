@@ -38,24 +38,24 @@
 	<body>";
 	
 // basic layout		
-		echo "
+	echo "
 		<div>
 			<header>";
 			
-		include("header.php");
+	include("header.php");
 
-		echo "
+	echo "
 			</header>
 			<div class='content'>";
 			
-		include("$page.php");
+	include("$page.php");
 		
-		echo "
+	echo "
 			</div>";
 
-		echo"
+	echo"
 		</div>";
-		echo "		
+	echo "		
 	</body>
 </html>";
 	
