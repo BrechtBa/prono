@@ -6,7 +6,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function display_knockout_match($round,$match,$enabled,$prono){
+function display_knockout_match($round,$match,$enabled,$row_prono){
 	global $team_name;
 	global $team_code;
 	global $userid;
@@ -20,12 +20,8 @@ function display_knockout_match($round,$match,$enabled,$prono){
 	$team1_str = get_team_str($row['team1'],$row['id'],1);
 	$team2_str = get_team_str($row['team2'],$row['id'],0);
 
-	if($prono){
+	if($row_prono != 0){
 		// get prono score
-		$query_prono  = "SELECT * FROM wk_users WHERE id='$userid'";
-		$result_prono = mysql_query($query_prono) or die('Error: ' . mysql_error());
-		$row_prono = mysql_fetch_array($result_prono);
-		
 		$score1 = $row_prono['match'.$row['id'].'_score1'];
 		$score2 = $row_prono['match'.$row['id'].'_score2'];
 		$score1p = -1;
@@ -62,7 +58,7 @@ function display_knockout_match($round,$match,$enabled,$prono){
 								<div class='match_number'>Match $match</div>
 								<div class='match_score'><input type='text' name='match".$row[id]."_score1' value='$score1_str' $enabled_str> - <input type='text' name='match".$row[id]."_score2' value='$score2_str' $enabled_str></div>";
 	// penaltys
-	if($prono==0 && $enabled==1){
+	if($row_prono==0 && $enabled==1){
 		echo "
 								<div class='match_score'><input type='text' name='match".$row[id]."_score1p' value='$score1p_str' $enabled_str> - <input type='text' name='match".$row[id]."_score2p' value='$score2p_str' $enabled_str></div>";
 	}

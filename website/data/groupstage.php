@@ -74,30 +74,18 @@ $enabled = $round_enabled[0];
 $enabled_str = "";
 
 if($prono){
-
 	// get scores the user submitted
 	$query_prono  = "SELECT * FROM wk_users WHERE id='$userid'";
 	$result_prono = mysql_query($query_prono) or die('Error: ' . mysql_error());
 	$row_prono = mysql_fetch_array($result_prono);
-		
-	if($enabled){
-		// prono
-	}
-	else{
-		// disp
-		$enabled_str = "readonly";
-	}
 }
-else{
-	if($admin){
-		// admin
-		$enabled = 1;
-	}
-	else{
-		// result
-		$enabled_str = "readonly";
-	}
+if($admin){
+	$enabled = 1;
 }
+if(!$enabled){
+	$enabled_str = "readonly";
+}
+
 
 
 // echo the content

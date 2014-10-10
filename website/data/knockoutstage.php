@@ -72,34 +72,44 @@ if(array_key_exists('knockoutstage',$_POST)){
 // result: used to display the actual scores     : $prono = 0
 
 $enabled = $round_enabled;
+$row_prono = 0;
+
+if($prono){
+	// get scores the user submitted
+	$query_prono  = "SELECT * FROM wk_users WHERE id='$userid'";
+	$result_prono = mysql_query($query_prono) or die('Error: ' . mysql_error());
+	$row_prono = mysql_fetch_array($result_prono);
+}
 if($admin){
 	$enabled = $enabled-$enabled+1;
 }
+
+
 
 echo "
 					<h2>Eliminatie fase</h2>	
 					<div class='ko'>
 						<div class='ko_stage'>";
 
-display_knockout_match('eight',49,$enabled[1],$prono);
-display_knockout_match('eight',50,$enabled[1],$prono);
-display_knockout_match('eight',53,$enabled[1],$prono);
-display_knockout_match('eight',54,$enabled[1],$prono);
+display_knockout_match('eight',49,$enabled[1],$row_prono);
+display_knockout_match('eight',50,$enabled[1],$row_prono);
+display_knockout_match('eight',53,$enabled[1],$row_prono);
+display_knockout_match('eight',54,$enabled[1],$row_prono);
 
 echo "
 						</div>
 						<div class='ko_stage'>";
 																	
-display_knockout_match('quarter',57,$enabled[2],$prono);
+display_knockout_match('quarter',57,$enabled[2],$row_prono);
 echo "
 							<div class=ko_empty></div>";
 
-display_knockout_match('quarter',58,$enabled[2],$prono);						
+display_knockout_match('quarter',58,$enabled[2],$row_prono);						
 echo "
 						</div>
 						<div class='ko_stage'>";
 					
-display_knockout_match('semi',61,$enabled[3],$prono);
+display_knockout_match('semi',61,$enabled[3],$row_prono);
 echo "
 						</div>
 						<div class='ko_stage'>";
@@ -108,38 +118,38 @@ echo "
 							<div class=ko_empty></div>
 							<div class=ko_empty></div>";			
 
-display_knockout_match('final',64,$enabled[4],$prono);
+display_knockout_match('final',64,$enabled[4],$row_prono);
 echo "
 							<div class=ko_empty></div>";
 
-display_knockout_match('final',63,$enabled[4],$prono);
+display_knockout_match('final',63,$enabled[4],$row_prono);
 
 						
 echo "
 						</div>
 						<div class='ko_stage'>";
 					
-display_knockout_match('semi',62,$enabled[3],$prono);
+display_knockout_match('semi',62,$enabled[3],$row_prono);
 
 echo "
 						</div>
 						<div class='ko_stage'>";
 													
-display_knockout_match('quarter',59,$enabled[2],$prono);
+display_knockout_match('quarter',59,$enabled[2],$row_prono);
 echo "
 							<div class=ko_empty></div>";
 						
-display_knockout_match('quarter',60,$enabled[2],$prono);
+display_knockout_match('quarter',60,$enabled[2],$row_prono);
 
 
 echo "
 						</div>
 						<div class='ko_stage'>";
 					
-display_knockout_match('eight',51,$enabled[1],$prono);
-display_knockout_match('eight',52,$enabled[1],$prono);
-display_knockout_match('eight',55,$enabled[1],$prono);
-display_knockout_match('eight',56,$enabled[1],$prono);
+display_knockout_match('eight',51,$enabled[1],$row_prono);
+display_knockout_match('eight',52,$enabled[1],$row_prono);
+display_knockout_match('eight',55,$enabled[1],$row_prono);
+display_knockout_match('eight',56,$enabled[1],$row_prono);
 
 echo "
 						</div>
