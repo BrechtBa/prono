@@ -10,7 +10,7 @@ else{
 		$subpage = $_GET['subpage'];
 	}
 	else{
-		$subpage = 'resultaten';
+		$subpage = 'results';
 	}
 	
 	// display admin menu
