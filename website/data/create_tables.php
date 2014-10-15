@@ -222,10 +222,7 @@
 	$query = $query.")";
 	$result = mysql_query($query) or die('Error: ' . mysql_error());
 	
-	
-	$query = "INSERT INTO wk_users (id,username,password) VALUES (1,'admin','".md5('admin')."')";
-	$result = mysql_query($query) or die('Error: ' . mysql_error());
-	
-	echo "success";
+	echo "<h1>success</h1>";
+	echo "<meta http-equiv='refresh' content='2; URL=../index.php'>";
 
 ?>

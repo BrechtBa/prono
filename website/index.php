@@ -17,7 +17,7 @@
 		$page = 'home';
 	}
 
-	$userid = $_SESSION['userid'];
+	//$userid = $_SESSION['userid'];
 	
 	// create default handlers
 	$admin = 0;
