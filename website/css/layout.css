@@ -52,3 +52,95 @@ div.table div.wide{
 div.table div.small{
 	width: 15%;
 }
+
+
+/***************************************/
+/*         Knockout stage              */
+/***************************************/
+div.knockoutstage{
+	display: table-row;
+}
+div.knockoutstage>div{
+	display: table-cell;
+	vertical-align: middle;
+}
+div.knockoutstage li{
+	display: table-row;
+}
+
+div.knockoutstage div.outercell{
+	display: table-cell; 
+	vertical-align: middle;
+}
+div.knockoutstage div.match{ 
+	height:8em; 
+	width:12em; 
+	border: 2px solid #440000;
+	background: #660000;
+}
+
+div.cell{
+	padding:0.1em;
+}
+div.stage2 div.cell{
+	padding-bottom:3em;
+	padding-top:3em;
+}
+div.stage2 div.match{
+	height:10em;
+}
+
+div.stage3 div.match{
+	height:16em;
+}
+div.stage4 div.match{
+	height:11em;
+}
+div.stage4 div.cell{
+	padding-top:2em;
+}
+div.stage4 div.outercell{
+	padding-top:8em;
+}
+
+
+div.knockoutteam{
+	width: 100%;
+	height: 25px;
+	text-align: center;
+	line-height: 25px;
+}
+div.knockoutteam select{
+	width: 90%;
+}
+div.knockoutcenter{
+	width: 100%;
+	height: 80px;
+	text-align: center;
+}
+div.knockout_center div.match_number{
+	position: relative;
+	text-align: center;
+	font-size: 0.7em;
+	top: 10px;
+}
+div.knockout_center div.match_score{
+	position: relative;
+	text-align: center;
+	top: 15px;
+}
+
+
+/* compressing rounds*/
+div.stage1 div.match {
+	width:2em;
+}
+div.stage3 div.match {
+	width:2em;
+}
+div.stage4 div.match {
+	width:2em;
+}
+.knockoutstage div.match div{
+	visibility: hidden;
+}

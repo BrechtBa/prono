@@ -6,7 +6,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function display_knockout_match($round,$match,$enabled,$row_prono){
+function display_knockout_match($match,$enabled,$row_prono){
 	global $team_name;
 	global $team_code;
 	global $userid;
@@ -50,31 +50,37 @@ function display_knockout_match($round,$match,$enabled,$row_prono){
 	}
 	
 	echo "
-						<div>
-							<div class='ko_team'>
-								$team1_str
-							</div>
-							<div class='ko_center $round'>
-								<div class='match_number'>Match $match</div>
-								<div class='match_score'><input type='text' name='match".$row['id']."_score1' value='$score1_str' $enabled_str> - <input type='text' name='match".$row['id']."_score2' value='$score2_str' $enabled_str></div>";
+						<li>
+							<div class='cell'>
+								<div class='match'>
+	
+
+									<div class='knockoutteam'>
+										$team1_str
+									</div>
+									<div class='knockoutcenter'>
+										<div class='match_number'>Match $match</div>
+										<div class='match_score'><input type='text' name='match".$row['id']."_score1' value='$score1_str' $enabled_str> - <input type='text' name='match".$row['id']."_score2' value='$score2_str' $enabled_str></div>";
 	// penaltys
 	if($row_prono==0 && $enabled==1){
 		echo "
-								<div class='match_score'><input type='text' name='match".$row['id']."_score1p' value='$score1p_str' $enabled_str> - <input type='text' name='match".$row['id']."_score2p' value='$score2p_str' $enabled_str></div>";
+										<div class='match_score'><input type='text' name='match".$row['id']."_score1p' value='$score1p_str' $enabled_str> - <input type='text' name='match".$row['id']."_score2p' value='$score2p_str' $enabled_str></div>";
 	}
 	else{
 		if($score1p>=0){
 		echo "
-									<div class='match_score'>($score1p_str - $score2p_str)</div>";
+										<div class='match_score'>($score1p_str - $score2p_str)</div>";
 		}
 	}
 								
 	echo "
+									</div>
+									<div class='knockoutteam'>
+										$team2_str
+									</div>
+								</div>
 							</div>
-							<div class='ko_team'>
-								$team2_str
-							</div>
-						</div>";
+						</li>";
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

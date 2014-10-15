@@ -86,72 +86,94 @@ if($admin){
 
 
 echo "
-					<h2>Eliminatie fase</h2>	
-					<div class='ko'>
-						<div class='ko_stage'>";
-
-display_knockout_match('eight',49,$enabled[1],$row_prono);
-display_knockout_match('eight',50,$enabled[1],$row_prono);
-display_knockout_match('eight',53,$enabled[1],$row_prono);
-display_knockout_match('eight',54,$enabled[1],$row_prono);
-
-echo "
-						</div>
-						<div class='ko_stage'>";
-																	
-display_knockout_match('quarter',57,$enabled[2],$row_prono);
-echo "
-							<div class=ko_empty></div>";
-
-display_knockout_match('quarter',58,$enabled[2],$row_prono);						
-echo "
-						</div>
-						<div class='ko_stage'>";
-					
-display_knockout_match('semi',61,$enabled[3],$row_prono);
-echo "
-						</div>
-						<div class='ko_stage'>";
-echo "
-							<div class=ko_empty></div>
-							<div class=ko_empty></div>
-							<div class=ko_empty></div>";			
-
-display_knockout_match('final',64,$enabled[4],$row_prono);
-echo "
-							<div class=ko_empty></div>";
-
-display_knockout_match('final',63,$enabled[4],$row_prono);
-
+						<h2>Eliminatie fase</h2>
+						<div class='knockoutstage'>";
 						
 echo "
-						</div>
-						<div class='ko_stage'>";
+							<div class='stage1'>
+								<div class='outercell'>
+									<ul>";
+										
+										display_knockout_match(49,$enabled[1],$row_prono);
+										display_knockout_match(50,$enabled[1],$row_prono);
+										display_knockout_match(53,$enabled[1],$row_prono);
+										display_knockout_match(54,$enabled[1],$row_prono);									
+echo "										
+									</ul>
+								</div>    
+							</div>";
+echo "							
+							<div class='stage2'>
+								<div class='outercell'>
+									<ul>";
+									
+										display_knockout_match(57,$enabled[2],$row_prono);
+										display_knockout_match(58,$enabled[2],$row_prono);
+
+echo "
+									</ul>                
+								</div>
+							</div>";
+echo "							
+							<div class='stage3'>
+								<div class='outercell'>
+									<ul>";
+									
+										display_knockout_match(61,$enabled[3],$row_prono);
+
+echo "
+									</ul>                
+								</div>
+							</div>";
+echo "							
+							<div class='stage4'>
+								<div class='outercell'>
+									<ul>";
+									
+										display_knockout_match(64,$enabled[4],$row_prono);
+										display_knockout_match(63,$enabled[4],$row_prono);
+echo "
+									</ul>                
+								</div>
+							</div>";
+echo "							
+							<div class='stage3'>
+								<div class='outercell'>
+									<ul>";
+									
+										display_knockout_match(62,$enabled[3],$row_prono);
+
+echo "
+									</ul>                
+								</div>
+							</div>";				
+echo "							
+							<div class='stage2'>
+								<div class='outercell'>
+									<ul>";
+									
+										display_knockout_match(59,$enabled[2],$row_prono);
+										display_knockout_match(60,$enabled[2],$row_prono);
+
+echo "
+									</ul>                
+								</div>
+							</div>";
+echo "
+							<div class='stage1'>
+								<div class='outercell'>
+									<ul>";
+										
+										display_knockout_match(51,$enabled[1],$row_prono);
+										display_knockout_match(52,$enabled[1],$row_prono);
+										display_knockout_match(55,$enabled[1],$row_prono);
+										display_knockout_match(56,$enabled[1],$row_prono);								
+echo "										
+									</ul>
+								</div>    
+							</div>";
 					
-display_knockout_match('semi',62,$enabled[3],$row_prono);
-
-echo "
-						</div>
-						<div class='ko_stage'>";
-													
-display_knockout_match('quarter',59,$enabled[2],$row_prono);
-echo "
-							<div class=ko_empty></div>";
-						
-display_knockout_match('quarter',60,$enabled[2],$row_prono);
-
-
-echo "
-						</div>
-						<div class='ko_stage'>";
 					
-display_knockout_match('eight',51,$enabled[1],$row_prono);
-display_knockout_match('eight',52,$enabled[1],$row_prono);
-display_knockout_match('eight',55,$enabled[1],$row_prono);
-display_knockout_match('eight',56,$enabled[1],$row_prono);
-
 echo "
-						</div>
-					</div>";
-
+						<div class='knockoutstage'>";
 ?>
