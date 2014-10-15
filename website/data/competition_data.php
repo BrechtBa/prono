@@ -15,7 +15,7 @@ while($row = mysql_fetch_array($result)) {
 }
 	
 // default team name strings	
-for($i=1;$i<=$groups*6;$i++){
+for($i=1;$i<=count($group_name)*6;$i++){
 	$default_team1_str[$i] = "";
 	$default_team2_str[$i] = "";
 }

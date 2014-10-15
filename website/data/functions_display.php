@@ -17,8 +17,8 @@ function display_knockout_match($round,$match,$enabled,$row_prono){
 	$row = mysql_fetch_array($result);
 	
 	// convert team numbers to names
-	$team1_str = get_team_str($row['team1'],$row['id'],1);
-	$team2_str = get_team_str($row['team2'],$row['id'],0);
+	$team1_str = get_team_name($row['team1'],$row['id'],1);
+	$team2_str = get_team_name($row['team2'],$row['id'],0);
 
 	if($row_prono != 0){
 		// get prono score
@@ -56,11 +56,11 @@ function display_knockout_match($round,$match,$enabled,$row_prono){
 							</div>
 							<div class='ko_center $round'>
 								<div class='match_number'>Match $match</div>
-								<div class='match_score'><input type='text' name='match".$row[id]."_score1' value='$score1_str' $enabled_str> - <input type='text' name='match".$row[id]."_score2' value='$score2_str' $enabled_str></div>";
+								<div class='match_score'><input type='text' name='match".$row['id']."_score1' value='$score1_str' $enabled_str> - <input type='text' name='match".$row['id']."_score2' value='$score2_str' $enabled_str></div>";
 	// penaltys
 	if($row_prono==0 && $enabled==1){
 		echo "
-								<div class='match_score'><input type='text' name='match".$row[id]."_score1p' value='$score1p_str' $enabled_str> - <input type='text' name='match".$row[id]."_score2p' value='$score2p_str' $enabled_str></div>";
+								<div class='match_score'><input type='text' name='match".$row['id']."_score1p' value='$score1p_str' $enabled_str> - <input type='text' name='match".$row['id']."_score2p' value='$score2p_str' $enabled_str></div>";
 	}
 	else{
 		if($score1p>=0){
@@ -165,7 +165,7 @@ function get_team_name($team,$match,$home){
 		}
 	}
 	
-	return $team_str;
+	return $team_name_str;
 }
 function get_team_code($team){
 	global $team_code;

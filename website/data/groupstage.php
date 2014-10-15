@@ -91,8 +91,6 @@ if(!$enabled){
 // echo the content
 echo "
 					<h2>Groepsfase</h2>";
-
-		
 		
 // echo all groups
 $query_group  = "SELECT * FROM wk_groups";
@@ -100,7 +98,7 @@ $result_group = mysql_query($query_group) or die('Error: ' . mysql_error());
 
 while($row_group = mysql_fetch_array($result_group)){
 	$groupid = $row_group['id'];
-	
+
 	echo "
 					<div class='group'>
 						<h3>Groep $group_name[$groupid]</h3>";
@@ -127,17 +125,17 @@ while($row_group = mysql_fetch_array($result_group)){
 		$score2_str = get_score_str($score2);
 
 		// convert team numbers to names
-		$team1_name_str = get_team_str($row_match['team1'],$row_match['id'],1);
-		$team2_name_str = get_team_str($row_match['team2'],$row_match['id'],0);
+		$team1_name_str = get_team_name($row_match['team1'],$row_match['id'],1);
+		$team2_name_str = get_team_name($row_match['team2'],$row_match['id'],0);
 		
 		// convert team numbers to team code
-		$team1_code_str = get_team_code($row_match['team1'])
-		$team2_code_str = get_team_code($row_match['team2'])
+		$team1_code_str = get_team_code($row_match['team1']);
+		$team2_code_str = get_team_code($row_match['team2']);
 		
 		if($prono || $admin){
 			// display score inside input field
-			$input_score1_str = "<input type='text' name='match$matchid_score1' value='$score1_str' $enabled_str>";
-			$input_score2_str = "<input type='text' name='match$matchid_score2' value='$score2_str' $enabled_str>";
+			$input_score1_str = "<input type='text' name='match".$matchid."_score1' value='$score1_str' $enabled_str>";
+			$input_score2_str = "<input type='text' name='match".$matchid."_score2' value='$score2_str' $enabled_str>";
 		}
 		else{
 			// display score as text
@@ -166,8 +164,8 @@ while($row_group = mysql_fetch_array($result_group)){
 // echo group winners 
 ///////////////////////////////////////////////////////////////////////////////	
 	if($prono){
-		$groupwinner = $row_prono['group'.$group.'_winner']; 
-		$groupsecond = $row_prono['group'.$group.'_second'];
+		$groupwinner = $row_prono['group'.$groupid.'_winner']; 
+		$groupsecond = $row_prono['group'.$groupid.'_second'];
 	}
 	else{
 		$groupwinner = $row_group['winner']; 
@@ -193,7 +191,7 @@ while($row_group = mysql_fetch_array($result_group)){
 	}
 	else{
 		echo "
-							<div>$groupwinner</div>"
+							<div>$groupwinner</div>";
 	}
 	echo "
 						</div>
@@ -204,7 +202,7 @@ while($row_group = mysql_fetch_array($result_group)){
 	}
 	else{
 		echo "
-							<div>$groupsecond</div>"
+							<div>$groupsecond</div>";
 	}
 	
 	echo "

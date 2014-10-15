@@ -24,7 +24,7 @@
 				$finaldate_part2 = "In te vullen voor ".date('d M Y, H:i', $phase_end_time[$i]);
 			}
 		}
-	
+		
 		///////////////////////////////////////////////////////////////////////////////
 		// Part 1
 		///////////////////////////////////////////////////////////////////////////////
@@ -33,7 +33,7 @@
 				<form class='prono' name='part1' action='index.php?page=$page' method='post'>
 					<h1>Pronostiek Deel 1</h1>
 					<div class='finaldate'>$finaldate_part1</div>";
-					
+				
 		include('data/groupstage.php');				
 	
 		include('data/progress.php');		
