@@ -16,7 +16,7 @@ else{
 	// display admin menu
 	echo "
 		<nav>
-			<li><a href='index.php?page=admin&subpage=resultaten'>RESULTATEN</a></li>
+			<li><a href='index.php?page=admin&subpage=results'>RESULTATEN</a></li>
 			<li><a href='index.php?page=admin&subpage=users'>USERS</a></li>
 			<li><a href='index.php?page=admin&subpage=matches'>WEDSTRIJDEN</a></li>
 			<li><a href='index.php?page=admin&subpage=teams'>TEAMS</a></li>

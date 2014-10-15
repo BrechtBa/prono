@@ -66,7 +66,7 @@
 		///////////////////////////////////////////////////////////////////////////////	
 		echo "
 			<article>
-				<form class='prono' name='print_pronostiek' action='print_pronostiek.php?userid=$userid' target='_blank' method='post'>
+				<form class='prono' name='print_pronostiek' action='print_prono.php?userid=$userid' target='_blank' method='post'>
 					<div class='submit'><input type='submit' value='Print pronostiek'></div>
 				</form>
 			</article>";

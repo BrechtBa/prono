@@ -11,7 +11,7 @@
 		$page = $_GET['page'];
 	}
 	else{
-		$page = 'home';
+		$page = 'ranking';
 	}
 
 	//$userid = $_SESSION['userid'];
