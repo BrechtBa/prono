@@ -90,7 +90,7 @@ echo "
 						<div class='knockoutstage'>";
 						
 echo "
-							<div class='stage1'>
+							<div class='stage1' data-stage='1'>
 								<div class='outercell'>
 									<ul>";
 										
@@ -103,7 +103,7 @@ echo "
 								</div>    
 							</div>";
 echo "							
-							<div class='stage2'>
+							<div class='stage2' data-stage='2'>
 								<div class='outercell'>
 									<ul>";
 									
@@ -115,7 +115,7 @@ echo "
 								</div>
 							</div>";
 echo "							
-							<div class='stage3'>
+							<div class='stage3' data-stage='3'>
 								<div class='outercell'>
 									<ul>";
 									
@@ -126,7 +126,7 @@ echo "
 								</div>
 							</div>";
 echo "							
-							<div class='stage4'>
+							<div class='stage4' data-stage='4'>
 								<div class='outercell'>
 									<ul>";
 									
@@ -137,7 +137,7 @@ echo "
 								</div>
 							</div>";
 echo "							
-							<div class='stage3'>
+							<div class='stage3' data-stage='3'>
 								<div class='outercell'>
 									<ul>";
 									
@@ -148,7 +148,7 @@ echo "
 								</div>
 							</div>";				
 echo "							
-							<div class='stage2'>
+							<div class='stage2' data-stage='2'>
 								<div class='outercell'>
 									<ul>";
 									
@@ -160,7 +160,7 @@ echo "
 								</div>
 							</div>";
 echo "
-							<div class='stage1'>
+							<div class='stage1' data-stage='1'>
 								<div class='outercell'>
 									<ul>";
 										
@@ -175,5 +175,5 @@ echo "
 					
 					
 echo "
-						<div class='knockoutstage'>";
+						</div>";
 ?>

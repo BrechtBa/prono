@@ -34,8 +34,8 @@
 		<title>3 fasen WK Pornostiek</title>
 
 		<meta charset='utf-8'/>
-		<meta name='viewport' content='width=device-width, initial-scale=1/>
-		<meta name='apple-mobile-web-app-capable' content='yes' />
+		<meta name='viewport' content='width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1'/>
+		<meta name='apple-mobile-web-app-capable' content='yes'/>
 		<meta name='apple-mobile-web-app-status-bar-style' content='black-translucent' />
 		<meta http-equiv='expires' content='0' />
 
@@ -59,6 +59,7 @@
 		
 		<script src='js/panel.js'></script>
 		<script src='js/header.js'></script>
+		<script src='js/knockoutstage.js'></script>
 	</head>
 	<body>
 	
@@ -70,7 +71,7 @@
 		</div>
 		
 		
-		<div data-role='header' data-position='fixed'>
+		<div data-role='header' data-position='fixed' data-tap-toggle='false'>
 			<h1>3 Fasen Pronostiek</h1>
 			<a class='ui-btn ui-btn-right ui-nodisc-icon ui-corner-all ui-btn-icon-notext ui-icon-bars' href='#navigation'>Navigation</a>
 		</div>

@@ -132,12 +132,11 @@ div.knockout_center div.match_score{
 	text-align: center;
 }
 
-
 /* compressing rounds*/
-div.stage2 div.match {
+div.stage1 div.match {
 	width: 6.5em;
 }
 
-div.stage2 div.match div{
+div.stage1 div.match div{
 	visibility: visible;
 }
