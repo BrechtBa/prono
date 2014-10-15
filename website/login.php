@@ -45,11 +45,11 @@
 							<article>
 								<h1>Registratie geslaagd</h1>
 							</article>
-							<meta http-equiv='refresh' content='0; URL=index.php?page=pronostiek'>";
+							<meta http-equiv='refresh' content='0; URL=index.php?page=$page'>";
 					}
 					else{
 						echo "Je wachtwoorden waren niet gelijk";
-						echo "<meta http-equiv='refresh' content='5; URL=index.php?page=pronostiek'>";
+						echo "<meta http-equiv='refresh' content='5; URL=index.php?page=$page'>";
 					}
 				}
 			}	
@@ -68,16 +68,16 @@
 			if($row['password'] == $pass){
 				$_SESSION['login'] = 1;
 				$_SESSION['userid'] = $row['id'];
-				echo "<meta http-equiv='refresh' content='0; URL=index.php?page=pronostiek'>";
+				echo "<meta http-equiv='refresh' content='0; URL=index.php?page=$page'>";
 			}
 			else{
 				echo "Verkeer paswoord";
-				echo "<meta http-equiv='refresh' content='5; URL=index.php?page=pronostiek'>";
+				echo "<meta http-equiv='refresh' content='5; URL=index.php?page=$page'>";
 			}
 		}
 		else{
 			echo "Naam bestaat niet, registreer eerst";
-			echo "<meta http-equiv='refresh' content='5; URL=index.php?page=pronostiek'>";
+			echo "<meta http-equiv='refresh' content='5; URL=index.php?page=$page'>";
 		}
 		
 	}
@@ -86,13 +86,13 @@
 		echo "
 				<article>
 					<h1>Login</h1>
-					<form class='login' name='login' action='index.php?page=pronostiek' method='post'>
+					<form class='login' name='login' action='index.php?page=$page' method='post'>
 						<div>Naam: <input type='text' name='username'></div>
 						<div>Paswoord: <input type='password' name='password'></div>
 						<div><input type='submit' value='Login' name='login'></div>
 					</form>	
 					<h1>Registreer</h1>
-					<form class='login' name='login' action='index.php?page=pronostiek' method='post'>
+					<form class='login' name='login' action='index.php?page=$page' method='post'>
 						<div>Naam: <input type='text' name='username'></div>
 						<div>Paswoord: <input type='password' name='password1'></div>
 						<div>Herhaal paswoord: <input type='password' name='password2'></div>

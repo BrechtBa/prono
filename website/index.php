@@ -16,9 +16,12 @@
 	else{
 		$page = 'ranking';
 	}
-
-	$userid = $_SESSION['userid'];
-	
+	if(array_key_exists('userid',$_SESSION)){
+		$userid = $_SESSION['userid'];
+	}
+	else{
+		$userid = 0;
+	}
 	// create default handlers
 	$admin = 0;
 	$round_enabled = array_fill (0 , count($phase_end_time) , 0 );
@@ -75,12 +78,12 @@
 		
 		<div data-role='panel' data-display='overlay' data-position='right' data-theme='b' id='navigation'>
 			<ul data-role='listview'>
+				<li data-icon='false'><a data-transition='none' href='index.php?page=rules'>Regels</a></li>
 				<li data-icon='false'><a data-transition='none' href='index.php?page=prono'>Pronostiek</a></li>
 				<li data-icon='false'><a data-transition='none' href='index.php?page=results'>Resultaten</a></li>
 				<li data-icon='false'><a data-transition='none' href='index.php?page=ranking'>Rangschikking</a></li>
-				<li data-icon='false'><a data-transition='none' href='index.php?page=rules'>Regels</a></li>
-				<li data-icon='false'><a data-transition='none' href='index.php?page=admin'>Admin</a></li>
-				<li data-icon='false'><a data-transition='none' href='index.php?page=admin'>Logout</a></li>
+				<?php if($userid==1){ echo "<li data-icon='false'><a data-transition='none' href='index.php?page=admin'>Admin</a></li>";}; ?>
+				<?php if($userid){ echo "<li data-icon='false'><a data-transition='none' href='index.php?page=logout'>Logout</a></li>";}; ?>
 			</ul>
 		</div>
 	</body>

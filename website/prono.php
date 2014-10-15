@@ -1,6 +1,6 @@
 <?php
 
-	if(!$_SESSION['login']){
+	if(!$userid){
 		include('login.php');
 	}
 	else{
