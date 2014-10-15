@@ -139,8 +139,8 @@ while($row_group = mysql_fetch_array($result_group)){
 		}
 		else{
 			// display score as text
-			$input_score1_str = "<div>$score1_str<div>";
-			$input_score2_str = "<div>$score2_str<div>";
+			$input_score1_str = "<div>$score1_str</div>";
+			$input_score2_str = "<div>$score2_str</div>";
 		}
 		
 		// display match
