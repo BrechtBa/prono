@@ -1,7 +1,7 @@
 <?php
-include('mysql.php');
 
-if($_SESSION['userid']==1){
+	include('mysql.php');
+
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// teams
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -193,7 +193,7 @@ if($_SESSION['userid']==1){
 	// users
 	////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	//mysql_query("DROP TABLE wk_users") or die('Error: ' . mysql_error());
-	$query = "CREATE TABLE IF NOT EXISTS wk_users(id INT AUTO_INCREMENT PRIMARY KEY,username VARCHAR(128),password VARCHAR(128),paid TINYINT";
+	$query = "CREATE TABLE IF NOT EXISTS wk_users(id INT AUTO_INCREMENT PRIMARY KEY,username VARCHAR(128),password VARCHAR(128),paid TINYINT DEFAULT 0";
 
 	for($i=1;$i<=64;$i++){
 		$query = $query.",match".$i."_score1 TINYINT DEFAULT '-1', match".$i."_score2 TINYINT DEFAULT '-1'";
@@ -221,5 +221,11 @@ if($_SESSION['userid']==1){
 
 	$query = $query.")";
 	$result = mysql_query($query) or die('Error: ' . mysql_error());
-}
+	
+	
+	$query = "INSERT INTO wk_users (id,username,password) VALUES (1,'admin','admin')";
+	$result = mysql_query($query) or die('Error: ' . mysql_error());
+	
+	echo "success";
+
 ?>
