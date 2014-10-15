@@ -30,7 +30,7 @@ if(array_key_exists('groupstage',$_POST)){
 			$query = "UPDATE wk_users SET group".$i."_winner=$winner, group".$i."_second=$second WHERE id=$userid";
 			$result = mysql_query($query) or die('Error: ' . mysql_error());
 		}
-		//echo "<meta http-equiv='refresh' content='0; URL=index.php?page=$page'>";
+		echo "<meta http-equiv='refresh' content='0; URL=index.php?page=$page'>";
 	}
 	// in resultaten invullen
 	else{
@@ -57,6 +57,7 @@ if(array_key_exists('groupstage',$_POST)){
 			$query = "UPDATE wk_groups SET winner=$winner, second=$second WHERE id=$i";
 			$result = mysql_query($query) or die('Error: ' . mysql_error());
 		}
+		echo "<meta http-equiv='refresh' content='0; URL=index.php?page=$page&subpage=$subpage'>";
 	}
 }
 

@@ -13,7 +13,9 @@ $result = mysql_query($query) or die('Error: ' . mysql_error());
 while($row = mysql_fetch_array($result)) {
 	$group_name[$row['id']] = $row['name'];
 }
-	
+
+$teamspergroup = count($team_name)/count($group_name);
+
 // default team name strings	
 for($i=1;$i<=count($group_name)*6;$i++){
 	$default_team1_str[$i] = "";

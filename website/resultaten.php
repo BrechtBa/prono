@@ -5,14 +5,20 @@ $prono = 0;
 
 echo "
 			<article>
-				<h1>Resultaten</h1>";
+				<form class='prono' name='results' action='index.php?page=$page&subpage=$subpage' method='post'>
+					<h1>Resultaten</h1>";
 
 		include('data/groupstage.php');
-echo "
-			</article>
-			<article>";	
+
+		
 		include('data/knockoutstage.php');
-					
+		
+		if($admin){
+			echo "
+				<div class='submit'><input type='submit' value='Verzenden' name='results'></div>";
+								
+		}
 echo "
+				</form>
 			</article>";
 ?>
