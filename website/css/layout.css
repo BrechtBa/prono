@@ -1,4 +1,10 @@
 
+body {
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
 
 .ui-header .ui-title{
 	font-size: 1.5em !important;
@@ -13,7 +19,7 @@
 	margin: 0em 0em 0.2em 0em !important;
 }
 .ui-panel {
-    width: 10em;
+    width: 12em;
 }
 
 
