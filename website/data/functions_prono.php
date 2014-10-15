@@ -13,15 +13,8 @@ function calculate_group_prono($id){
 }
 function calculate_prono($id){
 
-	$group_points = calculate_group_prono($id);
+	$goup_points = calculate_group_prono($id);
 	
-	$points = $group_points + count_correct_knockout_results($id)*6 + count_correct_knockout_scores($id)*12
-	        + count_correct_round_entries($id,'quarter')*18 + count_correct_round_entries($id,'semi')*28 + count_correct_round_entries($id,'final')*48 + winner_correct($id)*60
-			+ max(0,100-goal_difference($id)*6) + calculate_home_team_points($id);
-	return $points;
-}
-function calculate_home_team_points($id){
-
 	$points_home_team = 0;
 	$home_team_ranking = home_team_ranking($id);
 
@@ -43,9 +36,17 @@ function calculate_home_team_points($id){
 	elseif($home_team_ranking==6){
 		$points_home_team = 200;
 	}
+	
+	$points = $goup_points + count_correct_knockout_results($id)*6 + count_correct_knockout_scores($id)*12
+	        + count_correct_round_entries($id,'quarter')*18 + count_correct_round_entries($id,'semi')*28 + count_correct_round_entries($id,'final')*48 + winner_correct($id)*60
+			+ max(0,100-goal_difference($id)*6) + $points_home_team;
 
-	return $points_home_team;
+	return $points;
 }
+
+
+
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -386,107 +387,5 @@ function home_team_ranking($id){
 
 	
 	return $answer;
-}
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function groupstage_filled_in($id){
-
-	// check if team in is in the prono
-	$query = "SELECT * FROM wk_users WHERE id=$id";
-	$result = mysql_query($query) or die('Error: ' . mysql_error());
-	$row_user = mysql_fetch_array($result);
-		
-	$filledin = 1;
-	
-	// find all matches the group stage
-	$query = "SELECT * FROM wk_match WHERE id<=48";
-	$result = mysql_query($query) or die('Error: ' . mysql_error());
-	while($row_match = mysql_fetch_array($result)) {
-		if($row_user['match'.$row_match['id'].'_score1']<0 || $row_user['match'.$row_match['id'].'_score2']<0){
-			$filledin = 0;
-		}
-	}
-	
-	// check passers
-	$query = "SELECT * FROM wk_groups";
-	$result = mysql_query($query) or die('Error: ' . mysql_error());
-	while($row_group = mysql_fetch_array($result)){
-	
-		if($row_user['group'.$row_group['id'] .'_winner']<0){
-			$filledin = 0;
-		}
-		if($row_user['group'. $row_group['id'] .'_second']<0){
-			$filledin = 0;
-		}
-	}
-	
-	// check round entries
-	$round = 'quarter';
-	$query = "SELECT * FROM wk_match WHERE stage='$round'";
-	$result = mysql_query($query) or die('Error: ' . mysql_error());
-	$num_matches = mysql_num_rows($result);
-	while($row_match = mysql_fetch_array($result)) {
-		for($i=1;$i<=2*$num_matches;$i++){
-			if($row_user[$round.'_team'.$i]<0){
-				$filledin = 0;
-			}
-		}
-		
-		if($team1_found){
-			$number++;
-		}
-		if($team2_found){
-			$number++;
-		}
-	}
-
-	
-	// check total goals
-	if($row_user['total_goals']<0){
-		$filledin = 0;
-	}
-	
-	// check home team ranking
-	if($row_user['home_team_ranking']<0){
-		$filledin = 0;
-	}
-	
-	if($filledin){
-		return "x";
-	}
-	else{
-		return "";
-	}
-
-}
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function stage_filled_in($id,$round){
-
-	// check if team in is in the prono
-	$query = "SELECT * FROM wk_users WHERE id=$id";
-	$result = mysql_query($query) or die('Error: ' . mysql_error());
-	$row_user = mysql_fetch_array($result);
-		
-	$filledin = 1;
-	
-	// find all matches in a round
-	$query = "SELECT * FROM wk_match WHERE stage='$round'";
-	$result = mysql_query($query) or die('Error: ' . mysql_error());
-	while($row_match = mysql_fetch_array($result)) {
-		if($row_user['match'.$row_match['id'].'_score1']<0 || $row_user['match'.$row_match['id'].'_score2']<0){
-			$filledin = 0;
-		}
-	}
-
-	if($filledin){
-		return "x";
-	}
-	else{
-		return "";
-	}
-
 }
 ?>

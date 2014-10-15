@@ -3,18 +3,23 @@
 	
 	// functions
 	include('data/mysql.php');
-	include('data/functions_print.php');
+	include('data/functions_display.php');
 	include('data/functions_prono.php');
-	include('data/teams.php');
+	include('data/competition_data.php');
 	
 	if(array_key_exists('page',$_GET)){
 		$page = $_GET['page'];
 	}
 	else{
-		$page = 'home';
+		$page = 'ranking';
 	}
 
-	$userid = $_SESSION['userid'];
+	//$userid = $_SESSION['userid'];
+	
+	// create default handlers
+	$admin = 0;
+	$round_enabled = array_fill (0 , count($phase_end_time) , 0 );
+	$subpage = "";
 	
 	echo "
 <html>
@@ -38,24 +43,24 @@
 	<body>";
 	
 // basic layout		
-		echo "
+	echo "
 		<div>
 			<header>";
 			
-		include("header.php");
+	include("header.php");
 
-		echo "
+	echo "
 			</header>
 			<div class='content'>";
 			
-		include("$page.php");
+	include("$page.php");
 		
-		echo "
+	echo "
 			</div>";
 
-		echo"
+	echo"
 		</div>";
-		echo "		
+	echo "		
 	</body>
 </html>";
 	

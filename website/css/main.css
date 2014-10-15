@@ -76,8 +76,6 @@ article>nav>a:hover {
 }
 div.table_heading{
 	font-weight: bold;
-	height: auto;
-	margin-bottom: 5px;
 }
 
 @media screen and (max-width: 800px){

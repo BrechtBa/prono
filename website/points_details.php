@@ -2,7 +2,7 @@
 	session_start();
 
 	include('data/mysql.php');
-	include('data/functions_print.php');
+	include('data/functions_display.php');
 	include('data/functions_prono.php');
 	include('data/teams.php');
 
@@ -15,13 +15,13 @@
 	
 	$points_knockout = calculate_prono($userid)-calculate_group_prono($userid);
 	
-	///////////////////////////////////////////////////////////////////////////////
-	// Detail berekening weergeven
-	///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+// Detail berekening weergeven
+///////////////////////////////////////////////////////////////////////////////
 	echo "
 <html>
 	<head>
-		<title>3 fasen WK Pornostiek</title>
+		<title>3 fasen WK Pronostiek</title>
 
 		<meta charset='utf-8'/>
 		<meta name='viewport' content='width=device-width, user-scalable=yes, initial-scale=1, maximum-scale=1.3, minimum-scale=1' />

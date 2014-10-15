@@ -3,7 +3,7 @@
 $db_host = 'localhost';
 $db_username = 'pronouser';
 $db_password = 'pronopass';
-$db_database = 'pronostiek';
+$db_database = 'pronodatabase';
 
 $db_connection = mysql_pconnect("$location","$db_username","$db_password");
 if (!$db_connection) die ("Could not connect MySQL");

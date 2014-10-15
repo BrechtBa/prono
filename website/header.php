@@ -3,20 +3,20 @@
 echo "
 		<h1>
 			
-			3 Fasen WK 2014 PORNOSTIEK
+			3 Fasen WK 2014 PRONOSTIEK
 		</h1>
 		<nav>
 			<ul>
-				<li><a href='index.php?page=home'>SPELREGELS</a></li>
-				<li><a href='index.php?page=pronostiek'>PRONOSTIEK</a></li>
-				<li><a href='index.php?page=resultaten'>RESULTATEN</a></li>";
+				<li><a href='index.php?page=rules'>SPELREGELS</a></li>
+				<li><a href='index.php?page=prono'>PRONOSTIEK</a></li>
+				<li><a href='index.php?page=results'>RESULTATEN</a></li>";
 if(!$_SESSION['login']){
 	echo "
-				<li class='noborder'><a href='index.php?page=rangschikking'>RANGSCHIKKING</a></li>";				
+				<li class='noborder'><a href='index.php?page=ranking'>RANGSCHIKKING</a></li>";				
 }
 else{
 	echo "
-				<li><a href='index.php?page=rangschikking'>RANGSCHIKKING</a></li>";
+				<li><a href='index.php?page=ranking'>RANGSCHIKKING</a></li>";
 	if($_SESSION['userid']==1){
 		echo "
 				<li><a href='index.php?page=admin'>ADMIN</a></li>";
