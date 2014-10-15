@@ -223,7 +223,7 @@
 	$result = mysql_query($query) or die('Error: ' . mysql_error());
 	
 	
-	$query = "INSERT INTO wk_users (id,username,password) VALUES (1,'admin','admin')";
+	$query = "INSERT INTO wk_users (id,username,password) VALUES (1,'admin','".md5('admin')."')";
 	$result = mysql_query($query) or die('Error: ' . mysql_error());
 	
 	echo "success";
