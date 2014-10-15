@@ -62,39 +62,7 @@
 	
 		<div id='ranking' data-role='page' data-theme='a'>
 			<div data-role='content' class='ui-content'>
-				<?php include('ranking.php'); ?>
-			</div>
-		</div>
-	
-	
-	
-		<div id='prono' data-role='page'>
-			<div data-role='content' class='ui-content'>
-				<?php include('prono.php'); ?>
-			</div>
-		</div>
-		
-		
-
-		<div id='results' data-role='page'>
-			<div data-role='content' class='ui-content'>
-				<?php include('results.php'); ?>
-			</div>
-		</div>
-		
-		
-		
-		<div id='rules' data-role='page'>
-			<div data-role='content' class='ui-content'>
-				<?php include('rules.php'); ?>
-			</div>
-		</div>
-		
-		
-
-		<div id='admin' data-role='page'>
-			<div data-role='content' class='ui-content'>
-				<?php include('admin.php'); ?>
+				<?php include($page.'.php'); ?>
 			</div>
 		</div>
 		
@@ -105,15 +73,14 @@
 		</div>
 		
 		
-		
 		<div data-role='panel' data-display='overlay' data-position='right' data-theme='b' id='navigation'>
 			<ul data-role='listview'>
-				<li data-icon='false'><a data-transition='none' href='#prono'>Pronostiek</a></li>
-				<li data-icon='false'><a data-transition='none' href='#results'>Resultaten</a></li>
-				<li data-icon='false'><a data-transition='none' href='#ranking'>Rangschikking</a></li>
-				<li data-icon='false'><a data-transition='none' href='#rules'>Regels</a></li>
-				<li data-icon='false'><a data-transition='none' href='#admin'>Admin</a></li>
-				<li data-icon='false'><a data-transition='none' href='#admin'>Logout</a></li>
+				<li data-icon='false'><a data-transition='none' href='index.php?page=prono'>Pronostiek</a></li>
+				<li data-icon='false'><a data-transition='none' href='index.php?page=results'>Resultaten</a></li>
+				<li data-icon='false'><a data-transition='none' href='index.php?page=ranking'>Rangschikking</a></li>
+				<li data-icon='false'><a data-transition='none' href='index.php?page=rules'>Regels</a></li>
+				<li data-icon='false'><a data-transition='none' href='index.php?page=admin'>Admin</a></li>
+				<li data-icon='false'><a data-transition='none' href='index.php?page=admin'>Logout</a></li>
 			</ul>
 		</div>
 	</body>
