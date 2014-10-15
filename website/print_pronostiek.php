@@ -1,10 +1,13 @@
 <?php
 	session_start();
 
+	error_reporting(E_ALL);
+	ini_set('display_errors', 1);
+	
 	include('data/mysql.php');
 	include('data/functions_display.php');
 	include('data/functions_prono.php');
-	include('data/teams.php');
+	include('data/competition_data.php');
 	
 	echo "
 <html>
@@ -50,12 +53,15 @@
 		
 		include('data/groupstage.php');				
 		
+		echo "
+			<p style='page-break-before: always'></p>";
+			
 		include('data/progress.php');
 		
 		echo "			
 				<h1>$username Pronostiek Deel 2</h1>";
 				
-		include('knockoutstage.php');
+		include('data/knockoutstage.php');
 					
 		echo "
 			</article>
