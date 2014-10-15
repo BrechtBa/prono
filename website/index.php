@@ -19,6 +19,11 @@
 
 	$userid = $_SESSION['userid'];
 	
+	// create default handlers
+	$admin = 0;
+	$round_enabled = array_fill (0 , count($phase_end_time) , 0 );
+	
+	
 	echo "
 <html>
 	<head>

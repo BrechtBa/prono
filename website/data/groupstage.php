@@ -139,8 +139,10 @@ while($row_group = mysql_fetch_array($result_group)){
 		}
 		else{
 			// display score as text
-			$input_score1_str = "<div>$score1_str</div>";
-			$input_score2_str = "<div>$score2_str</div>";
+			//$input_score1_str = "<div>$score1_str</div>";
+			//$input_score2_str = "<div>$score2_str</div>";
+			$input_score1_str = "<input type='text' name='match".$matchid."_score1' value='$score1_str' $enabled_str>";
+			$input_score2_str = "<input type='text' name='match".$matchid."_score2' value='$score2_str' $enabled_str>";
 		}
 		
 		// display match
@@ -190,8 +192,9 @@ while($row_group = mysql_fetch_array($result_group)){
 		echo_select_list("group".$groupid."_winner",$enabled,array_merge((array)"",$team_name_range),array_merge((array)-1,$team_id_range),$groupwinner);				
 	}
 	else{
-		echo "
-							<div>$groupwinner</div>";
+		echo_select_list("group".$groupid."_winner",$enabled,array_merge((array)"",$team_name_range),array_merge((array)-1,$team_id_range),$groupwinner);	
+		//echo "
+		//					<div>$groupwinner</div>";
 	}
 	echo "
 						</div>
@@ -201,8 +204,9 @@ while($row_group = mysql_fetch_array($result_group)){
 		echo_select_list("group".$groupid."_second",$enabled,array_merge((array)"",$team_name_range),array_merge((array)-1,$team_id_range),$groupsecond);
 	}
 	else{
-		echo "
-							<div>$groupsecond</div>";
+		echo_select_list("group".$groupid."_second",$enabled,array_merge((array)"",$team_name_range),array_merge((array)-1,$team_id_range),$groupsecond);
+		//echo "
+		//					<div>$groupsecond</div>";
 	}
 	
 	echo "

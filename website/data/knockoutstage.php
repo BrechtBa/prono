@@ -81,9 +81,8 @@ if($prono){
 	$row_prono = mysql_fetch_array($result_prono);
 }
 if($admin){
-	$enabled = $enabled-$enabled+1;
+	$enabled = array_fill (0 , count($enabled) , 1 );
 }
-
 
 
 echo "
