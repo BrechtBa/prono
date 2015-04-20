@@ -9,8 +9,27 @@
 
 
 
-var prono = {
-	/* the current user                                                      */
+var model = {
+	initialized: false,
+	init: function(){	
+		// start
+		model.get_teams();
+		model.get_competition();
+		$(document).on('updated_competition',function(event,stage_id){
+			model.get_prono_stage(stage_id);
+		};
+		
+		// when the competition is loaded get the users
+		$(document).on('updated_prono',function(event){
+			model.get_usergroups(model.user.id);
+		});
+		
+		model.initialized = true;
+	},
+	
+	/*************************************************************************/
+	/*                     Current user                                      */
+	/*************************************************************************/
 	user: {
 		id: 1,
 		name: '',
@@ -18,24 +37,36 @@ var prono = {
 	},
 	
 	/*************************************************************************/
-	/*                     competition                                       */
+	/*                     Competition                                       */
+	/*************************************************************************/
+	teams: new Object(),        
+	/*  example structure    
+	teams: {
+		1: {id: 1, name: 'Belgium', abr: 'BEL'},
+		2: {id: 2, name: 'Germany', abr: 'GER'},
+		...
+	},
+	*/
+	
+	/*************************************************************************/
+	/*                     Competition                                       */
 	/*************************************************************************/
 	competition: new Object(),        
 	/*  example structure          
 	competition:{
-		'groupstage':{
+		1: {
 			id: 1,
 			name: 'groupstage',
 			type: 'points',
 			groups: {
-				'A':{
+				1: {
 					id: 1,
 					name: 'A',
 					matches: {
-						1:{
+						1: {
 							id: 1
-							team1: {id: 1, name: 'Belgium', abr: 'BEL'},
-							team2: {id: 2, name: 'Germany', abr: 'GER'},
+							team1: 1,
+							team2: 2,
 							default_team1: 'A1',
 							default_team2: 'A2',
 							score1: -1,
@@ -47,19 +78,19 @@ var prono = {
 				...
 			}
 		},
-		'round of 16':{
+		2: {
 			id: 2,
 			name: 'round of 16',
 			type: 'knockout',
 			groups: {
-				0:{
+				0: {
 					id: 0,
 					name: 0,
 					matches: {
-						33:{
+						33: {
 							id: 33
-							team1: {},
-							team2: {},
+							team1: 0,
+							team2: 0,
 							default_team1: '1A',
 							default_team2: '2B',
 							score1: -1,
@@ -177,9 +208,36 @@ var prono = {
 		}
 		return team;
 	},
-	
 	/*************************************************************************/
-	/*                     userprono                                         */
+	/*                     Prono                                             */
+	/*************************************************************************/
+	prono: new Object(),  
+	/*  example structure    
+	prono: {
+		stages:{
+			'groupstage': {
+				score_points: 3,
+				result_points: 4
+			},
+			'roundof16': {
+				score_points: 6,
+				result_points: 8
+			},
+			...
+		},
+		teamselections: {
+			'groupA_1':{
+				id: 1,
+				name: 'groupA_1',
+				displayname: 'Group A winner',
+				points: 3
+			}
+			...
+		}
+	},
+	*/
+	/*************************************************************************/
+	/*                     Userprono                                         */
 	/*************************************************************************/
 	userprono: new Object(),        
 	/*  example structure          
@@ -201,9 +259,9 @@ var prono = {
 			...
 		},
 		teamselections: {
-			'groupA_1': {id: 1, name: 'Belgium', abr: 'BEL'},
-			'groupA_2': {id: 1, name: 'Germany', abr: 'GER'},
-			'roundof16_1': {id: 1, name: 'Belgium', abr: 'BEL'},
+			'groupA_1': 1,
+			'groupA_2': 2,
+			'roundof16_1': 1,
 			...
 		},
 		numberselections: {
