@@ -1,0 +1,46 @@
+body{
+	font-family: Dosis,Helvetica,Arial,sans-serif;
+	color:#EEEEEE;
+}
+div[data-role=fixed-header]{
+	font-weight: bold;
+	color: #000000;
+	text-shadow:0  -1px  1px  #000000;
+	background: #FFFFFF;
+	-webkit-box-shadow: 0 0 10px 5px #000000, inset  0 -1px 2px #000000;
+	   -moz-box-shadow: 0 0 10px 5px #000000, inset  0 -1px 2px #000000;
+	        box-shadow: 0 0 10px 5px #000000, inset  0 -1px 2px #000000;
+}
+div[data-role=content]{
+	text-shadow:0  1px  1px  #111 ;
+	background-image:-webkit-gradient(linear,left top,left bottom,from( #D00 ),to( #400 )); 
+	background-image:-webkit-linear-gradient( #DD0000,#440000 ); 
+	background-image:   -moz-linear-gradient( #DD0000,#440000 ); 
+	background-image:    -ms-linear-gradient( #DD0000,#440000 ); 
+	background-image:     -o-linear-gradient( #DD0000,#440000 ); 
+	background-image:        linear-gradient( #DD0000,#440000 );
+	background-attachment: fixed;
+}
+div[data-role=fixed-footer]{
+	color: #000000;
+	font-size: 0.6em;
+	text-shadow:0  -1px  1px  #000000;
+	background: #FFFFFF;
+	-webkit-box-shadow: 0 0 10px 5px #000000, inset  0 -1px 2px #000000;
+	   -moz-box-shadow: 0 0 10px 5px #000000, inset  0 -1px 2px #000000;
+	        box-shadow: 0 0 10px 5px #000000, inset  0 -1px 2px #000000;
+}
+.btn{
+	background-color: #EEEEEE;
+	border-color: #AAAAAA;
+	color: #222222;
+}
+div[data-role=popup]{
+	color: #222222;
+	background: #FAFAFA;
+	box-shadow: 0 0 12px 3px #000000;
+}
+
+h1{
+	font-size: 1.8em;
+}

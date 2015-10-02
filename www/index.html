@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Prono</title>
+
+		<meta charset='utf-8'/>
+		<meta name='viewport' content='width=device-width, initial-scale=1'/>
+		<meta name='mobile-web-app-capable' content='yes' />
+		<meta name='apple-mobile-web-app-capable' content='yes' />
+		<meta name='apple-mobile-web-app-status-bar-style' content='black-translucent' />
+		<meta http-equiv='expires' content='0' />
+
+		<link rel='icon' href='icons/android/icon_36.png'/>
+		<link rel='apple-touch-icon' href='icons/ios/icon_144.png' />
+		<link rel='icon' href='icons/android/icon_36.png' type='image/x-icon' />
+
+		<!-- frameworks -->
+		<script src='lib/jquery-1.11.0.min.js'></script>
+		
+		<!-- custom -->
+		<script type='text/javascript' src='js/navigation.js'></script>
+		<script type='text/javascript' src='js/model.js'></script>
+		<script type='text/javascript' src='js/view.js'></script>
+		<script type='text/javascript' src='js/controller.js'></script>
+		
+		<link rel='stylesheet' type='text/css' href='css/layout.css'/>
+		<link rel='stylesheet' type='text/css' href='css/widgets.css'/>
+		<link rel='stylesheet' type='text/css' href='css/theme.css'/>
+		
+		
+	</head>
+	<body>
+		<div id="header" data-role="fixed-header">
+			<div class="narrow-page">
+				<h1>Prono</h1>
+				<a href="#menu" class="right"><img src="lib/images/icons-png/bars-black.png" class="icon"></a>
+			</div>
+		</div>
+		<div id="menu" data-role="panel-right">
+			<ul data-role="listview">
+				<li class="no-sides"><a href='#home'>Home</a></li>
+				<li class="no-sides"><a href='#ranking'>Rangschikking</a></li>
+				<li class="no-sides"><a href='#prono'>Pronostiek</a></li>
+				<li class="no-sides"><a href='#rules'>Regels</a></li>
+			</ul>
+		</div>	
+		
+		
+		
+		<div id="content" data-role="content">
+
+			<div id="login" data-role="page" class="narrow-page">
+				<h1>Login</h1>
+				<form>
+					<div>
+						<label>Username</label>
+						<input type="text" name="username"/>
+					</div>
+					<div>
+						<label>Password</label>
+						<input type="password" name="password"/>
+					</div>
+					<input type="submit" value="Submit" class="btn full-width"/>
+				</form>
+				<a href="#register">registreren</a>
+			</div>
+
+			<div id="home" data-role="page" class="narrow-page">
+			</div>
+			
+			<div id="ranking" data-role="page" class="narrow-page">
+			</div>
+
+			<div id="prono" data-role="page" class="narrow-page">
+			</div>
+
+			<div id="rules" data-role="page" class="narrow-page">
+			</div>			
+
+		</div>
+		
+		
+		<div  id="match" data-role="popup">
+			<a href='#' class='close'></a>
+		</div>
+
+		<div  id="register" data-role="popup">
+			<a href='#' class='close'></a>
+			<form>
+				<div>
+					<label>Username</label>
+					<input type="text" name="username"/>
+				</div>
+				<div>
+					<label>Password</label>
+					<input type="password" name="password"/>
+				</div>
+				<div>
+					<label>Herhaal password</label>
+					<input type="password" name="password2"/>
+				</div>
+				<input type="submit" value="Submit" class="btn full-width"/>
+			</form>
+		</div>
+
+		<div  id="message" data-role="popup">
+			<a href='#' class='close'></a>
+		</div>
+
+		
+		<div  id="overlay" data-role="overlay">
+		</div>
+	</body>
+</html>
