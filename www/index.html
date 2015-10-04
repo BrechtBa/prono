@@ -18,11 +18,12 @@
 		<script src='lib/jquery-1.11.0.min.js'></script>
 		
 		<!-- custom -->
-		<script type='text/javascript' src='js/navigation.js'></script>
-		<script type='text/javascript' src='js/model.js'></script>
+		<script type='text/javascript' src='js/main.js'></script>
+		<script type='text/javascript' src='js/model.js'></script>		
 		<script type='text/javascript' src='js/view.js'></script>
 		<script type='text/javascript' src='js/controller.js'></script>
-		
+		<script type='text/javascript' src='js/navigation.js'></script>
+
 		<link rel='stylesheet' type='text/css' href='css/layout.css'/>
 		<link rel='stylesheet' type='text/css' href='css/widgets.css'/>
 		<link rel='stylesheet' type='text/css' href='css/theme.css'/>
@@ -38,10 +39,10 @@
 		</div>
 		<div id="menu" data-role="panel-right">
 			<ul data-role="listview">
-				<li class="no-sides"><a href='#home'>Home</a></li>
 				<li class="no-sides"><a href='#ranking'>Rangschikking</a></li>
 				<li class="no-sides"><a href='#prono'>Pronostiek</a></li>
 				<li class="no-sides"><a href='#rules'>Regels</a></li>
+				<li class="no-sides"><a href='#users'>Users</a></li>
 			</ul>
 		</div>	
 		
@@ -64,18 +65,26 @@
 				</form>
 				<a href="#register">registreren</a>
 			</div>
-
-			<div id="home" data-role="page" class="narrow-page">
-			</div>
 			
 			<div id="ranking" data-role="page" class="narrow-page">
+				<h1>Rangschikking</h1>
 			</div>
 
 			<div id="prono" data-role="page" class="narrow-page">
+				<h1>Prono</h1>
 			</div>
 
 			<div id="rules" data-role="page" class="narrow-page">
+				<h1>Regels</h1>
 			</div>			
+
+			<div id="users" data-role="page" class="narrow-page">
+				<h1>Users</h1>
+				<div data-template="user" data-id="-1">
+					<div data-bind="id">id</div>
+					<div data-bind="username">username</div>
+				</div>
+			</div>
 
 		</div>
 		

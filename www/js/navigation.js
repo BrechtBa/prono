@@ -1,10 +1,12 @@
 // JQuery wrapper
+
+
 $(document).ready(function(){
-	
+
 	// show the 1st page
 	var target = '#' + $('[data-role=page]').first().attr('id');
-	hashhistory.push(target);
-	navigate(target);
+	//app.navigation.hashhistory.push(target);
+	app.navigation.go(target);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Navigation                                                                 //
@@ -15,9 +17,9 @@ $(document).ready(function(){
 		
 		var target = $(this).attr('href');
 		if(target != '#'){
-			navigate(target);
+			app.navigation.go(target);
 			event.stopPropagation();
-			hashhistory.push(target);
+			//app.navigation.hashhistory.push(target);
 		}
 	});
 
@@ -26,16 +28,16 @@ $(document).ready(function(){
 ////////////////////////////////////////////////////////////////////////////////
 	// hide a panel or popup when clicked outside
 	$(document).on('click tap','body',function(event){
-		var currenttype = $(hashhistory[hashhistory.length-1]).attr('data-role');
+		var currenttype = $(app.navigation.last()).attr('data-role');
 		if( currenttype.substring(0,5) == 'panel' || currenttype == 'popup'){
-			back();
+			app.navigation.back();
 		}
 	});
 	// do not hide the popup when clicked inside but do hide it when clicking on a popup
 	$(document).on('click tap','[data-role=popup]',function(event){
-		var currenttype = $(hashhistory[hashhistory.length-1]).attr('data-role');
+		var currenttype = $(app.navigation.last()).attr('data-role');
 		if( currenttype.substring(0,5) == 'panel' ){
-			back();
+			app.navigation.back();
 		}
 		else{
 			event.stopPropagation();
@@ -47,7 +49,7 @@ $(document).ready(function(){
 	});
 	// hide a popup when a .close link is clicked
 	$(document).on('click tap','[data-role=popup] a.close',function(event){
-		back();
+		app.navigation.back();
 	});
 
 	
@@ -79,19 +81,21 @@ $(document).ready(function(){
 	$(document).on('submit','form',function(event){
 		event.preventDefault();
 	});
+
 });
 
 
+app.navigation = {}
 ////////////////////////////////////////////////////////////////////////////////
 // Navigation functions                                                       //
 ////////////////////////////////////////////////////////////////////////////////
-var hashhistory = [];
+app.navigation.hashhistory = [];
 
-navigate = function(target){
+app.navigation.navigate = function(target){
 	$('[data-role=popup]').hide();
 	$('[data-role=overlay]').hide();
 	$('[data-role^=panel]').hide();
-	
+
 	if( $(target).attr('data-role') == 'page'){
 		// got to the page
 		$('[data-role=page]').hide();
@@ -106,7 +110,7 @@ navigate = function(target){
 	}
 	else if( $(target).attr('data-role').substring(0,5) == 'panel'){
 		if( $('#menu').is(":visible") ){
-			back();
+			this.back();
 		}
 		else{
 			// show the panel on top of the page
@@ -114,9 +118,16 @@ navigate = function(target){
 		}
 	}
 }
-back = function(){
-	if(hashhistory.length>1){
-		hashhistory.pop();
-		navigate(hashhistory[hashhistory.length-1]);
+app.navigation.go = function(target){
+	app.navigation.hashhistory.push(target);
+	this.navigate(target);
+}
+app.navigation.back = function(){
+	if(this.hashhistory.length>1){
+		this.hashhistory.pop();
+		this.navigate(this.last());
 	}
+}
+app.navigation.last = function(){
+	return this.hashhistory[this.hashhistory.length-1]
 }

@@ -18,9 +18,10 @@ $(document).ready(function(){
 		var username = $(this).find('[name=username]').val();
 		var password = $(this).find('[name=password]').val();
 		var password2 = $(this).find('[name=password2]').val();
-		back();
+		app.navigation.back();
 
 		$.post('requests/register.php',{username:username,password:password,password2:password2},function(result){
+			result = JSON.parse(result);			
 			if(result.status>0){
 				$(document).trigger('login',[{username:username,password:password}]);
 			}
@@ -34,18 +35,18 @@ $(document).ready(function(){
 });
 
 $(document).on('login',function(event,data){
-	console.log(data);
 	$.post('requests/login.php',data,function(result){
-		console.log(result);
+		result = JSON.parse(result);
 		if(result['status']>0){
-			model.user = result['user'];
+			app.model.user.set(result['user']);
+			app.navigation.go('#ranking')
 		}
 	});
 });
 
 
 $.post('requests/authenticate.php',{},function(result){
-	if(result==1){
+	if(result>0){
 		// user is authenticated, actions may be performed
 		
 	}

@@ -16,9 +16,9 @@
 			$user = array('username' => $dbuser['username'], 'id' => $dbuser['id']);
 
 	
-			$_SESSION['token'] = hash(HASH_ALGORITHM, SESSION_TOKEN.$_SERVER['HTTP_USER_AGENT'].session_id(),true);
-			$_SESSION['userid'] = $user['id'];
-
+			$_SESSION['token'] = base64_encode(hash(HASH_ALGORITHM, SESSION_TOKEN.$_SERVER['HTTP_USER_AGENT'].session_id(),true));
+			$_SESSION['id'] = $dbuser['id'];
+			$_SESSION['priveledge'] = $dbuser['priveledge'];
 		
 			//$session_token = hash(HASH_ALGORITHM, SESSION_TOKEN.$_SERVER['HTTP_USER_AGENT'].session_id(),true);
 			//if(hash_equals($session_token,$_SESSION['token']) && $_SESSION['userid'] > 0){ 
@@ -47,6 +47,7 @@
 			
 			if( $hashtoken==$token['token'] ){	
 				$user = loginuser($token['user_id']);
+				$status = 1;
 			}
 		}
 	}
