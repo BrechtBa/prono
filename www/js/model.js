@@ -8,7 +8,8 @@ app.model.user = {
 	},
 	set: function(user){
 		that = this;
-		$.post('requests/authenticate.php',{},function(result){
+		$.post('authenticate/authenticate.php',{},function(result){
+			console.log(result);
 			if(result>0){
 				that.username = user.username;
 				that.id = user.id;

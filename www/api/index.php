@@ -1,6 +1,10 @@
 <?php
 
-$dsn = 'mysql://prono:prono@localhost/prono/';
+include_once('../config/config.php');
+
+
+$dsn = 'mysql://'.USER.':'.PASSWORD.'@localhost/'.DATABASE.'/';
+
 $clients = [];
 
 /**

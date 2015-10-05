@@ -1,7 +1,7 @@
 <?php
 	session_start();
-	include('../config/mysql.php');
-
+	include_once('mysql.php');
+	include('hashfunctions.php');
 
 	$status = 0;
 	$user = 0;
@@ -23,13 +23,15 @@
 				$query = "SELECT id FROM users";
 				$result = mysql_query($query) or die('Error: ' . mysql_error());
 				if( mysql_num_rows($result) == 0 ){
+					// the first user to register gets priveledge level 9
 					$priveledge = 9;
 				}
 				else{
+					// other users get priveledge level 1
 					$priveledge = 1;
 				}
 
-				$hashpassword = base64_encode(hash(HASH_ALGORITHM, $_POST['password'], true));
+				$hashpassword = create_hash($_POST['password']);
 				$query = "INSERT INTO users (username,password,priveledge) VALUES ('$username','$hashpassword','$priveledge')";	
 				$result = mysql_query($query) or die('Error: ' . mysql_error());
 				$status = 1;
@@ -42,6 +44,6 @@
 			$status = -2;
 		}
 	}
-	echo json_encode( array('status' => $status, 'user' => $user) );
 
+	echo json_encode( array('status' => $status, 'user' => $user) );
 ?>

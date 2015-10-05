@@ -25,7 +25,7 @@ $(document).ready(function(){
 		var password2 = $(this).find('[name=password2]').val();
 		app.navigation.back();
 
-		$.post('requests/register.php',{username:username,password:password,password2:password2},function(result){
+		$.post('authenticate/register.php',{username:username,password:password,password2:password2},function(result){
 			result = JSON.parse(result);			
 			if(result['status']>0){
 				$(document).trigger('login',[{username:username,password:password}]);
@@ -40,7 +40,7 @@ $(document).ready(function(){
 // Logout                                                                     //
 ////////////////////////////////////////////////////////////////////////////////
 	$(document).on('click tap','[data-control="logout"]',function(event){
-		$.post('requests/logout.php',{id:app.model.user.id},function(result){
+		$.post('authenticate/logout.php',{id:app.model.user.id},function(result){
 			if(result>0){
 				app.model.user.unset();
 				app.navigation.go('#login')
@@ -70,7 +70,7 @@ $(document).ready(function(){
 // reoccurring functions                                                      //
 ////////////////////////////////////////////////////////////////////////////////
 $(document).on('login',function(event,data){
-	$.post('requests/login.php',data,function(result){
+	$.post('authenticate/login.php',data,function(result){
 		result = JSON.parse(result);
 		if(result['status']>0){
 			app.model.user.set(result['user']);

@@ -1,7 +1,7 @@
 <?php
 	session_start();
-	include('../config/mysql.php');
-
+	include_once('../config/mysql.php');
+	include_once('hashfunctions.php');
 
 	$status = 0;
 	$user = 0;
@@ -16,12 +16,12 @@
 			$user = array('username' => $dbuser['username'], 'id' => $dbuser['id']);
 
 	
-			$_SESSION['token'] = base64_encode(hash(HASH_ALGORITHM, SESSION_TOKEN.$_SERVER['HTTP_USER_AGENT'].session_id(),true));
+			$_SESSION['token'] = generate_session_token();
 			$_SESSION['id'] = $dbuser['id'];
 			$_SESSION['priveledge'] = $dbuser['priveledge'];
 		
-			//$session_token = hash(HASH_ALGORITHM, SESSION_TOKEN.$_SERVER['HTTP_USER_AGENT'].session_id(),true);
-			//if(hash_equals($session_token,$_SESSION['token']) && $_SESSION['userid'] > 0){ 
+			
+			//if(generate_session_token()==$_SESSION['token'] && $_SESSION['id'] > 0){ 
 			//	//valid session
 			//}
 		}
@@ -37,16 +37,15 @@
 		$array = explode(':',$_COOKIE['token'],2);
 		$tokenid = $array[0];
 		$token = $array[1];
-		$hashtoken = base64_encode(hash(HASH_ALGORITHM, $token, true));
 		
 		$query = "SELECT * FROM auth_tokens WHERE id='$tokenid'";
 		$result = mysql_query($query) or die('Error: ' . mysql_error());
 
 		if( mysql_num_rows($result) > 0 ){
-			$token = mysql_fetch_array($result);
+			$dbtoken = mysql_fetch_array($result);
 			
-			if( $hashtoken==$token['token'] ){	
-				$user = loginuser($token['user_id']);
+			if( create_hash($token) == $dbtoken['token'] ){	
+				$user = loginuser($dbtoken['user_id']);
 				$status = 1;
 			}
 		}
@@ -66,9 +65,7 @@
 				$dbuser = mysql_fetch_array($result);
 				
 				// verify the user password
-				if( base64_encode(hash(HASH_ALGORITHM, $_POST['password'], true))==$dbuser['password'] ){
-				// passwordhash in db generated with
-				//password_hash(base64_encode(hash(HASH_ALGORITHM, $_POST['password'], true)), PASSWORD_DEFAULT);
+				if( create_hash($_POST['password'])==$dbuser['password'] ){
 					
 					$user = loginuser($dbuser['id']);
 					$status = 1;
@@ -79,8 +76,8 @@
 					$result = mysql_query($query) or die('MySQL Error: ' . mysql_error());
 
 					// generate a new auth_token
-					$token = base64_encode(openssl_random_pseudo_bytes(64));
-					$hashtoken = base64_encode(hash(HASH_ALGORITHM, $token, true));
+					$token = generate_token();
+					$hashtoken = create_hash($token);
 					$query = "INSERT INTO auth_tokens (token,user_id) VALUES ('$hashtoken','$userid')";
 					$result = mysql_query($query) or die('MySQL Error: ' . mysql_error());
 
