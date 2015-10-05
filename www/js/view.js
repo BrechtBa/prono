@@ -9,32 +9,19 @@
 
 // JQuery wrapper
 $(document).ready(function(){
-////////////////////////////////////////////////////////////////////////////////
-// Templates                                                                  //
-////////////////////////////////////////////////////////////////////////////////
-	app.Template = function( name ){
-		this.name = name;
-		console.log($('[data-template="'+this.name+'"][data-id="-1"]'))
-		this.content = $('[data-template="'+this.name+'"][data-id="-1"]').prop('outerHTML');
-		this.html = function(id){
-			return $(this.content).attr('data-id',id).prop('outerHTML');
-		}
-	}
-	
-	app.templates = app.templates || {};
-	
-	$('[data-id="-1"]').each(function(index,value){
-		app.templates[$(value).attr('data-template')] = new app.Template($(value).attr('data-template'));
-	});
-	
 
-
+	
 ////////////////////////////////////////////////////////////////////////////////
-// View data binding                                                          //
+// users                                                                      //
 ////////////////////////////////////////////////////////////////////////////////	
 
-	app.view.user = new app.view.Bind('user',$(document));
-
+	app.view.users = new app.view.Bind('users',$(document),function(){
+		var data = [];
+		$.each(app.model.users.data,function(index,value){
+			data.push({id:value.id,username:value.username});
+		});
+		this.updateview(data);
+	});
 
 
 

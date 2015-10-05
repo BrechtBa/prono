@@ -51,8 +51,9 @@
 			}
 		}
 	}
-	else{
-		// the cookie is not set
+
+	if($status==0){
+		// the cookie is not set or wrong
 		if( isset($_POST['username']) && isset($_POST['password']) ){
 			// try authentication via the login form
 			$username = $_POST['username'];
@@ -60,7 +61,7 @@
 			// select the user from the table
 			$query = "SELECT id,password FROM users WHERE username='$username'";
 			$result = mysql_query($query) or die('Error: ' . mysql_error());
-			
+
 			if( mysql_num_rows($result) > 0 ){
 				$dbuser = mysql_fetch_array($result);
 				

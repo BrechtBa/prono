@@ -14,7 +14,7 @@
 		// select the user from the table
 		$query = "SELECT id FROM users WHERE username='$username'";
 		$result = mysql_query($query) or die('Error: ' . mysql_error());
-			echo mysql_num_rows($result);
+
 		if( mysql_num_rows($result) == 0 ){
 			// check if the 2 passwords are equal
 			if( $_POST['password']==$_POST['password2'] ){
@@ -23,10 +23,10 @@
 				$query = "SELECT id FROM users";
 				$result = mysql_query($query) or die('Error: ' . mysql_error());
 				if( mysql_num_rows($result) == 0 ){
-					$priveledge = 1;
+					$priveledge = 9;
 				}
 				else{
-					$priveledge = 0;
+					$priveledge = 1;
 				}
 
 				$hashpassword = base64_encode(hash(HASH_ALGORITHM, $_POST['password'], true));

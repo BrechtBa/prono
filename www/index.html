@@ -43,6 +43,7 @@
 				<li class="no-sides"><a href='#prono'>Pronostiek</a></li>
 				<li class="no-sides"><a href='#rules'>Regels</a></li>
 				<li class="no-sides"><a href='#users'>Users</a></li>
+				<li class="no-sides"><a href='#' data-control="logout">Logout</a></li>
 			</ul>
 		</div>	
 		
@@ -68,6 +69,11 @@
 			
 			<div id="ranking" data-role="page" class="narrow-page">
 				<h1>Rangschikking</h1>
+				<div data-template="users" data-id="-1">
+					<div data-bind="id">id</div>
+					<div data-bind="username">username</div>
+					<a href="#" data-control="delete">delete</a>
+				</div>
 			</div>
 
 			<div id="prono" data-role="page" class="narrow-page">
@@ -80,10 +86,7 @@
 
 			<div id="users" data-role="page" class="narrow-page">
 				<h1>Users</h1>
-				<div data-template="user" data-id="-1">
-					<div data-bind="id">id</div>
-					<div data-bind="username">username</div>
-				</div>
+
 			</div>
 
 		</div>

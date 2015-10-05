@@ -8,7 +8,7 @@ app.view = {};
 
 
 // binding class
-app.view.Bind = function(bind,parent){
+app.view.Bind = function(bind,parent,callback){
 
 	this.parent = parent	
 	this.bind = bind;
@@ -18,13 +18,13 @@ app.view.Bind = function(bind,parent){
 	this.html = function(id){
 		return $(this.content).attr('data-id',id).prop('outerHTML');
 	}
-
-	this.update = function(objectlist){
+	this.update = callback;
+	this.updateview = function(modeldata){
 		that = this;
 		template = this.parent.find('[data-template="'+this.bind+'"]:not([data-id=-1])').remove();
 		
 		// loop over each object in the list
-		$.each(objectlist,function(index,value){
+		$.each(modeldata,function(index,value){
 			var domobject = $(that.html(value.id));		
 			
 			// loop over each child dom object with a data-bind attribute and set the html
