@@ -7,13 +7,17 @@
 		return base64_encode(hash('sha256', $password.SALT, true));
 	}
 	//
-	function generate_token(){
+	function generate_cookie_token(){
 		return base64_encode(openssl_random_pseudo_bytes(64));
 	}
 	//
-
 	function generate_session_token(){
-		return base64_encode(hash('sha256', SESSION_TOKEN.$_SERVER['HTTP_USER_AGENT'].session_id(),true));
+		return create_hash( SESSION_TOKEN.$_SERVER['HTTP_USER_AGENT'].session_id() );
 	}
+	//
+	function generate_api_token(){
+		return create_hash( API_TOKEN.$_SERVER['HTTP_USER_AGENT'].session_id() );
+	}
+	
 
 ?>
