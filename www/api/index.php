@@ -2,9 +2,9 @@
 
 include_once('../config/config.php');
 include_once('../authenticate/hashfunctions.php');
+echo print_r($_SERVER);
 
 // security: check if the api token matches
-
 if( generate_api_token()==$_SERVER['api_token'] ){ 
 
 	$dsn = 'mysql://'.USER.':'.PASSWORD.'@localhost/'.DATABASE.'/';

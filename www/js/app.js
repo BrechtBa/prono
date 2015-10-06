@@ -4,27 +4,33 @@ var app = angular.module('app',[]);
 ////////////////////////////////////////////////////////////////////////////////
 // Authentication                                                             //
 ////////////////////////////////////////////////////////////////////////////////
-app.controller('MainController',['$scope', function($scope){
+app.controller('MainController',['$scope','api', function($scope,api){
 	// user
 	$scope.user = {
 		id:0,
 		username:''
 	};
-	//users
+	// users
+	$scope.get_users = function(){
+		api.get('users',function(result){
+			console.log(result);
+		});
+	}
+	$scope.users = {
+	};
 
-
-	//message
-	$scope.message = {
-		message:'',
+	// dialog
+	$scope.dialog = {
+		content:'',
 		show:function(){
-			jQuery(document).trigger('openPopup','#message');
+			jQuery(document).trigger('openPopup','#dialog');
 		}
 	};
 }]);
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// Authentication                                                             //
+// Login                                                                      //
 ////////////////////////////////////////////////////////////////////////////////
 app.controller('LoginController',['$scope','$http', function($scope,$http){
 	$scope.username = '';
@@ -33,33 +39,33 @@ app.controller('LoginController',['$scope','$http', function($scope,$http){
 	$scope.login = function(username,password){
 		console.log({username:$scope.username,password:$scope.password});
 		
-		$http({method:'POST', url:'/authenticate/login.php', data:{username:$scope.username,password:$scope.password}}).then(
+		$http({method:'POST', url:'authenticate/login.php', data:{username:$scope.username,password:$scope.password}}).then(
 		function(result){
-			console.log('success')
-			result = angular.toJson(result);
-			console.log(result)
-			if(result['status']>0){
-				console.log(result);
-				$scope.user.id = result.user.id;
-				$scope.user.username = result.user.username;
+			result = angular.fromJson(result);
+			if(result.data.status>0){
+				$scope.user.id = result.data.user.id;
+				$scope.user.username = result.data.user.username;
 				
 				window.location.hash = '#ranking';
+				$scope.get_users();
 			}
 			else{
 				console.log(result);
 			}
 		}).catch(
 		function(error){
-			console.log('error')
-			$scope.message.message = 'Error: can not connect to the database';
+			console.log('Error: can not connect to the database');
+			$scope.dialog.content = '<p>Error: can not connect to the database</p>';
 			// timeout required as jquery isn't ready when the exception occurs
 			setTimeout(function(){
-				$scope.message.show();
+				$scope.dialog.show();
 			},1000);
 		});
 	}
 	
 }]);
+
+
 
 
 
@@ -71,21 +77,16 @@ app.controller('LoginController',['$scope','$http', function($scope,$http){
 app.factory('api',function($http){
 	var api = {};
 	api.get = function(url,callback){
-		$http({method: 'GET',url:'/authenticate/index.php'}).then(function(result){
-			result = angular.toJson(result);
-			console.log(response.priveledge);
-			console.log(response.token);
-			
-			$http({method:'GET',url:'/api/index.php/'.url,headers:{'api_token':response.token}}).then(callback(result));
-		});
-	}
-	api.post = function(url,data,callback){
-		$http({method: 'GET',url:'/authenticate/index.php'}).then(function(result){
-			result = angular.toJson(result);
-			console.log(response.priveledge);
-			console.log(response.token);
-			
-			$http({method:'POST',url:'/api/index.php/'.url,data:data,headers:{'api_token':response.token}}).then(callback(result));
+		$http({method: 'GET',url:'authenticate/index.php'}).then(function(result){
+			result = angular.fromJson(result);
+			console.log(result.data);
+			console.log(result.data.priveledge);
+			console.log(result.data.api_token);
+
+			$http({method:'GET',url:'api/index.php/'+url,headers:{'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8','Authorization':result.data.api_token}}).then(function(result){
+				console.log(result);				
+				//callback(result)
+			});
 		});
 	}
 	return api;

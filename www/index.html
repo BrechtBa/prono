@@ -28,7 +28,7 @@
 		
 		
 	</head>
-	<body data-ng-app="app">
+	<body data-ng-app="app" data-ng-controller="MainController">
 		<div id="header" data-role="fixed-header">
 			<div class="narrow-page">
 				<h1>Prono</h1>
@@ -47,7 +47,7 @@
 		
 		
 		
-		<div id="content" data-role="content" data-ng-controller="MainController">
+		<div id="content" data-role="content">
 
 			<div id="login" data-role="page" class="narrow-page" data-ng-controller="LoginController" data-ng-init="login()">
 				<h1>Login</h1>
@@ -114,9 +114,9 @@
 			</form>
 		</div>
 
-		<div id="message" data-role="popup">
+		<div id="dialog" data-role="popup">
 			<a href="#" class="close"></a>
-			<p data-ng-model="message.message"></p>
+			<div data-ng-bind="dialog.content"></div>
 		</div>
 
 		
