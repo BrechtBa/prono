@@ -5,9 +5,21 @@ var app = angular.module('app',[]);
 // Authentication                                                             //
 ////////////////////////////////////////////////////////////////////////////////
 app.controller('MainController',['$scope', function($scope){
-	$scope.user = {id:0,
-				   username:''};
-	
+	// user
+	$scope.user = {
+		id:0,
+		username:''
+	};
+	//users
+
+
+	//message
+	$scope.message = {
+		message:'',
+		show:function(){
+			jQuery(document).trigger('openPopup','#message');
+		}
+	};
 }]);
 
 
@@ -17,22 +29,36 @@ app.controller('MainController',['$scope', function($scope){
 app.controller('LoginController',['$scope','$http', function($scope,$http){
 	$scope.username = '';
 	$scope.password = '';
+	
 	$scope.login = function(username,password){
 		console.log({username:$scope.username,password:$scope.password});
 		
-		$http({method:'POST', url:'/authenticate/login.php', data:{username:$scope.username,password:$scope.password}}).then(function(result){
+		$http({method:'POST', url:'/authenticate/login.php', data:{username:$scope.username,password:$scope.password}}).then(
+		function(result){
+			console.log('success')
 			result = angular.toJson(result);
+			console.log(result)
 			if(result['status']>0){
 				console.log(result);
-				user.id = result.user.id;
-				user.username = result.user.username;
+				$scope.user.id = result.user.id;
+				$scope.user.username = result.user.username;
 				
+				window.location.hash = '#ranking';
 			}
 			else{
 				console.log(result);
 			}
+		}).catch(
+		function(error){
+			console.log('error')
+			$scope.message.message = 'Error: can not connect to the database';
+			// timeout required as jquery isn't ready when the exception occurs
+			setTimeout(function(){
+				$scope.message.show();
+			},1000);
 		});
 	}
+	
 }]);
 
 
@@ -41,6 +67,7 @@ app.controller('LoginController',['$scope','$http', function($scope,$http){
 ////////////////////////////////////////////////////////////////////////////////
 // Services                                                                   //
 ////////////////////////////////////////////////////////////////////////////////
+// API
 app.factory('api',function($http){
 	var api = {};
 	api.get = function(url,callback){
@@ -63,7 +90,6 @@ app.factory('api',function($http){
 	}
 	return api;
 });
-
 
 
 

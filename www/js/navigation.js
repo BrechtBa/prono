@@ -1,133 +1,115 @@
 // JQuery wrapper
-
-
 $(document).ready(function(){
 
-	// show the 1st page
-	var target = '#' + $('[data-role=page]').first().attr('id');
-	//app.navigation.hashhistory.push(target);
-	app.navigation.go(target);
-
 ////////////////////////////////////////////////////////////////////////////////
-// Navigation                                                                 //
+// Panel                                                                      //
 ////////////////////////////////////////////////////////////////////////////////
-	// action to perform when a link is clicked
+	$('[data-role^=panel]').hide();
+	var openPanels = [];
+	// open panel
 	$(document).on('click tap','a[href^="#"]',function(event){
 		event.preventDefault();
 		
 		var target = $(this).attr('href');
-		if(target != '#'){
-			app.navigation.go(target);
+		console.log(target)
+		if( target!='#' && target!='#close' && $(target).attr('data-role').substring(0,5)=='panel' ){
+			$(target).show();
 			event.stopPropagation();
-			//app.navigation.hashhistory.push(target);
+			openPanels.push($(target));
 		}
 	});
-
-////////////////////////////////////////////////////////////////////////////////
-// Popup and Panel                                                            //
-////////////////////////////////////////////////////////////////////////////////
-	// hide a panel or popup when clicked outside
+	// close panel
 	$(document).on('click tap','body',function(event){
-		var currenttype = $(app.navigation.last()).attr('data-role');
-		if( currenttype.substring(0,5) == 'panel' || currenttype == 'popup'){
-			app.navigation.back();
-		}
-	});
-	// do not hide the popup when clicked inside but do hide it when clicking on a popup
-	$(document).on('click tap','[data-role=popup]',function(event){
-		var currenttype = $(app.navigation.last()).attr('data-role');
-		if( currenttype.substring(0,5) == 'panel' ){
-			app.navigation.back();
-		}
-		else{
-			event.stopPropagation();
-		}
+		$(document).trigger('closePanel');
 	});
 	// do not hide the panel when clicked inside
-	$(document).on('click tap','[data-role^=panel]',function(event){
+	$(document).on('click tap','[data-role=panel]',function(event){
 		event.stopPropagation();
 	});
-	// hide a popup when a .close link is clicked
-	$(document).on('click tap','[data-role=popup] a.close',function(event){
-		app.navigation.back();
-	});
-
-	
-////////////////////////////////////////////////////////////////////////////////
-// Collapsible                                                                //
-////////////////////////////////////////////////////////////////////////////////
-	$(document).on('click tap','[data-role=collapsible]>h1',function(event){
-		//console.log( $(event.target).parent() )
-		object = $(event.target).parent();
-		if(object.hasClass('collapsed')){
-			object.removeClass('collapsed');
-		}
-		else{
-			object.addClass('collapsed');
-		}
-	}); 
-	
-////////////////////////////////////////////////////////////////////////////////
-// Collapsible-set                                                            //
-////////////////////////////////////////////////////////////////////////////////
-	$(document).on('click tap','[data-role=collapsible-set]>[data-role=collapsible]>h1',function(event){
-		object = $(event.target).parent();
-		siblings = object.siblings('[data-role=collapsible]');
-		siblings.addClass('collapsed');
-	});
-////////////////////////////////////////////////////////////////////////////////
-// Navigation functions                                                       //
-////////////////////////////////////////////////////////////////////////////////
-	$(document).on('submit','form',function(event){
+	// hide the panel when clicking on a link with a #attribute
+	$(document).on('click tap','[data-role^="panel"] a[href^="#"]',function(event){
 		event.preventDefault();
+		$(document).trigger('closePanel');
 	});
-
-});
-
-
-app.navigation = {}
+	
+	
+	$(document).on('closePanel',function(event){
+		currentPanel = openPanels.pop()
+		if( currentPanel != undefined ){
+			currentPanel.hide()
+		}
+	});
+	
 ////////////////////////////////////////////////////////////////////////////////
-// Navigation functions                                                       //
+// Popup                                                                      //
 ////////////////////////////////////////////////////////////////////////////////
-app.navigation.hashhistory = [];
-
-app.navigation.navigate = function(target){
 	$('[data-role=popup]').hide();
 	$('[data-role=overlay]').hide();
-	$('[data-role^=panel]').hide();
-
-	if( $(target).attr('data-role') == 'page'){
-		// got to the page
-		$('[data-role=page]').hide();
-		$(target).show();
-	}
-	else if( $(target).attr('data-role') == 'popup'){
-		// close open popups
-		$('[data-role=popup]').hide();
-		// show the popup on top of the page
-		$(target).show();
-		$('[data-role=overlay]').show();
-	}
-	else if( $(target).attr('data-role').substring(0,5) == 'panel'){
-		if( $('#menu').is(":visible") ){
-			this.back();
+	var openPopups = [];
+	// open popup
+	$(document).on('click tap','a[href^="#"]',function(event){
+		event.preventDefault();
+		
+		var target = $(this).attr('href');
+		if( target!='#' && target!='#close' && $(target).attr('data-role').substring(0,5)=='popup' ){
+			$(document).trigger('openPopup',[target]);
+			event.stopPropagation();
 		}
-		else{
-			// show the panel on top of the page
-			$(target).show();
+	});
+	// close popup
+	$(document).on('click tap','body',function(event){
+		$(document).trigger('closePopup');
+	});
+	// do not hide the popup when clicked inside a popup
+	$(document).on('click tap','[data-role=popup]',function(event){
+		event.stopPropagation();
+	});
+	// hide the popup when clicking on a link with a #attribute
+	$(document).on('click tap','[data-role^="popup"] a[href^="#"]',function(event){
+		event.preventDefault();
+		$(document).trigger('closePopup');
+	});
+	
+	$(document).on('openPopup',function(event,target){
+		$(target).show();
+		$('[data-role="overlay"]').show();
+		openPopups.push($(target));
+	});
+	$(document).on('closePopup',function(event){
+		currentPopup = openPopups.pop()
+		if( currentPopup != undefined ){
+			currentPopup.hide();
 		}
+		if( openPopups.length == 0){
+			$('[data-role="overlay"]').hide();
+		}	
+	});
+	
+////////////////////////////////////////////////////////////////////////////////
+// Pages                                                                 //
+////////////////////////////////////////////////////////////////////////////////	
+	$('[data-role=page]').hide();
+	if(window.location.hash==""){
+		$('[data-role=page]').first().show();
 	}
-}
-app.navigation.go = function(target){
-	app.navigation.hashhistory.push(target);
-	this.navigate(target);
-}
-app.navigation.back = function(){
-	if(this.hashhistory.length>1){
-		this.hashhistory.pop();
-		this.navigate(this.last());
+	else{
+		$(window.location.hash).show()
 	}
-}
-app.navigation.last = function(){
-	return this.hashhistory[this.hashhistory.length-1]
-}
+	// open page
+	$(document).on('click tap','a[href^="#"]',function(event){
+		event.preventDefault();
+		
+		var target = $(this).attr('href');
+		if( target!='#' && target!='#close' && $(target).attr('data-role')=='page' ){
+			//change the window hash
+			window.location.hash = this.hash;
+			event.stopPropagation();
+		}
+	});
+	$(window).on('hashchange',function(event){
+		$('[data-role="page"]').hide()
+		$(window.location.hash).show()
+	});
+	
+	
+});

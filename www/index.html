@@ -3,32 +3,32 @@
 	<head>
 		<title>Prono</title>
 
-		<meta charset='utf-8'/>
-		<meta name='viewport' content='width=device-width, initial-scale=1'/>
-		<meta name='mobile-web-app-capable' content='yes' />
-		<meta name='apple-mobile-web-app-capable' content='yes' />
-		<meta name='apple-mobile-web-app-status-bar-style' content='black-translucent' />
-		<meta http-equiv='expires' content='0' />
+		<meta charset="utf-8"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		<meta http-equiv="expires" content="0" />
 
-		<link rel='icon' href='icons/android/icon_36.png'/>
-		<link rel='apple-touch-icon' href='icons/ios/icon_144.png' />
-		<link rel='icon' href='icons/android/icon_36.png' type='image/x-icon' />
+		<link rel="icon" href="icons/android/icon_36.png"/>
+		<link rel="apple-touch-icon" href="icons/ios/icon_144.png" />
+		<link rel="icon" href="icons/android/icon_36.png" type="image/x-icon" />
 
 		<!-- frameworks -->
-		<script src='lib/jquery-1.11.0.min.js'></script>
-		<script type='text/javascript' src='lib/angular.min.js'></script>
+		<script src="lib/jquery-1.11.0.min.js"></script>
+		<script type="text/javascript" src="lib/angular.min.js"></script>
 		
 		<!-- custom -->
-		<script type='text/javascript' src='js/app.js'></script>		
-		<script type='text/javascript' src='js/navigation.js'></script>
+		<script type="text/javascript" src="js/app.js"></script>		
+		<script type="text/javascript" src="js/navigation.js"></script>
 
-		<link rel='stylesheet' type='text/css' href='css/layout.css'/>
-		<link rel='stylesheet' type='text/css' href='css/widgets.css'/>
-		<link rel='stylesheet' type='text/css' href='css/theme.css'/>
+		<link rel="stylesheet" type="text/css" href="css/layout.css"/>
+		<link rel="stylesheet" type="text/css" href="css/widgets.css"/>
+		<link rel="stylesheet" type="text/css" href="css/theme.css"/>
 		
 		
 	</head>
-	<body data-ng-app="app" data-ng-controller="MainController">
+	<body data-ng-app="app">
 		<div id="header" data-role="fixed-header">
 			<div class="narrow-page">
 				<h1>Prono</h1>
@@ -37,17 +37,17 @@
 		</div>
 		<div id="menu" data-role="panel-right">
 			<ul data-role="listview">
-				<li class="no-sides"><a href='#ranking'>Rangschikking</a></li>
-				<li class="no-sides"><a href='#prono'>Pronostiek</a></li>
-				<li class="no-sides"><a href='#rules'>Regels</a></li>
-				<li class="no-sides"><a href='#users'>Users</a></li>
-				<li class="no-sides"><a href='#' data-control="logout">Logout</a></li>
+				<li class="no-sides"><a href="#ranking">Rangschikking</a></li>
+				<li class="no-sides"><a href="#prono">Pronostiek</a></li>
+				<li class="no-sides"><a href="#rules">Regels</a></li>
+				<li class="no-sides"><a href="#users">Users</a></li>
+				<li class="no-sides"><a href="#" data-control="logout">Logout</a></li>
 			</ul>
 		</div>	
 		
 		
 		
-		<div id="content" data-role="content">
+		<div id="content" data-role="content" data-ng-controller="MainController">
 
 			<div id="login" data-role="page" class="narrow-page" data-ng-controller="LoginController" data-ng-init="login()">
 				<h1>Login</h1>
@@ -63,6 +63,7 @@
 					<input type="submit" value="Submit" class="btn full-width" data-ng-click="login(username,password)"/>
 				</form>
 				<a href="#register">registreren</a>
+				<span data-ng-model="message.message"></span>
 			</div>
 			
 			<div id="ranking" data-role="page" class="narrow-page">
@@ -90,12 +91,12 @@
 		</div>
 		
 		
-		<div  id="match" data-role="popup">
-			<a href='#' class='close'></a>
+		<div id="match" data-role="popup">
+			<a href="#close"></a>
 		</div>
 
-		<div  id="register" data-role="popup">
-			<a href='#' class='close'></a>
+		<div id="register" data-role="popup">
+			<a href="#close"></a>
 			<form>
 				<div>
 					<label>Username</label>
@@ -113,12 +114,13 @@
 			</form>
 		</div>
 
-		<div  id="message" data-role="popup">
-			<a href='#' class='close'></a>
+		<div id="message" data-role="popup">
+			<a href="#" class="close"></a>
+			<p data-ng-model="message.message"></p>
 		</div>
 
 		
-		<div  id="overlay" data-role="overlay">
+		<div id="overlay" data-role="overlay">
 		</div>
 	</body>
 </html>
