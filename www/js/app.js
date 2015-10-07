@@ -1,53 +1,85 @@
-var app = angular.module('app',[]);
-
+var app = angular.module('app',['ngRoute']);
 
 ////////////////////////////////////////////////////////////////////////////////
-// Authentication                                                             //
+// Routing                                                                    //
 ////////////////////////////////////////////////////////////////////////////////
-app.controller('MainController',['$scope','api', function($scope,api){
-	// user
-	$scope.user = {
-		id:0,
-		username:''
-	};
-	// users
-	$scope.get_users = function(){
-		api.get('users',function(result){
-			console.log(result);
-		});
-	}
-	$scope.users = {
-	};
-
-	// dialog
-	$scope.dialog = {
-		content:'',
-		show:function(){
-			jQuery(document).trigger('openPopup','#dialog');
-		}
-	};
+app.config(['$routeProvider', '$locationProvider',function($routeProvider,$locationProvider) {
+    $routeProvider
+    .when('/login', {
+		templateUrl: 'views/login.html',
+        controller: 'LoginController'
+    })
+	.when('/ranking', {
+		templateUrl: 'views/ranking.html',
+		controller: 'RankingController'
+    })
+	.when('/prono', {
+		templateUrl: 'views/prono.html',
+		controller: 'PronoController'
+    })
+	.when('/rules', {
+		templateUrl: 'views/rules.html',
+		controller: 'RulesController'
+    })
+	.when('/users', {
+		templateUrl: 'views/users.html',
+		controller: 'UsersController'
+    })
+    .otherwise({
+		redirectTo: '/login'
+    });
+    //$locationProvider.html5Mode(true); //Remove the '#' from URL.
 }]);
 
 
 ////////////////////////////////////////////////////////////////////////////////
+// Main controller                                                            //
+////////////////////////////////////////////////////////////////////////////////
+app.controller('MainController',['$scope','$location','api','user',function($scope,$location,api,user){
+	
+	// check if the user is logged in and redirect them to the login page otherwise
+	$scope.$on('$routeChangeStart',function(event){
+        if (user.priveledge < 1) {
+            console.log('Access not allowed!');
+			console.log(user);
+            //event.preventDefault();
+            $location.path('/login');
+        }
+    });
+	
+	// menu control
+	$scope.showMenu = false;
+	$scope.toggleMenu = function(){
+		$scope.showMenu = !$scope.showMenu;
+	};
+}]);
+
+////////////////////////////////////////////////////////////////////////////////
 // Login                                                                      //
 ////////////////////////////////////////////////////////////////////////////////
-app.controller('LoginController',['$scope','$http', function($scope,$http){
+app.controller('LoginController',['$scope','$http','user', function($scope,$http,user){
 	$scope.username = '';
 	$scope.password = '';
 	
-	$scope.login = function(username,password){
-		console.log({username:$scope.username,password:$scope.password});
+	$scope.login = function(){
 		
+		console.log({username:$scope.username,password:$scope.password});
+		//user.login(1,'BB',9,'jdshsd')
+/*
 		$http({method:'POST', url:'authenticate/login.php', data:{username:$scope.username,password:$scope.password}}).then(
 		function(result){
 			result = angular.fromJson(result);
+			console.log(result.data);
+			userid = result.data.user.id;
+			username = result.data.user.username;
 			if(result.data.status>0){
-				$scope.user.id = result.data.user.id;
-				$scope.user.username = result.data.user.username;
-				
-				window.location.hash = '#ranking';
-				$scope.get_users();
+				// get the api token
+				$http({method: 'GET',url:'authenticate/index.php'}).then(function(result){
+					console.log(result.data);
+					console.log(result.data.priveledge);
+					console.log(result.data.api_token);
+					user.login(userid,username,result.data.priveledge,result.data.api_token)
+				});
 			}
 			else{
 				console.log(result);
@@ -55,44 +87,103 @@ app.controller('LoginController',['$scope','$http', function($scope,$http){
 		}).catch(
 		function(error){
 			console.log('Error: can not connect to the database');
-			$scope.dialog.content = '<p>Error: can not connect to the database</p>';
-			// timeout required as jquery isn't ready when the exception occurs
-			setTimeout(function(){
-				$scope.dialog.show();
-			},1000);
-		});
+		});*/
 	}
+	
+	$scope.showRegister = false;
+	$scope.toggleRegister = function(){
+		$scope.showRegister = !$scope.showRegister;
+	};
+}]);
+
+app.controller('RankingController',['$scope','api', function($scope,api){
 	
 }]);
 
+app.controller('UsersController',['$scope','api', function($scope,api){
+	
+}]);
 
+app.controller('PronoController',['$scope','api', function($scope,api){
+	
+}]);
 
+////////////////////////////////////////////////////////////////////////////////
+// Directives                                                                 //
+////////////////////////////////////////////////////////////////////////////////
+// panel
+app.directive('panel', function() {
+	var panel = {
+		restrict: 'E',
+		scope: {
+			visible: '='
+		},
+		replace: true,    // Replace with the template below
+		transclude: true, // we want to insert custom content inside the directive
+		link: function(scope, element, attributes) {
+			scope.hide = function() {
+				scope.visible = false;
+			};
+		},
+		templateUrl: 'views/panel.html'
+	};
+	return panel;
+});
 
+// popup
+app.directive('popup', function() {
+	var popup = {
+		restrict: 'E',
+		scope: {
+			visible: '='
+		},
+		replace: true,    // Replace with the template below
+		transclude: true, // we want to insert custom content inside the directive
+		link: function(scope, element, attributes) {
+			scope.hide = function() {
+				scope.visible = false;
+			};
+		},
+		templateUrl: 'views/popup.html'
+	};
+	return popup;
+});
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // Services                                                                   //
 ////////////////////////////////////////////////////////////////////////////////
 // API
-app.factory('api',function($http){
+app.factory('api',function($http,user){
 	var api = {};
 	api.get = function(url,callback){
-		$http({method: 'GET',url:'authenticate/index.php'}).then(function(result){
-			result = angular.fromJson(result);
-			console.log(result.data);
-			console.log(result.data.priveledge);
-			console.log(result.data.api_token);
-
-			$http({method:'GET',url:'api/index.php/'+url,headers:{'Content-Type':'application/x-www-form-urlencoded; charset=UTF-8','Authorization':result.data.api_token}}).then(function(result){
-				console.log(result);				
-				//callback(result)
-			});
+		
+		console.log(user.api_token)
+		$http({method:'GET',url:'api/index.php/'+url,headers:{'Content-Type':'application/x-www-form-urlencoded;','Authorization': 'Basic '+user.api_token}}).then(function(result){
+			console.log(result);				
+			//callback(result)
 		});
 	}
 	return api;
 });
-
-
+// User
+app.factory('user',function($location){
+	var user = {
+		id:0,
+		username:'',
+		priveledge:0,
+		api_token: ''
+	};
+	user.login = function(id,username,priveledge,api_token){
+        user.id = id;
+		user.username = username;
+		user.priveledge = priveledge;
+		user.api_token = api_token;
+		
+		$location.path('/ranking');
+    }
+	return user;
+});
 
 
 /*
