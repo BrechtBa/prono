@@ -9,12 +9,16 @@
 
 // JQuery wrapper
 $(document).ready(function(){
-
+	
+	$(document).on('updateGroupstageView',function(event,data){
+		app.views.update(app.groupstage,$('[data-view="groupstage"]'));
+	});
+	
 	
 ////////////////////////////////////////////////////////////////////////////////
 // users                                                                      //
 ////////////////////////////////////////////////////////////////////////////////	
-
+/*
 	app.view.users = new app.view.Bind('users',$(document),function(){
 		var data = [];
 		$.each(app.model.users.data,function(index,value){
@@ -22,7 +26,7 @@ $(document).ready(function(){
 		});
 		this.updateview(data);
 	});
-
+*/
 
 
 	

@@ -1,6 +1,33 @@
+
+
 // JQuery wrapper
 $(document).ready(function(){
 
+	$(document).on('getTeamsModel',function(event,data){
+		console.log('getting teams');
+		app.teams.get();
+	});
+	$(document).on('getMatchesModel',function(event,data){
+		console.log('getting matches');
+		app.matches.get();
+	});
+	$(document).on('getGroupstageModel',function(event,data){
+		console.log('getting groupstage');
+		app.groupstage.get();
+	});
+
+	
+	
+
+	// start
+	$(document).trigger('getTeamsModel');
+	
+	
+	
+	// test changing scores
+	app.matches.put({id:1,team1:1,score1:5,team2:2,score2:1, date:100100});
+	console.log(app.matches.data[1])
+/*
 ////////////////////////////////////////////////////////////////////////////////
 // Login                                                                      //
 ////////////////////////////////////////////////////////////////////////////////
@@ -59,7 +86,7 @@ $(document).ready(function(){
 
 
 
-
+*/
 
 // close wrapper
 });
