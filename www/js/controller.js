@@ -25,8 +25,9 @@ $(document).ready(function(){
 	
 	
 	// test changing scores
+	console.log('test')
 	app.matches.put({id:1,team1:1,score1:5,team2:2,score2:1, date:100100});
-	console.log(app.matches.data[1])
+	
 /*
 ////////////////////////////////////////////////////////////////////////////////
 // Login                                                                      //

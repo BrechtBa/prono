@@ -10,8 +10,11 @@
 // JQuery wrapper
 $(document).ready(function(){
 	
+	groupstageView = new app.classes.view($('[data-view="groupstage"]'),app.groupstage);
+
 	$(document).on('updateGroupstageView',function(event,data){
-		app.views.update(app.groupstage,$('[data-view="groupstage"]'));
+		groupstageView.update();		
+		//app.views.update(app.groupstage,$('[data-view="groupstage"]'));
 	});
 	
 	

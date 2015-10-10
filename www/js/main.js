@@ -66,6 +66,85 @@ app.classes.model = function(args){
 ////////////////////////////////////////////////////////////////////////////////
 // View                                                                       //
 ////////////////////////////////////////////////////////////////////////////////
+app.classes.view = function(parent,model){
+	this.parent = parent
+	this.template = parent.html();
+	this.model = model;
+
+
+
+	this.update = function(){
+		this._update(this.model,this.parent,this.template);
+	}
+
+	this._update = function(model,parent,template){
+		// remove the parents content and replace it with template
+		parent.html(template);
+
+		var that = this;
+
+		// look for all elements with a data-bind attribute in the template including the element itself
+		var elements = $(parent).find('[data-bind]');
+		if( $(parent).length ==1 && typeof $(parent).attr('data-bind') !== 'undefined' ){
+			elements = $(parent).add(elements)
+		}
+
+
+		// loop over the elements
+		elements.each(function(index,element){
+			var bind = $(element).attr('data-bind');
+			
+			if(bind.indexOf(' in ') > -1){
+				// if bind contains an ' in ' statement expand the child
+
+				// get the part of bind after the ' in '
+				var childstring = bind.substring(0,bind.indexOf(' in '));
+				var parentstring = bind.substring(bind.indexOf(' in ')+4);
+
+				if( typeof deepFind(model,parentstring)  !== 'undefined'  ){
+			
+					var find = childstring+'\.';
+					var re = new RegExp(find, 'g');
+
+					$.each( model[parentstring],function(index,submodel){
+
+						var child = $(element).clone()
+						parent.append( child );
+
+						$(element).remove();
+
+						var subparent = $(child);
+						var subtemplate = $(child).html().replace(re,'');
+
+						that._update(submodel,subparent,subtemplate);
+					});
+				}
+				else{
+					//console.log('Error: Value not found in model');
+				}
+			}
+			else{
+				// check if bind is in the model and update the html if so
+
+				if( typeof deepFind(model,bind) !== "undefined" ){
+					console.log($(element));
+					console.log(deepFind(model,bind));
+
+					if( $(element).is('input') ){
+						$(element).val( deepFind(model,bind) )
+					}
+					else{
+						$(element).html( deepFind(model,bind) )
+					}
+				}
+			}
+		
+		});
+	}
+}
+
+
+
 app.views = {};
 app.views.update = function(model,parent){
 	
