@@ -127,8 +127,6 @@ app.classes.view = function(parent,model){
 				// check if bind is in the model and update the html if so
 
 				if( typeof deepFind(model,bind) !== "undefined" ){
-					console.log($(element));
-					console.log(deepFind(model,bind));
 
 					if( $(element).is('input') ){
 						$(element).val( deepFind(model,bind) )
@@ -145,52 +143,6 @@ app.classes.view = function(parent,model){
 
 
 
-app.views = {};
-app.views.update = function(model,parent){
-	
-	// look for all elements with a data-bind attribute
-	parent.find('[data-bind]').each(function(index,value){
-		var bind = $(value).attr('data-bind');
-
-		// if bind contains an ' in ' statement
-		if(bind.indexOf(' in ') > -1){
-
-			// get the subparent and submodel
-			var subparent = $(value).parent();
-			
-			// get the part of bind after the ' in '
-			var childstring = bind.substring(0,bind.indexOf(' in '));
-			var parentstring = bind.substring(bind.indexOf(' in ')+4);
-			
-			if( typeof deepFind(model,parentstring)  !== "undefined"  ){
-			
-				var find = childstring+'\.';
-				var re = new RegExp(find, 'g');
-				var template = value.outerHTML.replace(re,'');
-				$(value).remove();
-				
-				$.each( model[parentstring],function(index,submodel){
-					var subparent = $(template);
-					parent.append( subparent )
-					app.views.update(submodel,subparent);
-				});
-			}
-		}
-		else{
-			if( typeof deepFind(model,bind) !== "undefined" ){
-				if( $(value).is('input') ){
-					$(value).val( deepFind(model,bind) )
-				}
-				else{
-					$(value).html( deepFind(model,bind) )
-				}
-			}
-		}
-		
-		
-		// check if bind is in the model and update the html if so
-	});
-}
 
 
 function deepFind(obj, path) {

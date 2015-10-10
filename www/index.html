@@ -80,11 +80,12 @@
 			<div id="prono" data-role="page" class="narrow-page">			
 				<h1>Prono</h1>
 				<div data-view="groupstage">
+					<h2>Groepsfase</h2>
 					<div data-bind="group in data">
 						<h3>Groep <span data-bind="group.name"></span></h3> 
 						<div class="matches">
 							<div data-bind="match in group.matches">
-								<span data-bind="match.team1.name"></span> <input data-bind="match.score1" style="width:20px"/> - <input data-bind="match.score2" style="width:20px"> <span data-bind="match.team2.name"></span>
+								<span data-bind="match.team1.name"></span> <input data-bind="match.score1"/> - <input data-bind="match.score2"> <span data-bind="match.team2.name"></span>
 							</div>
 						</div>
 					</div>

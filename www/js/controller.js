@@ -25,7 +25,7 @@ $(document).ready(function(){
 	
 	
 	// test changing scores
-	console.log('test')
+	console.log('test changing scores')
 	app.matches.put({id:1,team1:1,score1:5,team2:2,score2:1, date:100100});
 	
 /*

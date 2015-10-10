@@ -54,8 +54,12 @@ app.matches = new app.classes.model({
 		//	$(document).trigger('updateMatchesView');
 		//});
 		var result = data;
-		app.matches.data[result.id] = {id:result.id, team1:app.teams.data[result.team1], score1:result.score1, team2:app.teams.data[result.team2], score2:result.score2, date:result.date};
-		console.log(app.groupstage.data[1])		
+		app.matches.data[result.id].team1 = app.teams.data[result.team1];
+		app.matches.data[result.id].score1 = result.score1;
+		app.matches.data[result.id].team2 = app.teams.data[result.team2];
+		app.matches.data[result.id].score2 = result.score2;
+		app.matches.data[result.id].date = result.date;
+	
 		$(document).trigger('updateMatchesView',[data.id]);
 		$(document).trigger('updateGroupstageView');
 	},
