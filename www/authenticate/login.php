@@ -70,13 +70,13 @@
 					$user = loginuser($dbuser['id']);
 					$status = 1;
 					
-					// delete old auth_tokens
+					// delete old cookie_tokens
 					$userid = $user['id'];
 					$query = "DELETE FROM auth_tokens WHERE user_id='$userid'";
 					$result = mysql_query($query) or die('MySQL Error: ' . mysql_error());
 
 					// generate a new auth_token
-					$token = generate_token();
+					$token = generate_cookie_token();
 					$hashtoken = create_hash($token);
 					$query = "INSERT INTO auth_tokens (token,user_id) VALUES ('$hashtoken','$userid')";
 					$result = mysql_query($query) or die('MySQL Error: ' . mysql_error());

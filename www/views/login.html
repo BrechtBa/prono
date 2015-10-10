@@ -1,0 +1,37 @@
+<div class="page" data-ng-init="login()">
+	<h1>Login</h1>
+	<form>
+		<div>
+			<label>Username</label>
+			<input type="text" data-ng-model="username"/>
+		</div>
+		<div>
+			<label>Password</label>
+			<input type="password" data-ng-model="password"/>
+		</div>
+		<input type="submit" value="Submit" class="btn full-width" data-ng-click="login()"/>
+	</form>
+
+	<a  ng-click='toggleRegister()'>registreren</a>
+
+	<popup data-visible="showRegister">
+		<form>
+			<div>
+				<label>Username</label>
+				<input type="text" name="username"/>
+			</div>
+			<div>
+				<label>Password</label>
+				<input type="password" name="password"/>
+			</div>
+			<div>
+				<label>Herhaal password</label>
+				<input type="password" name="password2"/>
+			</div>
+			<input type="submit" value="Submit" class="btn full-width" data-ng-click="register(username,password,password2)"/>
+		</form>
+	</popup>
+	
+</div>
+
+
