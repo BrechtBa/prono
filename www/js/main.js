@@ -12,29 +12,167 @@ var app = app || {};
 // Services                                                                   //
 ////////////////////////////////////////////////////////////////////////////////
 app.service = {};
-app.service.api = {};
-app.service.api.location = '';
-app.service.api.put = function(apiTable,data,callback){
 
-	/*
-	$.ajax({
-		type:'PUT',
-		dataType:'json',
-		data: JSON.stringify(data),
-		url: app.service.api.location+'/api/index.php/'+apiTable+'/',
-		statusCode:{
-			200: function(result){
-				console.log(result)
-				callback(result)
+////////////////////////////////////////////////////////////////////////////////
+// API                                                                        //
+////////////////////////////////////////////////////////////////////////////////
+app.service.api = {
+	location: '',
+	get: function(apipath,callback){
+		app.service.user.authenticate(function(result){			
+			if(result.priveledge>0){
+				$.ajax({
+					type: 'GET',
+					dataType: 'json',
+					url: app.service.api.location+'api/index.php/'+apipath,
+					headers: {'Authentication': result.api_token},
+					statusCode: {
+						200: function(result){
+							callback(result);
+						}
+					},
+					error: function(result){
+						console.log(result);
+					}
+				});
 			}
-		},
-		error: function(result){
-			console.log(result);
+		});
+	},
+	put: function(apipath,data,callback){
+		app.service.user.authenticate(function(result){			
+			if(result.priveledge>0){
+				$.ajax({
+					type: 'PUT',
+					dataType: 'json',
+					data: data,
+					url: app.service.api.location+'api/index.php/'+apipath,
+					headers: {'Authentication': result.api_token},
+					statusCode: {
+						200: function(result){
+							callback(result);
+						}
+					},
+					error: function(result){
+						console.log(result);
+					}
+				});
+			}
+		});
+	},
+	post: function(apipath,data,callback){
+		app.service.user.authenticate(function(result){			
+			if(result.priveledge>0){
+				$.ajax({
+					type: 'POST',
+					dataType: 'json',
+					data: data,
+					url: app.service.api.location+'api/index.php/'+apipath,
+					headers: {'Authentication': result.api_token},
+					statusCode: {
+						200: function(result){
+							callback(result);
+						}
+					},
+					error: function(result){
+						console.log(result);
+					}
+				});
+			}
+		});
+	},
+	del: function(apipath,callback){
+		app.service.user.authenticate(function(result){			
+			if(result.priveledge>0){
+				$.ajax({
+					type: 'DELETE',
+					dataType: 'json',
+					url: app.service.api.location+'api/index.php/'+apipath,
+					headers: {'Authentication': result.api_token},
+					statusCode: {
+						200: function(result){
+							callback(result);
+						}
+					},
+					error: function(result){
+						console.log(result);
+					}
+				});
+			}
+		});
+	}
+
+
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// User                                                                       //
+////////////////////////////////////////////////////////////////////////////////
+app.service.user = {
+	id: -1,
+	username: '',
+	login: function(username=-1,password=-1){
+		console.log('loggigng in');
+		that = this;
+		var data = {username:username,password:password};
+		if(username==-1){
+			data = {};
 		}
-	});
-	*/
-	callback(data);
+
+		$.post('authenticate/login.php',data,function(result){
+			result = JSON.parse(result);
+			console.log(result);
+			if(result.status>0){
+				that.id = result.data.id;
+				that.username = result.data.username;
+				$(document).trigger('loggedin');
+				window.location.hash = '#ranking';
+			}
+		});
+	},
+	authenticate: function(callback){
+		$.get('authenticate/index.php',function(result){
+			result = JSON.parse(result);
+			callback(result)
+		});
+	}
 }
+
+
+
+
+/*
+app.model.user = {
+	data: {
+		username: '',
+		id: 0,
+	},
+	set: function(user){
+		that = this;
+		$.post('authenticate/authenticate.php',{},function(result){
+			console.log(result);
+			if(result>0){
+				that.username = user.username;
+				that.id = user.id;
+
+				// get a list of users
+				app.model.users.get();
+			}
+			// update views
+			$(document).trigger('update_user',[]);
+
+		});
+	},
+	unset: function(){
+		this.data.username = '';
+		this.data.id = 0;
+	}
+};
+*/
+
+
+
+
+
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -70,8 +208,6 @@ app.classes.view = function(parent,model){
 	this.parent = parent
 	this.template = parent.html();
 	this.model = model;
-
-
 
 	this.update = function(){
 		this._update(this.model,this.parent,this.template);
@@ -142,9 +278,6 @@ app.classes.view = function(parent,model){
 }
 
 
-
-
-
 function deepFind(obj, path) {
   var paths = path.split('.')
     , current = obj
@@ -160,42 +293,3 @@ function deepFind(obj, path) {
   return current;
 }
 
-
-/*
-// binding class
-app.view.Bind = function(bind,parent,callback){
-
-	this.parent = parent	
-	this.bind = bind;
-
-	this.template = this.parent.find('[data-template="'+this.bind+'"][data-id="-1"]'); 
-	this.content = this.template.prop('outerHTML');
-	this.html = function(id){
-		return $(this.content).attr('data-id',id).prop('outerHTML');
-	}
-	this.update = callback;
-	this.updateview = function(modeldata){
-		that = this;
-		template = this.parent.find('[data-template="'+this.bind+'"]:not([data-id=-1])').remove();
-		
-		// loop over each object in the list
-		$.each(modeldata,function(index,value){
-			var domobject = $(that.html(value.id));		
-			
-			// loop over each child dom object with a data-bind attribute and set the html
-			domobject.find('[data-bind]').each(function(domindex,domvalue){
-				var key = $(domvalue).attr('data-bind');
-				if(key in value){
-					if($(domvalue).is('input')){
-						$(domvalue).val(value[key]);
-					}
-					else{
-						$(domvalue).html(value[key]);
-					}
-				}
-			});
-			domobject.insertBefore(that.template);
-		});
-	}
-};
-*/

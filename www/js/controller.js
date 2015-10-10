@@ -1,32 +1,76 @@
 
 
-// JQuery wrapper
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Login                                                                      //
+////////////////////////////////////////////////////////////////////////////////
+// try to login using a cookie
 $(document).ready(function(){
-
-	$(document).on('getTeamsModel',function(event,data){
-		console.log('getting teams');
-		app.teams.get();
-	});
-	$(document).on('getMatchesModel',function(event,data){
-		console.log('getting matches');
-		app.matches.get();
-	});
-	$(document).on('getGroupstageModel',function(event,data){
-		console.log('getting groupstage');
-		app.groupstage.get();
-	});
-
-	
-	
-
-	// start
+	app.service.user.login();
+});
+$('#login form').submit(function(event){
+	event.preventDefault();
+	app.service.user.login( $(this).find('[name=username]').val(),$(this).find('[name=password]').val() );
+});
+$(document).on('loggedin',function(event,data){
+	console.log('user is logged in');
 	$(document).trigger('getTeamsModel');
+});
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Prono                                                                      //
+////////////////////////////////////////////////////////////////////////////////
+$(document).on('getTeamsModel',function(event,data){
+	console.log('getting teams');
+	app.teams.get();
+});
+$(document).on('getMatchesModel',function(event,data){
+	console.log('getting matches');
+	app.matches.get();
+});
+$(document).on('getGroupstageModel',function(event,data){
+	console.log('getting groupstage');
+	app.groupstage.get();
+});
+
 	
 	
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Testing                                                                    //
+////////////////////////////////////////////////////////////////////////////////
+$(document).on('loggedin',function(event,data){
+	app.service.api.get('users/',function(result){console.log(result);});
+	app.service.api.get('users/1',function(result){console.log(result);});
+
+	app.service.api.put('users/2',{'username':'test'},function(result){console.log(result);});
 	
-	// test changing scores
-	console.log('test changing scores')
-	app.matches.put({id:1,team1:1,score1:5,team2:2,score2:1, date:100100});
+	
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	
 /*
 ////////////////////////////////////////////////////////////////////////////////
@@ -88,9 +132,6 @@ $(document).ready(function(){
 
 
 */
-
-// close wrapper
-});
 
 
 

@@ -1,6 +1,6 @@
 <?php
 	session_start();
-	include_once('../config/mysql.php');
+	include_once('mysql.php');
 	include_once('hashfunctions.php');
 
 	$status = 0;
@@ -100,6 +100,6 @@
 			}
 		}
 	}
-	echo json_encode( array('status' => $status, 'user' => $user) );
+	echo json_encode( array('status' => $status, 'data' => $user) );
 
 ?>
