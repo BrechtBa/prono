@@ -37,15 +37,17 @@
 				<a href="#menu" class="right"><img src="lib/images/icons-png/bars-black.png" class="icon"></a>
 			</div>
 		</div>
-		<div id="menu" data-role="panel-right">
+		<nav id="menu" data-role="panel-right">
 			<ul data-role="listview">
 				<li class="no-sides"><a href='#ranking'>Rangschikking</a></li>
 				<li class="no-sides"><a href='#prono'>Pronostiek</a></li>
 				<li class="no-sides"><a href='#rules'>Regels</a></li>
 				<li class="no-sides"><a href='#users'>Users</a></li>
+				<li class="no-sides"><a href='#teams'>Teams</a></li>
+				<li class="no-sides"><a href='#matches'>Matches</a></li>
 				<li class="no-sides"><a href='#' data-control="logout">Logout</a></li>
 			</ul>
-		</div>	
+		</nav>	
 		
 		
 		
@@ -62,18 +64,13 @@
 						<label>Password</label>
 						<input type="password" name="password"/>
 					</div>
-					<input type="submit" value="Submit" class="btn full-width"/>
+					<input type="submit" value="Submit" class="btn"/>
 				</form>
 				<a href="#register">registreren</a>
 			</div>
 			
 			<div id="ranking" data-role="page" class="narrow-page">
 				<h1>Rangschikking</h1>
-				<div data-template="users" data-id="-1">
-					<div data-bind="id">id</div>
-					<div data-bind="username">username</div>
-					<a href="#" data-control="delete">delete</a>
-				</div>
 			</div>
 
 			
@@ -100,17 +97,76 @@
 
 			<div id="users" data-role="page" class="narrow-page">
 				<h1>Users</h1>
-
+				<div data-view="users">
+					<div data-bind="user in data">
+						<span data-bind="user.id">id</span>
+						<span data-bind="user.username">username</span>
+						<button data-control="reset password" class="btn">reset password</button>
+						<button data-control="delete" class="btn">delete</button>
+					</div>
+				</div>
 			</div>
 
+
+			<div id="teams" data-role="page" class="narrow-page">
+				<h1>Teams</h1>
+				<div data-view="teams">
+					<div data-bind="team in data">
+						<span data-bind="team.id">id</span>
+						<span data-bind="team.name">name</span>
+						<span data-bind="team.abr">abr</span>
+						<span data-bind="team.icon">icon</span>
+						<button data-control="edit" class="btn">edit</button>
+						<button data-control="delete" class="btn">delete</button>
+					</div>
+					<button data-control="add" class="btn">Add Team</button>
+				</div>
+				<div id="edit_team" data-role="popup">
+					<a href='#' class='close'></a>
+					<form>
+						<div>
+							<label>Name</label>
+							<input type="text" name="name"/>
+						</div>
+						<div>
+							<label>Abreviation</label>
+							<input type="text" name="abr"/>
+						</div>
+						<div>
+							<label>Icon</label>
+							<input type="test" name="icon"/>
+						</div>
+						<input type="submit" value="Submit" class="btn"/>
+					</form>
+				</div>
+			</div>
+
+
+			<div id="matches" data-role="page" class="narrow-page">
+				<h1>Matches</h1>
+				<div data-view="matches">
+					<div data-bind="match in data">
+						<span data-bind="match.id">id</span>
+						<span data-bind="match.team1">team1</span>
+						<span data-bind="match.score1">score1</span>
+						<span data-bind="match.penalty1">penalty1</span>
+						<span> - </span>
+						<span data-bind="match.score2">score2</span>
+						<span data-bind="match.penalty2">penalty2</span>
+						<span data-bind="match.team2">team2</span>
+						<span data-bind="match.date">date</span>	
+					</div>
+				</div>
+			</div>
+
+
 		</div>
-		
-		
+
 		<div  id="match" data-role="popup">
 			<a href='#' class='close'></a>
 		</div>
 
-		<div  id="register" data-role="popup">
+		<div id="register" data-role="popup">
 			<a href='#' class='close'></a>
 			<form>
 				<div>
@@ -125,7 +181,7 @@
 					<label>Herhaal password</label>
 					<input type="password" name="password2"/>
 				</div>
-				<input type="submit" value="Submit" class="btn full-width"/>
+				<input type="submit" value="Submit" class="btn"/>
 			</form>
 		</div>
 

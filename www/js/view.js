@@ -11,12 +11,22 @@
 $(document).ready(function(){
 	
 	groupstageView = new app.classes.view($('[data-view="groupstage"]'),app.groupstage);
-
+	groupstageView.update();
 	$(document).on('updateGroupstageView',function(event,data){
 		groupstageView.update();		
-		//app.views.update(app.groupstage,$('[data-view="groupstage"]'));
 	});
-	
+
+	usersView = new app.classes.view($('[data-view="users"]'),app.users);
+	usersView.update();	
+	$(document).on('updateUsersView',function(event,data){
+		usersView.update();		
+	});
+
+	teamsView = new app.classes.view($('[data-view="teams"]'),app.teams);
+	teamsView.update();
+	$(document).on('updateTeamsView',function(event,data){
+		teamsView.update();		
+	});
 	
 ////////////////////////////////////////////////////////////////////////////////
 // users                                                                      //

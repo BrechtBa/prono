@@ -54,12 +54,12 @@ h1{
 /******************************************************************************/
 /* Panel                                                                      */
 /******************************************************************************/
-div[data-role^=panel]{
+[data-role^=panel]{
 	background-color: #F4F4F4;
 	box-shadow: 5px 0px 5px rgba(0, 0, 0, 0.15);
 	-webkit-box-shadow: 5px 0px 5px rgba(0, 0, 0, 0.15);
 }
-div[data-role=panel-right]{
+[data-role=panel-right]{
 	box-shadow: -5px 0px 5px rgba(0, 0, 0, 0.15);
 	-webkit-box-shadow: -5px 0px 5px rgba(0, 0, 0, 0.15);
 }

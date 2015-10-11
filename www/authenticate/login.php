@@ -26,7 +26,7 @@
 			//}
 		}
 		else{
-			$user = 0;
+			$user = $userid;
 		}
 		return $user;
 	}

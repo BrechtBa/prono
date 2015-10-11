@@ -19,7 +19,8 @@ app.service = {};
 app.service.api = {
 	location: '',
 	get: function(apipath,callback){
-		app.service.user.authenticate(function(result){			
+		app.service.user.authenticate(function(result){
+			console.log(result);		
 			if(result.priveledge>0){
 				$.ajax({
 					type: 'GET',
@@ -28,7 +29,13 @@ app.service.api = {
 					headers: {'Authentication': result.api_token},
 					statusCode: {
 						200: function(result){
-							callback(result);
+							console.log(result);
+							if (typeof(result.error) == 'undefined'){
+								callback(result);
+							}
+							else{
+								callback({});
+							}
 						}
 					},
 					error: function(result){
@@ -117,7 +124,6 @@ app.service.user = {
 		if(username==-1){
 			data = {};
 		}
-
 		$.post('authenticate/login.php',data,function(result){
 			result = JSON.parse(result);
 			console.log(result);
@@ -129,10 +135,31 @@ app.service.user = {
 			}
 		});
 	},
+	logout: function(){
+		that = this;
+		$.post('authenticate/logout.php',{id:that.id},function(result){
+			that.id = -1;
+			that.username = '';
+			$(document).trigger('loggedout');
+			window.location.hash = '#login';
+		});
+	},
 	authenticate: function(callback){
 		$.get('authenticate/index.php',function(result){
 			result = JSON.parse(result);
-			callback(result)
+			callback(result);
+		});
+	},
+	register: function(username=-1,password=-1,password2=-1){
+		that = this;
+		$.post('authenticate/register.php',{username:username,password:password,password2:password2},function(result){
+			result = JSON.parse(result);			
+			if(result['status']>0){
+				that.login(username,password);
+			}
+			else{
+				console.log(result);
+			}
 		});
 	}
 }
@@ -239,21 +266,26 @@ app.classes.view = function(parent,model){
 
 				if( typeof deepFind(model,parentstring)  !== 'undefined'  ){
 			
-					var find = childstring+'\.';
+					var find = 'data-bind=\"'+childstring+'\.';
 					var re = new RegExp(find, 'g');
 
 					$.each( model[parentstring],function(index,submodel){
-
+						
 						var child = $(element).clone()
 						parent.append( child );
+						child.attr('data-id',index);
 
-						$(element).remove();
+						//$(element).remove();
 
 						var subparent = $(child);
-						var subtemplate = $(child).html().replace(re,'');
+						var subtemplate = $(child).html();
+
+						// replace all occurences of the childstring in data-bind attributes
+						subtemplate = subtemplate.replace(re,'data-bind="');
 
 						that._update(submodel,subparent,subtemplate);
 					});
+					$(element).remove();
 				}
 				else{
 					//console.log('Error: Value not found in model');
@@ -261,7 +293,6 @@ app.classes.view = function(parent,model){
 			}
 			else{
 				// check if bind is in the model and update the html if so
-
 				if( typeof deepFind(model,bind) !== "undefined" ){
 
 					if( $(element).is('input') ){
