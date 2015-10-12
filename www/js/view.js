@@ -28,7 +28,7 @@ $(document).ready(function(){
 		teamsView.update();		
 	});
 	
-	matchesView = new app.classes.view($('[data-view="matches"]'),app.teams);
+	matchesView = new app.classes.view($('[data-view="matches"]'),app.matches);
 	matchesView.update();
 	$(document).on('updateMatchesView',function(event,data){
 		matchesView.update();		
