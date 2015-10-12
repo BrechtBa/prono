@@ -257,20 +257,23 @@ if( generate_api_token()==getallheaders()['Authentication'] ){
 			else if (is_null($query = array_shift($queries)) !== true)
 			{
 				$result = ArrestDB::Query($query[0], $query[1]);
+				$id = $result;
 			}
 
 			if ($result === false)
 			{
 				$result = ArrestDB::$HTTP[409];
+				$geturl = 'false';
 			}
 
 			else
 			{
 				$result = ArrestDB::$HTTP[201];
+				$geturl = sprintf('%s/%s',$table,$id);
 			}
 		}
 
-		return ArrestDB::Reply($result);
+		return ArrestDB::Reply($result,$geturl);
 	});
 
 	ArrestDB::Serve('PUT', '/(#any)/(#num)', function ($table, $id)
@@ -300,15 +303,17 @@ if( generate_api_token()==getallheaders()['Authentication'] ){
 			if ($result === false)
 			{
 				$result = ArrestDB::$HTTP[409];
+				$geturl = 'false';
 			}
 
 			else
 			{
 				$result = ArrestDB::$HTTP[200];
+				$geturl = sprintf('%s/%s',$table,$id);
 			}
 		}
 
-		return ArrestDB::Reply($result);
+		return ArrestDB::Reply($result,$geturl);
 	});
 
 	exit(ArrestDB::Reply(ArrestDB::$HTTP[400]));
@@ -531,7 +536,7 @@ class ArrestDB
 		return (isset($db) === true) ? $db : false;
 	}
 
-	public static function Reply($data)
+	public static function Reply($data,$geturl="false")
 	{
 		$bitmask = 0;
 		$options = ['UNESCAPED_SLASHES', 'UNESCAPED_UNICODE'];
@@ -563,6 +568,7 @@ class ArrestDB
 			if (headers_sent() !== true)
 			{
 				header(sprintf('Content-Type: application/%s; charset=utf-8', (empty($callback) === true) ? 'json' : 'javascript'));
+				header('geturl: '.$geturl);
 			}
 		}
 
