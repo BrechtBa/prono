@@ -27,7 +27,7 @@ app.users = new app.classes.model({
 			delete app.users.data[id];
 			$(document).trigger('updateUsersView');
 		});
-	},
+	}
 });
 
 
@@ -70,7 +70,12 @@ app.teams = new app.classes.model({
 	post: function(data){
 		app.service.api.post('teams',data,function(result,geturl){
 			app.service.api.get(geturl,function(result){
-				app.teams.data[result.id] = {id:result.id, name:result.name, abr:result.abr, icon:result.icon};
+				app.teams.data[result.id] = {};
+				app.teams.data[result.id]['id'] = result.id;
+				app.teams.data[result.id]['name'] = result.name;
+				app.teams.data[result.id]['abr'] = result.abr;
+				app.teams.data[result.id]['icon'] = result.icon;
+		
 				$(document).trigger('updateTeamsView');
 			});
 		});
@@ -80,7 +85,7 @@ app.teams = new app.classes.model({
 			delete app.teams.data[id];
 			$(document).trigger('updateTeamsView');
 		});
-	},
+	}
 });
 
 
@@ -119,13 +124,17 @@ app.matches = new app.classes.model({
 				app.matches.data[result.id]['score2'] = result.score1;
 				app.matches.data[result.id]['penalty2'] = result.penalty2;
 				app.matches.data[result.id]['date'] = result.date;
+
 				$(document).trigger('updateMatchesView');
 			});
 		});
 	},
-	post: function(value){
+	post: function(data){
 		app.service.api.post('matches/',data,function(result,geturl){
+			console.log(result);
+			console.log(geturl);
 			app.service.api.get(geturl,function(result){
+				app.matches.data[result.id] = {};
 				app.matches.data[result.id]['id'] = result.id;
 				app.matches.data[result.id]['team1'] = app.teams.data[result.team1];
 				app.matches.data[result.id]['score1'] = result.score1;
@@ -134,6 +143,7 @@ app.matches = new app.classes.model({
 				app.matches.data[result.id]['score2'] = result.score1;
 				app.matches.data[result.id]['penalty2'] = result.penalty2;
 				app.matches.data[result.id]['date'] = result.date;
+
 				$(document).trigger('updateMatchesView');
 			});
 		});
@@ -143,11 +153,14 @@ app.matches = new app.classes.model({
 			delete app.matches.data[id];
 			$(document).trigger('updateMatchesView');
 		});
-	},
+	}
 });
 
+
+
+
 ////////////////////////////////////////////////////////////////////////////////
-// Groupstage                                                                     //
+// Groupstage                                                                 //
 ////////////////////////////////////////////////////////////////////////////////
 app.groupstage = new app.classes.model({
 	get: function(){
@@ -162,10 +175,10 @@ app.groupstage = new app.classes.model({
 			$(document).trigger('updateGroupstageView');
 		});
 	},
-	post: function(value){
+	post: function(data){
 	},
 	del: function(id){
-	},
+	}
 });
 
 /*

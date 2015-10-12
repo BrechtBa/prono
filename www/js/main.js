@@ -19,8 +19,7 @@ app.service = {};
 app.service.api = {
 	location: '',
 	get: function(apipath,callback){
-		app.service.user.authenticate(function(result){
-			console.log(result);		
+		app.service.user.authenticate(function(result){		
 			if(result.priveledge>0){
 				$.ajax({
 					type: 'GET',
@@ -215,8 +214,8 @@ app.classes.model = function(args){
 	this.put = function(id,data){
 		args.put(id,data);
 	}
-	this.post = function(value){
-		args.post(value);
+	this.post = function(data){
+		args.post(data);
 	}
 	this.del = function(id){
 		args.del(id);
@@ -228,7 +227,13 @@ app.classes.model = function(args){
 ////////////////////////////////////////////////////////////////////////////////
 // View                                                                       //
 ////////////////////////////////////////////////////////////////////////////////
-app.classes.view = function(parent,model){
+app.classes.view = function(parent,model,conversion={}){
+	// class to bind a model to a view
+	// arguments:
+	// parent:        a jquery dom element
+	// model:         a model with data attribute
+	// conversion:    an object containing conversion functions
+
 	this.parent = parent
 	this.template = parent.html();
 	this.model = model;
@@ -263,7 +268,7 @@ app.classes.view = function(parent,model){
 
 				if( typeof deepFind(model,parentstring)  !== 'undefined'  ){
 			
-					var find = 'data-bind=\"'+childstring+'\.';
+					var find = childstring+'\.';
 					var re = new RegExp(find, 'g');
 
 					$.each( model[parentstring],function(index,submodel){
@@ -278,7 +283,7 @@ app.classes.view = function(parent,model){
 						var subtemplate = $(child).html();
 
 						// replace all occurences of the childstring in data-bind attributes
-						subtemplate = subtemplate.replace(re,'data-bind="');
+						subtemplate = subtemplate.replace(re,'');
 
 						that._update(submodel,subparent,subtemplate);
 					});
@@ -289,6 +294,10 @@ app.classes.view = function(parent,model){
 				}
 			}
 			else{
+				// check if there is an (*) statement in the bind
+				var re = new RegExp('(.*)');
+				
+
 				// check if bind is in the model and update the html if so
 				if( typeof deepFind(model,bind) !== "undefined" ){
 

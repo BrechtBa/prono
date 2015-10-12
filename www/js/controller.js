@@ -96,6 +96,57 @@ $(document).ready(function(){
 
 
 
+////////////////////////////////////////////////////////////////////////////////
+// Matches                                                                      //
+////////////////////////////////////////////////////////////////////////////////
+	// add a match
+	$(document).on('click tap','[data-view="matches"] [data-control="add"]',function(event){
+		
+		app.matches.post({'team1':0,'score1':-1,'penalty1':-1,'team2':0,'score2':-1,'penalty2':-1,'date':0});
+
+	});
+	// edit a match
+	$(document).on('click tap','[data-view="matches"] [data-control="edit"]',function(event){
+		var id = $(event.target).parent('[data-bind="match in data"]').attr('data-id');
+		// populate the popup
+		$('#edit_match').find('[name="id"]').val(id);
+		$('#edit_match').find('[name="team1"]').val(app.matches.data[id].team1.id);
+		$('#edit_match').find('[name="team2"]').val(app.matches.data[id].team1.id);
+		$('#edit_match').find('[name="score1"]').val(app.matches.data[id].score1);
+		$('#edit_match').find('[name="score2"]').val(app.matches.data[id].score2);
+		$('#edit_match').find('[name="penalty1"]').val(app.matches.data[id].penalty1);
+		$('#edit_match').find('[name="penalty2"]').val(app.matches.data[id].penalty2);
+		$('#edit_match').find('[name="date"]').val(app.matches.data[id].date);
+
+		// open the popup
+		$(document).trigger('openPopup',['#edit_match']);
+	});
+	$(document).submit('#edit_match form',function(event){
+		event.preventDefault();
+		console.log(event);
+
+		// populate the popup
+		var id = $('#edit_match').find('[name="id"]').val();
+		app.matches.put(id,{
+			'team1':$('#edit_match').find('[name="team1"]').val(),
+			'team2':$('#edit_match').find('[name="team2"]').val(),
+			'score1':$('#edit_match').find('[name="score1"]').val(),
+			'score2':$('#edit_match').find('[name="score2"]').val(),
+			'penalty1':$('#edit_match').find('[name="penalty1"]').val(),
+			'penalty2':$('#edit_match').find('[name="penalty2"]').val(),
+			'date':$('#edit_match').find('[name="date"]').val()
+		});
+
+		// close the popup
+		$(document).trigger('closePopup');
+	});	
+	// delete a team
+	$(document).on('click tap','[data-view="matches"] [data-control="delete"]',function(event){
+		var id = $(event.target).parent('[data-bind="match in data"]').attr('data-id');
+		app.matches.del(id);
+	});
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Prono                                                                      //

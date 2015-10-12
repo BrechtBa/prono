@@ -129,15 +129,18 @@
 				<div data-view="matches">
 					<div data-bind="match in data">
 						<span data-bind="match.id">id</span>
-						<span data-bind="match.team1">team1</span>
+						<span data-bind="parse_team(match.team1)">team1</span>
 						<span data-bind="match.score1">score1</span>
 						<span data-bind="match.penalty1">penalty1</span>
 						<span> - </span>
 						<span data-bind="match.score2">score2</span>
 						<span data-bind="match.penalty2">penalty2</span>
-						<span data-bind="match.team2">team2</span>
-						<span data-bind="match.date">date</span>	
+						<span data-bind="parse_team(match.team2)">team2</span>
+						<span data-bind="match.date">date</span>
+						<button data-control="edit" class="btn">edit</button>
+						<button data-control="delete" class="btn">delete</button>
 					</div>
+					<button data-control="add" class="btn">Add Match</button>
 				</div>
 			</div>
 
