@@ -29,7 +29,6 @@ app.service.api = {
 					headers: {'Authentication': result.api_token},
 					statusCode: {
 						200: function(result){
-							console.log(result);
 							if (typeof(result.error) == 'undefined'){
 								callback(result);
 							}
@@ -54,10 +53,9 @@ app.service.api = {
 					data: data,
 					url: app.service.api.location+'api/index.php/'+apipath,
 					headers: {'Authentication': result.api_token},
-					statusCode: {
-						200: function(result){
-							callback(result);
-						}
+					success: function(result, textStatus, request){
+						geturl = request.getResponseHeader('geturl');
+						callback(result,geturl);
 					},
 					error: function(result){
 						console.log(result);
@@ -75,10 +73,9 @@ app.service.api = {
 					data: data,
 					url: app.service.api.location+'api/index.php/'+apipath,
 					headers: {'Authentication': result.api_token},
-					statusCode: {
-						200: function(result){
-							callback(result);
-						}
+					success: function(result, textStatus, request){
+						geturl = request.getResponseHeader('geturl');
+						callback(result,geturl);
 					},
 					error: function(result){
 						console.log(result);

@@ -8,19 +8,17 @@
 ////////////////////////////////////////////////////////////////////////////////
 app.users = new app.classes.model({
 	get: function(){
-		// load data from the database
 		app.service.api.get('users/',function(result){
 			$.each(result,function(index,user){
-				app.users.data[user.id] = {id:user.id,username:user.username};
+				app.users.data[user.id] = {
+					id:user.id,
+					username:user.username
+				};
 			});
 			$(document).trigger('updateUsersView');
 		});
 	},
 	put: function(data){
-		app.service.api.put('users/'+data.id,data,function(result){
-			//app.teams.data[data.id] = {id:result.id, name:result.name, abr:result.abr};
-			$(document).trigger('updateUsersView');
-		});
 	},
 	post: function(data){
 	},
@@ -35,75 +33,111 @@ app.users = new app.classes.model({
 
 
 
-
 ////////////////////////////////////////////////////////////////////////////////
 // Teams                                                                      //
 ////////////////////////////////////////////////////////////////////////////////
 app.teams = new app.classes.model({
 	get: function(){
-		// load data from the database
 		app.service.api.get('teams/',function(result){
 			$.each(result,function(index,team){
-				app.teams.data[team.id] = {id:team.id,name:team.name,abr:team.abr,icon:team.icon};
+				app.teams.data[team.id] = {
+					id:team.id,
+					name:team.name,
+					abr:team.abr,
+					icon:team.icon
+				};
 			});
 			$(document).trigger('updateTeamsView');
 			$(document).trigger('getMatchesModel');
 		});
 	},
 	put: function(id,data){
-		app.service.api.put('teams/'+id,data,function(result){
-			if( typeof data.name !== 'undefined' ){
-				app.teams.data[id].name = data.name;
-			}
-			if( typeof data.abr !== 'undefined' ){
-				app.teams.data[id].abr = data.abr;
-			}
-			if( typeof data.icon !== 'undefined' ){
-				app.teams.data[id].icon = data.icon;
-			}
-			$(document).trigger('updateTeamsView');
+		app.service.api.put('teams/'+id,data,function(result,geturl){
+			app.service.api.get(geturl,function(result){
+				app.teams.data[result.id]['id'] = result.id;
+				app.teams.data[result.id]['name'] = result.name;
+				app.teams.data[result.id]['abr'] = result.abr;
+				app.teams.data[result.id]['icon'] = result.icon;
+				$(document).trigger('updateTeamsView');
+			});
 		});
 	},
 	post: function(data){
-		app.service.api.post('teams',data,function(result){
-			app.teams.data[data.id] = {id:data.id, name:data.name, abr:data.abr};
-			$(document).trigger('updateTeamsView');
+		app.service.api.post('teams',data,function(result,geturl){
+			app.service.api.get(geturl,function(result){
+				app.teams.data[result.id] = {id:result.id, name:result.name, abr:result.abr, icon:result.icon};
+				$(document).trigger('updateTeamsView');
+			});
 		});
 	},
 	del: function(id){
+		app.service.api.del('teams/'+id,function(result){
+			delete app.teams.data[id];
+			$(document).trigger('updateTeamsView');
+		});
 	},
 });
+
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Matches                                                                    //
 ////////////////////////////////////////////////////////////////////////////////
 app.matches = new app.classes.model({
 	get: function(){
-		//app.matches.data[1] = {id:1,team1:app.teams.data[1],score1:5,team2:app.teams.data[2],score2:0, date:100100};
-		//app.matches.data[2] = {id:2,team1:app.teams.data[3],score1:2,team2:app.teams.data[4],score2:2, date:100300};
-		//app.matches.data[3] = {id:3,team1:app.teams.data[1],score1:7,team2:app.teams.data[3],score2:0, date:100200};
-		//app.matches.data[4] = {id:4,team1:app.teams.data[4],score1:2,team2:app.teams.data[2],score2:3, date:100400};
-		$(document).trigger('getGroupstageModel');
+		app.service.api.get('matches/',function(result){
+			$.each(result,function(index,match){
+				app.matches.data[match.id] = {
+					id:match.id,
+					team1:app.teams.data[match.team1],
+					score1:match.score1,
+					penalty1:match.penalty1,
+					team2:app.teams.data[match.team2],
+					score2:match.score2,
+					penalty2:match.penalty2,
+					date:match.date
+				};
+			});
+			$(document).trigger('updateMatchesView');
+			$(document).trigger('getGroupstageModel');
+		});
 	},
-	put: function(data){
-		//app.service.api.put('matches',data,function(result){
-		//  console.log(result)
-		//	app.matches.data[data.id] = {id:result.id, team1:app.teams.data[result.team1], score1:result.score1, team2:app.teams.data[result.team2], score2:result.score2, date:result.date};
-		//	$(document).trigger('updateMatchesView');
-		//});
-		var result = data;
-		app.matches.data[result.id].team1 = app.teams.data[result.team1];
-		app.matches.data[result.id].score1 = result.score1;
-		app.matches.data[result.id].team2 = app.teams.data[result.team2];
-		app.matches.data[result.id].score2 = result.score2;
-		app.matches.data[result.id].date = result.date;
-	
-		$(document).trigger('updateMatchesView',[data.id]);
-		$(document).trigger('updateGroupstageView');
+	put: function(id,data){
+		app.service.api.put('matches/'+id,data,function(result,geturl){
+			app.service.api.get(geturl,function(result){
+				app.matches.data[result.id]['id'] = result.id;
+				app.matches.data[result.id]['team1'] = app.teams.data[result.team1];
+				app.matches.data[result.id]['score1'] = result.score1;
+				app.matches.data[result.id]['penalty1'] = result.penalty1;
+				app.matches.data[result.id]['team2'] = app.teams.data[result.team2];
+				app.matches.data[result.id]['score2'] = result.score1;
+				app.matches.data[result.id]['penalty2'] = result.penalty2;
+				app.matches.data[result.id]['date'] = result.date;
+				$(document).trigger('updateMatchesView');
+			});
+		});
 	},
 	post: function(value){
+		app.service.api.post('matches/',data,function(result,geturl){
+			app.service.api.get(geturl,function(result){
+				app.matches.data[result.id]['id'] = result.id;
+				app.matches.data[result.id]['team1'] = app.teams.data[result.team1];
+				app.matches.data[result.id]['score1'] = result.score1;
+				app.matches.data[result.id]['penalty1'] = result.penalty1;
+				app.matches.data[result.id]['team2'] = app.teams.data[result.team2];
+				app.matches.data[result.id]['score2'] = result.score1;
+				app.matches.data[result.id]['penalty2'] = result.penalty2;
+				app.matches.data[result.id]['date'] = result.date;
+				$(document).trigger('updateMatchesView');
+			});
+		});
 	},
 	del: function(id){
+		app.service.api.del('matches/'+id,function(result){
+			delete app.matches.data[id];
+			$(document).trigger('updateMatchesView');
+		});
 	},
 });
 

@@ -56,20 +56,11 @@ $(document).ready(function(){
 ////////////////////////////////////////////////////////////////////////////////
 	// add a team
 	$(document).on('click tap','[data-view="teams"] [data-control="add"]',function(event){
+		
 		app.teams.post({'name':'','abr':'','icon':''});
 
-		id = 
-
-		// populate the popup
-		$('#edit_team').find('[name="name"]').val(app.teams.data[id].name);
-		$('#edit_team').find('[name="abr"]').val(app.teams.data[id].abr);
-		$('#edit_team').find('[name="icon"]').val(app.teams.data[id].icon);
-
-		// open the popup
-		$(document).trigger('openPopup',['#edit_team']);
-
 	});
-	//edit a team
+	// edit a team
 	$(document).on('click tap','[data-view="teams"] [data-control="edit"]',function(event){
 		var id = $(event.target).parent('[data-bind="team in data"]').attr('data-id');
 		// populate the popup
