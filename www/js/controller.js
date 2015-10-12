@@ -64,6 +64,7 @@ $(document).ready(function(){
 	$(document).on('click tap','[data-view="teams"] [data-control="edit"]',function(event){
 		var id = $(event.target).parent('[data-bind="team in data"]').attr('data-id');
 		// populate the popup
+		$('#edit_team').find('[name="id"]').val(id);
 		$('#edit_team').find('[name="name"]').val(app.teams.data[id].name);
 		$('#edit_team').find('[name="abr"]').val(app.teams.data[id].abr);
 		$('#edit_team').find('[name="icon"]').val(app.teams.data[id].icon);
@@ -71,8 +72,26 @@ $(document).ready(function(){
 		// open the popup
 		$(document).trigger('openPopup',['#edit_team']);
 	});
-	
+	$(document).submit('#edit_team form',function(event){
+		event.preventDefault();
+		console.log(event);
 
+		// populate the popup
+		var id = $('#edit_team').find('[name="id"]').val();
+		app.teams.put(id,{
+			'name':$('#edit_team').find('[name="name"]').val(),
+			'abr':$('#edit_team').find('[name="abr"]').val(),
+			'icon':$('#edit_team').find('[name="icon"]').val()
+		});
+
+		// close the popup
+		$(document).trigger('closePopup');
+	});	
+	// delete a team
+	$(document).on('click tap','[data-view="teams"] [data-control="delete"]',function(event){
+		var id = $(event.target).parent('[data-bind="team in data"]').attr('data-id');
+		app.teams.del(id);
+	});
 
 
 

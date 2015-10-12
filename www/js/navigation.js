@@ -56,7 +56,7 @@ $(document).ready(function(){
 		}
 	});
 	// close popup
-	$(document).on('click tap','body',function(event){
+	$(document).on('click tap','[data-role=overlay]',function(event){
 		$(document).trigger('closePopup');
 	});
 	// do not hide the popup when clicked inside a popup

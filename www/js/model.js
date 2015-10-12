@@ -52,8 +52,13 @@ app.teams = new app.classes.model({
 		});
 	},
 	put: function(id,data){
+		console.log(id);
+		console.log(data);
 		app.service.api.put('teams/'+id,data,function(result,geturl){
+			console.log(result);
+			console.log(geturl);
 			app.service.api.get(geturl,function(result){
+				console.log(result);
 				app.teams.data[result.id]['id'] = result.id;
 				app.teams.data[result.id]['name'] = result.name;
 				app.teams.data[result.id]['abr'] = result.abr;

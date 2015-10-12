@@ -121,24 +121,6 @@
 					</div>
 					<button data-control="add" class="btn">Add Team</button>
 				</div>
-				<div id="edit_team" data-role="popup">
-					<a href='#' class='close'></a>
-					<form>
-						<div>
-							<label>Name</label>
-							<input type="text" name="name"/>
-						</div>
-						<div>
-							<label>Abreviation</label>
-							<input type="text" name="abr"/>
-						</div>
-						<div>
-							<label>Icon</label>
-							<input type="test" name="icon"/>
-						</div>
-						<input type="submit" value="Submit" class="btn"/>
-					</form>
-				</div>
 			</div>
 
 
@@ -160,10 +142,6 @@
 			</div>
 
 
-		</div>
-
-		<div  id="match" data-role="popup">
-			<a href='#' class='close'></a>
 		</div>
 
 		<div id="register" data-role="popup">
@@ -189,6 +167,32 @@
 			<a href='#' class='close'></a>
 		</div>
 
+		<div id="edit_team" data-role="popup">
+			<a href='#' class='close'></a>
+			<form>
+				<div class="hidden">
+					<label>id</label>
+					<input type="text" name="id"/>
+				</div>
+				<div>
+					<label>Name</label>
+					<input type="text" name="name"/>
+				</div>
+				<div>
+					<label>Abreviation</label>
+					<input type="text" name="abr"/>
+				</div>
+				<div>
+					<label>Icon</label>
+					<input type="test" name="icon"/>
+				</div>
+				<input type="submit" value="Submit" class="btn"/>
+			</form>
+		</div>
+
+		<div  id="edit_match" data-role="popup">
+			<a href='#' class='close'></a>
+		</div>
 		
 		<div  id="overlay" data-role="overlay">
 		</div>

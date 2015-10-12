@@ -212,8 +212,8 @@ app.classes.model = function(args){
 	this.get = function(){
 		args.get();
 	}
-	this.put = function(data){
-		args.put(data);
+	this.put = function(id,data){
+		args.put(id,data);
 	}
 	this.post = function(value){
 		args.post(value);
