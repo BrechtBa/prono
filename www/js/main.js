@@ -227,17 +227,18 @@ app.classes.model = function(args){
 ////////////////////////////////////////////////////////////////////////////////
 // View                                                                       //
 ////////////////////////////////////////////////////////////////////////////////
-app.classes.view = function(parent,model,conversion={}){
+app.classes.view = function(parent,model,parse={}){
 	// class to bind a model to a view
 	// arguments:
-	// parent:        a jquery dom element
-	// model:         a model with data attribute
-	// conversion:    an object containing conversion functions
+	// parent:      a jquery dom element
+	// model:       a model with data attribute
+	// parse:    	an object containing parsing functions
 
 	this.parent = parent
 	this.template = parent.html();
 	this.model = model;
-
+	this.parse  = parse;
+	
 	this.update = function(){
 		this._update(this.model,this.parent,this.template);
 	}
@@ -268,8 +269,7 @@ app.classes.view = function(parent,model,conversion={}){
 
 				if( typeof deepFind(model,parentstring)  !== 'undefined'  ){
 			
-					var find = childstring+'\.';
-					var re = new RegExp(find, 'g');
+					var re = new RegExp(childstring+'\\.', 'g');
 
 					$.each( model[parentstring],function(index,submodel){
 						
@@ -294,18 +294,34 @@ app.classes.view = function(parent,model,conversion={}){
 				}
 			}
 			else{
-				// check if there is an (*) statement in the bind
-				var re = new RegExp('(.*)');
-				
-
 				// check if bind is in the model and update the html if so
+				var val = false;
 				if( typeof deepFind(model,bind) !== "undefined" ){
-
+					val = deepFind(model,bind);
+				}
+				else{
+					// check if there is a parse(*.) statement in the bind and redefine the parsefun if so
+					$.each(that.parse,function(index,value){
+						var re = new RegExp(index+'\\(([^)]+)\\)');
+						var arg = re.exec(bind);
+						if(arg !== null){
+							if( typeof deepFind(model,arg[1]) !== "undefined" ){
+								val = value(deepFind(model,arg[1]));
+								console.log(bind);
+								console.log(value);
+								console.log(model);
+								console.log(val);
+							}
+						}
+					});
+				}
+				
+				if(val !== false){
 					if( $(element).is('input') ){
-						$(element).val( deepFind(model,bind) )
+							$(element).val( val );
 					}
 					else{
-						$(element).html( deepFind(model,bind) )
+							$(element).html( val );
 					}
 				}
 			}

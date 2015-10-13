@@ -110,14 +110,18 @@ $(document).ready(function(){
 		var id = $(event.target).parent('[data-bind="match in data"]').attr('data-id');
 		// populate the popup
 		$('#edit_match').find('[name="id"]').val(id);
-		$('#edit_match').find('[name="team1"]').val(app.matches.data[id].team1.id);
-		$('#edit_match').find('[name="team2"]').val(app.matches.data[id].team1.id);
 		$('#edit_match').find('[name="score1"]').val(app.matches.data[id].score1);
 		$('#edit_match').find('[name="score2"]').val(app.matches.data[id].score2);
 		$('#edit_match').find('[name="penalty1"]').val(app.matches.data[id].penalty1);
 		$('#edit_match').find('[name="penalty2"]').val(app.matches.data[id].penalty2);
 		$('#edit_match').find('[name="date"]').val(app.matches.data[id].date);
 
+		// populate the teams select lists
+		populate_select_list($('#edit_match').find('[name="team1"]'),app.teams.data,'id','name');
+		populate_select_list($('#edit_match').find('[name="team2"]'),app.teams.data,'id','name');
+		$('#edit_match').find('[name="team1"]').val(app.matches.data[id].team1.id);
+		$('#edit_match').find('[name="team2"]').val(app.matches.data[id].team2.id);
+		
 		// open the popup
 		$(document).trigger('openPopup',['#edit_match']);
 	});
@@ -190,80 +194,13 @@ $(document).on('loggedin',function(event,data){
 
 
 
-
-
-
-
-
-
-
-
-
-	
-/*
 ////////////////////////////////////////////////////////////////////////////////
-// Login                                                                      //
+// Common functions                                                           //
 ////////////////////////////////////////////////////////////////////////////////
-	// try to login using a cookie
-	$(document).trigger('login',[{}]);
-
-	// try to login using the login form
-	$('#login form').submit(function(event){
-		event.preventDefault();
-		var username = $(this).find('[name=username]').val();
-		var password = $(this).find('[name=password]').val();
-		$(document).trigger('login',[{username:username,password:password}]);
+//populate select list
+function populate_select_list(object,model,val,text){
+	object.children().remove();
+	$.each(model,function(index,value){
+		object.append('<option value="'+value[val]+'">'+value[text]+'</option');
 	});
-
-////////////////////////////////////////////////////////////////////////////////
-// Register                                                                   //
-////////////////////////////////////////////////////////////////////////////////
-	$('#register form').submit(function(event){
-		event.preventDefault();
-		var username = $(this).find('[name=username]').val();
-		var password = $(this).find('[name=password]').val();
-		var password2 = $(this).find('[name=password2]').val();
-		app.navigation.back();
-
-		
-	});
-
-////////////////////////////////////////////////////////////////////////////////
-// Logout                                                                     //
-////////////////////////////////////////////////////////////////////////////////
-	$(document).on('click tap','[data-control="logout"]',function(event){
-		$.post('authenticate/logout.php',{id:app.model.user.id},function(result){
-			if(result>0){
-				app.model.user.unset();
-				app.navigation.go('#login')
-			}
-		});
-	});
-
-
-////////////////////////////////////////////////////////////////////////////////
-// Users                                                                      //
-////////////////////////////////////////////////////////////////////////////////
-	$(document).on('click tap','[data-template="users"] [data-control="delete"]',function(event){
-		var id = $(event.target).parent('[data-id]').attr('data-id');
-		app.model.users.del(id);
-	});
-
-
-
-*/
-
-
-
-////////////////////////////////////////////////////////////////////////////////
-// reoccurring functions                                                      //
-////////////////////////////////////////////////////////////////////////////////
-$(document).on('login',function(event,data){
-	$.post('authenticate/login.php',data,function(result){
-		result = JSON.parse(result);
-		if(result['status']>0){
-			app.model.user.set(result['user']);
-			app.navigation.go('#ranking')
-		}
-	});
-});
+}
