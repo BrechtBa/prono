@@ -22,8 +22,8 @@ $(document).ready(function(){
 	// event triggered when a user logs in
 	$(document).on('loggedin',function(event,data){
 		console.log('user is logged in');
+		$(document).trigger('usersModelGet');
 		$(document).trigger('teamsModelGet');
-		app.model.users.get();
 	});
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -204,6 +204,10 @@ $(document).ready(function(){
 ////////////////////////////////////////////////////////////////////////////////
 // Prono                                                                      //
 ////////////////////////////////////////////////////////////////////////////////
+	$(document).on('usersModelGet',function(event,data){
+		console.log('getting users');
+		app.model.users.get();
+	});
 	$(document).on('teamsModelGet',function(event,data){
 		console.log('getting teams');
 		app.model.teams.get();
