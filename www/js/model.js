@@ -13,8 +13,10 @@ app.add_model('users',{
 				that[user.id] = {};
 				that[user.id]['id'] = user.id;
 				that[user.id]['username'] = user.username;
+				that[user.id]['points'] = user.points;
 			});
 			$(document).trigger('usersViewUpdate');
+			$(document).trigger('rankingViewUpdate');
 		});
 	},
 	put: function(that,id,data){
@@ -184,6 +186,7 @@ app.add_model('editmatch',{
 		that['date'] = data['date'];
 		
 		$(document).trigger('editmatchViewUpdate');
+		$(document).trigger('editmatchscoreViewUpdate');
 	},
 	post(that,data){
 	},

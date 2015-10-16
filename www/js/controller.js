@@ -94,7 +94,7 @@ $(document).ready(function(){
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// Matches                                                                      //
+// Matches                                                                    //
 ////////////////////////////////////////////////////////////////////////////////
 	// add a match
 	$(document).on('click tap','[data-view="matches"] [data-control="add"]',function(event){
@@ -132,7 +132,7 @@ $(document).ready(function(){
 		// open the popup
 		$(document).trigger('openPopup',['#editmatch']);
 	});
-	$(document).on('submit','form[data-view="editmatch"]',function(event){
+	$(document).on('submit','#editmatch form',function(event){
 		event.preventDefault();
 		console.log('editmatch form submit');
 		
@@ -140,11 +140,54 @@ $(document).ready(function(){
 		app.model.matches.put(id,{
 			'team1':    $('#editmatch').find('[name="team1"]').val(),
 			'team2':    $('#editmatch').find('[name="team2"]').val(),
-			'score1':   $('#editmatch').find('[name="score1"]').val(),
-			'score2':   $('#editmatch').find('[name="score2"]').val(),
-			'penalty1': $('#editmatch').find('[name="penalty1"]').val(),
-			'penalty2': $('#editmatch').find('[name="penalty2"]').val(),
 			'date':     $('#editmatch').find('[name="date"]').val()
+		});
+
+		// close the popup
+		$(document).trigger('closePopup');
+	});	
+	// edit a match score
+	$(document).on('click tap','[data-view="matches"] [data-control="editscore"]',function(event){
+		var id = $(event.target).parents('[data-bind="match in matches"]').attr('data-id');
+		
+		// check if the teams are defined
+		if( typeof app.model.matches[id].team1 === 'undefined'){
+			team1 = 0;
+		}
+		else{
+			team1 = app.model.matches[id].team1.id
+		}
+		if( typeof app.model.matches[id].team2 === 'undefined'){
+			team2 = 0;
+		}
+		else{
+			team2 = app.model.matches[id].team2.id
+		}
+		
+		app.model.editmatch.put(1,{
+			'id': id,
+			'score1':   app.model.matches[id].score1,
+			'score2':   app.model.matches[id].score2,
+			'penalty1': app.model.matches[id].penalty1,
+			'penalty2': app.model.matches[id].penalty2,
+			'date':     app.model.matches[id].date,
+			'team1':    team1,
+			'team2':    team2
+		});
+
+		// open the popup
+		$(document).trigger('openPopup',['#editmatchscore']);
+	});
+	$(document).on('submit','#editmatchscore form',function(event){
+		event.preventDefault();
+		console.log('editmatchscore form submit');
+		
+		var id = $('#editmatchscore').find('[name="id"]').val();
+		app.model.matches.put(id,{
+			'score1':   $('#editmatchscore').find('[name="score1"]').val(),
+			'score2':   $('#editmatchscore').find('[name="score2"]').val(),
+			'penalty1': $('#editmatchscore').find('[name="penalty1"]').val(),
+			'penalty2': $('#editmatchscore').find('[name="penalty2"]').val(),
 		});
 
 		// close the popup

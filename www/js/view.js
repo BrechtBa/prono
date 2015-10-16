@@ -10,11 +10,19 @@
 // JQuery wrapper
 $(document).ready(function(){
 	
-	app.add_view('groupstage',$('[data-view="groupstage"]'),{});
-	app.view.groupstage.update();
-
+////////////////////////////////////////////////////////////////////////////////
+// Users                                                                      //
+////////////////////////////////////////////////////////////////////////////////	
 	app.add_view('users',$('[data-view="users"]'),{});
-	app.view.users.update();	
+	app.view.users.update();
+	
+	app.add_view('ranking',$('[data-view="ranking"]'),{});
+	app.view.ranking.update();
+	
+
+////////////////////////////////////////////////////////////////////////////////
+// Teams                                                                      //
+////////////////////////////////////////////////////////////////////////////////
 
 	app.add_view('teams',$('[data-view="teams"]'),{});
 	app.view.teams.update();
@@ -23,6 +31,9 @@ $(document).ready(function(){
 	});
 	app.view.editteam.update();
 	
+////////////////////////////////////////////////////////////////////////////////
+// Matches                                                                    //
+////////////////////////////////////////////////////////////////////////////////
 	app.add_view('matches',$('[data-view="matches"]'),{
 		'parseDate': function(arg){
 			var date = new Date(arg*1000);
@@ -38,5 +49,18 @@ $(document).ready(function(){
 	app.add_view('editmatch',$('[data-view="editmatch"]'),{
 	});
 	app.view.editmatch.update();
+	
+	app.add_view('editmatchscore',$('[data-view="editmatchscore"]'),{
+	});
+	app.view.editmatchscore.update();
+	
+	
+	
+////////////////////////////////////////////////////////////////////////////////
+// Results                                                                    //
+////////////////////////////////////////////////////////////////////////////////	
+	
+	app.add_view('groupstage',$('[data-view="groupstage"]'),{});
+	app.view.groupstage.update();
 	
 });

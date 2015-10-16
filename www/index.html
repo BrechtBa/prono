@@ -70,7 +70,15 @@
 			</div>
 			
 			<div id="ranking" data-role="page" class="narrow-page">
-				<h1>Rangschikking</h1>
+				<div data-view="ranking">
+					<h1>Rangschikking</h1>
+					<ol class="ranking">
+						<li data-bind="user in users orderby points reversed">
+							<span data-bind="user.username">username</span>
+							<span data-bind="user.points">points</span>
+						</li>
+					</ol>
+				</div>
 			</div>
 
 			
@@ -78,23 +86,25 @@
 				<h1>Prono</h1>
 				<div data-view="groupstage">
 					<h2>Groepsfase</h2>
-					<div data-bind="group in groupstage">
-						<h3>Groep <span data-bind="group.name"></span></h3> 
-						<div class="matches">
-							<div data-bind="match in group.matches">
-								<span data-bind="match.team1.name"></span> <input data-bind="match.score1"/> - <input data-bind="match.score2"> <span data-bind="match.team2.name"></span>
+					<div class="groups">
+						<div data-bind="group in groupstage">
+							<h3>Groep <span data-bind="group.name"></span></h3> 
+							<div class="matches">
+								<div data-bind="match in group.matches">
+									<span data-bind="match.team1.name"></span> <input data-bind="match.score1"/> - <input data-bind="match.score2"> <span data-bind="match.team2.name"></span>
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 			
-		
-
+			
 			<div id="rules" data-role="page" class="narrow-page">
 				<h1>Regels</h1>
 			</div>			
 
+			
 			<div id="users" data-role="page" class="narrow-page">
 				<h1>Users</h1>
 				<div data-view="users">
@@ -109,43 +119,52 @@
 
 
 			<div id="teams" data-role="page" class="narrow-page">
-				<h1>Teams</h1>
 				<div data-view="teams">
-					<div data-bind="team in teams">
-						<span data-bind="team.id">id</span>
-						<span data-bind="team.name">name</span>
-						<span data-bind="team.abr">abr</span>
-						<span data-bind="team.icon">icon</span>
-						<button data-control="edit" class="btn">edit</button>
-						<button data-control="delete" class="btn">delete</button>
-					</div>
+					<h1>Teams</h1>
+					<div class="teams">
+						<div data-bind="team in teams">
+							<span data-bind="team.id">id</span>
+							<span data-bind="team.name">name</span>
+							<span data-bind="team.abr">abr</span>
+							<span data-bind="team.icon">icon</span>
+							<button data-control="edit" class="btn">edit</button>
+							<button data-control="delete" class="btn">delete</button>
+						</div>
+					</div>	
 					<button data-control="add" class="btn">Add Team</button>
 				</div>
 			</div>
 
 
 			<div id="matches" data-role="page" class="narrow-page">
-				<h1>Matches</h1>
 				<div data-view="matches">
-					<div data-bind="match in matches">
-						<span data-bind="match.id">id</span>
-						<span data-bind="match.team1.name">team1</span>
-						<span data-bind="match.score1">score1</span>
-						<span data-bind="match.penalty1">penalty1</span>
-						<span> - </span>
-						<span data-bind="match.score2">score2</span>
-						<span data-bind="match.penalty2">penalty2</span>
-						<span data-bind="match.team2.name">team2</span>
-						<span data-bind="match.date">date</span>
-						<button data-control="edit" class="btn">edit</button>
-						<button data-control="delete" class="btn">delete</button>
+					<h1>Matches</h1>
+					<div class="matches">
+						<div data-bind="match in matches">
+							<span data-bind="match.id">id</span>
+							<span data-bind="match.team1.name">team1</span>
+							<span data-bind="match.score1">score1</span>
+							<span data-bind="match.penalty1">penalty1</span>
+							<span> - </span>
+							<span data-bind="match.score2">score2</span>
+							<span data-bind="match.penalty2">penalty2</span>
+							<span data-bind="match.team2.name">team2</span>
+							<span data-bind="match.date">date</span>
+							<button data-control="edit" class="btn">edit</button>
+							<button data-control="editscore" class="btn">edit score</button>
+							<button data-control="delete" class="btn">delete</button>
+						</div>
 					</div>
 					<button data-control="add" class="btn">Add Match</button>
 				</div>
 			</div>
 
-
 		</div>
+
+		
+<!----------------------------------------------------------------------------->
+<!-- popups ------------------------------------------------------------------->
+<!----------------------------------------------------------------------------->
 
 		<div id="register" data-role="popup">
 			<a href='#' class='close'></a>
@@ -166,7 +185,7 @@
 			</form>
 		</div>
 
-		<div  id="message" data-role="popup">
+		<div id="message" data-role="popup">
 			<a href='#' class='close'></a>
 		</div>
 
@@ -193,7 +212,7 @@
 			</form>
 		</div>
 
-		<div  id="editmatch" data-role="popup">
+		<div id="editmatch" data-role="popup">
 			<a href='#' class='close'></a>
 			<form data-view="editmatch">
 				<div class="hidden">
@@ -207,19 +226,39 @@
 					</select>
 				</div>
 				<div>
-					<label>score1</label>
-					<input type="text" name="score1" data-bind="editmatch.score1"/>
-				</div>
-				<div>
 					<label>team2</label>
 					<select name="team2" data-bind="editmatch.team2.id">
 						<option value="1" data-bind="team.name in teams">Team 2</option>
 					</select>
 				</div>
+				<input type="submit" value="Submit" class="btn"/>
+			</form>
+		</div>
+		
+		<div id="editmatchscore" data-role="popup">
+			<a href='#' class='close'></a>
+			<form data-view="editmatchscore">
+				<div class="hidden">
+					<label>id</label>
+					<input type="text" name="id" data-bind="editmatch.id"/>
+				</div>
+				<div>
+					<label>score1</label>
+					<input type="text" name="score1" data-bind="editmatch.score1"/>
+				</div>
 				<div>
 					<label>score2</label>
 					<input type="text" name="score2" data-bind="editmatch.score2"/>
 				</div>
+				<div>
+					<label>penalty1</label>
+					<input type="text" name="penalty1" data-bind="editmatch.penalty1"/>
+				</div>
+				<div>
+					<label>penalty2</label>
+					<input type="text" name="penalty2" data-bind="editmatch.penalty2"/>
+				</div>
+				
 				<input type="submit" value="Submit" class="btn"/>
 			</form>
 		</div>

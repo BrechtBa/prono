@@ -231,6 +231,23 @@ app._view.prototype._update = function(model,parent,template){
 			var childstring = bind.substring(0,bind.indexOf(' in '));
 			var parentstring = bind.substring(bind.indexOf(' in ')+4);
 			
+			
+			// check if the parentstring contains an orderby statement
+			if(parentstring.indexOf(' orderby ') > -1){
+				var temp = parentstring
+				parentstring = temp.substring(0,temp.indexOf(' orderby '));
+				var orderstring = temp.substring(temp.indexOf(' orderby ')+9);
+				
+				// check if the orderstring contains a reversed statement
+				var reversed = false;
+				if(orderstring.indexOf(' reversed') > -1){
+					var orderstring = orderstring.substring(0,orderstring.indexOf(' reversed'));
+					reversed = true;
+				}
+			}
+			
+			
+			
 			var temp = childstring;
 			// get only the part of the child before the 1st dot
 			var attribute = '';
@@ -239,26 +256,50 @@ app._view.prototype._update = function(model,parent,template){
 				attribute = temp.substr(temp.indexOf('.')+1);
 			}
 			
+			// check if the parent exists in the model
 			if( typeof that.deepFind(model,parentstring)  !== 'undefined'  ){
-		
-				var re = new RegExp(childstring+'\\.', 'g');
-				var container = $(element).parent();
 				
-				if(typeof container === "undefined"){
+				// prepare a regular expression to remove the childstring from the added elements
+				var re = new RegExp(childstring+'\\.', 'g');
+				
+				// get the container element and
+				var container = $(element).parent();
+				if(typeof container === 'undefined'){
 					container = parent;
 				}
 				
+				// create a list of submodels
+				var submodels = [];
 				$.each(model[parentstring],function(index,submodel){
+					submodels.push(submodel);
+				});
+				
+				// order the list of submodels if required
+				if(typeof orderstring  !== 'undefined'){
+					if( typeof that.deepFind(submodels[0],orderstring)  !== 'undefined' ){
+						submodels.sort(function(a, b){
+							if(reversed){
+								return that.deepFind(b,orderstring)- that.deepFind(a,orderstring);
+							}
+							else{
+								return that.deepFind(a,orderstring)- that.deepFind(b,orderstring);
+							}
+						});
+					}
+				}
+				
+				$.each(submodels,function(index,submodel){
 					if(typeof submodel === typeof {} ){
 	
 						var child = $(element).clone()
 						container.append( child );
 						
+						// the submodel must have an id value to reference it
 						if( child.is('option') ){
-							child.attr('value',index);
+							child.attr('value',submodel.id);
 						}
 						else{
-							child.attr('data-id',index);
+							child.attr('data-id',submodel.id);
 						}
 						
 						// if the attribute is found in the submodel fill it in
