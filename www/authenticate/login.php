@@ -18,7 +18,7 @@
 	
 			$_SESSION['token'] = generate_session_token();
 			$_SESSION['id'] = $dbuser['id'];
-			$_SESSION['priveledge'] = $dbuser['priveledge'];
+			$_SESSION['permission'] = $dbuser['permission'];
 		
 			
 			//if(generate_session_token()==$_SESSION['token'] && $_SESSION['id'] > 0){ 

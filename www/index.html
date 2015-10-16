@@ -38,13 +38,14 @@
 			</div>
 		</div>
 		<nav id="menu" data-role="panel-right">
-			<ul data-role="listview">
+			<ul data-role="listview" data-view="menu">
 				<li class="no-sides"><a href='#ranking'>Rangschikking</a></li>
 				<li class="no-sides"><a href='#prono'>Pronostiek</a></li>
+				<li class="no-sides"><a href='#results'>Resultaten</a></li>
 				<li class="no-sides"><a href='#rules'>Regels</a></li>
-				<li class="no-sides"><a href='#users'>Users</a></li>
-				<li class="no-sides"><a href='#teams'>Teams</a></li>
-				<li class="no-sides"><a href='#matches'>Matches</a></li>
+				<li class="no-sides" data-bind-class="parseDisplay(user.permission)"><a href='#users'>Users</a></li>
+				<li class="no-sides" data-bind-class="parseDisplay(user.permission)"><a href='#teams'>Teams</a></li>
+				<li class="no-sides" data-bind-class="parseDisplay(user.permission)"><a href='#matches'>Matches</a></li>
 				<li class="no-sides"><a href='#' data-control="logout">Logout</a></li>
 			</ul>
 		</nav>	
@@ -84,7 +85,7 @@
 			
 			<div id="prono" data-role="page" class="narrow-page">			
 				<h1>Prono</h1>
-				<div data-view="groupstage">
+				<div data-view="groupstageprono">
 					<h2>Groepsfase</h2>
 					<div class="groups">
 						<div data-bind="group in groupstage">
@@ -99,6 +100,27 @@
 				</div>
 			</div>
 			
+
+			<div id="results" data-role="page" class="narrow-page">			
+				<h1>Resultaten</h1>
+
+				<div data-view="groupstage">
+					<h2>Groepsfase</h2>
+					<div class="groups">
+						<div data-bind="group in groupstage">
+							<h3>Groep <span data-bind="group.name"></span></h3>
+							<div class="matches">
+								<div data-bind="match in group.matches orderby date">
+									<span data-bind="match.team1.name"></span> <span data-bind="match.score1"></span> - <span data-bind="match.score2"></span> <span data-bind="match.team2.name"></span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+
+			</div>
+
 			
 			<div id="rules" data-role="page" class="narrow-page">
 				<h1>Regels</h1>
@@ -136,7 +158,24 @@
 			</div>
 
 
+
 			<div id="matches" data-role="page" class="narrow-page">
+
+				<div data-view="groups">
+					<h1>Groups</h1>
+					<div class="groups">
+						<div data-bind="group in groups">
+							<span data-bind="group.id">id</span>
+							<span data-bind="group.name">name</span>
+							<span data-bind="group.team1.name">winner</span>
+							<span data-bind="group.team2.name">second</span>
+							<button data-control="edit" class="btn">edit</button>
+							<button data-control="delete" class="btn">delete</button>
+						</div>
+					</div>
+					<button data-control="add" class="btn">Add Group</button>
+				</div>
+
 				<div data-view="matches">
 					<h1>Matches</h1>
 					<div class="matches">
@@ -150,6 +189,8 @@
 							<span data-bind="match.penalty2">penalty2</span>
 							<span data-bind="match.team2.name">team2</span>
 							<span data-bind="match.date">date</span>
+							<span data-bind="match.stage">stage</span>
+							<span data-bind="match.group">group</span>
 							<button data-control="edit" class="btn">edit</button>
 							<button data-control="editscore" class="btn">edit score</button>
 							<button data-control="delete" class="btn">delete</button>
@@ -157,6 +198,8 @@
 					</div>
 					<button data-control="add" class="btn">Add Match</button>
 				</div>
+
+
 			</div>
 
 		</div>
@@ -231,6 +274,14 @@
 						<option value="1" data-bind="team.name in teams">Team 2</option>
 					</select>
 				</div>
+				<div>
+					<label>stage</label>
+					<input type="text" name="stage" data-bind="editmatch.stage"/>
+				</div>
+				<div>
+					<label>group</label>
+					<input type="text" name="group" data-bind="editmatch.group"/>
+				</div>
 				<input type="submit" value="Submit" class="btn"/>
 			</form>
 		</div>
@@ -263,6 +314,34 @@
 			</form>
 		</div>
 		
+		<div id="editgroup" data-role="popup">
+			<a href='#' class='close'></a>
+			<form data-view="editgroup">
+				<div class="hidden">
+					<label>id</label>
+					<input type="text" name="id" data-bind="editgroup.id"/>
+				</div>
+				<div>
+					<label>Name</label>
+					<input type="text" name="name" data-bind="editgroup.name"/>
+				</div>
+				<div>
+					<label>Winner</label>
+					<select name="team1" data-bind="editgroup.team1.id">
+						<option value="1" data-bind="team.name in teams">Team 1</option>
+					</select>
+				</div>
+				<div>
+					<label>Second</label>
+					<select name="team2" data-bind="editgroup.team2.id">
+						<option value="1" data-bind="team.name in teams">Team 2</option>
+					</select>
+				</div>
+				<input type="submit" value="Submit" class="btn"/>
+			</form>
+		</div>
+
+
 		<div  id="overlay" data-role="overlay">
 		</div>
 	</body>

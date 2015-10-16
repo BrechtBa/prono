@@ -70,7 +70,7 @@ $(document).ready(function(){
 		// open the popup
 		$(document).trigger('openPopup',['#editteam']);
 	});
-	$(document).on('submit','form[data-view="editteam"]',function(event){
+	$(document).on('submit','#editteam form',function(event){
 		event.preventDefault();
 		console.log('editteam form submit');
 		
@@ -94,10 +94,65 @@ $(document).ready(function(){
 
 
 ////////////////////////////////////////////////////////////////////////////////
+// Groups                                                                     //
+////////////////////////////////////////////////////////////////////////////////
+	// add a group
+	$(document).on('click tap','[data-view="groups"] [data-control="add"]',function(event){
+		console.log('add group');
+		app.model.groups.post({'name':'','team1':'','team2':''});
+	});
+	// edit a group
+	$(document).on('click tap','[data-view="groups"] [data-control="edit"]',function(event){
+		var id = $(event.target).parents('[data-bind="group in groups"]').attr('data-id');
+		
+		// check if the teams are defined
+		if( typeof app.model.groups[id].team1 === 'undefined'){
+			team1 = 0;
+		}
+		else{
+			team1 = app.model.groups[id].team1.id
+		}
+		if( typeof app.model.groups[id].team2 === 'undefined'){
+			team2 = 0;
+		}
+		else{
+			team2 = app.model.groups[id].team2.id
+		}
+		
+		app.model.editgroup.put(1,{
+			'id': id,
+			'name':   	app.model.groups[id].name,
+			'team1':    team1,
+			'team2':    team2
+		});
+
+		// open the popup
+		$(document).trigger('openPopup',['#editgroup']);
+	});
+	$(document).on('submit','#editgroup form',function(event){
+		event.preventDefault();
+		console.log('editgroup form submit');
+		
+		var id = $('#editgroup').find('[name="id"]').val();
+		app.model.groups.put(id,{
+			'team1':    $('#editgroup').find('[name="team1"]').val(),
+			'team2':    $('#editgroup').find('[name="team2"]').val(),
+			'name':     $('#editgroup').find('[name="name"]').val()
+		});
+
+		// close the popup
+		$(document).trigger('closePopup');
+	});	
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////
 // Matches                                                                    //
 ////////////////////////////////////////////////////////////////////////////////
 	// add a match
 	$(document).on('click tap','[data-view="matches"] [data-control="add"]',function(event){
+		console.log('add match');
 		app.model.matches.post({'team1':'','score1':'','penalty1':'','team2':'','score2':'','penalty2':'','date':''});
 	});
 	// edit a match
@@ -125,6 +180,8 @@ $(document).ready(function(){
 			'penalty1': app.model.matches[id].penalty1,
 			'penalty2': app.model.matches[id].penalty2,
 			'date':     app.model.matches[id].date,
+			'stage': 	app.model.matches[id].stage,
+			'group':    app.model.matches[id].group,
 			'team1':    team1,
 			'team2':    team2
 		});
@@ -140,6 +197,8 @@ $(document).ready(function(){
 		app.model.matches.put(id,{
 			'team1':    $('#editmatch').find('[name="team1"]').val(),
 			'team2':    $('#editmatch').find('[name="team2"]').val(),
+			'stage':    $('#editmatch').find('[name="stage"]').val(),
+			'group':    $('#editmatch').find('[name="group"]').val(),
 			'date':     $('#editmatch').find('[name="date"]').val()
 		});
 
@@ -171,6 +230,8 @@ $(document).ready(function(){
 			'penalty1': app.model.matches[id].penalty1,
 			'penalty2': app.model.matches[id].penalty2,
 			'date':     app.model.matches[id].date,
+			'stage': 	app.model.matches[id].stage,
+			'group':    app.model.matches[id].group,
 			'team1':    team1,
 			'team2':    team2
 		});
@@ -201,6 +262,7 @@ $(document).ready(function(){
 
 
 
+
 ////////////////////////////////////////////////////////////////////////////////
 // Prono                                                                      //
 ////////////////////////////////////////////////////////////////////////////////
@@ -212,13 +274,17 @@ $(document).ready(function(){
 		console.log('getting teams');
 		app.model.teams.get();
 	});
+	$(document).on('groupsModelGet',function(event,data){
+		console.log('getting groups');
+		app.model.groups.get();
+	});
 	$(document).on('matchesModelGet',function(event,data){
 		console.log('getting matches');
 		app.model.matches.get();
 	});
 	$(document).on('groupstageModelGet',function(event,data){
 		console.log('getting groupstage');
-		app.model.groupstage.get();
+		//app.model.groupstage.get();
 	});
 
 

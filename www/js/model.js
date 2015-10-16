@@ -48,7 +48,7 @@ app.add_model('teams',{
 				that[team.id]['icon'] = team.icon;
 			});
 			$(document).trigger('teamsViewUpdate');
-			$(document).trigger('matchesModelGet');
+			$(document).trigger('groupsModelGet');
 		});
 	},
 	put: function(that,id,data){
@@ -64,7 +64,7 @@ app.add_model('teams',{
 		});
 	},
 	post: function(that,data){
-		app.service.api.post('teams',data,function(result,geturl){
+		app.service.api.post('teams/',data,function(result,geturl){
 			app.service.api.get(geturl,function(result){
 				that[result.id] = {};
 				that[result.id]['id'] = result.id;
@@ -105,6 +105,83 @@ app.add_model('editteam',{
 });
 
 
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Groups                                                                     //
+////////////////////////////////////////////////////////////////////////////////
+app.add_model('groups',{
+	get: function(that){
+		app.service.api.get('groups/',function(result){
+			$.each(result,function(index,group){
+				that[group.id] = {};
+				that[group.id]['id'] = group.id;
+				that[group.id]['name'] = group.name;
+				that[group.id]['team1'] = app.model.teams[group.team1];
+				that[group.id]['team2'] = app.model.teams[group.team2];
+			});
+			$(document).trigger('matchesModelGet');
+			$(document).trigger('groupsViewUpdate');
+		});
+	},
+	put: function(that,id,data){
+		console.log(data);
+		app.service.api.put('groups/'+id,data,function(result,geturl){
+			app.service.api.get(geturl,function(group){
+				that[group.id]['id'] = group.id;
+				that[group.id]['name'] = group.name;
+				that[group.id]['team1'] = app.model.teams[group.team1];
+				that[group.id]['team2'] = app.model.teams[group.team2];
+
+				$(document).trigger('groupsViewUpdate');
+			});
+		});
+	},
+	post: function(that,data){
+		console.log(data)
+		app.service.api.post('groups/',data,function(result,geturl){
+			console.log(result)
+			app.service.api.get(geturl,function(group){
+				that[group.id] = {};
+				that[group.id]['id'] = group.id;
+				that[group.id]['name'] = group.name;
+				that[group.id]['team1'] = app.model.teams[group.team1];
+				that[group.id]['team2'] = app.model.teams[group.team2];
+	
+				$(document).trigger('groupsViewUpdate');;
+			});
+		});
+	},
+	delete: function(that,id){
+		app.service.api.delete('groups/'+id,function(result){
+			delete that[id];
+			$(document).trigger('groupsViewUpdate');
+		});
+	}
+});
+////////////////////////////////////////////////////////////////////////////////
+// Edit group                                                                 //
+////////////////////////////////////////////////////////////////////////////////
+app.add_model('editgroup',{
+	get(that){
+	},
+	put(that,id,data){
+		that['id'] = data['id'];
+		that['name'] = data.name;
+		that['team1'] = app.model.teams[data.team1];
+		that['team2'] = app.model.teams[data.team2];
+		
+		$(document).trigger('editgroupViewUpdate');
+	},
+	post(that,data){
+	},
+	delete(that,id){
+	}
+});
+
+
+
+
 ////////////////////////////////////////////////////////////////////////////////
 // Matches                                                                    //
 ////////////////////////////////////////////////////////////////////////////////
@@ -121,22 +198,27 @@ app.add_model('matches',{
 				that[match.id]['score2'] = match.score2;
 				that[match.id]['penalty2'] = match.penalty2;
 				that[match.id]['date'] = match.date;
+				that[match.id]['stage'] = match.stage;
+				that[match.id]['group'] = match.group;
 			});
-			$(document).trigger('matchesViewUpdate');
 			$(document).trigger('groupstageModelGet');
+			$(document).trigger('matchesViewUpdate');
 		});
 	},
 	put: function(that,id,data){
+		console.log(data);
 		app.service.api.put('matches/'+id,data,function(result,geturl){
-			app.service.api.get(geturl,function(result){
-				that[result.id]['id'] = result.id;
-				that[result.id]['team1'] = app.model.teams[result.team1];
-				that[result.id]['score1'] = result.score1;
-				that[result.id]['penalty1'] = result.penalty1;
-				that[result.id]['team2'] = app.model.teams[result.team2];
-				that[result.id]['score2'] = result.score2;
-				that[result.id]['penalty2'] = result.penalty2;
-				that[result.id]['date'] = result.date;
+			app.service.api.get(geturl,function(match){
+				that[match.id]['id'] = match.id;
+				that[match.id]['team1'] = app.model.teams[match.team1];
+				that[match.id]['score1'] = match.score1;
+				that[match.id]['penalty1'] = match.penalty1;
+				that[match.id]['team2'] = app.model.teams[match.team2];
+				that[match.id]['score2'] = match.score2;
+				that[match.id]['penalty2'] = match.penalty2;
+				that[match.id]['date'] = match.date;
+				that[match.id]['stage'] = match.stage;
+				that[match.id]['group'] = match.group;
 
 				$(document).trigger('matchesViewUpdate');
 			});
@@ -146,17 +228,19 @@ app.add_model('matches',{
 		console.log(data)
 		app.service.api.post('matches/',data,function(result,geturl){
 			console.log(result)
-			app.service.api.get(geturl,function(result){
-				that[result.id] = {};
-				that[result.id]['id'] = result.id;
-				that[result.id]['team1'] = app.model.teams[result.team1];
-				that[result.id]['score1'] = result.score1;
-				that[result.id]['penalty1'] = result.penalty1;
-				that[result.id]['team2'] = app.model.teams[result.team2];
-				that[result.id]['score2'] = result.score1;
-				that[result.id]['penalty2'] = result.penalty2;
-				that[result.id]['date'] = result.date;
-					
+			app.service.api.get(geturl,function(match){
+				that[match.id] = {};
+				that[match.id]['id'] = match.id;
+				that[match.id]['team1'] = app.model.teams[match.team1];
+				that[match.id]['score1'] = match.score1;
+				that[match.id]['penalty1'] = match.penalty1;
+				that[match.id]['team2'] = app.model.teams[match.team2];
+				that[match.id]['score2'] = match.score1;
+				that[match.id]['penalty2'] = match.penalty2;
+				that[match.id]['date'] = match.date;
+				that[match.id]['stage'] = match.stage;
+				that[match.id]['group'] = match.group;
+	
 				$(document).trigger('matchesViewUpdate');
 			});
 		});
@@ -168,7 +252,6 @@ app.add_model('matches',{
 		});
 	}
 });
-
 ////////////////////////////////////////////////////////////////////////////////
 // Edit match                                                                 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -195,11 +278,32 @@ app.add_model('editmatch',{
 });
 
 
+
+
 ////////////////////////////////////////////////////////////////////////////////
 // Groupstage                                                                 //
 ////////////////////////////////////////////////////////////////////////////////
 app.add_model('groupstage',{
 	get: function(that){
+		app.service.api.get('groups/',function(result){
+			$.each(result,function(index,group){
+				that[group.id] = {};
+				that[group.id]['id'] = group.id;
+				that[group.id]['name'] = group.name;
+				that[group.id]['team1'] = app.model.teams[group.team1];
+				that[group.id]['team2'] = app.model.teams[group.team1];
+				that[group.id]['matches'] = {};
+				
+
+				$.each(app.model.match,function(index,match){
+					if(match.stage==1 && match.group == group.id){
+						that[group.id]['matches'][match.id] = match;
+					}
+				});
+
+			});
+			$(document).trigger('groupstageViewUpdate');
+		});
 		//app.groupstage.data[1] = {id:1, name:'A', matches:{1:app.matches.data[1], 2:app.matches.data[2]}};
 		//app.groupstage.data[2] = {id:2, name:'B', matches:{3:app.matches.data[3], 4:app.matches.data[4]}};
 

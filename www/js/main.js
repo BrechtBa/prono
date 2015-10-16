@@ -14,7 +14,7 @@ app.service.api = {
 	location: '',
 	get: function(apipath,callback){
 		app.service.user.authenticate(function(result){		
-			if(result.priveledge>0){
+			if(result.permission>0){
 				$.ajax({
 					type: 'GET',
 					dataType: 'json',
@@ -40,7 +40,7 @@ app.service.api = {
 	},
 	put: function(apipath,data,callback){
 		app.service.user.authenticate(function(result){			
-			if(result.priveledge>0){
+			if(result.permission>0){
 				$.ajax({
 					type: 'PUT',
 					dataType: 'json',
@@ -60,7 +60,7 @@ app.service.api = {
 	},
 	post: function(apipath,data,callback){
 		app.service.user.authenticate(function(result){			
-			if(result.priveledge>0){
+			if(result.permission>0){
 				$.ajax({
 					type: 'POST',
 					dataType: 'json',
@@ -80,7 +80,7 @@ app.service.api = {
 	},
 	delete: function(apipath,callback){
 		app.service.user.authenticate(function(result){			
-			if(result.priveledge>0){
+			if(result.permission>0){
 				$.ajax({
 					type: 'DELETE',
 					dataType: 'json',
@@ -317,6 +317,13 @@ app._view.prototype._update = function(model,parent,template){
 						that._update(submodel,subparent,subtemplate);
 					}
 				});
+				// if it is a select list, prepend a blank opption
+				if( $(element).is('option') ){
+					var child = $(element).clone()
+					child.attr('value','');
+					container.prepend( child );
+				}
+
 				$(element).remove();
 			}
 			else{
