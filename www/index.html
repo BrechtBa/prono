@@ -78,7 +78,7 @@
 				<h1>Prono</h1>
 				<div data-view="groupstage">
 					<h2>Groepsfase</h2>
-					<div data-bind="group in data">
+					<div data-bind="group in groupstage">
 						<h3>Groep <span data-bind="group.name"></span></h3> 
 						<div class="matches">
 							<div data-bind="match in group.matches">
@@ -98,7 +98,7 @@
 			<div id="users" data-role="page" class="narrow-page">
 				<h1>Users</h1>
 				<div data-view="users">
-					<div data-bind="user in data">
+					<div data-bind="user in users">
 						<span data-bind="user.id">id</span>
 						<span data-bind="user.username">username</span>
 						<button data-control="reset password" class="btn">reset password</button>
@@ -111,7 +111,7 @@
 			<div id="teams" data-role="page" class="narrow-page">
 				<h1>Teams</h1>
 				<div data-view="teams">
-					<div data-bind="team in data">
+					<div data-bind="team in teams">
 						<span data-bind="team.id">id</span>
 						<span data-bind="team.name">name</span>
 						<span data-bind="team.abr">abr</span>
@@ -127,15 +127,15 @@
 			<div id="matches" data-role="page" class="narrow-page">
 				<h1>Matches</h1>
 				<div data-view="matches">
-					<div data-bind="match in data">
+					<div data-bind="match in matches">
 						<span data-bind="match.id">id</span>
-						<span data-bind="parse_team(match.team1)">team1</span>
+						<span data-bind="match.team1.name">team1</span>
 						<span data-bind="match.score1">score1</span>
 						<span data-bind="match.penalty1">penalty1</span>
 						<span> - </span>
 						<span data-bind="match.score2">score2</span>
 						<span data-bind="match.penalty2">penalty2</span>
-						<span data-bind="parse_team(match.team2)">team2</span>
+						<span data-bind="match.team2.name">team2</span>
 						<span data-bind="match.date">date</span>
 						<button data-control="edit" class="btn">edit</button>
 						<button data-control="delete" class="btn">delete</button>
@@ -170,31 +170,58 @@
 			<a href='#' class='close'></a>
 		</div>
 
-		<div id="edit_team" data-role="popup">
+		<div id="editteam" data-role="popup">
 			<a href='#' class='close'></a>
-			<form>
+			<form data-view="editteam">
 				<div class="hidden">
 					<label>id</label>
-					<input type="text" name="id"/>
+					<input type="text" name="id" data-bind="editteam.id"/>
 				</div>
 				<div>
 					<label>Name</label>
-					<input type="text" name="name"/>
+					<input type="text" name="name" data-bind="editteam.name"/>
 				</div>
 				<div>
 					<label>Abreviation</label>
-					<input type="text" name="abr"/>
+					<input type="text" name="abr" data-bind="editteam.abr"/>
 				</div>
 				<div>
 					<label>Icon</label>
-					<input type="test" name="icon"/>
+					<input type="test" name="icon" data-bind="editteam.icon"/>
 				</div>
 				<input type="submit" value="Submit" class="btn"/>
 			</form>
 		</div>
 
-		<div  id="edit_match" data-role="popup">
+		<div  id="editmatch" data-role="popup">
 			<a href='#' class='close'></a>
+			<form data-view="editmatch">
+				<div class="hidden">
+					<label>id</label>
+					<input type="text" name="id" data-bind="editmatch.id"/>
+				</div>
+				<div>
+					<label>team1</label>
+					<select name="team1" data-bind="editmatch.team1.id">
+						<option value="1" data-bind="team.name in teams">Team 1</option>
+					</select>
+				</div>
+				<div>
+					<label>score1</label>
+					<input type="text" name="score1" data-bind="editmatch.score1"/>
+				</div>
+				<div>
+					<label>team2</label>
+					<select name="team2" data-bind="editmatch.team2.id">
+						<option value="1" data-bind="team.name in teams">Team 2</option>
+					</select>
+				</div>
+				<div>
+					<label>score2</label>
+					<input type="text" name="score2" data-bind="editmatch.score2"/>
+				</div>
+				<input type="submit" value="Submit" class="btn"/>
+			</form>
 		</div>
 		
 		<div  id="overlay" data-role="overlay">

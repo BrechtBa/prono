@@ -10,24 +10,20 @@
 // JQuery wrapper
 $(document).ready(function(){
 	
-	groupstageView = new app.classes.view($('[data-view="groupstage"]'),app.groupstage);
-	groupstageView.update();
-	$(document).on('updateGroupstageView',function(event,data){
-		groupstageView.update();		
-	});
+	app.add_view('groupstage',$('[data-view="groupstage"]'),{});
+	app.view.groupstage.update();
 
-	usersView = new app.classes.view($('[data-view="users"]'),app.users);
-	usersView.update();	
-	$(document).on('updateUsersView',function(event,data){
-		usersView.update();		
-	});
+	app.add_view('users',$('[data-view="users"]'),{});
+	app.view.users.update();	
 
-	teamsView = new app.classes.view($('[data-view="teams"]'),app.teams);
-	teamsView.update();
-	$(document).on('updateTeamsView',function(event,data){
-		teamsView.update();		
+	app.add_view('teams',$('[data-view="teams"]'),{});
+	app.view.teams.update();
+	
+	app.add_view('editteam',$('[data-view="editteam"]'),{
 	});
-	matchesView = new app.classes.view($('[data-view="matches"]'),app.matches,{
+	app.view.editteam.update();
+	
+	app.add_view('matches',$('[data-view="matches"]'),{
 		'parseDate': function(arg){
 			var date = new Date(arg*1000);
 			var month = "0" + date.getMonth();
@@ -37,9 +33,10 @@ $(document).ready(function(){
 			return month.substr(-2) + '-' + day.substr(-2) + ' ' + hours.substr(-2) + ':' + minutes.substr(-2)
 		}
 	});
-	matchesView.update();
-	$(document).on('updateMatchesView',function(event,data){
-		matchesView.update();		
+	app.view.matches.update();
+	
+	app.add_view('editmatch',$('[data-view="editmatch"]'),{
 	});
+	app.view.editmatch.update();
 	
 });

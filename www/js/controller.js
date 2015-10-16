@@ -22,8 +22,8 @@ $(document).ready(function(){
 	// event triggered when a user logs in
 	$(document).on('loggedin',function(event,data){
 		console.log('user is logged in');
-		$(document).trigger('getTeamsModel');
-		app.users.get();
+		$(document).trigger('teamsModelGet');
+		app.model.users.get();
 	});
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -39,9 +39,9 @@ $(document).ready(function(){
 // Users                                                                      //
 ////////////////////////////////////////////////////////////////////////////////
 	$(document).on('click tap','[data-view="users"] [data-control="delete"]',function(event){
-		var id = $(event.target).parent('[data-bind="user in data"]').attr('data-id');
+		var id = $(event.target).parent('[data-bind="user in users"]').attr('data-id');
 		if( id != app.service.user.id ){ 
-			app.users.del( id );
+			app.users.delete( id );
 		}
 		else{
 			console.log('Error: you con not delete yourself');
@@ -56,32 +56,29 @@ $(document).ready(function(){
 ////////////////////////////////////////////////////////////////////////////////
 	// add a team
 	$(document).on('click tap','[data-view="teams"] [data-control="add"]',function(event){
-		
-		app.teams.post({'name':'','abr':'','icon':''});
-
+		app.model.teams.post({'name':'','abr':'','icon':''});
 	});
 	// edit a team
 	$(document).on('click tap','[data-view="teams"] [data-control="edit"]',function(event){
-		var id = $(event.target).parent('[data-bind="team in data"]').attr('data-id');
-		// populate the popup
-		$('#edit_team').find('[name="id"]').val(id);
-		$('#edit_team').find('[name="name"]').val(app.teams.data[id].name);
-		$('#edit_team').find('[name="abr"]').val(app.teams.data[id].abr);
-		$('#edit_team').find('[name="icon"]').val(app.teams.data[id].icon);
-
+		var id = $(event.target).parents('[data-bind="team in teams"]').attr('data-id');
+		app.model.editteam.put(1,{
+			'id': id,
+			'name': app.model.teams[id]['name'],
+			'abr':  app.model.teams[id]['abr'],
+			'icon': app.model.teams[id]['icon'],
+		});
 		// open the popup
-		$(document).trigger('openPopup',['#edit_team']);
+		$(document).trigger('openPopup',['#editteam']);
 	});
-	$(document).submit('#edit_team form',function(event){
+	$(document).on('submit','form[data-view="editteam"]',function(event){
 		event.preventDefault();
-		console.log(event);
-
-		// populate the popup
-		var id = $('#edit_team').find('[name="id"]').val();
-		app.teams.put(id,{
-			'name':$('#edit_team').find('[name="name"]').val(),
-			'abr':$('#edit_team').find('[name="abr"]').val(),
-			'icon':$('#edit_team').find('[name="icon"]').val()
+		console.log('editteam form submit');
+		
+		var id = $('#editteam').find('[name="id"]').val();
+		app.model.teams.put(id,{
+			'name': $('#editteam').find('[name="name"]').val(),
+			'abr':  $('#editteam').find('[name="abr"]').val(),
+			'icon': $('#editteam').find('[name="icon"]').val()
 		});
 
 		// close the popup
@@ -89,8 +86,8 @@ $(document).ready(function(){
 	});	
 	// delete a team
 	$(document).on('click tap','[data-view="teams"] [data-control="delete"]',function(event){
-		var id = $(event.target).parent('[data-bind="team in data"]').attr('data-id');
-		app.teams.del(id);
+		var id = $(event.target).parents('[data-bind="team in teams"]').attr('data-id');
+		app.model.teams.delete(id);
 	});
 
 
@@ -101,53 +98,62 @@ $(document).ready(function(){
 ////////////////////////////////////////////////////////////////////////////////
 	// add a match
 	$(document).on('click tap','[data-view="matches"] [data-control="add"]',function(event){
-		
-		app.matches.post({'team1':0,'score1':-1,'penalty1':-1,'team2':0,'score2':-1,'penalty2':-1,'date':0});
-
+		app.model.matches.post({'team1':'','score1':'','penalty1':'','team2':'','score2':'','penalty2':'','date':''});
 	});
 	// edit a match
 	$(document).on('click tap','[data-view="matches"] [data-control="edit"]',function(event){
-		var id = $(event.target).parent('[data-bind="match in data"]').attr('data-id');
-		// populate the popup
-		$('#edit_match').find('[name="id"]').val(id);
-		$('#edit_match').find('[name="score1"]').val(app.matches.data[id].score1);
-		$('#edit_match').find('[name="score2"]').val(app.matches.data[id].score2);
-		$('#edit_match').find('[name="penalty1"]').val(app.matches.data[id].penalty1);
-		$('#edit_match').find('[name="penalty2"]').val(app.matches.data[id].penalty2);
-		$('#edit_match').find('[name="date"]').val(app.matches.data[id].date);
-
-		// populate the teams select lists
-		populate_select_list($('#edit_match').find('[name="team1"]'),app.teams.data,'id','name');
-		populate_select_list($('#edit_match').find('[name="team2"]'),app.teams.data,'id','name');
-		$('#edit_match').find('[name="team1"]').val(app.matches.data[id].team1.id);
-		$('#edit_match').find('[name="team2"]').val(app.matches.data[id].team2.id);
+		var id = $(event.target).parents('[data-bind="match in matches"]').attr('data-id');
 		
-		// open the popup
-		$(document).trigger('openPopup',['#edit_match']);
-	});
-	$(document).submit('#edit_match form',function(event){
-		event.preventDefault();
-		console.log(event);
+		// check if the teams are defined
+		if( typeof app.model.matches[id].team1 === 'undefined'){
+			team1 = 0;
+		}
+		else{
+			team1 = app.model.matches[id].team1.id
+		}
+		if( typeof app.model.matches[id].team2 === 'undefined'){
+			team2 = 0;
+		}
+		else{
+			team2 = app.model.matches[id].team2.id
+		}
+		
+		app.model.editmatch.put(1,{
+			'id': id,
+			'score1':   app.model.matches[id].score1,
+			'score2':   app.model.matches[id].score2,
+			'penalty1': app.model.matches[id].penalty1,
+			'penalty2': app.model.matches[id].penalty2,
+			'date':     app.model.matches[id].date,
+			'team1':    team1,
+			'team2':    team2
+		});
 
-		// populate the popup
-		var id = $('#edit_match').find('[name="id"]').val();
-		app.matches.put(id,{
-			'team1':$('#edit_match').find('[name="team1"]').val(),
-			'team2':$('#edit_match').find('[name="team2"]').val(),
-			'score1':$('#edit_match').find('[name="score1"]').val(),
-			'score2':$('#edit_match').find('[name="score2"]').val(),
-			'penalty1':$('#edit_match').find('[name="penalty1"]').val(),
-			'penalty2':$('#edit_match').find('[name="penalty2"]').val(),
-			'date':$('#edit_match').find('[name="date"]').val()
+		// open the popup
+		$(document).trigger('openPopup',['#editmatch']);
+	});
+	$(document).on('submit','form[data-view="editmatch"]',function(event){
+		event.preventDefault();
+		console.log('editmatch form submit');
+		
+		var id = $('#editmatch').find('[name="id"]').val();
+		app.model.matches.put(id,{
+			'team1':    $('#editmatch').find('[name="team1"]').val(),
+			'team2':    $('#editmatch').find('[name="team2"]').val(),
+			'score1':   $('#editmatch').find('[name="score1"]').val(),
+			'score2':   $('#editmatch').find('[name="score2"]').val(),
+			'penalty1': $('#editmatch').find('[name="penalty1"]').val(),
+			'penalty2': $('#editmatch').find('[name="penalty2"]').val(),
+			'date':     $('#editmatch').find('[name="date"]').val()
 		});
 
 		// close the popup
 		$(document).trigger('closePopup');
 	});	
-	// delete a team
+	// delete a match
 	$(document).on('click tap','[data-view="matches"] [data-control="delete"]',function(event){
-		var id = $(event.target).parent('[data-bind="match in data"]').attr('data-id');
-		app.matches.del(id);
+		var id = $(event.target).parents('[data-bind="match in matches"]').attr('data-id');
+		app.model.matches.delete(id);
 	});
 
 
@@ -155,17 +161,17 @@ $(document).ready(function(){
 ////////////////////////////////////////////////////////////////////////////////
 // Prono                                                                      //
 ////////////////////////////////////////////////////////////////////////////////
-	$(document).on('getTeamsModel',function(event,data){
+	$(document).on('teamsModelGet',function(event,data){
 		console.log('getting teams');
-		app.teams.get();
+		app.model.teams.get();
 	});
-	$(document).on('getMatchesModel',function(event,data){
+	$(document).on('matchesModelGet',function(event,data){
 		console.log('getting matches');
-		app.matches.get();
+		app.model.matches.get();
 	});
-	$(document).on('getGroupstageModel',function(event,data){
+	$(document).on('groupstageModelGet',function(event,data){
 		console.log('getting groupstage');
-		app.groupstage.get();
+		app.model.groupstage.get();
 	});
 
 
@@ -189,18 +195,3 @@ $(document).on('loggedin',function(event,data){
 	
 
 });
-
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////
-// Common functions                                                           //
-////////////////////////////////////////////////////////////////////////////////
-//populate select list
-function populate_select_list(object,model,val,text){
-	object.children().remove();
-	$.each(model,function(index,value){
-		object.append('<option value="'+value[val]+'">'+value[text]+'</option');
-	});
-}

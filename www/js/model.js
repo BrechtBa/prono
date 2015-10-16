@@ -6,26 +6,25 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Users                                                                      //
 ////////////////////////////////////////////////////////////////////////////////
-app.users = new app.classes.model({
-	get: function(){
+app.add_model('users',{
+	get: function(that){
 		app.service.api.get('users/',function(result){
 			$.each(result,function(index,user){
-				app.users.data[user.id] = {
-					id:user.id,
-					username:user.username
-				};
+				that[user.id] = {};
+				that[user.id]['id'] = user.id;
+				that[user.id]['username'] = user.username;
 			});
-			$(document).trigger('updateUsersView');
+			$(document).trigger('usersViewUpdate');
 		});
 	},
-	put: function(data){
+	put: function(that,id,data){
 	},
-	post: function(data){
+	post: function(that,data){
 	},
-	del: function(id){
-		app.service.api.del('users/'+id,function(result){
-			delete app.users.data[id];
-			$(document).trigger('updateUsersView');
+	delete: function(that,id){
+		app.service.api.delete('users/'+id,function(result){
+			delete that[id];
+			$(document).trigger('usersViewUpdate');
 		});
 	}
 });
@@ -36,205 +35,181 @@ app.users = new app.classes.model({
 ////////////////////////////////////////////////////////////////////////////////
 // Teams                                                                      //
 ////////////////////////////////////////////////////////////////////////////////
-app.teams = new app.classes.model({
-	get: function(){
+app.add_model('teams',{
+	get: function(that){
 		app.service.api.get('teams/',function(result){
 			$.each(result,function(index,team){
-				app.teams.data[team.id] = {
-					id:team.id,
-					name:team.name,
-					abr:team.abr,
-					icon:team.icon
-				};
+				that[team.id] = {};
+				that[team.id]['id'] = team.id;
+				that[team.id]['name'] = team.name;
+				that[team.id]['abr'] = team.abr;
+				that[team.id]['icon'] = team.icon;
 			});
-			$(document).trigger('updateTeamsView');
-			$(document).trigger('getMatchesModel');
+			$(document).trigger('teamsViewUpdate');
+			$(document).trigger('matchesModelGet');
 		});
 	},
-	put: function(id,data){
-		console.log(id);
-		console.log(data);
+	put: function(that,id,data){
 		app.service.api.put('teams/'+id,data,function(result,geturl){
-			console.log(result);
-			console.log(geturl);
 			app.service.api.get(geturl,function(result){
-				console.log(result);
-				app.teams.data[result.id]['id'] = result.id;
-				app.teams.data[result.id]['name'] = result.name;
-				app.teams.data[result.id]['abr'] = result.abr;
-				app.teams.data[result.id]['icon'] = result.icon;
-				$(document).trigger('updateTeamsView');
+				that[result.id]['id'] = result.id;
+				that[result.id]['name'] = result.name;
+				that[result.id]['abr'] = result.abr;
+				that[result.id]['icon'] = result.icon;
+				
+				$(document).trigger('teamsViewUpdate');
 			});
 		});
 	},
-	post: function(data){
+	post: function(that,data){
 		app.service.api.post('teams',data,function(result,geturl){
 			app.service.api.get(geturl,function(result){
-				app.teams.data[result.id] = {};
-				app.teams.data[result.id]['id'] = result.id;
-				app.teams.data[result.id]['name'] = result.name;
-				app.teams.data[result.id]['abr'] = result.abr;
-				app.teams.data[result.id]['icon'] = result.icon;
-		
-				$(document).trigger('updateTeamsView');
+				that[result.id] = {};
+				that[result.id]['id'] = result.id;
+				that[result.id]['name'] = result.name;
+				that[result.id]['abr'] = result.abr;
+				that[result.id]['icon'] = result.icon;
+				
+				$(document).trigger('teamsViewUpdate');
 			});
 		});
 	},
-	del: function(id){
-		app.service.api.del('teams/'+id,function(result){
-			delete app.teams.data[id];
-			$(document).trigger('updateTeamsView');
+	delete: function(that,id){
+		app.service.api.delete('teams/'+id,function(result){
+			delete that[id];
+			$(document).trigger('teamsViewUpdate');
 		});
 	}
 });
 
-
+////////////////////////////////////////////////////////////////////////////////
+// Edit team                                                                   //
+////////////////////////////////////////////////////////////////////////////////
+app.add_model('editteam',{
+	get(that){
+	},
+	put(that,id,data){
+		that['id'] = data['id'];
+		that['name'] = data['name'];
+		that['abr'] = data['abr'];
+		that['icon'] = data['icon'];
+		
+		$(document).trigger('editteamViewUpdate');
+	},
+	post(that,data){
+	},
+	delete(that,id){
+	}
+});
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // Matches                                                                    //
 ////////////////////////////////////////////////////////////////////////////////
-app.matches = new app.classes.model({
-	get: function(){
+app.add_model('matches',{
+	get: function(that){
 		app.service.api.get('matches/',function(result){
 			$.each(result,function(index,match){
-				app.matches.data[match.id] = {
-					id:match.id,
-					team1:app.teams.data[match.team1],
-					score1:match.score1,
-					penalty1:match.penalty1,
-					team2:app.teams.data[match.team2],
-					score2:match.score2,
-					penalty2:match.penalty2,
-					date:match.date
-				};
+				that[match.id] = {};
+				that[match.id]['id'] = match.id;
+				that[match.id]['team1'] = app.model.teams[match.team1];
+				that[match.id]['score1'] = match.score1;
+				that[match.id]['penalty1'] = match.penalty1;
+				that[match.id]['team2'] = app.model.teams[match.team2];
+				that[match.id]['score2'] = match.score2;
+				that[match.id]['penalty2'] = match.penalty2;
+				that[match.id]['date'] = match.date;
 			});
-			$(document).trigger('updateMatchesView');
-			$(document).trigger('getGroupstageModel');
+			$(document).trigger('matchesViewUpdate');
+			$(document).trigger('groupstageModelGet');
 		});
 	},
-	put: function(id,data){
+	put: function(that,id,data){
 		app.service.api.put('matches/'+id,data,function(result,geturl){
 			app.service.api.get(geturl,function(result){
-				app.matches.data[result.id]['id'] = result.id;
-				app.matches.data[result.id]['team1'] = app.teams.data[result.team1];
-				app.matches.data[result.id]['score1'] = result.score1;
-				app.matches.data[result.id]['penalty1'] = result.penalty1;
-				app.matches.data[result.id]['team2'] = app.teams.data[result.team2];
-				app.matches.data[result.id]['score2'] = result.score1;
-				app.matches.data[result.id]['penalty2'] = result.penalty2;
-				app.matches.data[result.id]['date'] = result.date;
+				that[result.id]['id'] = result.id;
+				that[result.id]['team1'] = app.model.teams[result.team1];
+				that[result.id]['score1'] = result.score1;
+				that[result.id]['penalty1'] = result.penalty1;
+				that[result.id]['team2'] = app.model.teams[result.team2];
+				that[result.id]['score2'] = result.score2;
+				that[result.id]['penalty2'] = result.penalty2;
+				that[result.id]['date'] = result.date;
 
-				$(document).trigger('updateMatchesView');
+				$(document).trigger('matchesViewUpdate');
 			});
 		});
 	},
-	post: function(data){
+	post: function(that,data){
+		console.log(data)
 		app.service.api.post('matches/',data,function(result,geturl){
-			console.log(result);
-			console.log(geturl);
+			console.log(result)
 			app.service.api.get(geturl,function(result){
-				app.matches.data[result.id] = {};
-				app.matches.data[result.id]['id'] = result.id;
-				app.matches.data[result.id]['team1'] = app.teams.data[result.team1];
-				app.matches.data[result.id]['score1'] = result.score1;
-				app.matches.data[result.id]['penalty1'] = result.penalty1;
-				app.matches.data[result.id]['team2'] = app.teams.data[result.team2];
-				app.matches.data[result.id]['score2'] = result.score1;
-				app.matches.data[result.id]['penalty2'] = result.penalty2;
-				app.matches.data[result.id]['date'] = result.date;
-
-				$(document).trigger('updateMatchesView');
+				that[result.id] = {};
+				that[result.id]['id'] = result.id;
+				that[result.id]['team1'] = app.model.teams[result.team1];
+				that[result.id]['score1'] = result.score1;
+				that[result.id]['penalty1'] = result.penalty1;
+				that[result.id]['team2'] = app.model.teams[result.team2];
+				that[result.id]['score2'] = result.score1;
+				that[result.id]['penalty2'] = result.penalty2;
+				that[result.id]['date'] = result.date;
+					
+				$(document).trigger('matchesViewUpdate');
 			});
 		});
 	},
-	del: function(id){
-		app.service.api.del('matches/'+id,function(result){
-			delete app.matches.data[id];
-			$(document).trigger('updateMatchesView');
+	delete: function(that,id){
+		app.service.api.delete('matches/'+id,function(result){
+			delete that[id];
+			$(document).trigger('matchesViewUpdate');
 		});
 	}
 });
 
-
+////////////////////////////////////////////////////////////////////////////////
+// Edit match                                                                 //
+////////////////////////////////////////////////////////////////////////////////
+app.add_model('editmatch',{
+	get(that){
+	},
+	put(that,id,data){
+		that['id'] = data['id'];
+		that['team1'] = app.model.teams[data['team1']];
+		that['team2'] = app.model.teams[data['team2']];
+		that['score1'] = data['score1'];
+		that['score2'] = data['score2'];
+		that['penalty1'] = data['penalty1'];
+		that['penalty2'] = data['penalty2'];
+		that['date'] = data['date'];
+		
+		$(document).trigger('editmatchViewUpdate');
+	},
+	post(that,data){
+	},
+	delete(that,id){
+	}
+});
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // Groupstage                                                                 //
 ////////////////////////////////////////////////////////////////////////////////
-app.groupstage = new app.classes.model({
-	get: function(){
+app.add_model('groupstage',{
+	get: function(that){
 		//app.groupstage.data[1] = {id:1, name:'A', matches:{1:app.matches.data[1], 2:app.matches.data[2]}};
 		//app.groupstage.data[2] = {id:2, name:'B', matches:{3:app.matches.data[3], 4:app.matches.data[4]}};
 
 		$(document).trigger('updateGroupstageView');
 	},
-	put: function(data){
+	put: function(that,id,data){
 		app.service.api.put('groups',data,function(result){
-			app.groupstage.data[data.id] = {id:data.id, name:data.name};
+			//that[id] = {id:data.id, name:data.name};
 			$(document).trigger('updateGroupstageView');
 		});
 	},
-	post: function(data){
+	post: function(that,data){
 	},
-	del: function(id){
+	del: function(that,id){
 	}
 });
-
-/*
-app.model.user = {
-	data: {
-		username: '',
-		id: 0,
-	},
-	set: function(user){
-		that = this;
-		$.post('authenticate/authenticate.php',{},function(result){
-			console.log(result);
-			if(result>0){
-				that.username = user.username;
-				that.id = user.id;
-
-				// get a list of users
-				app.model.users.get();
-			}
-			// update views
-			$(document).trigger('update_user',[]);
-
-		});
-	},
-	unset: function(){
-		this.data.username = '';
-		this.data.id = 0;
-	}
-};
-
-app.model.users = {
-	data: {},
-	get: function(){
-		that = this;
-		// get all users from the database
-		$.post('requests/select_from_table.php',{table:'users',column:'id,username',where:'id>0'},function(result){
-			result = JSON.parse(result);
-			$.each(result,function(index,value){
-				that.data[value.id] = {id:value.id, username:value.username};
-			});
-			app.view.users.update();
-		});
-	},
-	add: function(){
-	},
-	del: function(id){
-		that = this;
-		$.post('requests/delete_from_table.php',{table:'users',where:'id='+id},function(result){
-			result = JSON.parse(result);
-			console.log(result)
-			if(result>0){
-				delete that.data[id];
-				app.view.users.update();
-			}
-		});
-	}
-}
-*/
-

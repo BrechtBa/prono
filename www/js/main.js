@@ -2,12 +2,6 @@
 
 var app = app || {};
 
-
-
-
-
-
-
 ////////////////////////////////////////////////////////////////////////////////
 // Services                                                                   //
 ////////////////////////////////////////////////////////////////////////////////
@@ -32,7 +26,8 @@ app.service.api = {
 								callback(result);
 							}
 							else{
-								callback({});
+								console.log(result);
+								//callback({});
 							}
 						}
 					},
@@ -83,7 +78,7 @@ app.service.api = {
 			}
 		});
 	},
-	del: function(apipath,callback){
+	delete: function(apipath,callback){
 		app.service.user.authenticate(function(result){			
 			if(result.priveledge>0){
 				$.ajax({
@@ -161,177 +156,185 @@ app.service.user = {
 }
 
 
-
-
-/*
-app.model.user = {
-	data: {
-		username: '',
-		id: 0,
-	},
-	set: function(user){
-		that = this;
-		$.post('authenticate/authenticate.php',{},function(result){
-			console.log(result);
-			if(result>0){
-				that.username = user.username;
-				that.id = user.id;
-
-				// get a list of users
-				app.model.users.get();
-			}
-			// update views
-			$(document).trigger('update_user',[]);
-
-		});
-	},
-	unset: function(){
-		this.data.username = '';
-		this.data.id = 0;
-	}
-};
-*/
-
-
-
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////
-// Classes                                                                    //
-////////////////////////////////////////////////////////////////////////////////
-app.classes = {};
 ////////////////////////////////////////////////////////////////////////////////
 // Model                                                                      //
 ////////////////////////////////////////////////////////////////////////////////
-app.classes.model = function(args){
-	this.data = {};
+app.model = {};
+app.add_model = function(name,methods){
+	app.model[name] = {};
+	var that = app.model[name];
 	
-	this.get = function(){
-		args.get();
+	that.get = function(){
+		return methods['get'](that);
 	}
-	this.put = function(id,data){
-		args.put(id,data);
+	that.post = function(data){
+		return methods['post'](that,data);
 	}
-	this.post = function(data){
-		args.post(data);
+	that.put = function(id,data){
+		return methods['put'](that,id,data);
 	}
-	this.del = function(id){
-		args.del(id);
+	that.delete = function(id){
+		return methods['delete'](that,id);
 	}
-	
 }
+
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // View                                                                       //
 ////////////////////////////////////////////////////////////////////////////////
-app.classes.view = function(parent,model,parse={}){
+app.view = {}
+app.add_view = function(key,parent,parse={}){
 	// class to bind a model to a view
 	// arguments:
 	// parent:      a jquery dom element
-	// model:       a model with data attribute
 	// parse:    	an object containing parsing functions
+	app.view[key] = new app._view(parent,parse);
+	
+	// add an update event to the document
+	$(document).on(key+'ViewUpdate',function(){
+		app.view[key].update();
+	});
+}
 
+
+// _view class
+app._view = function(parent,parse){
 	this.parent = parent
 	this.template = parent.html();
-	this.model = model;
 	this.parse  = parse;
-	
-	this.update = function(){
-		this._update(this.model,this.parent,this.template);
+};
+app._view.prototype.update = function(){
+	this._update(app.model,this.parent,this.template);
+}
+app._view.prototype._update = function(model,parent,template){
+	// remove the parents content and replace it with template
+	parent.html(template);
+
+	var that = this;
+
+	var todolist = [];
+	// look for all elements with a data-bind attribute in the template including the element itself
+	var elements = $(parent).find('[data-bind]');
+	if( $(parent).length ==1 && typeof $(parent).attr('data-bind') !== 'undefined' ){
+		elements = $(parent).add(elements)
 	}
+	
+	// loop over the elements
+	elements.each(function(index,element){
+		var bind = $(element).attr('data-bind');
+		
+		if(bind.indexOf(' in ') > -1){
+			// if bind contains an ' in ' statement expand the child
 
-	this._update = function(model,parent,template){
-		// remove the parents content and replace it with template
-		parent.html(template);
-
-		var that = this;
-
-		// look for all elements with a data-bind attribute in the template including the element itself
-		var elements = $(parent).find('[data-bind]');
-		if( $(parent).length ==1 && typeof $(parent).attr('data-bind') !== 'undefined' ){
-			elements = $(parent).add(elements)
-		}
-
-
-		// loop over the elements
-		elements.each(function(index,element){
-			var bind = $(element).attr('data-bind');
+			// get the part of bind after the ' in '
+			var childstring = bind.substring(0,bind.indexOf(' in '));
+			var parentstring = bind.substring(bind.indexOf(' in ')+4);
 			
-			if(bind.indexOf(' in ') > -1){
-				// if bind contains an ' in ' statement expand the child
-
-				// get the part of bind after the ' in '
-				var childstring = bind.substring(0,bind.indexOf(' in '));
-				var parentstring = bind.substring(bind.indexOf(' in ')+4);
-
-				if( typeof deepFind(model,parentstring)  !== 'undefined'  ){
+			var temp = childstring;
+			// get only the part of the child before the 1st dot
+			var attribute = '';
+			if(temp.indexOf('.') > -1){
+				childstring = temp.substr(0,temp.indexOf('.'));
+				attribute = temp.substr(temp.indexOf('.')+1);
+			}
 			
-					var re = new RegExp(childstring+'\\.', 'g');
-
-					$.each( model[parentstring],function(index,submodel){
-						
+			if( typeof that.deepFind(model,parentstring)  !== 'undefined'  ){
+		
+				var re = new RegExp(childstring+'\\.', 'g');
+				var container = $(element).parent();
+				
+				if(typeof container === "undefined"){
+					container = parent;
+				}
+				
+				$.each(model[parentstring],function(index,submodel){
+					if(typeof submodel === typeof {} ){
+	
 						var child = $(element).clone()
-						parent.append( child );
-						child.attr('data-id',index);
-
-						//$(element).remove();
-
+						container.append( child );
+						
+						if( child.is('option') ){
+							child.attr('value',index);
+						}
+						else{
+							child.attr('data-id',index);
+						}
+						
+						// if the attribute is found in the submodel fill it in
+						var ret = that.fillIn(child,submodel,attribute);
+						if(ret !== false){
+							todolist.push(ret);
+						}
+						// try to go one level deeper
 						var subparent = $(child);
 						var subtemplate = $(child).html();
-
+						
 						// replace all occurences of the childstring in data-bind attributes
 						subtemplate = subtemplate.replace(re,'');
 
 						that._update(submodel,subparent,subtemplate);
-					});
-					$(element).remove();
-				}
-				else{
-					//console.log('Error: Value not found in model');
-				}
+					}
+				});
+				$(element).remove();
 			}
 			else{
-				// check if bind is in the model and update the html if so
-				var val = false;
-				if( typeof deepFind(model,bind) !== "undefined" ){
-					val = deepFind(model,bind);
-				}
-				else{
-					// check if there is a parse(*.) statement in the bind and redefine the parsefun if so
-					$.each(that.parse,function(index,value){
-						var re = new RegExp(index+'\\(([^)]+)\\)');
-						var arg = re.exec(bind);
-						if(arg !== null){
-							if( typeof deepFind(model,arg[1]) !== "undefined" ){
-								val = value(deepFind(model,arg[1]));
-								console.log(bind);
-								console.log(value);
-								console.log(model);
-								console.log(val);
-							}
-						}
-					});
-				}
-				
-				if(val !== false){
-					if( $(element).is('input') ){
-							$(element).val( val );
-					}
-					else{
-							$(element).html( val );
-					}
+				//console.log('Error: Value not found in model');
+			}
+		}
+		else{
+			// check if bind is in the model and update the html if so
+			var ret = that.fillIn(element,model,bind);
+			if(ret !== false){
+				todolist.push(ret);
+			}
+		}
+	});
+	
+	// set all values in the todolist
+	$.each(todolist,function(index,value){
+		$(value.element).val( value.value );
+	});
+}
+app._view.prototype.fillIn = function(element,model,bind){
+	that = this;
+
+	var val = false;
+	if( typeof that.deepFind(model,bind) !== "undefined" ){
+		val = that.deepFind(model,bind);
+	}
+	else{
+		// check if there is a parse(*.) statement in the bind and redefine the parsefun if so
+		$.each(that.parse,function(index,parsefun){
+			var re = new RegExp(index+'\\(([^)]+)\\)');
+			var arg = re.exec(bind);
+			if(arg !== null){
+				if( typeof that.deepFind(model,arg[1]) !== "undefined" ){
+					val = parsefun(that.deepFind(model,arg[1]));
 				}
 			}
-		
 		});
 	}
+	
+	ret = false;
+	
+	if(val !== false){
+		if( $(element).is('input') ){
+			$(element).val( val );
+		}
+		else if( $(element).is('select') ){
+			$(element).val( val );
+			// select hack
+			// return the element and value and store them in a list as they must be set after the options, which can be dynamic are added
+			ret = {element:element, value:val};
+		}
+		else{
+			$(element).html( val );
+		}
+	}
+	return ret;
 }
-
-
-function deepFind(obj, path) {
+app._view.prototype.deepFind = function(obj, path){
   var paths = path.split('.')
     , current = obj
     , i;
