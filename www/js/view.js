@@ -73,13 +73,22 @@ $(document).ready(function(){
 	});
 	app.view.editmatchscore.update();
 	
-	
+
+////////////////////////////////////////////////////////////////////////////////
+// Groupstage                                                                 //
+////////////////////////////////////////////////////////////////////////////////
+	app.add_view('groupstage',$('[data-view="groupstage"]'),{
+	});
+	app.view.groupstage.update();
 	
 ////////////////////////////////////////////////////////////////////////////////
-// Results                                                                    //
-////////////////////////////////////////////////////////////////////////////////	
-	
-	app.add_view('groupstage',$('[data-view="groupstage"]'),{});
-	app.view.groupstage.update();
+// Knockoutstage                                                              //
+////////////////////////////////////////////////////////////////////////////////
+	app.add_view('roundof16left',$('[data-view="roundof16left"]'),{
+	});
+	app.view.roundof16left.update();
+	//app.add_view('roundof16right',$('[data-view="roundof16right"]'),{
+	//});
+	//app.view.roundof16right.update();
 	
 });

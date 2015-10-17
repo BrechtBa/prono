@@ -204,13 +204,21 @@ app.add_model('matches',{
 				that[match.id]['date'] = match.date;
 				that[match.id]['stage'] = match.stage;
 				that[match.id]['group'] = app.model.groups[match.group];
+				that[match.id]['position'] = match.position;
 			});
 			$(document).trigger('groupstageModelGet');
+			$(document).trigger('knockoutstageModelGet');
+
 			$(document).trigger('matchesViewUpdate');
+			$(document).trigger('groupstageViewUpdate');
+			$(document).trigger('roundof16leftViewUpdate');
+			$(document).trigger('roundof16rightViewUpdate');
+			$(document).trigger('quarterfinalViewUpdate');
+			$(document).trigger('semifinalViewUpdate');
+			$(document).trigger('finalViewUpdate');
 		});
 	},
 	put: function(that,id,data){
-		console.log(data);
 		app.service.api.put('matches/'+id,data,function(result,geturl){
 			app.service.api.get(geturl,function(match){
 				that[match.id]['id'] = match.id;
@@ -223,8 +231,15 @@ app.add_model('matches',{
 				that[match.id]['date'] = match.date;
 				that[match.id]['stage'] = match.stage;
 				that[match.id]['group'] = app.model.groups[match.group];
+				that[match.id]['position'] = match.position;
 
 				$(document).trigger('matchesViewUpdate');
+				$(document).trigger('groupstageViewUpdate');
+				$(document).trigger('roundof16leftViewUpdate');
+				$(document).trigger('roundof16rightViewUpdate');
+				$(document).trigger('quarterfinalViewUpdate');
+				$(document).trigger('semifinalViewUpdate');
+				$(document).trigger('finalViewUpdate');
 			});
 		});
 	},
@@ -244,8 +259,15 @@ app.add_model('matches',{
 				that[match.id]['date'] = match.date;
 				that[match.id]['stage'] = match.stage;
 				that[match.id]['group'] = app.model.groups[match.group];
+				that[match.id]['position'] = match.position;
 	
 				$(document).trigger('matchesViewUpdate');
+				$(document).trigger('groupstageViewUpdate');
+				$(document).trigger('roundof16leftViewUpdate');
+				$(document).trigger('roundof16rightViewUpdate');
+				$(document).trigger('quarterfinalViewUpdate');
+				$(document).trigger('semifinalViewUpdate');
+				$(document).trigger('finalViewUpdate');
 			});
 		});
 	},
@@ -297,12 +319,10 @@ app.add_model('groupstage',{
 				that[group.id]['id'] = group.id;
 				that[group.id]['name'] = group.name;
 				that[group.id]['team1'] = app.model.teams[group.team1];
-				that[group.id]['team2'] = app.model.teams[group.team1];
+				that[group.id]['team2'] = app.model.teams[group.team2];
 				that[group.id]['matches'] = {};
-				
-
-				$.each(app.model.match,function(index,match){
-					if(match.stage==1 && match.group == group.id){
+				$.each(app.model.matches,function(index,match){
+					if(match.stage==1 && match.group.id == group.id){
 						that[group.id]['matches'][match.id] = match;
 					}
 				});
@@ -310,19 +330,50 @@ app.add_model('groupstage',{
 			});
 			$(document).trigger('groupstageViewUpdate');
 		});
-		//app.groupstage.data[1] = {id:1, name:'A', matches:{1:app.matches.data[1], 2:app.matches.data[2]}};
-		//app.groupstage.data[2] = {id:2, name:'B', matches:{3:app.matches.data[3], 4:app.matches.data[4]}};
-
-		$(document).trigger('updateGroupstageView');
 	},
 	put: function(that,id,data){
-		app.service.api.put('groups',data,function(result){
-			//that[id] = {id:data.id, name:data.name};
-			$(document).trigger('updateGroupstageView');
-		});
 	},
 	post: function(that,data){
 	},
 	del: function(that,id){
 	}
 });
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Round of 16                                                                //
+////////////////////////////////////////////////////////////////////////////////
+app.add_model('roundof16left',{
+	get: function(that){
+		that['matches'] = {};
+		$.each(app.model.matches,function(index,match){
+			if(match.stage==2 && match.position <= 4){
+				that['matches'][match.id] = match;
+			}
+		});
+		$(document).trigger('roundof16leftViewUpdate');
+	},
+	put: function(that,id,data){
+	},
+	post: function(that,data){
+	},
+	del: function(that,id){
+	}
+});
+app.add_model('roundof16right',{
+	get: function(that){
+		$.each(app.model.matches,function(index,match){
+			if(match.stage==2 && match.position > 4){
+				that['matches'][match.id] = match;
+			}
+		});
+		$(document).trigger('roundof16rightViewUpdate');
+	},
+	put: function(that,id,data){
+	},
+	post: function(that,data){
+	},
+	del: function(that,id){
+	}
+});
+

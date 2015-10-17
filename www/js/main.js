@@ -270,12 +270,12 @@ app._view.prototype._update = function(model,parent,template){
 				
 				// create a list of submodels
 				var submodels = [];
-				$.each(model[parentstring],function(index,submodel){
+				$.each(that.deepFind(model,parentstring),function(index,submodel){
 					submodels.push(submodel);
 				});
 				
 				// order the list of submodels if required
-				if(typeof orderstring  !== 'undefined'){
+				if(typeof orderstring  !== 'undefined' && typeof submodels[0] !== 'undefined'){
 					if( typeof that.deepFind(submodels[0],orderstring)  !== 'undefined' ){
 						submodels.sort(function(a, b){
 							if(reversed){
@@ -383,17 +383,18 @@ app._view.prototype.fillIn = function(element,model,bind){
 	return ret;
 }
 app._view.prototype.deepFind = function(obj, path){
-  var paths = path.split('.')
-    , current = obj
-    , i;
+	var paths = path.split('.')
+    	, current = obj
+    	, i;
 
-  for (i = 0; i < paths.length; ++i) {
-    if (current[paths[i]] == undefined) {
-      return undefined;
-    } else {
-      current = current[paths[i]];
-    }
-  }
-  return current;
+	for (i = 0; i < paths.length; ++i) {
+		if (current[paths[i]] == undefined) {
+      		return undefined;
+    	}
+		else {
+      		current = current[paths[i]];
+    	}
+  	}
+  	return current;
 }
 

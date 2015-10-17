@@ -278,9 +278,13 @@ $(document).ready(function(){
 	});
 	$(document).on('groupstageModelGet',function(event,data){
 		console.log('getting groupstage');
-		//app.model.groupstage.get();
+		app.model.groupstage.get();
 	});
-
+	$(document).on('knockoutstageModelGet',function(event,data){
+		console.log('getting knockoutstage');
+		app.model.roundof16left.get();
+		//app.model.roundof16right.get();
+	});
 
 	
 // JQuery wrapper

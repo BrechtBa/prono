@@ -117,6 +117,38 @@
 						</div>
 					</div>
 				</div>
+
+				<div>
+					<h2>Knockout fase</h2>
+					<div data-view="roundof16left">
+						<div class="matches">
+							<div data-bind="match in roundof16left.matches">
+								<span data-bind="match.team1.name"></span> <span data-bind="match.score1"></span> - <span data-bind="match.score2"></span> <span data-bind="match.team2.name"></span>
+							</div>
+						</div>
+					</div>
+					<div data-view="quarterfinalleft">
+						
+					</div>
+					<div data-view="semifinalleft">
+						
+					</div>
+					<div data-view="final">
+						
+					</div>
+					<div data-view="semifinalright">
+						
+					</div>
+					<div data-view="quarterfinalright">
+						
+					</div>
+					<div data-view="roundof16right">
+						<div class="matches">
+							<div data-bind="match in roundof16right.matches orderby date">
+							</div>
+						</div>
+					</div>
+				</div>
 				
 
 			</div>
