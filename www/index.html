@@ -163,39 +163,47 @@
 
 				<div data-view="groups">
 					<h1>Groups</h1>
-					<div class="groups">
-						<div data-bind="group in groups">
-							<span data-bind="group.id">id</span>
-							<span data-bind="group.name">name</span>
-							<span data-bind="group.team1.name">winner</span>
-							<span data-bind="group.team2.name">second</span>
-							<button data-control="edit" class="btn">edit</button>
-							<button data-control="delete" class="btn">delete</button>
-						</div>
-					</div>
+					<table class="groups">
+						<tr data-bind="group in groups">
+							<td data-bind="group.id">id</td>
+							<td data-bind="group.name">name</td>
+							<td data-bind="group.team1.name">winner</td>
+							<td data-bind="group.team2.name">second</td>
+							<td><button data-control="edit" class="btn">edit</button></td>
+							<td><button data-control="delete" class="btn">delete</button></td>
+						</tr>
+					</table>
 					<button data-control="add" class="btn">Add Group</button>
 				</div>
 
 				<div data-view="matches">
 					<h1>Matches</h1>
-					<div class="matches">
-						<div data-bind="match in matches">
-							<span data-bind="match.id">id</span>
-							<span data-bind="match.team1.name">team1</span>
-							<span data-bind="match.score1">score1</span>
-							<span data-bind="match.penalty1">penalty1</span>
-							<span> - </span>
-							<span data-bind="match.score2">score2</span>
-							<span data-bind="match.penalty2">penalty2</span>
-							<span data-bind="match.team2.name">team2</span>
-							<span data-bind="match.date">date</span>
-							<span data-bind="match.stage">stage</span>
-							<span data-bind="match.group">group</span>
-							<button data-control="edit" class="btn">edit</button>
-							<button data-control="editscore" class="btn">edit score</button>
-							<button data-control="delete" class="btn">delete</button>
-						</div>
-					</div>
+					<table class="matches">
+						<tr data-bind="match in matches">
+							<td data-bind="match.id">id</td>
+							<td data-bind="match.team1.name">team1</td>
+							<td> - </td>
+							<td data-bind="match.team2.name">team2</td>
+							<td data-bind="parseDate(match.date)">date</td>
+							<td data-bind="match.stage">stage</td>
+							<td data-bind="match.group.name">group</td>
+							<td>
+								<div>
+									<span data-bind="match.score1">score1</span>
+									<span> - </span>
+									<span data-bind="match.score2">score2</span>
+								</div>
+								<div data-bind-class="parsePenaltiesTaken(match.penalty1)">
+									(<span data-bind="match.penalty1">penalty1</span>
+									<span> - </span>
+									<span data-bind="match.penalty2">penalty2</span>)
+								</div>
+							</td>
+							<td><button data-control="edit" class="btn">edit</button></td>
+							<td><button data-control="editscore" class="btn">edit score</button></td>
+							<td><button data-control="delete" class="btn">delete</button></td>
+						</tr>
+					</table>
 					<button data-control="add" class="btn">Add Match</button>
 				</div>
 
@@ -263,24 +271,26 @@
 					<input type="text" name="id" data-bind="editmatch.id"/>
 				</div>
 				<div>
-					<label>team1</label>
+					<label>Team 1</label>
 					<select name="team1" data-bind="editmatch.team1.id">
 						<option value="1" data-bind="team.name in teams">Team 1</option>
 					</select>
 				</div>
 				<div>
-					<label>team2</label>
+					<label>Team 2</label>
 					<select name="team2" data-bind="editmatch.team2.id">
 						<option value="1" data-bind="team.name in teams">Team 2</option>
 					</select>
 				</div>
 				<div>
-					<label>stage</label>
+					<label>Stage</label>
 					<input type="text" name="stage" data-bind="editmatch.stage"/>
 				</div>
 				<div>
-					<label>group</label>
-					<input type="text" name="group" data-bind="editmatch.group"/>
+					<label>Group</label>
+					<select name="group" data-bind="editmatch.group">
+						<option value="1" data-bind="group.name in groups">Group</option>
+					</select>
 				</div>
 				<input type="submit" value="Submit" class="btn"/>
 			</form>

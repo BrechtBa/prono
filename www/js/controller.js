@@ -172,7 +172,12 @@ $(document).ready(function(){
 		else{
 			team2 = app.model.matches[id].team2.id
 		}
-		
+		if( typeof app.model.matches[id].group === 'undefined'){
+			group = 0;
+		}
+		else{
+			group = app.model.matches[id].group.id
+		}
 		app.model.editmatch.put(1,{
 			'id': id,
 			'score1':   app.model.matches[id].score1,
@@ -181,7 +186,7 @@ $(document).ready(function(){
 			'penalty2': app.model.matches[id].penalty2,
 			'date':     app.model.matches[id].date,
 			'stage': 	app.model.matches[id].stage,
-			'group':    app.model.matches[id].group,
+			'group':    group,
 			'team1':    team1,
 			'team2':    team2
 		});

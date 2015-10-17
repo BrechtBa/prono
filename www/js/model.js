@@ -60,6 +60,7 @@ app.add_model('teams',{
 				that[result.id]['icon'] = result.icon;
 				
 				$(document).trigger('teamsViewUpdate');
+				$(document).trigger('matchesViewUpdate');
 			});
 		});
 	},
@@ -80,6 +81,7 @@ app.add_model('teams',{
 		app.service.api.delete('teams/'+id,function(result){
 			delete that[id];
 			$(document).trigger('teamsViewUpdate');
+			$(document).trigger('matchesViewUpdate');
 		});
 	}
 });
@@ -134,6 +136,7 @@ app.add_model('groups',{
 				that[group.id]['team2'] = app.model.teams[group.team2];
 
 				$(document).trigger('groupsViewUpdate');
+				$(document).trigger('matchesViewUpdate');
 			});
 		});
 	},
@@ -156,6 +159,7 @@ app.add_model('groups',{
 		app.service.api.delete('groups/'+id,function(result){
 			delete that[id];
 			$(document).trigger('groupsViewUpdate');
+			$(document).trigger('matchesViewUpdate');
 		});
 	}
 });
@@ -199,7 +203,7 @@ app.add_model('matches',{
 				that[match.id]['penalty2'] = match.penalty2;
 				that[match.id]['date'] = match.date;
 				that[match.id]['stage'] = match.stage;
-				that[match.id]['group'] = match.group;
+				that[match.id]['group'] = app.model.groups[match.group];
 			});
 			$(document).trigger('groupstageModelGet');
 			$(document).trigger('matchesViewUpdate');
@@ -218,7 +222,7 @@ app.add_model('matches',{
 				that[match.id]['penalty2'] = match.penalty2;
 				that[match.id]['date'] = match.date;
 				that[match.id]['stage'] = match.stage;
-				that[match.id]['group'] = match.group;
+				that[match.id]['group'] = app.model.groups[match.group];
 
 				$(document).trigger('matchesViewUpdate');
 			});
@@ -239,7 +243,7 @@ app.add_model('matches',{
 				that[match.id]['penalty2'] = match.penalty2;
 				that[match.id]['date'] = match.date;
 				that[match.id]['stage'] = match.stage;
-				that[match.id]['group'] = match.group;
+				that[match.id]['group'] = app.model.groups[match.group];
 	
 				$(document).trigger('matchesViewUpdate');
 			});
@@ -266,6 +270,8 @@ app.add_model('editmatch',{
 		that['score2'] = data['score2'];
 		that['penalty1'] = data['penalty1'];
 		that['penalty2'] = data['penalty2'];
+		that['stage'] = data['stage'];
+		that['group'] = data['group'];
 		that['date'] = data['date'];
 		
 		$(document).trigger('editmatchViewUpdate');
