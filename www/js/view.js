@@ -46,16 +46,26 @@ $(document).ready(function(){
 	app.add_view('matches',$('[data-view="matches"]'),{
 		'parseDate': function(arg){
 			var date = new Date(arg*1000);
-			var month = "0" + date.getMonth();
-			var day = "0" + date.getDay();
+			var year = date.getFullYear();
+			var month = "0" + (date.getMonth()+1);
+			var day = "0" + date.getDate();
 			var hours = "0" + date.getHours();
 			var minutes = "0" + date.getMinutes();
-			return month.substr(-2) + '-' + day.substr(-2) + ' ' + hours.substr(-2) + ':' + minutes.substr(-2)
+			return day.substr(-2) + '-' + month.substr(-2) + '-' + year + ' ' + hours.substr(-2) + ':' + minutes.substr(-2)
 		}
 	});
 	app.view.matches.update();
 	
 	app.add_view('editmatch',$('[data-view="editmatch"]'),{
+		'parseDate': function(arg){
+			var date = new Date(arg*1000);
+			var year = date.getFullYear();
+			var month = "0" + (date.getMonth()+1);
+			var day = "0" + date.getDate();
+			var hours = "0" + date.getHours();
+			var minutes = "0" + date.getMinutes();
+			return day.substr(-2) + '-' + month.substr(-2) + '-' + year + ' ' + hours.substr(-2) + ':' + minutes.substr(-2)
+		}
 	});
 	app.view.editmatch.update();
 	

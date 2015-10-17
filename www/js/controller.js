@@ -172,18 +172,16 @@ $(document).ready(function(){
 		else{
 			team2 = app.model.matches[id].team2.id
 		}
+		// check if the group is defined
 		if( typeof app.model.matches[id].group === 'undefined'){
 			group = 0;
 		}
 		else{
 			group = app.model.matches[id].group.id
 		}
+		
 		app.model.editmatch.put(1,{
 			'id': id,
-			'score1':   app.model.matches[id].score1,
-			'score2':   app.model.matches[id].score2,
-			'penalty1': app.model.matches[id].penalty1,
-			'penalty2': app.model.matches[id].penalty2,
 			'date':     app.model.matches[id].date,
 			'stage': 	app.model.matches[id].stage,
 			'group':    group,
@@ -199,12 +197,22 @@ $(document).ready(function(){
 		console.log('editmatch form submit');
 		
 		var id = $('#editmatch').find('[name="id"]').val();
+		
+		// parse the date string
+		var datestring = $('#editmatch').find('[name="date"]').val();
+		var dateparts = datestring.split(' ');
+   		var timeparts = dateparts[1].split(':');
+   		dateparts = dateparts[0].split('-');
+
+		var date = new Date(dateparts[2], parseInt(dateparts[1], 10) - 1, dateparts[0], timeparts[0], timeparts[1]);
+		date = date.getTime()/1000;
+
 		app.model.matches.put(id,{
 			'team1':    $('#editmatch').find('[name="team1"]').val(),
 			'team2':    $('#editmatch').find('[name="team2"]').val(),
 			'stage':    $('#editmatch').find('[name="stage"]').val(),
 			'group':    $('#editmatch').find('[name="group"]').val(),
-			'date':     $('#editmatch').find('[name="date"]').val()
+			'date':     date
 		});
 
 		// close the popup
@@ -212,33 +220,14 @@ $(document).ready(function(){
 	});	
 	// edit a match score
 	$(document).on('click tap','[data-view="matches"] [data-control="editscore"]',function(event){
-		var id = $(event.target).parents('[data-bind="match in matches"]').attr('data-id');
-		
-		// check if the teams are defined
-		if( typeof app.model.matches[id].team1 === 'undefined'){
-			team1 = 0;
-		}
-		else{
-			team1 = app.model.matches[id].team1.id
-		}
-		if( typeof app.model.matches[id].team2 === 'undefined'){
-			team2 = 0;
-		}
-		else{
-			team2 = app.model.matches[id].team2.id
-		}
-		
+		var id = $(event.target).parents('[data-bind="match in matches"]').attr('data-id');		
+
 		app.model.editmatch.put(1,{
 			'id': id,
 			'score1':   app.model.matches[id].score1,
 			'score2':   app.model.matches[id].score2,
 			'penalty1': app.model.matches[id].penalty1,
 			'penalty2': app.model.matches[id].penalty2,
-			'date':     app.model.matches[id].date,
-			'stage': 	app.model.matches[id].stage,
-			'group':    app.model.matches[id].group,
-			'team1':    team1,
-			'team2':    team2
 		});
 
 		// open the popup
