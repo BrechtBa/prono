@@ -196,10 +196,12 @@ app.add_model('matches',{
 				that[match.id] = {};
 				that[match.id]['id'] = match.id;
 				that[match.id]['team1'] = app.model.teams[match.team1];
-				that[match.id]['score1'] = match.score1;
-				that[match.id]['penalty1'] = match.penalty1;
 				that[match.id]['team2'] = app.model.teams[match.team2];
+				that[match.id]['defaultteam1'] = match.defaultteam1;
+				that[match.id]['defaultteam2'] = match.defaultteam2;
+				that[match.id]['score1'] = match.score1;
 				that[match.id]['score2'] = match.score2;
+				that[match.id]['penalty1'] = match.penalty1;
 				that[match.id]['penalty2'] = match.penalty2;
 				that[match.id]['date'] = match.date;
 				that[match.id]['stage'] = match.stage;
@@ -223,10 +225,12 @@ app.add_model('matches',{
 			app.service.api.get(geturl,function(match){
 				that[match.id]['id'] = match.id;
 				that[match.id]['team1'] = app.model.teams[match.team1];
-				that[match.id]['score1'] = match.score1;
-				that[match.id]['penalty1'] = match.penalty1;
 				that[match.id]['team2'] = app.model.teams[match.team2];
+				that[match.id]['defaultteam1'] = match.defaultteam1;
+				that[match.id]['defaultteam2'] = match.defaultteam2;
+				that[match.id]['score1'] = match.score1;
 				that[match.id]['score2'] = match.score2;
+				that[match.id]['penalty1'] = match.penalty1;
 				that[match.id]['penalty2'] = match.penalty2;
 				that[match.id]['date'] = match.date;
 				that[match.id]['stage'] = match.stage;
@@ -251,15 +255,17 @@ app.add_model('matches',{
 				that[match.id] = {};
 				that[match.id]['id'] = match.id;
 				that[match.id]['team1'] = app.model.teams[match.team1];
-				that[match.id]['score1'] = match.score1;
-				that[match.id]['penalty1'] = match.penalty1;
 				that[match.id]['team2'] = app.model.teams[match.team2];
-				that[match.id]['score2'] = match.score1;
+				that[match.id]['defaultteam1'] = match.defaultteam1;
+				that[match.id]['defaultteam2'] = match.defaultteam2;
+				that[match.id]['score1'] = match.score1;
+				that[match.id]['score2'] = match.score2;
+				that[match.id]['penalty1'] = match.penalty1;
 				that[match.id]['penalty2'] = match.penalty2;
 				that[match.id]['date'] = match.date;
 				that[match.id]['stage'] = match.stage;
 				that[match.id]['group'] = app.model.groups[match.group];
-				that[match.id]['position'] = match.position;
+				that[match.id]['position'] = match.position;;
 	
 				$(document).trigger('matchesViewUpdate');
 				$(document).trigger('groupstageViewUpdate');
@@ -288,6 +294,8 @@ app.add_model('editmatch',{
 		that['id'] = data['id'];
 		that['team1'] = app.model.teams[data['team1']];
 		that['team2'] = app.model.teams[data['team2']];
+		that['defaultteam1'] = data['defaultteam1'];
+		that['defaultteam2'] = data['defaultteam2'];
 		that['score1'] = data['score1'];
 		that['score2'] = data['score2'];
 		that['penalty1'] = data['penalty1'];

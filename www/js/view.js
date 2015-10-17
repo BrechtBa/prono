@@ -52,6 +52,22 @@ $(document).ready(function(){
 			var hours = "0" + date.getHours();
 			var minutes = "0" + date.getMinutes();
 			return day.substr(-2) + '-' + month.substr(-2) + '-' + year + ' ' + hours.substr(-2) + ':' + minutes.substr(-2)
+		},
+		'parseTeam1Name': function(id){
+			if(typeof app.model.matches[id].team1 == "undefined"){
+				return app.model.matches[id].defaultteam1;
+			}
+			else{
+				return app.model.matches[id].team1.name;
+			}
+		},
+		'parseTeam2Name': function(id){
+			if(typeof app.model.matches[id].team2 == "undefined"){
+				return app.model.matches[id].defaultteam2;
+			}
+			else{
+				return app.model.matches[id].team2.name;
+			}
 		}
 	});
 	app.view.matches.update();

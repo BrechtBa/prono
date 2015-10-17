@@ -186,7 +186,9 @@ $(document).ready(function(){
 			'stage': 	app.model.matches[id].stage,
 			'group':    group,
 			'team1':    team1,
-			'team2':    team2
+			'team2':    team2,
+			'defaultteam1':    app.model.matches[id].defaultteam1,
+			'defaultteam2':    app.model.matches[id].defaultteam2
 		});
 
 		// open the popup
@@ -210,6 +212,8 @@ $(document).ready(function(){
 		app.model.matches.put(id,{
 			'team1':    $('#editmatch').find('[name="team1"]').val(),
 			'team2':    $('#editmatch').find('[name="team2"]').val(),
+			'defaultteam1':    $('#editmatch').find('[name="defaultteam1"]').val(),
+			'defaultteam2':    $('#editmatch').find('[name="defaultteam2"]').val(),
 			'stage':    $('#editmatch').find('[name="stage"]').val(),
 			'group':    $('#editmatch').find('[name="group"]').val(),
 			'date':     date
