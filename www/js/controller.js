@@ -287,7 +287,12 @@ $(document).ready(function(){
 	$(document).on('knockoutstageModelGet',function(event,data){
 		console.log('getting knockoutstage');
 		app.model.roundof16left.get();
-		//app.model.roundof16right.get();
+		app.model.roundof16right.get();
+		app.model.quarterfinalleft.get();
+		app.model.quarterfinalright.get();
+		app.model.semifinalleft.get();
+		app.model.semifinalright.get();
+		app.model.final.get();
 	});
 
 	

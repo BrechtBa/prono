@@ -353,7 +353,7 @@ app.add_model('groupstage',{
 ////////////////////////////////////////////////////////////////////////////////
 app.add_model('roundof16left',{
 	get: function(that){
-		that['matches'] = {};
+		that['matches'] = that['matches'] || {};
 		$.each(app.model.matches,function(index,match){
 			if(match.stage==2 && match.position <= 4){
 				that['matches'][match.id] = match;
@@ -370,12 +370,113 @@ app.add_model('roundof16left',{
 });
 app.add_model('roundof16right',{
 	get: function(that){
+		that['matches'] = that['matches'] || {};
 		$.each(app.model.matches,function(index,match){
 			if(match.stage==2 && match.position > 4){
 				that['matches'][match.id] = match;
 			}
 		});
 		$(document).trigger('roundof16rightViewUpdate');
+	},
+	put: function(that,id,data){
+	},
+	post: function(that,data){
+	},
+	del: function(that,id){
+	}
+});
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Quarter final                                                              //
+////////////////////////////////////////////////////////////////////////////////
+app.add_model('quarterfinalleft',{
+	get: function(that){
+		that['matches'] = that['matches'] || {};
+		$.each(app.model.matches,function(index,match){
+			if(match.stage==3 && match.position <= 2){
+				that['matches'][match.id] = match;
+			}
+		});
+		$(document).trigger('quarterfinalleftViewUpdate');
+	},
+	put: function(that,id,data){
+	},
+	post: function(that,data){
+	},
+	del: function(that,id){
+	}
+});
+app.add_model('quarterfinalright',{
+	get: function(that){
+		that['matches'] = that['matches'] || {};
+		$.each(app.model.matches,function(index,match){
+			if(match.stage==3 && match.position > 2){
+				that['matches'][match.id] = match;
+			}
+		});
+		$(document).trigger('quarterfinalrightViewUpdate');
+	},
+	put: function(that,id,data){
+	},
+	post: function(that,data){
+	},
+	del: function(that,id){
+	}
+});
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Semi final                                                                 //
+////////////////////////////////////////////////////////////////////////////////
+app.add_model('semifinalleft',{
+	get: function(that){
+		that['matches'] = that['matches'] || {};
+		$.each(app.model.matches,function(index,match){
+			if(match.stage==4 && match.position <= 1){
+				that['matches'][match.id] = match;
+			}
+		});
+		$(document).trigger('semifinalleftViewUpdate');
+	},
+	put: function(that,id,data){
+	},
+	post: function(that,data){
+	},
+	del: function(that,id){
+	}
+});
+app.add_model('semifinalright',{
+	get: function(that){
+		that['matches'] = that['matches'] || {};
+		$.each(app.model.matches,function(index,match){
+			if(match.stage==4 && match.position > 1){
+				that['matches'][match.id] = match;
+			}
+		});
+		$(document).trigger('semifinalrightViewUpdate');
+	},
+	put: function(that,id,data){
+	},
+	post: function(that,data){
+	},
+	del: function(that,id){
+	}
+});
+
+
+////////////////////////////////////////////////////////////////////////////////
+// final                                                                //
+////////////////////////////////////////////////////////////////////////////////
+app.add_model('final',{
+	get: function(that){
+		that['matches'] = that['matches'] || {};
+		$.each(app.model.matches,function(index,match){
+			if(match.stage==5 && match.position <= 4){
+				that['matches'][match.id] = match;
+			}
+		});
+		$(document).trigger('finalViewUpdate');
 	},
 	put: function(that,id,data){
 	},

@@ -92,7 +92,7 @@
 							<h3>Groep <span data-bind="group.name"></span></h3> 
 							<div class="matches">
 								<div data-bind="match in group.matches">
-									<span data-bind="match.team1.name"></span> <input data-bind="match.score1"/> - <input data-bind="match.score2"> <span data-bind="match.team2.name"></span>
+									<span data-bind="parseTeam1Name(match.id)"></span> <input data-bind="match.score1"/> - <input data-bind="match.score2"> <span data-bind="parseTeam2Name(match.id)e"></span>
 								</div>
 							</div>
 						</div>
@@ -111,7 +111,7 @@
 							<h3>Groep <span data-bind="group.name"></span></h3>
 							<div class="matches">
 								<div data-bind="match in group.matches orderby date">
-									<span data-bind="match.team1.name"></span> <span data-bind="match.score1"></span> - <span data-bind="match.score2"></span> <span data-bind="match.team2.name"></span>
+									<span data-bind="parseTeam1Name(match.id)"></span> <span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span> <span data-bind="parseTeam2Name(match.id)"></span>
 								</div>
 							</div>
 						</div>
@@ -123,28 +123,49 @@
 					<div data-view="roundof16left">
 						<div class="matches">
 							<div data-bind="match in roundof16left.matches">
-								<span data-bind="match.team1.name"></span> <span data-bind="match.score1"></span> - <span data-bind="match.score2"></span> <span data-bind="match.team2.name"></span>
+								<span data-bind="parseTeam1Name(match.id)"></span> <span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span> <span data-bind="parseTeam2Name(match.id)"></span>
 							</div>
 						</div>
 					</div>
 					<div data-view="quarterfinalleft">
-						
+						<div class="matches">
+							<div data-bind="match in quarterfinalleft.matches">
+								<span data-bind="parseTeam1Name(match.id)"></span> <span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span> <span data-bind="parseTeam2Name(match.id)"></span>
+							</div>
+						</div>
 					</div>
 					<div data-view="semifinalleft">
-						
+						<div class="matches">
+							<div data-bind="match in semifinalleft.matches">
+								<span data-bind="parseTeam1Name(match.id)"></span> <span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span> <span data-bind="parseTeam2Name(match.id)"></span>
+							</div>
+						</div>
 					</div>
 					<div data-view="final">
-						
+						<div class="matches">
+							<div data-bind="match in final.matches">
+								<span data-bind="parseTeam1Name(match.id)"></span> <span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span> <span data-bind="parseTeam2Name(match.id)"></span>
+							</div>
+						</div>
 					</div>
 					<div data-view="semifinalright">
-						
+						<div class="matches">
+							<div data-bind="match in semifinalright.matches">
+								<span data-bind="parseTeam1Name(match.id)"></span> <span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span> <span data-bind="parseTeam2Name(match.id)"></span>
+							</div>
+						</div>
 					</div>
 					<div data-view="quarterfinalright">
-						
+						<div class="matches">
+							<div data-bind="match in quarterfinalright.matches">
+								<span data-bind="parseTeam1Name(match.id)"></span> <span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span> <span data-bind="parseTeam2Name(match.id)"></span>
+							</div>
+						</div>
 					</div>
 					<div data-view="roundof16right">
 						<div class="matches">
-							<div data-bind="match in roundof16right.matches orderby date">
+							<div data-bind="match in roundof16left.matches">
+								<span data-bind="parseTeam1Name(match.id)"></span> <span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span> <span data-bind="parseTeam2Name(match.id)"></span>
 							</div>
 						</div>
 					</div>
@@ -221,11 +242,11 @@
 							<td data-bind="match.group.name"></td>
 							<td>
 								<div>
-									<span data-bind="match.score1"></span>
+									<span data-bind="parseScore(match.score1)"></span>
 									<span> - </span>
-									<span data-bind="match.score2"></span>
+									<span data-bind="parseScore(match.score2)"></span>
 								</div>
-								<div data-bind-class="parsePenaltiesTaken(match.penalty1)">
+								<div data-bind-class="parsePenaltiesTaken(match.id)">
 									(<span data-bind="match.penalty1"></span>
 									<span> - </span>
 									<span data-bind="match.penalty2"></span>)
