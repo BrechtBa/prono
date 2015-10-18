@@ -210,6 +210,7 @@ app.add_model('matches',{
 			});
 			$(document).trigger('groupstageModelGet');
 			$(document).trigger('knockoutstageModelGet');
+			$(document).trigger('userbetsModelGet');
 
 			$(document).trigger('matchesViewUpdate');
 			$(document).trigger('groupstageViewUpdate');
@@ -248,9 +249,7 @@ app.add_model('matches',{
 		});
 	},
 	post: function(that,data){
-		console.log(data)
 		app.service.api.post('matches/',data,function(result,geturl){
-			console.log(result)
 			app.service.api.get(geturl,function(match){
 				that[match.id] = {};
 				that[match.id]['id'] = match.id;
@@ -316,7 +315,6 @@ app.add_model('editmatch',{
 
 
 
-
 ////////////////////////////////////////////////////////////////////////////////
 // Groupstage                                                                 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -335,7 +333,6 @@ app.add_model('groupstage',{
 						that[group.id]['matches'][match.id] = match;
 					}
 				});
-
 			});
 			$(document).trigger('groupstageViewUpdate');
 		});
@@ -487,3 +484,82 @@ app.add_model('final',{
 	}
 });
 
+
+
+
+////////////////////////////////////////////////////////////////////////////////
+// bets score                                                                 //
+////////////////////////////////////////////////////////////////////////////////
+app.add_model('userbetsscore',{
+	get: function(that){
+		app.service.api.get('bets_score/user_id/'+app.service.user.id,function(result){
+			$.each(result,function(index,bet){
+				that[bet.match_id] = that[bet.match_id] || {};
+				that[bet.match_id]['id'] = bet.id;
+				that[bet.match_id]['match'] = app.model.matches[bet.match_id];
+				that[bet.match_id]['score1'] = bet.score1;
+				that[bet.match_id]['score2'] = bet.score2;
+			});
+			$(document).trigger('userbetsscoregroupstageViewUpdate');
+			$(document).trigger('userbetsscoreroundof16leftViewUpdate');
+			$(document).trigger('userbetsscoreroundof16rightViewUpdate');
+			$(document).trigger('userbetsscorequarterfinalleftViewUpdate');
+			$(document).trigger('userbetsscorequarterfinalrightViewUpdate');
+			$(document).trigger('userbetsscoresemifinalleftViewUpdate');
+			$(document).trigger('userbetsscoresemifinalrightViewUpdate');
+			$(document).trigger('userbetsscorefinalViewUpdate');
+;
+		});
+	},
+	put: function(that,id,data){
+		app.service.api.put('bets_score/'+id,data,function(result,geturl){
+			app.service.api.get(geturl,function(bet){
+				that[bet.match_id]['id'] = bet.id;
+				that[bet.match_id]['match'] = app.model.matches[bet.match_id];
+				that[bet.match_id]['score1'] = bet.score1;
+				that[bet.match_id]['score2'] = bet.score2;
+			});
+			$(document).trigger('userbetsscoregroupstageViewUpdate');
+			$(document).trigger('userbetsscoreroundof16leftViewUpdate');
+			$(document).trigger('userbetsscoreroundof16rightViewUpdate');
+			$(document).trigger('userbetsscorequarterfinalleftViewUpdate');
+			$(document).trigger('userbetsscorequarterfinalrightViewUpdate');
+			$(document).trigger('userbetsscoresemifinalleftViewUpdate');
+			$(document).trigger('userbetsscoresemifinalrightViewUpdate');
+			$(document).trigger('userbetsscorefinalViewUpdate');
+		});
+	},
+	post: function(that,data){
+		app.service.api.post('bets_score/',data,function(result,geturl){
+			app.service.api.get(geturl,function(bet){
+				that[bet.match_id] = that[bet.id] || {};
+				that[bet.match_id]['id'] = bet.id;
+				that[bet.match_id]['match'] = app.model.matches[bet.match_id];
+				that[bet.match_id]['score1'] = bet.score1;
+				that[bet.match_id]['score2'] = bet.score2;ty2;
+			});
+			$(document).trigger('userbetsscoregroupstageViewUpdate');
+			$(document).trigger('userbetsscoreroundof16leftViewUpdate');
+			$(document).trigger('userbetsscoreroundof16rightViewUpdate');
+			$(document).trigger('userbetsscorequarterfinalleftViewUpdate');
+			$(document).trigger('userbetsscorequarterfinalrightViewUpdate');
+			$(document).trigger('userbetsscoresemifinalleftViewUpdate');
+			$(document).trigger('userbetsscoresemifinalrightViewUpdate');
+			$(document).trigger('userbetsscorefinalViewUpdate');
+		});
+	},
+	delete: function(that,match_id){
+		id = that[match_id].id;
+		app.service.api.delete('bets_score/'+id,function(result){
+			delete that[match_id];
+			$(document).trigger('userbetsscoregroupstageViewUpdate');
+			$(document).trigger('userbetsscoreroundof16leftViewUpdate');
+			$(document).trigger('userbetsscoreroundof16rightViewUpdate');
+			$(document).trigger('userbetsscorequarterfinalleftViewUpdate');
+			$(document).trigger('userbetsscorequarterfinalrightViewUpdate');
+			$(document).trigger('userbetsscoresemifinalleftViewUpdate');
+			$(document).trigger('userbetsscoresemifinalrightViewUpdate');
+			$(document).trigger('userbetsscorefinalViewUpdate');
+		});
+	}
+});

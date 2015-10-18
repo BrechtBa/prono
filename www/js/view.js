@@ -13,32 +13,30 @@ $(document).ready(function(){
 ////////////////////////////////////////////////////////////////////////////////
 // Users                                                                      //
 ////////////////////////////////////////////////////////////////////////////////	
-	app.add_view('users',$('[data-view="users"]'),{});
-	app.view.users.update();
+	app.add_view('users',$('[data-view="users"]'),{
+	});
 	
-	app.add_view('ranking',$('[data-view="ranking"]'),{});
-	app.view.ranking.update();
-	
+	app.add_view('ranking',$('[data-view="ranking"]'),{
+	});
 
 ////////////////////////////////////////////////////////////////////////////////
 // Teams                                                                      //
 ////////////////////////////////////////////////////////////////////////////////
-	app.add_view('teams',$('[data-view="teams"]'),{});
-	app.view.teams.update();
+	app.add_view('teams',$('[data-view="teams"]'),{
+	});
 	
 	app.add_view('editteam',$('[data-view="editteam"]'),{
 	});
-	app.view.editteam.update();
 
 ////////////////////////////////////////////////////////////////////////////////
 // Groups                                                                     //
 ////////////////////////////////////////////////////////////////////////////////
-	app.add_view('groups',$('[data-view="groups"]'),{});
-	app.view.groups.update();
+	app.add_view('groups',$('[data-view="groups"]'),{
+	});
 	
 	app.add_view('editgroup',$('[data-view="editgroup"]'),{
 	});
-	app.view.editgroup.update();
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Matches                                                                    //
@@ -50,20 +48,18 @@ $(document).ready(function(){
 		'parseScore': app.view.functions.parseScore,
 		'parsePenaltiesTaken': app.view.functions.parsePenaltiesTaken
 	});
-	app.view.matches.update();
 	
 	app.add_view('editmatch',$('[data-view="editmatch"]'),{
 		'parseDate': app.view.functions.parseDate
 	});
-	app.view.editmatch.update();
 	
 	app.add_view('editmatchscore',$('[data-view="editmatchscore"]'),{
 	});
-	app.view.editmatchscore.update();
+
 	
 
 ////////////////////////////////////////////////////////////////////////////////
-// Groupstage                                                                 //
+// Results                                                                    //
 ////////////////////////////////////////////////////////////////////////////////
 	app.add_view('groupstage',$('[data-view="groupstage"]'),{
 		'parseTeam1Name': app.view.functions.parseTeam1Name,
@@ -71,26 +67,19 @@ $(document).ready(function(){
 		'parseScore': app.view.functions.parseScore,
 		'parsePenaltiesTaken': app.view.functions.parsePenaltiesTaken
 	});
-	app.view.groupstage.update();
-	
 
-////////////////////////////////////////////////////////////////////////////////
-// Knockoutstage                                                              //
-////////////////////////////////////////////////////////////////////////////////
 	app.add_view('roundof16left',$('[data-view="roundof16left"]'),{
 		'parseTeam1Name': app.view.functions.parseTeam1Name,
 		'parseTeam2Name': app.view.functions.parseTeam2Name,
 		'parseScore': app.view.functions.parseScore,
 		'parsePenaltiesTaken': app.view.functions.parsePenaltiesTaken
 	});
-	app.view.roundof16left.update();
 	app.add_view('roundof16right',$('[data-view="roundof16right"]'),{
 		'parseTeam1Name': app.view.functions.parseTeam1Name,
 		'parseTeam2Name': app.view.functions.parseTeam2Name,
 		'parseScore': app.view.functions.parseScore,
 		'parsePenaltiesTaken': app.view.functions.parsePenaltiesTaken
 	});
-	app.view.roundof16right.update();
 
 	app.add_view('quarterfinalleft',$('[data-view="quarterfinalleft"]'),{
 		'parseTeam1Name': app.view.functions.parseTeam1Name,
@@ -98,14 +87,12 @@ $(document).ready(function(){
 		'parseScore': app.view.functions.parseScore,
 		'parsePenaltiesTaken': app.view.functions.parsePenaltiesTaken
 	});
-	app.view.quarterfinalleft.update();
 	app.add_view('quarterfinalright',$('[data-view="quarterfinalright"]'),{
 		'parseTeam1Name': app.view.functions.parseTeam1Name,
 		'parseTeam2Name': app.view.functions.parseTeam2Name,
 		'parseScore': app.view.functions.parseScore,
 		'parsePenaltiesTaken': app.view.functions.parsePenaltiesTaken
 	});
-	app.view.quarterfinalright.update();
 
 	app.add_view('semifinalleft',$('[data-view="semifinalleft"]'),{
 		'parseTeam1Name': app.view.functions.parseTeam1Name,
@@ -113,14 +100,12 @@ $(document).ready(function(){
 		'parseScore': app.view.functions.parseScore,
 		'parsePenaltiesTaken': app.view.functions.parsePenaltiesTaken
 	});
-	app.view.semifinalleft.update();
 	app.add_view('semifinalright',$('[data-view="semifinalright"]'),{
 		'parseTeam1Name': app.view.functions.parseTeam1Name,
 		'parseTeam2Name': app.view.functions.parseTeam2Name,
 		'parseScore': app.view.functions.parseScore,
 		'parsePenaltiesTaken': app.view.functions.parsePenaltiesTaken
 	});
-	app.view.semifinalright.update();
 
 	app.add_view('final',$('[data-view="final"]'),{
 		'parseTeam1Name': app.view.functions.parseTeam1Name,
@@ -128,10 +113,77 @@ $(document).ready(function(){
 		'parseScore': app.view.functions.parseScore,
 		'parsePenaltiesTaken': app.view.functions.parsePenaltiesTaken
 	});
-	app.view.final.update();
 
-	
+
+////////////////////////////////////////////////////////////////////////////////
+// User Bets                                                                  //
+////////////////////////////////////////////////////////////////////////////////
+	app.add_view('userbetsscoregroupstage',$('[data-view="userbetsscoregroupstage"]'),{
+		'parseTeam1Name': app.view.functions.parseTeam1Name,
+		'parseTeam2Name': app.view.functions.parseTeam2Name,
+		'parseBetScore1': app.view.functions.parseBetScore1,
+		'parseBetScore2': app.view.functions.parseBetScore2
+	});
+
+	app.add_view('userbetsscoreroundof16left',$('[data-view="userbetsscoreroundof16left"]'),{
+		'parseTeam1Name': app.view.functions.parseTeam1Name,
+		'parseTeam2Name': app.view.functions.parseTeam2Name,
+		'parseBetScore1': app.view.functions.parseBetScore1,
+		'parseBetScore2': app.view.functions.parseBetScore2
+	});
+	app.add_view('userbetsscoreroundof16right',$('[data-view="userbetsscoreroundof16right"]'),{
+		'parseTeam1Name': app.view.functions.parseTeam1Name,
+		'parseTeam2Name': app.view.functions.parseTeam2Name,
+		'parseBetScore1': app.view.functions.parseBetScore1,
+		'parseBetScore2': app.view.functions.parseBetScore2
+	});
+
+	app.add_view('userbetsscorequarterfinalleft',$('[data-view="userbetsscorequarterfinalleft"]'),{
+		'parseTeam1Name': app.view.functions.parseTeam1Name,
+		'parseTeam2Name': app.view.functions.parseTeam2Name,
+		'parseBetScore1': app.view.functions.parseBetScore1,
+		'parseBetScore2': app.view.functions.parseBetScore2
+	});
+	app.add_view('userbetsscorequarterfinalright',$('[data-view="userbetsscorequarterfinalright"]'),{
+		'parseTeam1Name': app.view.functions.parseTeam1Name,
+		'parseTeam2Name': app.view.functions.parseTeam2Name,
+		'parseBetScore1': app.view.functions.parseBetScore1,
+		'parseBetScore2': app.view.functions.parseBetScore2
+	});
+
+	app.add_view('userbetsscoresemifinalleft',$('[data-view="userbetsscoresemifinalleft"]'),{
+		'parseTeam1Name': app.view.functions.parseTeam1Name,
+		'parseTeam2Name': app.view.functions.parseTeam2Name,
+		'parseBetScore1': app.view.functions.parseBetScore1,
+		'parseBetScore2': app.view.functions.parseBetScore2
+	});
+	app.add_view('userbetsscoresemifinalright',$('[data-view="userbetsscoresemifinalright"]'),{
+		'parseTeam1Name': app.view.functions.parseTeam1Name,
+		'parseTeam2Name': app.view.functions.parseTeam2Name,
+		'parseBetScore1': app.view.functions.parseBetScore1,
+		'parseBetScore2': app.view.functions.parseBetScore2
+	});
+
+	app.add_view('userbetsscorefinalright',$('[data-view="userbetsscorefinalright"]'),{
+		'parseTeam1Name': app.view.functions.parseTeam1Name,
+		'parseTeam2Name': app.view.functions.parseTeam2Name,
+		'parseBetScore1': app.view.functions.parseBetScore1,
+		'parseBetScore2': app.view.functions.parseBetScore2
+	});
+
 });
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -170,6 +222,32 @@ app.view.functions.parseScore = function(score){
 	}
 	else{
 		return score;
+	}
+}
+app.view.functions.parseBetScore1 = function(matchid){
+	if(typeof app.model.userbetsscore[matchid] == "undefined"){
+		return "";
+	}
+	else{
+		if(typeof app.model.userbetsscore[matchid].score1 == "undefined"){
+			return "";
+		}
+		else{
+			return app.model.userbetsscore[matchid].score1;
+		}
+	}
+}
+app.view.functions.parseBetScore2 = function(matchid){
+	if(typeof app.model.userbetsscore[matchid] == "undefined"){
+		return "";
+	}
+	else{
+		if(typeof app.model.userbetsscore[matchid].score2 == "undefined"){
+			return "";
+		}
+		else{
+			return app.model.userbetsscore[matchid].score2;
+		}
 	}
 }
 app.view.functions.parsePenaltiesTaken = function(matchid){

@@ -264,7 +264,7 @@ $(document).ready(function(){
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// Prono                                                                      //
+// Data get events                                                            //
 ////////////////////////////////////////////////////////////////////////////////
 	$(document).on('usersModelGet',function(event,data){
 		console.log('getting users');
@@ -296,8 +296,11 @@ $(document).ready(function(){
 		app.model.semifinalright.get();
 		app.model.final.get();
 	});
+	$(document).on('userbetsModelGet',function(event,data){
+		console.log('getting bets');
+		app.model.userbetsscore.get();
+	});
 
-	
 // JQuery wrapper
 });
 
