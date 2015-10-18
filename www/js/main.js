@@ -308,7 +308,7 @@ app._view.prototype._update = function(model,parent,template){
 						}
 						
 						// if the attribute is found in the submodel fill it in
-						var ret = that.fillIn(child,submodel,attribute);
+						var ret = that.bindValue(child,submodel,attribute);
 						if(ret !== false){
 							todolist.push(ret);
 						}
@@ -337,19 +337,34 @@ app._view.prototype._update = function(model,parent,template){
 		}
 		else{
 			// check if bind is in the model and update the html if so
-			var ret = that.fillIn(element,model,bind);
+			var ret = that.bindValue(element,model,bind);
 			if(ret !== false){
 				todolist.push(ret);
 			}
 		}
 	});
-	
+
+
+
+	// check for bind-class emenents
+	var classelements = $(parent).find('[data-bind-class]');
+	if( $(parent).length ==1 && typeof $(parent).attr('data-bind-class') !== 'undefined' ){
+		classelements = $(parent).add(classelements)
+	}
+	// loop over the elements
+	classelements.each(function(index,classelement){
+		var classbind = $(classelement).attr('data-bind-class');
+		// bind classes
+		that.bindClass(classelement,model,classbind);
+	});
+
+
 	// set all values in the todolist
 	$.each(todolist,function(index,value){
 		$(value.element).val( value.value );
 	});
 }
-app._view.prototype.fillIn = function(element,model,bind){
+app._view.prototype.bindValue = function(element,model,bind){
 	that = this;
 
 	var val = false;
@@ -387,6 +402,30 @@ app._view.prototype.fillIn = function(element,model,bind){
 	}
 	return ret;
 }
+app._view.prototype.bindClass = function(element,model,bind){
+	that = this;
+
+	var val = false;
+	if( typeof that.deepFind(model,bind) !== "undefined" ){
+		val = that.deepFind(model,bind);
+	}
+	else{
+		// check if there is a parse(*.) statement in the bind and redefine the parsefun if so
+		$.each(that.parse,function(index,parsefun){
+			var re = new RegExp(index+'\\(([^)]+)\\)');
+			var arg = re.exec(bind);
+			if(arg !== null){
+				if( typeof that.deepFind(model,arg[1]) !== "undefined" ){
+					val = parsefun(that.deepFind(model,arg[1]));
+				}
+			}
+		});
+	}
+	if(val !== false){
+		$(element).addClass(val);
+	}
+}
+
 app._view.prototype.deepFind = function(obj, path){
 	var paths = path.split('.')
     	, current = obj
