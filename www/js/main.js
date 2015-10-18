@@ -108,11 +108,11 @@ app.service.api = {
 app.service.user = {
 	id: -1,
 	username: '',
-	login: function(username=-1,password=-1){
+	login: function(username,password){
 		console.log('loggigng in');
 		that = this;
 		var data = {username:username,password:password};
-		if(username==-1){
+		if(typeof username == "undefined"){
 			data = {};
 		}
 		$.post('authenticate/login.php',data,function(result){
@@ -141,7 +141,7 @@ app.service.user = {
 			callback(result);
 		});
 	},
-	register: function(username=-1,password=-1,password2=-1){
+	register: function(username,password,password2){
 		that = this;
 		$.post('authenticate/register.php',{username:username,password:password,password2:password2},function(result){
 			result = JSON.parse(result);			
@@ -184,11 +184,16 @@ app.add_model = function(name,methods){
 // View                                                                       //
 ////////////////////////////////////////////////////////////////////////////////
 app.view = {}
-app.add_view = function(key,parent,parse={}){
+app.add_view = function(key,parent,parse){
 	// class to bind a model to a view
 	// arguments:
 	// parent:      a jquery dom element
 	// parse:    	an object containing parsing functions
+
+	if(typeof parse == "undefined"){
+		parse = {};
+	}
+
 	app.view[key] = new app._view(parent,parse);
 	
 	// add an update event to the document
