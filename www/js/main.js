@@ -385,10 +385,12 @@ app._view.prototype.bindValue = function(element,model,bind){
 	}
 	
 	ret = false;
-	
 	if(val !== false){
 		if( $(element).is('input') ){
 			$(element).val( val );
+		}
+		else if( $(element).is('img') ){
+			$(element).attr('src',val );
 		}
 		else if( $(element).is('select') ){
 			$(element).val( val );

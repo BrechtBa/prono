@@ -302,6 +302,7 @@ app.add_model('editmatch',{
 		that['penalty2'] = data['penalty2'];
 		that['stage'] = data['stage'];
 		that['group'] = data['group'];
+		that['position'] = data['position'];
 		that['date'] = data['date'];
 		
 		$(document).trigger('editmatchViewUpdate');

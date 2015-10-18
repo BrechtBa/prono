@@ -120,10 +120,10 @@ $(document).ready(function(){
 		}
 		
 		app.model.editgroup.put(1,{
-			'id': id,
+			'id': 		id,
 			'name':   	app.model.groups[id].name,
 			'team1':    team1,
-			'team2':    team2
+			'team2':	team2
 		});
 
 		// open the popup
@@ -181,14 +181,15 @@ $(document).ready(function(){
 		}
 		
 		app.model.editmatch.put(1,{
-			'id': id,
-			'date':     app.model.matches[id].date,
-			'stage': 	app.model.matches[id].stage,
-			'group':    group,
-			'team1':    team1,
-			'team2':    team2,
-			'defaultteam1':    app.model.matches[id].defaultteam1,
-			'defaultteam2':    app.model.matches[id].defaultteam2
+			'id': 			id,
+			'date':     	app.model.matches[id].date,
+			'stage': 		app.model.matches[id].stage,
+			'group':    	group,
+			'position': 	app.model.matches[id].position,
+			'team1':    	team1,
+			'team2':    	team2,
+			'defaultteam1': app.model.matches[id].defaultteam1,
+			'defaultteam2': app.model.matches[id].defaultteam2
 		});
 
 		// open the popup
@@ -210,13 +211,14 @@ $(document).ready(function(){
 		date = date.getTime()/1000;
 
 		app.model.matches.put(id,{
-			'team1':    $('#editmatch').find('[name="team1"]').val(),
-			'team2':    $('#editmatch').find('[name="team2"]').val(),
-			'defaultteam1':    $('#editmatch').find('[name="defaultteam1"]').val(),
-			'defaultteam2':    $('#editmatch').find('[name="defaultteam2"]').val(),
-			'stage':    $('#editmatch').find('[name="stage"]').val(),
-			'group':    $('#editmatch').find('[name="group"]').val(),
-			'date':     date
+			'team1':    		$('#editmatch').find('[name="team1"]').val(),
+			'team2':    		$('#editmatch').find('[name="team2"]').val(),
+			'defaultteam1': 	$('#editmatch').find('[name="defaultteam1"]').val(),
+			'defaultteam2':  	$('#editmatch').find('[name="defaultteam2"]').val(),
+			'stage':    		$('#editmatch').find('[name="stage"]').val(),
+			'group':    		$('#editmatch').find('[name="group"]').val(),
+			'position':    		$('#editmatch').find('[name="position"]').val(),
+			'date':     		date
 		});
 
 		// close the popup
