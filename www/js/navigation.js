@@ -5,6 +5,7 @@ $(document).ready(function(){
 // Panel                                                                      //
 ////////////////////////////////////////////////////////////////////////////////
 	$('[data-role^=panel]').hide();
+	$('[data-role=overlaypanel]').hide();
 	var openPanels = [];
 	// open panel
 	$(document).on('click tap','a[href^="#"]',function(event){
@@ -12,30 +13,38 @@ $(document).ready(function(){
 		
 		var target = $(this).attr('href');
 		if( target!='#' && target!='#close' && $(target).attr('data-role').substring(0,5)=='panel' ){
-			$(target).show();
+			$(document).trigger('openPanel',[target]);
 			event.stopPropagation();
-			openPanels.push($(target));
+
 		}
 	});
 	// close panel
-	$(document).on('click tap','body',function(event){
+	$(document).on('click tap','[data-role=overlaypanel]',function(event){
 		$(document).trigger('closePanel');
 	});
 	// do not hide the panel when clicked inside
-	$(document).on('click tap','[data-role=panel]',function(event){
+	$(document).on('click tap','[data-role^=panel]',function(event){
 		event.stopPropagation();
 	});
 	// hide the panel when clicking on a link with a #attribute
-	$(document).on('click tap','[data-role^="panel"] a[href^="#"]',function(event){
+	$(document).on('click tap','[data-role^=panel] a[href^="#"]',function(event){
 		event.preventDefault();
 		$(document).trigger('closePanel');
 	});
 	
-	
+	$(document).on('openPanel',function(event,target){
+		console.log(target);
+		$(target).show();
+		$('[data-role="overlaypanel"]').show();
+		openPanels.push($(target));
+	});
 	$(document).on('closePanel',function(event){
 		currentPanel = openPanels.pop()
 		if( currentPanel != undefined ){
 			currentPanel.hide()
+		}
+		if( openPanels.length == 0){
+			$('[data-role="overlaypanel"]').hide();
 		}
 	});
 	

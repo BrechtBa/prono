@@ -117,7 +117,6 @@ app.service.user = {
 		}
 		$.post('authenticate/login.php',data,function(result){
 			result = JSON.parse(result);
-			console.log(result);
 			if(result.status>0){
 				that.id = result.data.id;
 				that.username = result.data.username;

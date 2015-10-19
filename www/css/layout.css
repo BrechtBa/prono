@@ -76,7 +76,7 @@ div[data-role="page"]{
 	position: fixed;
 	top: 0;
 	bottom: 0;
-	z-index: 1002;
+	z-index: 1004;
 	width: 30%;
 	min-width: 8em; 
 	padding: 0 0.5em;
@@ -87,7 +87,13 @@ div[data-role="page"]{
 [data-role="panel-right"]{
 	right: 0;
 }
-
+[data-role="overlaypanel"]{
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	z-index: 1003;
+	cursor: pointer;
+}
 /******************************************************************************/
 /* Popup                                                                      */
 /******************************************************************************/
@@ -99,7 +105,7 @@ div[data-role="page"]{
 	max-height: 90%;
 	width: 90%;
 	overflow-y: auto;
-	z-index: 1004;
+	z-index: 1006;
 }
 [data-role="popup"] a[href="#close"]{
 	display: block;
@@ -119,5 +125,6 @@ div[data-role="page"]{
 	position: fixed;
 	width: 100%;
 	height: 100%;
-	z-index: 1003;
+	z-index: 1005;
+	cursor: pointer;
 }

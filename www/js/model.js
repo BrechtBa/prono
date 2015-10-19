@@ -2,7 +2,6 @@
 
 
 
-
 ////////////////////////////////////////////////////////////////////////////////
 // Users                                                                      //
 ////////////////////////////////////////////////////////////////////////////////
@@ -30,8 +29,6 @@ app.add_model('users',{
 		});
 	}
 });
-
-
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -86,13 +83,14 @@ app.add_model('teams',{
 	}
 });
 
+
 ////////////////////////////////////////////////////////////////////////////////
-// Edit team                                                                   //
+// Edit team                                                                  //
 ////////////////////////////////////////////////////////////////////////////////
 app.add_model('editteam',{
-	get(that){
+	get: function(that){
 	},
-	put(that,id,data){
+	put: function(that,id,data){
 		that['id'] = data['id'];
 		that['name'] = data['name'];
 		that['abr'] = data['abr'];
@@ -100,12 +98,11 @@ app.add_model('editteam',{
 		
 		$(document).trigger('editteamViewUpdate');
 	},
-	post(that,data){
+	post: function(that,data){
 	},
-	delete(that,id){
+	delete: function(that,id){
 	}
 });
-
 
 
 
@@ -167,9 +164,9 @@ app.add_model('groups',{
 // Edit group                                                                 //
 ////////////////////////////////////////////////////////////////////////////////
 app.add_model('editgroup',{
-	get(that){
+	get: function(that){
 	},
-	put(that,id,data){
+	put: function(that,id,data){
 		that['id'] = data['id'];
 		that['name'] = data.name;
 		that['team1'] = app.model.teams[data.team1];
@@ -177,9 +174,9 @@ app.add_model('editgroup',{
 		
 		$(document).trigger('editgroupViewUpdate');
 	},
-	post(that,data){
+	post: function(that,data){
 	},
-	delete(that,id){
+	delete: function(that,id){
 	}
 });
 
@@ -287,9 +284,9 @@ app.add_model('matches',{
 // Edit match                                                                 //
 ////////////////////////////////////////////////////////////////////////////////
 app.add_model('editmatch',{
-	get(that){
+	get: function(that){
 	},
-	put(that,id,data){
+	put: function(that,id,data){
 		that['id'] = data['id'];
 		that['team1'] = app.model.teams[data['team1']];
 		that['team2'] = app.model.teams[data['team2']];
@@ -307,12 +304,11 @@ app.add_model('editmatch',{
 		$(document).trigger('editmatchViewUpdate');
 		$(document).trigger('editmatchscoreViewUpdate');
 	},
-	post(that,data){
+	post: function(that,data){
 	},
-	delete(that,id){
+	delete: function(that,id){
 	}
 });
-
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -341,7 +337,7 @@ app.add_model('groupstage',{
 	},
 	post: function(that,data){
 	},
-	del: function(that,id){
+	delete: function(that,id){
 	}
 });
 
@@ -363,7 +359,7 @@ app.add_model('roundof16left',{
 	},
 	post: function(that,data){
 	},
-	del: function(that,id){
+	delete: function(that,id){
 	}
 });
 app.add_model('roundof16right',{
@@ -380,7 +376,7 @@ app.add_model('roundof16right',{
 	},
 	post: function(that,data){
 	},
-	del: function(that,id){
+	delete: function(that,id){
 	}
 });
 
@@ -402,7 +398,7 @@ app.add_model('quarterfinalleft',{
 	},
 	post: function(that,data){
 	},
-	del: function(that,id){
+	delete: function(that,id){
 	}
 });
 app.add_model('quarterfinalright',{
@@ -419,7 +415,7 @@ app.add_model('quarterfinalright',{
 	},
 	post: function(that,data){
 	},
-	del: function(that,id){
+	delete: function(that,id){
 	}
 });
 
@@ -441,7 +437,7 @@ app.add_model('semifinalleft',{
 	},
 	post: function(that,data){
 	},
-	del: function(that,id){
+	delete: function(that,id){
 	}
 });
 app.add_model('semifinalright',{
@@ -458,7 +454,7 @@ app.add_model('semifinalright',{
 	},
 	post: function(that,data){
 	},
-	del: function(that,id){
+	delete: function(that,id){
 	}
 });
 
@@ -480,7 +476,7 @@ app.add_model('final',{
 	},
 	post: function(that,data){
 	},
-	del: function(that,id){
+	delete: function(that,id){
 	}
 });
 
@@ -508,7 +504,6 @@ app.add_model('userbetsscore',{
 			$(document).trigger('userbetsscoresemifinalleftViewUpdate');
 			$(document).trigger('userbetsscoresemifinalrightViewUpdate');
 			$(document).trigger('userbetsscorefinalViewUpdate');
-;
 		});
 	},
 	put: function(that,id,data){
@@ -563,3 +558,4 @@ app.add_model('userbetsscore',{
 		});
 	}
 });
+
