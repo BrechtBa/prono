@@ -496,6 +496,22 @@ app.add_model('userbetsscore',{
 				that[bet.match_id]['score1'] = bet.score1;
 				that[bet.match_id]['score2'] = bet.score2;
 			});
+
+			// check if all bets exist, otherwise create them
+			$.each(app.model.matches,function(index,match){
+				if(!(match.id in that)){
+					if( typeof match.id !== "undefined"){
+
+						app.model.userbetsscore.post({
+							'match_id': match.id,
+							'user_id': app.service.user.id,
+							'score1': -1,
+							'score2': -1
+						});
+					}
+				}
+			});
+
 			$(document).trigger('userbetsscoregroupstageViewUpdate');
 			$(document).trigger('userbetsscoreroundof16leftViewUpdate');
 			$(document).trigger('userbetsscoreroundof16rightViewUpdate');
@@ -513,15 +529,16 @@ app.add_model('userbetsscore',{
 				that[bet.match_id]['match'] = app.model.matches[bet.match_id];
 				that[bet.match_id]['score1'] = bet.score1;
 				that[bet.match_id]['score2'] = bet.score2;
+
+				$(document).trigger('userbetsscoregroupstageViewUpdate');
+				$(document).trigger('userbetsscoreroundof16leftViewUpdate');
+				$(document).trigger('userbetsscoreroundof16rightViewUpdate');
+				$(document).trigger('userbetsscorequarterfinalleftViewUpdate');
+				$(document).trigger('userbetsscorequarterfinalrightViewUpdate');
+				$(document).trigger('userbetsscoresemifinalleftViewUpdate');
+				$(document).trigger('userbetsscoresemifinalrightViewUpdate');
+				$(document).trigger('userbetsscorefinalViewUpdate');
 			});
-			$(document).trigger('userbetsscoregroupstageViewUpdate');
-			$(document).trigger('userbetsscoreroundof16leftViewUpdate');
-			$(document).trigger('userbetsscoreroundof16rightViewUpdate');
-			$(document).trigger('userbetsscorequarterfinalleftViewUpdate');
-			$(document).trigger('userbetsscorequarterfinalrightViewUpdate');
-			$(document).trigger('userbetsscoresemifinalleftViewUpdate');
-			$(document).trigger('userbetsscoresemifinalrightViewUpdate');
-			$(document).trigger('userbetsscorefinalViewUpdate');
 		});
 	},
 	post: function(that,data){
@@ -531,16 +548,16 @@ app.add_model('userbetsscore',{
 				that[bet.match_id]['id'] = bet.id;
 				that[bet.match_id]['match'] = app.model.matches[bet.match_id];
 				that[bet.match_id]['score1'] = bet.score1;
-				that[bet.match_id]['score2'] = bet.score2;ty2;
+				that[bet.match_id]['score2'] = bet.score2;
+				$(document).trigger('userbetsscoregroupstageViewUpdate');
+				$(document).trigger('userbetsscoreroundof16leftViewUpdate');
+				$(document).trigger('userbetsscoreroundof16rightViewUpdate');
+				$(document).trigger('userbetsscorequarterfinalleftViewUpdate');
+				$(document).trigger('userbetsscorequarterfinalrightViewUpdate');
+				$(document).trigger('userbetsscoresemifinalleftViewUpdate');
+				$(document).trigger('userbetsscoresemifinalrightViewUpdate');
+				$(document).trigger('userbetsscorefinalViewUpdate');
 			});
-			$(document).trigger('userbetsscoregroupstageViewUpdate');
-			$(document).trigger('userbetsscoreroundof16leftViewUpdate');
-			$(document).trigger('userbetsscoreroundof16rightViewUpdate');
-			$(document).trigger('userbetsscorequarterfinalleftViewUpdate');
-			$(document).trigger('userbetsscorequarterfinalrightViewUpdate');
-			$(document).trigger('userbetsscoresemifinalleftViewUpdate');
-			$(document).trigger('userbetsscoresemifinalrightViewUpdate');
-			$(document).trigger('userbetsscorefinalViewUpdate');
 		});
 	},
 	delete: function(that,match_id){
@@ -558,4 +575,22 @@ app.add_model('userbetsscore',{
 		});
 	}
 });
-
+////////////////////////////////////////////////////////////////////////////////
+// Edit bet score 
+////////////////////////////////////////////////////////////////////////////////
+app.add_model('editbetscore',{
+	get: function(that){
+	},
+	put: function(that,id,data){
+		that['id'] = data['id'];
+		that['match'] = app.model.matches[data.match_id];
+		that['score1'] = data.score1;
+		that['score2'] = data.score2;
+		
+		$(document).trigger('editbetscoreViewUpdate');
+	},
+	post: function(that,data){
+	},
+	delete: function(that,id){
+	}
+});

@@ -259,6 +259,37 @@ $(document).ready(function(){
 		app.model.matches.delete(id);
 	});
 
+////////////////////////////////////////////////////////////////////////////////
+// Bets score                                                                 //
+////////////////////////////////////////////////////////////////////////////////
+	$(document).on('click tap','[data-view="userbetsscoregroupstage"] [data-bind^="match in "]',function(event){
+		var id = $(event.target).parents('[data-bind^="match in "]').attr('data-id');
+		app.model.editbetscore.put(1,{
+			'id': app.model.userbetsscore[id].id,
+			'match_id': app.model.userbetsscore[id].match.id,
+			'score1':   app.model.userbetsscore[id].score1,
+			'score2':   app.model.userbetsscore[id].score2,
+		});
+		// open the popup
+		$(document).trigger('openPopup',['#editbetscore']);
+	});
+	$(document).on('submit','#editbetscore form',function(event){
+		event.preventDefault();
+		console.log('editbetscore form submit');
+		
+		var match_id = $('#editbetscore').find('[name="id"]').val();
+		var id = app.model.userbetsscore[match_id].id;
+
+		app.model.userbetsscore.put(match_id,{
+			'score1':   $('#editbetscore').find('[name="score1"]').val(),
+			'score2':   $('#editbetscore').find('[name="score2"]').val()
+		});
+
+		// close the popup
+		$(document).trigger('closePopup');
+	});
+
+
 
 
 

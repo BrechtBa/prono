@@ -171,6 +171,13 @@ $(document).ready(function(){
 		'parseBetScore2': app.view.functions.parseBetScore2
 	});
 
+	app.add_view('editbetscore',$('[data-view="editbetscore"]'),{
+		'parseTeam1Name': app.view.functions.parseTeam1Name,
+		'parseTeam2Name': app.view.functions.parseTeam2Name,
+		'parseBetScore1': app.view.functions.parseBetScore1,
+		'parseBetScore2': app.view.functions.parseBetScore2
+	});
+
 });
 
 
@@ -216,6 +223,22 @@ app.view.functions.parseTeam2Name = function(matchid){
 		return app.model.matches[matchid].team2.name;
 	}
 }
+app.view.functions.parseTeam1Icon = function(matchid){
+	if(typeof app.model.matches[matchid].team1 == "undefined"){
+		return "images/flags/XXX.png";
+	}
+	else{
+		return app.model.matches[matchid].team1.icon;
+	}
+}
+app.view.functions.parseTeam2Icon = function(matchid){
+	if(typeof app.model.matches[matchid].team2 == "undefined"){
+		return "images/flags/XXX.png";
+	}
+	else{
+		return app.model.matches[matchid].team2.icon;
+	}
+}
 app.view.functions.parseScore = function(score){
 	if(score < 0){
 		return "";
@@ -229,7 +252,7 @@ app.view.functions.parseBetScore1 = function(matchid){
 		return "";
 	}
 	else{
-		if(typeof app.model.userbetsscore[matchid].score1 == "undefined"){
+		if(typeof app.model.userbetsscore[matchid].score1 == "undefined" || app.model.userbetsscore[matchid].score1 <0 ){
 			return "";
 		}
 		else{
@@ -242,7 +265,7 @@ app.view.functions.parseBetScore2 = function(matchid){
 		return "";
 	}
 	else{
-		if(typeof app.model.userbetsscore[matchid].score2 == "undefined"){
+		if(typeof app.model.userbetsscore[matchid].score2 == "undefined" || app.model.userbetsscore[matchid].score2 <0 ){
 			return "";
 		}
 		else{

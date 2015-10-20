@@ -33,7 +33,6 @@ $(document).ready(function(){
 	});
 	
 	$(document).on('openPanel',function(event,target){
-		console.log(target);
 		$(target).show();
 		$('[data-role="overlaypanel"]').show();
 		openPanels.push($(target));

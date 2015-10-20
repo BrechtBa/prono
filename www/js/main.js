@@ -143,7 +143,9 @@ app.service.user = {
 	register: function(username,password,password2){
 		that = this;
 		$.post('authenticate/register.php',{username:username,password:password,password2:password2},function(result){
-			result = JSON.parse(result);			
+			console.log(result);
+			result = JSON.parse(result);
+				
 			if(result['status']>0){
 				that.login(username,password);
 			}
