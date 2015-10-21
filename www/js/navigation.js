@@ -2,6 +2,32 @@
 $(document).ready(function(){
 
 ////////////////////////////////////////////////////////////////////////////////
+// Pages                                                                      //
+////////////////////////////////////////////////////////////////////////////////	
+	$('[data-role=page]').hide();
+	if(window.location.hash==""){
+		$('[data-role=page]').first().show();
+	}
+	else{
+		$(window.location.hash).show()
+	}
+	// open page
+	$(document).on('click tap','a[href^="#"]',function(event){
+		event.preventDefault();
+		
+		var target = $(this).attr('href');
+		if( target!='#' && target!='#close' && $(target).attr('data-role')=='page' ){
+			//change the window hash
+			window.location.hash = this.hash;
+			event.stopPropagation();
+		}
+	});
+	$(window).on('hashchange',function(event){
+		$('[data-role="page"]').hide()
+		$(window.location.hash).show()
+	});
+	
+////////////////////////////////////////////////////////////////////////////////
 // Panel                                                                      //
 ////////////////////////////////////////////////////////////////////////////////
 	$('[data-role^=panel]').hide();
@@ -15,7 +41,6 @@ $(document).ready(function(){
 		if( target!='#' && target!='#close' && $(target).attr('data-role').substring(0,5)=='panel' ){
 			$(document).trigger('openPanel',[target]);
 			event.stopPropagation();
-
 		}
 	});
 	// close panel
@@ -91,32 +116,4 @@ $(document).ready(function(){
 			$('[data-role="overlay"]').hide();
 		}	
 	});
-	
-////////////////////////////////////////////////////////////////////////////////
-// Pages                                                                      //
-////////////////////////////////////////////////////////////////////////////////	
-	$('[data-role=page]').hide();
-	if(window.location.hash==""){
-		$('[data-role=page]').first().show();
-	}
-	else{
-		$(window.location.hash).show()
-	}
-	// open page
-	$(document).on('click tap','a[href^="#"]',function(event){
-		event.preventDefault();
-		
-		var target = $(this).attr('href');
-		if( target!='#' && target!='#close' && $(target).attr('data-role')=='page' ){
-			//change the window hash
-			window.location.hash = this.hash;
-			event.stopPropagation();
-		}
-	});
-	$(window).on('hashchange',function(event){
-		$('[data-role="page"]').hide()
-		$(window.location.hash).show()
-	});
-	
-	
 });
