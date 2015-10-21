@@ -157,6 +157,7 @@ app.service.user = {
 }
 
 
+
 ////////////////////////////////////////////////////////////////////////////////
 // Model                                                                      //
 ////////////////////////////////////////////////////////////////////////////////
@@ -185,17 +186,12 @@ app.add_model = function(name,methods){
 // View                                                                       //
 ////////////////////////////////////////////////////////////////////////////////
 app.view = {}
-app.add_view = function(key,parent,parse){
+app.add_view = function(key,parent){
 	// class to bind a model to a view
 	// arguments:
 	// parent:      a jquery dom element
-	// parse:    	an object containing parsing functions
-
-	if(typeof parse == "undefined"){
-		parse = {};
-	}
-
-	app.view[key] = new app._view(parent,parse);
+	
+	app.view[key] = new app._view(parent);
 	
 	// add an update event to the document
 	$(document).on(key+'ViewUpdate',function(){
@@ -205,10 +201,9 @@ app.add_view = function(key,parent,parse){
 
 
 // _view class
-app._view = function(parent,parse){
+app._view = function(parent){
 	this.parent = parent
 	this.template = parent.html();
-	this.parse  = parse;
 };
 app._view.prototype.update = function(){
 	this._update(app.model,this.parent,this.template);
@@ -374,7 +369,7 @@ app._view.prototype.bindValue = function(element,model,bind){
 	}
 	else{
 		// check if there is a parse(*.) statement in the bind and redefine the parsefun if so
-		$.each(that.parse,function(index,parsefun){
+		$.each(app.view.functions,function(index,parsefun){
 			var re = new RegExp(index+'\\(([^)]+)\\)');
 			var arg = re.exec(bind);
 			if(arg !== null){
@@ -414,7 +409,7 @@ app._view.prototype.bindClass = function(element,model,bind){
 	}
 	else{
 		// check if there is a parse(*.) statement in the bind and redefine the parsefun if so
-		$.each(that.parse,function(index,parsefun){
+		$.each(app.view.functions,function(index,parsefun){
 			var re = new RegExp(index+'\\(([^)]+)\\)');
 			var arg = re.exec(bind);
 			if(arg !== null){
@@ -445,3 +440,12 @@ app._view.prototype.deepFind = function(obj, path){
   	return current;
 }
 
+
+////////////////////////////////////////////////////////////////////////////////
+// Bind the elements with a data-view attribute                               //
+////////////////////////////////////////////////////////////////////////////////
+$(document).ready(function(){
+	$('[data-view]').each(function(index,element){
+		app.add_view(element.attr('data-view'),element);
+	});
+});
