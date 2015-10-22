@@ -11,7 +11,7 @@
 		$username = $_POST['username'];
 		
 		// select the user from the table
-		$query = "SELECT id,password FROM users WHERE username='$username'";
+		$query = "SELECT * FROM users WHERE username='$username'";
 		$result = mysql_query($query) or die('Error: ' . mysql_error());
 
 		if( mysql_num_rows($result) > 0 ){
@@ -24,7 +24,7 @@
 
 				// generate a JWT
 				$payload = array('id' => $dbuser['id'],  'username' => $dbuser['username'], 'permission' => $dbuser['permission']);
-				$token = jwt_encode($payload)
+				$token = jwt_encode($payload);
 			}
 			else{
 				$status = -2;

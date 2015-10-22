@@ -93,12 +93,12 @@ app.service.user = {
 		
 		// check if the token exists in local storage
 		var token = localStorage.getItem('token');
-		console.log(token)
 		if(token !== null){
 			// get the data from the token
-			var parts = that.token.split('.');
-			var header = atob(parts[0]);
-			var payload = atob(parts[1]);
+			var parts = token.split('.');
+			
+			var header = JSON.parse(atob(parts[0]));
+			var payload = JSON.parse(atob(parts[1]));
 			
 			that.token = token;
 			that.id = payload['id'];
@@ -107,7 +107,6 @@ app.service.user = {
 			
 			$(document).trigger('loggedin');
 		}
-		console.log(that);
 	},
 	logout: function(){
 		that = this;
@@ -122,11 +121,8 @@ app.service.user = {
 	formlogin: function(username,password){
 		console.log('loggigng in');
 		that = this;
-		var data = {username:username,password:password};
-		if(typeof username == "undefined"){
-			data = {};
-		}
-		$.post('authenticate/login.php',data,function(result){
+		
+		$.post('authenticate/login.php',{username:username,password:password},function(result){
 			result = JSON.parse(result);
 			if(result.status>0){
 				// store the token in webstorage
