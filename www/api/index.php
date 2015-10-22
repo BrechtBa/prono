@@ -7,7 +7,7 @@ include_once('../authenticate/hashfunctions.php');
 $token = jwt_decode(getallheaders()['Authentication']);
 
 // for debugging
-$token = array('status' => 1, 'payload' =>array('user_id' => 1,'permission' => 9));
+//$token = array('status' => 1, 'payload' =>array('user_id' => 1,'permission' => 9));
 
 
 if( $token['status'] == 1 ){
@@ -638,15 +638,6 @@ class ArrestDB
 // api access control banned requests
 function allow_api_access($method,$table,$id,$data){
 	global $user_id, $permission;
-	echo $user_id.'<br/>';
-	echo $permission.'<br/>';
-	
-	echo '<br/>';
-	echo $method.'<br/>';
-	echo $table.'<br/>';
-	echo $id.'<br/>';
-	echo json_encode($data).'<br/>';
-	echo '<br/>';
 	
 	
 	if($method=='GET'){

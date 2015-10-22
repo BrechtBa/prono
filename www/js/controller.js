@@ -4,7 +4,6 @@
 
 // JQuery wrapper
 $(document).ready(function(){
-
 ////////////////////////////////////////////////////////////////////////////////
 // Register                                                                   //
 ////////////////////////////////////////////////////////////////////////////////
@@ -16,8 +15,6 @@ $(document).ready(function(){
 ////////////////////////////////////////////////////////////////////////////////
 // Login                                                                      //
 ////////////////////////////////////////////////////////////////////////////////
-	// try to login using the localStorage
-	app.service.user.login();
 	// form login
 	$('#login form').submit(function(event){
 		event.preventDefault();
@@ -336,6 +333,14 @@ $(document).ready(function(){
 		app.model.userbetsscore.get();
 	});
 
+	
+	
+	
+	
+	
+	// try to login using the localStorage after all triggers are created
+	app.service.user.login();
+	
 // JQuery wrapper
 });
 
