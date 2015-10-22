@@ -290,6 +290,6 @@ app._view.prototype.deepFind = function(obj, path){
 ////////////////////////////////////////////////////////////////////////////////
 $(document).ready(function(){
 	$('[data-view]').each(function(index,element){
-		app.add_view(element.attr('data-view'),element);
+		app.add_view($(element).attr('data-view'),$(element));
 	});
 });
