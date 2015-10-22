@@ -7,88 +7,72 @@ app.service = {};
 app.service.api = {
 	location: '',
 	get: function(apipath,callback){
-		app.service.user.authenticate(function(result){		
-			if(result.permission>0){
-				$.ajax({
-					type: 'GET',
-					dataType: 'json',
-					url: app.service.api.location+'api/index.php/'+apipath,
-					headers: {'Authentication': result.api_token},
-					statusCode: {
-						200: function(result){
-							if (typeof(result.error) == 'undefined'){
-								callback(result);
-							}
-							else{
-								console.log(result);
-								//callback({});
-							}
-						}
-					},
-					error: function(result){
-						console.log(result);
+		$.ajax({
+			type: 'GET',
+			dataType: 'json',
+			url: app.service.api.location+'api/index.php/'+apipath,
+			headers: {'Authentication': app.service.user.token},
+			statusCode: {
+				200: function(result){
+					if (typeof(result.error) == 'undefined'){
+						callback(result);
 					}
-				});
+					else{
+						console.log(result);
+						//callback({});
+					}
+				}
+			},
+			error: function(result){
+				console.log(result);
 			}
 		});
 	},
 	put: function(apipath,data,callback){
-		app.service.user.authenticate(function(result){			
-			if(result.permission>0){
-				$.ajax({
-					type: 'PUT',
-					dataType: 'json',
-					data: data,
-					url: app.service.api.location+'api/index.php/'+apipath,
-					headers: {'Authentication': result.api_token},
-					success: function(result, textStatus, request){
-						geturl = request.getResponseHeader('geturl');
-						callback(result,geturl);
-					},
-					error: function(result){
-						console.log(result);
-					}
-				});
+		$.ajax({
+			type: 'PUT',
+			dataType: 'json',
+			data: data,
+			url: app.service.api.location+'api/index.php/'+apipath,
+			headers: {'Authentication': app.service.user.token},
+			success: function(result, textStatus, request){
+				geturl = request.getResponseHeader('geturl');
+				callback(result,geturl);
+			},
+			error: function(result){
+				console.log(result);
 			}
 		});
 	},
 	post: function(apipath,data,callback){
-		app.service.user.authenticate(function(result){			
-			if(result.permission>0){
-				$.ajax({
-					type: 'POST',
-					dataType: 'json',
-					data: data,
-					url: app.service.api.location+'api/index.php/'+apipath,
-					headers: {'Authentication': result.api_token},
-					success: function(result, textStatus, request){
-						geturl = request.getResponseHeader('geturl');
-						callback(result,geturl);
-					},
-					error: function(result){
-						console.log(result);
-					}
-				});
+		$.ajax({
+			type: 'POST',
+			dataType: 'json',
+			data: data,
+			url: app.service.api.location+'api/index.php/'+apipath,
+			headers: {'Authentication': app.service.user.token},
+			success: function(result, textStatus, request){
+				geturl = request.getResponseHeader('geturl');
+				callback(result,geturl);
+			},
+			error: function(result){
+				console.log(result);
 			}
 		});
 	},
-	delete: function(apipath,callback){
-		app.service.user.authenticate(function(result){			
-			if(result.permission>0){
-				$.ajax({
-					type: 'DELETE',
-					dataType: 'json',
-					url: app.service.api.location+'api/index.php/'+apipath,
-					headers: {'Authentication': result.api_token},
-					statusCode: {
-						200: function(result){
-							callback(result);
-						}
-					},
-					error: function(result){
-						console.log(result);
-					}
-				});
+	delete: function(apipath,callback){		
+		$.ajax({
+			type: 'DELETE',
+			dataType: 'json',
+			url: app.service.api.location+'api/index.php/'+apipath,
+			headers: {'Authentication': app.service.user.token},
+			statusCode: {
+				200: function(result){
+					callback(result);
+				}
+			},
+			error: function(result){
+				console.log(result);
 			}
 		});
 	}
@@ -102,7 +86,40 @@ app.service.api = {
 app.service.user = {
 	id: -1,
 	username: '',
-	login: function(username,password){
+	permission: 0,
+	token: '',
+	login: function(){
+		that = this;
+		
+		// check if the token exists in local storage
+		var token = localStorage.getItem('token');
+		console.log(token)
+		if(token !== null){
+			// get the data from the token
+			var parts = that.token.split('.');
+			var header = atob(parts[0]);
+			var payload = atob(parts[1]);
+			
+			that.token = token;
+			that.id = payload['id'];
+			that.username = payload['username'];
+			that.permission = payload['permission'];
+			
+			$(document).trigger('loggedin');
+		}
+		console.log(that);
+	},
+	logout: function(){
+		that = this;
+		that.id = -1;
+		that.username = '';
+		that.permission = 0;
+		that.token = '';
+		
+		// clear local storage
+		localStorage.clear();
+	},
+	formlogin: function(username,password){
 		console.log('loggigng in');
 		that = this;
 		var data = {username:username,password:password};
@@ -112,26 +129,10 @@ app.service.user = {
 		$.post('authenticate/login.php',data,function(result){
 			result = JSON.parse(result);
 			if(result.status>0){
-				that.id = result.data.id;
-				that.username = result.data.username;
-				$(document).trigger('loggedin');
-				window.location.hash = '#ranking';
+				// store the token in webstorage
+				localStorage.setItem('token', result.token);
+				that.login()
 			}
-		});
-	},
-	logout: function(){
-		that = this;
-		$.post('authenticate/logout.php',{id:that.id},function(result){
-			that.id = -1;
-			that.username = '';
-			$(document).trigger('loggedout');
-			window.location.hash = '#login';
-		});
-	},
-	authenticate: function(callback){
-		$.get('authenticate/index.php',function(result){
-			result = JSON.parse(result);
-			callback(result);
 		});
 	},
 	register: function(username,password,password2){
@@ -141,7 +142,7 @@ app.service.user = {
 			result = JSON.parse(result);
 				
 			if(result['status']>0){
-				that.login(username,password);
+				that.formlogin(username,password);
 			}
 			else{
 				console.log(result);
