@@ -636,28 +636,34 @@ class ArrestDB
 
 
 // api access control banned requests
-function allow_api_access($method,$table,$id,$data){
-	global $user_id, $permission;
+function allow_api_access($payload,$method,$table,$id,$data){
 	
+	if($payload['exp']<time()){
+		return false;
+	}
 	
 	if($method=='GET'){
-
+		if($payload['permission'] < 9){
+			if($table=='prono' && $data!=$payload['id']){
+				return false;
+			}
+		}
 	}
 	if($method=='POST'){
-		if($permission < 9){
+		if($payload['permission'] < 9){
 			// normal users can only POST if the data contains their user_id
 			if(!isset($data['user_id'])){
 				return false;
 			}
 			else{
-				if($data['user_id']!=$user_id){
+				if($data['user_id']!=$payload['id']){
 					return false;
 				}
 			}
 		}
 	}
 	if($method=='PUT'){
-		if($permission < 9){
+		if($payload['permission'] < 9){
 			// normal users can only PUT to entries containing their user_id
 			$query = sprintf('SELECT user_id FROM "%s" WHERE "%s" = %s', $table,'id',$data['id']);
 			echo $query.'<br/>';
@@ -669,7 +675,7 @@ function allow_api_access($method,$table,$id,$data){
 				return false;
 			}
 			else{
-				if($result['user_id'] != $user_id){
+				if($result['user_id'] != $payload['id']){
 					// the user_id doesn't match
 					return false;
 				}
@@ -677,7 +683,7 @@ function allow_api_access($method,$table,$id,$data){
 		}
 	}
 	if($method=='DELETE'){
-		if($permission < 9){
+		if($payload['permission'] < 9){
 			// normal users can not DELETE entries
 			return false;
 		}

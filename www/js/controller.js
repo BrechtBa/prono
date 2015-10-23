@@ -264,7 +264,7 @@ $(document).ready(function(){
 ////////////////////////////////////////////////////////////////////////////////
 // Bets score                                                                 //
 ////////////////////////////////////////////////////////////////////////////////
-	$(document).on('click tap','[data-view="userbetsscoregroupstage"] [data-bind^="match in "]',function(event){
+	$(document).on('click tap','#prono [data-bind^="match in "]',function(event){
 		var id = $(event.target).parents('[data-bind^="match in "]').attr('data-id');
 		app.model.editbetscore.put(1,{
 			'id': app.model.userbetsscore[id].id,

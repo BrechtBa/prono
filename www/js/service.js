@@ -108,6 +108,21 @@ app.service.user = {
 			$(document).trigger('loggedin');
 		}
 	},
+	renewtoken(){
+		$.ajax({
+			type: 'GET',
+			dataType: 'json',
+			url: 'authenticate/login.php',
+			headers: {'Authentication': app.service.user.token},
+			success: function(result, textStatus, request){
+				result = JSON.parse(result);
+				if(result.status>0){
+					// store the token in webstorage
+					localStorage.setItem('token', result.token);
+				}
+			}
+		});
+	},
 	logout: function(){
 		that = this;
 		that.id = -1;
