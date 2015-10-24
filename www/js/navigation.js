@@ -2,6 +2,32 @@
 $(document).ready(function(){
 
 ////////////////////////////////////////////////////////////////////////////////
+// Pages                                                                      //
+////////////////////////////////////////////////////////////////////////////////	
+	$('[data-role=page]').hide();
+	if(window.location.hash==""){
+		$('[data-role=page]').first().show();
+	}
+	else{
+		$(window.location.hash).show()
+	}
+	// open page
+	$(document).on('click tap','a[href^="#"]',function(event){
+		event.preventDefault();
+		
+		var target = $(this).attr('href');
+		if( target!='#' && target!='#close' && $(target).attr('data-role')=='page' ){
+			//change the window hash
+			window.location.hash = this.hash;
+			event.stopPropagation();
+		}
+	});
+	$(window).on('hashchange',function(event){
+		$('[data-role="page"]').hide()
+		$(window.location.hash).show()
+	});
+	
+////////////////////////////////////////////////////////////////////////////////
 // Panel                                                                      //
 ////////////////////////////////////////////////////////////////////////////////
 	$('[data-role^=panel]').hide();
@@ -15,7 +41,6 @@ $(document).ready(function(){
 		if( target!='#' && target!='#close' && $(target).attr('data-role').substring(0,5)=='panel' ){
 			$(document).trigger('openPanel',[target]);
 			event.stopPropagation();
-
 		}
 	});
 	// close panel
@@ -92,31 +117,45 @@ $(document).ready(function(){
 		}	
 	});
 	
+	
+	
 ////////////////////////////////////////////////////////////////////////////////
-// Pages                                                                      //
-////////////////////////////////////////////////////////////////////////////////	
-	$('[data-role=page]').hide();
-	if(window.location.hash==""){
-		$('[data-role=page]').first().show();
-	}
-	else{
-		$(window.location.hash).show()
-	}
-	// open page
-	$(document).on('click tap','a[href^="#"]',function(event){
-		event.preventDefault();
-		
-		var target = $(this).attr('href');
-		if( target!='#' && target!='#close' && $(target).attr('data-role')=='page' ){
-			//change the window hash
-			window.location.hash = this.hash;
-			event.stopPropagation();
+// Hide Header on on scroll down                                              //
+////////////////////////////////////////////////////////////////////////////////
+	var didScroll;
+	var lastScrollTop = 0;
+	var delta = 5;
+	var header = $('[data-rol="fixed-header"]');
+	var headerHeight = header.outerHeight();
+
+	$(window).scroll(function(event){
+		didScroll = true;
+	});
+	setInterval(function() {
+		if (didScroll) {
+			hasScrolled();
+			didScroll = false;
 		}
-	});
-	$(window).on('hashchange',function(event){
-		$('[data-role="page"]').hide()
-		$(window.location.hash).show()
-	});
-	
-	
+	}, 250);
+	function hasScrolled() {
+		var st = $(this).scrollTop();
+		
+		// Make sure they scroll more than delta
+		if(Math.abs(lastScrollTop - st) <= delta)
+			return;
+		
+		// If they scrolled down and are past the header, add class .header-up.
+		// This is necessary so you never see what is "behind" the header.
+		if (st > lastScrollTop && st > headerHeight){
+			// Scroll Down
+			header.addClass('header-up');
+		}
+		else{
+			// Scroll Up
+			if(st + $(window).height() < $(document).height()){
+				header.removeClass('header-up');
+			}
+		}
+		lastScrollTop = st;
+	}	
 });

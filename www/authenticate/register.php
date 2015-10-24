@@ -4,7 +4,6 @@
 	include('hashfunctions.php');
 
 	$status = 0;
-	$user = 0;
 
 	
 	if( isset($_POST['username']) && isset($_POST['password']) && isset($_POST['password2']) ){
@@ -27,7 +26,7 @@
 					$permission = 9;
 				}
 				else{
-					// other users get priveledge level 1
+					// other users get permission level 1
 					$permission = 1;
 				}
 
@@ -45,5 +44,5 @@
 		}
 	}
 
-	echo json_encode( array('status' => $status, 'user' => $user) );
+	echo json_encode( array('status' => $status) );
 ?>

@@ -5,27 +5,6 @@
 // JQuery wrapper
 $(document).ready(function(){
 ////////////////////////////////////////////////////////////////////////////////
-// Login                                                                      //
-////////////////////////////////////////////////////////////////////////////////
-	// try to login using a cookie
-	app.service.user.login();
-	// form login
-	$('#login form').submit(function(event){
-		event.preventDefault();
-		app.service.user.login( $(this).find('[name=username]').val(),$(this).find('[name=password]').val() );
-	});
-	// logout
-	$(document).on('click tap', '[data-control="logout"]',function(event,data){
-		app.service.user.logout();
-	});
-	// event triggered when a user logs in
-	$(document).on('loggedin',function(event,data){
-		console.log('user is logged in');
-		$(document).trigger('usersModelGet');
-		$(document).trigger('teamsModelGet');
-	});
-
-////////////////////////////////////////////////////////////////////////////////
 // Register                                                                   //
 ////////////////////////////////////////////////////////////////////////////////
 	$('#register form').submit(function(event){
@@ -33,6 +12,31 @@ $(document).ready(function(){
 		app.service.user.register( $(this).find('[name=username]').val(),$(this).find('[name=password]').val(),$(this).find('[name=password2]').val() );
 		$(document).trigger('closePopup');
 	});
+////////////////////////////////////////////////////////////////////////////////
+// Login                                                                      //
+////////////////////////////////////////////////////////////////////////////////
+	// form login
+	$('#login form').submit(function(event){
+		event.preventDefault();
+		app.service.user.formlogin( $(this).find('[name=username]').val(),$(this).find('[name=password]').val() );
+	});
+	// event triggered when a user logs in
+	$(document).on('loggedin',function(event,data){
+		console.log('user is logged in');
+		window.location.hash = '#ranking';
+		
+		$(document).trigger('usersModelGet');
+		$(document).trigger('teamsModelGet');
+	});
+////////////////////////////////////////////////////////////////////////////////
+// Logout                                                                     //
+////////////////////////////////////////////////////////////////////////////////
+	$(document).on('click tap', '[data-control="logout"]',function(event,data){
+		window.location.hash = '#login';
+		app.service.user.logout();
+	});
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 // Users                                                                      //
@@ -46,8 +50,6 @@ $(document).ready(function(){
 			console.log('Error: you con not delete yourself');
 		}
 	});
-
-
 
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -262,7 +264,7 @@ $(document).ready(function(){
 ////////////////////////////////////////////////////////////////////////////////
 // Bets score                                                                 //
 ////////////////////////////////////////////////////////////////////////////////
-	$(document).on('click tap','[data-view="userbetsscoregroupstage"] [data-bind^="match in "]',function(event){
+	$(document).on('click tap','#prono [data-bind^="match in "]',function(event){
 		var id = $(event.target).parents('[data-bind^="match in "]').attr('data-id');
 		app.model.editbetscore.put(1,{
 			'id': app.model.userbetsscore[id].id,
@@ -331,6 +333,14 @@ $(document).ready(function(){
 		app.model.userbetsscore.get();
 	});
 
+	
+	
+	
+	
+	
+	// try to login using the localStorage after all triggers are created
+	app.service.user.login();
+	
 // JQuery wrapper
 });
 

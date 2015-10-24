@@ -3,13 +3,25 @@
 include_once('../config/config.php');
 include_once('../authenticate/hashfunctions.php');
 
-// security: check if the api token matches
-if( generate_api_token()==getallheaders()['Authentication'] ){ 
+// security: check if the token is signed correctly
+$token = jwt_decode(getallheaders()['Authentication']);
+
+// for debugging
+//$token = array('status' => 1, 'payload' =>array('user_id' => 1,'permission' => 9));
+
+
+if( $token['status'] == 1 ){
 
 	$dsn = 'mysql://'.USER.':'.PASSWORD.'@localhost/'.DATABASE.'/';
 
 	$clients = [];
 
+	$payload = $token['payload'];
+	$user_id = $payload['user_id'];
+	$permission = $payload['permission'];
+	
+	
+	
 	/**
 	* The MIT License
 	* http://creativecommons.org/licenses/MIT/
@@ -45,6 +57,9 @@ if( generate_api_token()==getallheaders()['Authentication'] ){
 
 	ArrestDB::Serve('GET', '/(#any)/(#any)/(#any)', function ($table, $id, $data)
 	{
+		// api access control
+		allow_api_access('GET',$table,$id,$data);
+	
 		$query = array
 		(
 			sprintf('SELECT * FROM "%s"', $table),
@@ -89,6 +104,9 @@ if( generate_api_token()==getallheaders()['Authentication'] ){
 
 	ArrestDB::Serve('GET', '/(#any)/(#num)?', function ($table, $id = null)
 	{
+		// api access control
+		allow_api_access('GET',$table,$id,null);
+	
 		$query = array
 		(
 			sprintf('SELECT * FROM "%s"', $table),
@@ -145,6 +163,9 @@ if( generate_api_token()==getallheaders()['Authentication'] ){
 
 	ArrestDB::Serve('DELETE', '/(#any)/(#num)', function ($table, $id)
 	{
+		// api access control
+		allow_api_access('DELETE',$table,$id,null);
+		
 		$query = array
 		(
 			sprintf('DELETE FROM "%s" WHERE "%s" = ?', $table, 'id'),
@@ -201,6 +222,9 @@ if( generate_api_token()==getallheaders()['Authentication'] ){
 
 	ArrestDB::Serve('POST', '/(#any)', function ($table)
 	{
+	
+		
+		
 		if (empty($_POST) === true)
 		{
 			$result = ArrestDB::$HTTP[204];
@@ -214,7 +238,7 @@ if( generate_api_token()==getallheaders()['Authentication'] ){
 			{
 				$_POST = [$_POST];
 			}
-
+			
 			foreach ($_POST as $row)
 			{
 				$data = [];
@@ -223,7 +247,9 @@ if( generate_api_token()==getallheaders()['Authentication'] ){
 				{
 					$data[sprintf('"%s"', $key)] = $value;
 				}
-
+				// api access control
+				allow_api_access('POST',$table,null,$data);
+			
 				$query = array
 				(
 					sprintf('INSERT INTO "%s" (%s) VALUES (%s)', $table, implode(', ', array_keys($data)), implode(', ', array_fill(0, count($data), '?'))),
@@ -285,6 +311,7 @@ if( generate_api_token()==getallheaders()['Authentication'] ){
 
 		else if (is_array($GLOBALS['_PUT']) === true)
 		{
+			
 			$data = [];
 
 			foreach ($GLOBALS['_PUT'] as $key => $value)
@@ -292,6 +319,9 @@ if( generate_api_token()==getallheaders()['Authentication'] ){
 				$data[$key] = sprintf('"%s" = ?', $key);
 			}
 
+			// api access control
+			allow_api_access('POST',$table,$id,$data);
+			
 			$query = array
 			(
 				sprintf('UPDATE "%s" SET %s WHERE "%s" = ?', $table, implode(', ', $data), 'id'),
@@ -601,3 +631,64 @@ class ArrestDB
 	}
 }
 
+
+
+
+
+// api access control banned requests
+function allow_api_access($payload,$method,$table,$id,$data){
+	
+	if($payload['exp']<time()){
+		return false;
+	}
+	
+	if($method=='GET'){
+		if($payload['permission'] < 9){
+			if($table=='prono' && $data!=$payload['id']){
+				return false;
+			}
+		}
+	}
+	if($method=='POST'){
+		if($payload['permission'] < 9){
+			// normal users can only POST if the data contains their user_id
+			if(!isset($data['user_id'])){
+				return false;
+			}
+			else{
+				if($data['user_id']!=$payload['id']){
+					return false;
+				}
+			}
+		}
+	}
+	if($method=='PUT'){
+		if($payload['permission'] < 9){
+			// normal users can only PUT to entries containing their user_id
+			$query = sprintf('SELECT user_id FROM "%s" WHERE "%s" = %s', $table,'id',$data['id']);
+			echo $query.'<br/>';
+			
+			$result = ArrestDB::Query( $query );
+			echo json_encode($result).'<br/>';
+			if( !isset($result['user_id']) ){
+				// the user is trying to PUT to a table that doesn't contain user_id which is forbidden
+				return false;
+			}
+			else{
+				if($result['user_id'] != $payload['id']){
+					// the user_id doesn't match
+					return false;
+				}
+			}
+		}
+	}
+	if($method=='DELETE'){
+		if($payload['permission'] < 9){
+			// normal users can not DELETE entries
+			return false;
+		}
+	}
+	
+	// if the script gets here the request is valid
+	return true;
+}
