@@ -17,7 +17,7 @@ body{
 }
 .narrow-page{
 	position: relative;
-	max-width: 640px;
+	max-width: 650px;
 	left: 30%;
 	transform: translate(-30%, 0);
 }
@@ -46,27 +46,14 @@ div[data-role="fixed-header"] h1{
 	margin-top: 0.1em;
 }
 /******************************************************************************/
-/* Footer                                                                     */
-/******************************************************************************/
-div[data-role="fixed-footer"]{
-	position: fixed;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	padding: 0 1em;
-	z-index: 1001;
-	height: 18px;
-	overflow: hidden;
-}
-/******************************************************************************/
 /* Content                                                                    */
 /******************************************************************************/
 div[data-role="content"]{
 	position: absolute;
-	top: 45px;
-	bottom: 18px;
+	top: 0;
+	bottom: 0;
 	width: 100%;
-	padding-top: 0.0em;
+	padding-top: 45px;
 	overflow-x: hidden;
 	overflow-y: scroll;
 }

@@ -122,24 +122,26 @@ $(document).ready(function(){
 ////////////////////////////////////////////////////////////////////////////////
 // Hide Header on on scroll down                                              //
 ////////////////////////////////////////////////////////////////////////////////
+/*
 	var didScroll;
 	var lastScrollTop = 0;
 	var delta = 5;
-	var header = $('[data-rol="fixed-header"]');
+	var content = $('[data-role="content"]');
+	var header = $('[data-role="fixed-header"]');
 	var headerHeight = header.outerHeight();
 
-	$(window).scroll(function(event){
+	content.scroll(function(event){
 		didScroll = true;
 	});
-	setInterval(function() {
-		if (didScroll) {
+	setInterval(function(){
+		if(didScroll){
 			hasScrolled();
 			didScroll = false;
 		}
 	}, 250);
 	function hasScrolled() {
-		var st = $(this).scrollTop();
-		
+		var st = $(content).scrollTop();
+
 		// Make sure they scroll more than delta
 		if(Math.abs(lastScrollTop - st) <= delta)
 			return;
@@ -152,10 +154,11 @@ $(document).ready(function(){
 		}
 		else{
 			// Scroll Up
-			if(st + $(window).height() < $(document).height()){
+			if(st + content.height() < $(document).height()){
 				header.removeClass('header-up');
 			}
 		}
 		lastScrollTop = st;
-	}	
+	}
+*/
 });
