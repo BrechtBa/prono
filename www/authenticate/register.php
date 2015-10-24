@@ -19,20 +19,20 @@
 			// check if the 2 passwords are equal
 			if( $_POST['password']==$_POST['password2'] ){
 
-				// check if there are users in the database, else give a privelegde of 1
+				// check if there are users in the database, else give a permission of 1
 				$query = "SELECT id FROM users";
 				$result = mysql_query($query) or die('Error: ' . mysql_error());
 				if( mysql_num_rows($result) == 0 ){
-					// the first user to register gets priveledge level 9
-					$priveledge = 9;
+					// the first user to register gets permission level 9
+					$permission = 9;
 				}
 				else{
 					// other users get priveledge level 1
-					$priveledge = 1;
+					$permission = 1;
 				}
 
 				$hashpassword = create_hash($_POST['password']);
-				$query = "INSERT INTO users (username,password,priveledge) VALUES ('$username','$hashpassword','$priveledge')";	
+				$query = "INSERT INTO users (username,password,permission) VALUES ('$username','$hashpassword','$permission')";	
 				$result = mysql_query($query) or die('Error: ' . mysql_error());
 				$status = 1;
 			}
