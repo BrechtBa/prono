@@ -32,9 +32,9 @@
 	</head>
 	<body>
 		<div id="header" data-role="fixed-header">
-			<div class="narrow-page">
+			<div>
 				<h1>Prono</h1>
-				<a href="#menu" class="right"><img src="lib/images/icons-png/bars-black.png" class="icon"></a>
+				<a href="#menu" class="absolute-right"><img src="lib/images/icons-png/bars-black.png" class="icon"></a>
 			</div>
 		</div>
 		<nav id="menu" data-role="panel-right">
@@ -57,7 +57,7 @@
 <!----------------------------------------------------------------------------->
 <!-- login -------------------------------------------------------------------->
 <!----------------------------------------------------------------------------->
-			<div id="login" data-role="page" class="narrow-page">
+			<div id="login" data-role="page">
 				<h1>Login</h1>
 				<form>
 					<div>
@@ -88,7 +88,7 @@
 <!----------------------------------------------------------------------------->
 <!-- prono -------------------------------------------------------------------->
 <!----------------------------------------------------------------------------->	
-			<div id="prono" data-role="page" class="narrow-page">		
+			<div id="prono" data-role="page">		
 				<h1>Prono</h1>
 
 				<div data-view="userbetsscoregroupstage">
@@ -109,153 +109,171 @@
 							</div>
 						</div>
 					</div>
-				</div>
-				<div>
 					<h2>Knockout fase</h2>
-					<div data-view="userbetsscoreroundof16left" class="roundof16">
-						<div class="matches">
-							<div data-bind="match in roundof16left.matches" class="match boxed">
-								<div class="knockoutstageteam" data-bind="parseTeam1Name(match.id)"></div>
-								<div>
-									<div class="teamicon">
-										<img data-bind="match.team1.icon"/>
-									</div>
-									<div>
-										<div>
-											<span data-bind="parseBetScore1(match.id)"></span> - <span data-bind="parseBetScore2(match.id)"></span>
+					<div class="knockoutstage">
+						<div data-view="userbetsscoreroundof16left" class="stage roundof16">
+							<div class="matches">
+								<div data-bind="match in roundof16left.matches" class="match boxed">
+									<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
+									<div class="centered">
+										<div class="teamicon left">
+											<img data-bind="match.team1.icon"/>
+										</div>
+										<div class="score">
+											<div class="regular">
+												<span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span>
+											</div>
+										</div>
+										<div class="teamicon right">
+											<img data-bind="match.team2.icon"/>
 										</div>
 									</div>
-									<div class="teamicon">
-										<img data-bind="match.team2.icon"/>
-									</div>
+									<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
 								</div>
-								<div class="knockoutstageteam" data-bind="parseTeam2Name(match.id)"></div>
 							</div>
 						</div>
-					</div>
-					<div data-view="userbetsscorequarterfinalleft">
-						<div class="matches">
-							<div data-bind="match in quarterfinalleft.matches" class="match boxed">
-								<div class="knockoutstageteam" data-bind="parseTeam1Name(match.id)"></div>
-								<div>
-									<div class="teamicon">
-										<img data-bind="match.team1.icon"/>
-									</div>
-									<div>
-										<div>
-											<span data-bind="parseBetScore1(match.id)"></span> - <span data-bind="parseBetScore2(match.id)"></span>
+						<div class="spacer">
+							<img src="images/connection_roundof16.png"/>
+						</div>
+						<div data-view="userbetsscorequarterfinalleft" class="stage quarterfinal collapsed">
+							<div class="matches">
+								<div data-bind="match in quarterfinalleft.matches" class="match boxed">
+									<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
+									<div class="centered">
+										<div class="teamicon left">
+											<img data-bind="match.team1.icon"/>
+										</div>
+										<div class="score">
+											<div class="regular">
+												<span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span>
+											</div>
+										</div>
+										<div class="teamicon right">
+											<img data-bind="match.team2.icon"/>
 										</div>
 									</div>
-									<div class="teamicon">
-										<img data-bind="match.team2.icon"/>
-									</div>
+									<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
 								</div>
-								<div class="knockoutstageteam" data-bind="parseTeam2Name(match.id)"></div>
 							</div>
 						</div>
-					</div>
-					<div data-view="userbetsscoresemifinalleft">
-						<div class="matches">
-							<div data-bind="match in semifinalleft.matches" class="match boxed">
-								<div class="knockoutstageteam" data-bind="parseTeam1Name(match.id)"></div>
-								<div>
-									<div class="teamicon">
-										<img data-bind="match.team1.icon"/>
-									</div>
-									<div>
-										<div>
-											<span data-bind="parseBetScore1(match.id)"></span> - <span data-bind="parseBetScore2(match.id)"></span>
+						<div class="spacer">
+							<img src="images/connection_quarterfinal.png"/>
+						</div>
+						<div data-view="userbetsscoresemifinalleft" class="stage semifinal collapsed">
+							<div class="matches">
+								<div data-bind="match in semifinalleft.matches" class="match boxed">
+									<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
+									<div class="centered">
+										<div class="teamicon left">
+											<img data-bind="match.team1.icon"/>
+										</div>
+										<div class="score">
+											<div class="regular">
+												<span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span>
+											</div>
+										</div>
+										<div class="teamicon right">
+											<img data-bind="match.team2.icon"/>
 										</div>
 									</div>
-									<div class="teamicon">
-										<img data-bind="match.team2.icon"/>
-									</div>
+									<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
 								</div>
-								<div class="knockoutstageteam" data-bind="parseTeam2Name(match.id)"></div>
 							</div>
 						</div>
-					</div>
-					<div data-view="userbetsscorefinal">
-						<div class="matches">
-							<div data-bind="match in final.matches" class="match boxed">
-								<div class="knockoutstageteam" data-bind="parseTeam1Name(match.id)"></div>
-								<div>
-									<div class="teamicon">
-										<img data-bind="match.team1.icon"/>
-									</div>
-									<div>
-										<div>
-											<span data-bind="parseBetScore1(match.id)"></span> - <span data-bind="parseBetScore2(match.id)"></span>
+						<div class="spacer">
+							<img src="images/connection_semifinal.png"/>
+						</div>
+						<div data-view="userbetsscorefinal" class="stage final collapsed">
+							<div class="matches">
+								<div data-bind="match in final.matches" class="match boxed">
+									<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
+									<div class="centered">
+										<div class="teamicon left">
+											<img data-bind="match.team1.icon"/>
+										</div>
+										<div class="score">
+											<div class="regular">
+												<span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span>
+											</div>
+										</div>
+										<div class="teamicon right">
+											<img data-bind="match.team2.icon"/>
 										</div>
 									</div>
-									<div class="teamicon">
-										<img data-bind="match.team2.icon"/>
-									</div>
+									<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
 								</div>
-								<div class="knockoutstageteam" data-bind="parseTeam2Name(match.id)"></div>
 							</div>
 						</div>
-					</div>
-					<div data-view="userbetsscoresemifinalright">
-						<div class="matches">
-							<div data-bind="match in semifinalright.matches">
-								<div class="knockoutstageteam" data-bind="parseTeam1Name(match.id)"></div>
-								<div>
-									<div class="teamicon">
-										<img data-bind="match.team1.icon"/>
-									</div>
-									<div>
-										<div>
-											<span data-bind="parseBetScore1(match.id)"></span> - <span data-bind="parseBetScore2(match.id)"></span>
+						<div class="spacer">
+							<img src="images/connection_semifinal.png" class="flip-ud-lr"/>
+						</div>
+						<div data-view="userbetsscoresemifinalright" class="stage semifinal-right collapsed">
+							<div class="matches">
+								<div data-bind="match in semifinalright.matches" class="match boxed">
+									<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
+									<div class="centered">
+										<div class="teamicon left">
+											<img data-bind="match.team1.icon"/>
+										</div>
+										<div class="score">
+											<div class="regular">
+												<span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span>
+											</div>
+										</div>
+										<div class="teamicon right">
+											<img data-bind="match.team2.icon"/>
 										</div>
 									</div>
-									<div class="teamicon">
-										<img data-bind="match.team2.icon"/>
-									</div>
+									<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
 								</div>
-								<div class="knockoutstageteam" data-bind="parseTeam2Name(match.id)"></div>
 							</div>
 						</div>
-					</div>
-					<div data-view="userbetsscorequarterfinalright">
-						<div class="matches">
-							<div data-bind="match in quarterfinalright.matches">
-								<div class="knockoutstageteam" data-bind="parseTeam1Name(match.id)"></div>
-								<div>
-									<div class="teamicon">
-										<img data-bind="match.team1.icon"/>
-									</div>
-									<div>
-										<div>
-											<span data-bind="parseBetScore1(match.id)"></span> - <span data-bind="parseBetScore2(match.id)"></span>
+						<div class="spacer">
+							<img src="images/connection_quarterfinal.png" class="flip-ud-lr"/>
+						</div>
+						<div data-view="userbetsscorequarterfinalright" class="stage quarterfinal collapsed">
+							<div class="matches">
+								<div data-bind="match in quarterfinalright.matches" class="match boxed">
+									<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
+									<div class="centered">
+										<div class="teamicon left">
+											<img data-bind="match.team1.icon"/>
+										</div>
+										<div class="score">
+											<div class="regular">
+												<span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span>
+											</div>
+										</div>
+										<div class="teamicon right">
+											<img data-bind="match.team2.icon"/>
 										</div>
 									</div>
-									<div class="teamicon">
-										<img data-bind="match.team2.icon"/>
-									</div>
+									<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
 								</div>
-								<div class="knockoutstageteam" data-bind="parseTeam2Name(match.id)"></div>
 							</div>
 						</div>
-					</div>
-					<div data-view="userbetsscoreroundof16right">
-						<div class="matches">
-							<div data-bind="match in roundof16right.matches">
-								<div class="knockoutstageteam" data-bind="parseTeam1Name(match.id)"></div>
-								<div>
-									<div class="teamicon">
-										<img data-bind="match.team1.icon"/>
-									</div>
-									<div>
-										<div>
-											<span data-bind="parseBetScore1(match.id)"></span> - <span data-bind="parseBetScore2(match.id)"></span>
+						<div class="spacer">
+							<img src="images/connection_roundof16.png" class="flip-ud-lr"/>
+						</div>
+						<div data-view="userbetsscoreroundof16right" class="stage roundof16">
+							<div class="matches">
+								<div data-bind="match in roundof16right.matches" class="match boxed">
+									<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
+									<div class="centered">
+										<div class="teamicon left">
+											<img data-bind="match.team1.icon"/>
+										</div>
+										<div class="score">
+											<div class="regular">
+												<span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span>
+											</div>
+										</div>
+										<div class="teamicon right">
+											<img data-bind="match.team2.icon"/>
 										</div>
 									</div>
-									<div class="teamicon">
-										<img data-bind="match.team2.icon"/>
-									</div>
+									<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
 								</div>
-								<div class="knockoutstageteam" data-bind="parseTeam2Name(match.id)"></div>
 							</div>
 						</div>
 					</div>
@@ -266,7 +284,7 @@
 <!----------------------------------------------------------------------------->
 <!-- results ------------------------------------------------------------------>
 <!----------------------------------------------------------------------------->
-			<div id="results" data-role="page" class="narrow-page">			
+			<div id="results" data-role="page">			
 				<h1>Resultaten</h1>
 
 				<div data-view="groupstage">
@@ -277,11 +295,11 @@
 							<div class="matches">
 								<div data-bind="match in group.matches orderby date" class="match">
 									<div data-bind="parseTeam1Name(match.id)" class="teamname"></div>
-									<div class="teamicon" ><img data-bind="match.team1.icon"/></div>
+									<div class="teamicon"><img data-bind="match.team1.icon"/></div>
 									<div class="score">
 										<span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span>
 									</div>
-									<div class="teamicon" ><img data-bind="match.team2.icon"/></div>
+									<div class="teamicon"><img data-bind="match.team2.icon"/></div>
 									<div data-bind="parseTeam2Name(match.id)" class="teamname text-right"></div>
 								</div>
 							</div>
@@ -295,24 +313,24 @@
 						<div data-view="roundof16left" class="stage roundof16">
 							<div class="matches">
 								<div data-bind="match in roundof16left.matches" class="match boxed">
-									<div data-bind="parseTeam1Name(match.id)"></div>
-									<div>
-										<div class="teamicon" >
+									<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
+									<div class="centered">
+										<div class="teamicon left">
 											<img data-bind="match.team1.icon"/>
 										</div>
-										<div>
-											<div>
+										<div class="score">
+											<div class="regular">
 												<span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span>
 											</div>
-											<div data-bind-class="parsePenaltiesTaken(match.id)">
+											<div data-bind-class="parsePenaltiesTaken(match.id)" class="penalties">
 												(<span data-bind="match.penalty1"></span> - <span data-bind="match.penalty2"></span>)
 											</div>
 										</div>
-										<div class="teamicon" >
+										<div class="teamicon right">
 											<img data-bind="match.team2.icon"/>
 										</div>
 									</div>
-									<div class="knockoutstageteam" data-bind="parseTeam2Name(match.id)"></div>
+									<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
 								</div>
 							</div>
 						</div>
@@ -322,24 +340,24 @@
 						<div data-view="quarterfinalleft" class="stage quarterfinal collapsed">
 							<div class="matches">
 								<div data-bind="match in quarterfinalleft.matches" class="match boxed">
-									<div class="knockoutstageteam" data-bind="parseTeam1Name(match.id)"></div>
-									<div>
-										<div class="teamicon" >
+									<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
+									<div class="centered">
+										<div class="teamicon left">
 											<img data-bind="match.team1.icon"/>
 										</div>
-										<div>
-											<div>
+										<div class="score">
+											<div class="regular">
 												<span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span>
 											</div>
-											<div data-bind-class="parsePenaltiesTaken(match.id)">
+											<div data-bind-class="parsePenaltiesTaken(match.id)" class="penalties">
 												(<span data-bind="match.penalty1"></span> - <span data-bind="match.penalty2"></span>)
 											</div>
 										</div>
-										<div class="teamicon" >
+										<div class="teamicon right">
 											<img data-bind="match.team2.icon"/>
 										</div>
 									</div>
-									<div class="knockoutstageteam" data-bind="parseTeam2Name(match.id)"></div>
+									<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
 								</div>
 							</div>
 						</div>
@@ -349,24 +367,24 @@
 						<div data-view="semifinalleft" class="stage semifinal collapsed">
 							<div class="matches">
 								<div data-bind="match in semifinalleft.matches" class="match boxed">
-									<div class="knockoutstageteam" data-bind="parseTeam1Name(match.id)"></div>
-									<div>
-										<div class="teamicon" >
+									<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
+									<div class="centered">
+										<div class="teamicon left">
 											<img data-bind="match.team1.icon"/>
 										</div>
-										<div>
-											<div>
+										<div class="score">
+											<div class="regular">
 												<span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span>
 											</div>
-											<div data-bind-class="parsePenaltiesTaken(match.id)">
+											<div data-bind-class="parsePenaltiesTaken(match.id)" class="penalties">
 												(<span data-bind="match.penalty1"></span> - <span data-bind="match.penalty2"></span>)
 											</div>
 										</div>
-										<div class="teamicon" >
+										<div class="teamicon right">
 											<img data-bind="match.team2.icon"/>
 										</div>
 									</div>
-									<div class="knockoutstageteam" data-bind="parseTeam2Name(match.id)"></div>
+									<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
 								</div>
 							</div>
 						</div>
@@ -376,24 +394,24 @@
 						<div data-view="final" class="stage final collapsed">
 							<div class="matches">
 								<div data-bind="match in final.matches" class="match boxed">
-									<div class="knockoutstageteam" data-bind="parseTeam1Name(match.id)"></div>
-									<div>
-										<div class="teamicon" >
+									<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
+									<div class="centered">
+										<div class="teamicon left">
 											<img data-bind="match.team1.icon"/>
 										</div>
-										<div>
-											<div>
+										<div class="score">
+											<div class="regular">
 												<span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span>
 											</div>
-											<div data-bind-class="parsePenaltiesTaken(match.id)">
+											<div data-bind-class="parsePenaltiesTaken(match.id)" class="penalties">
 												(<span data-bind="match.penalty1"></span> - <span data-bind="match.penalty2"></span>)
 											</div>
 										</div>
-										<div class="teamicon" >
+										<div class="teamicon right">
 											<img data-bind="match.team2.icon"/>
 										</div>
 									</div>
-									<div class="knockoutstageteam" data-bind="parseTeam2Name(match.id)"></div>
+									<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
 								</div>
 							</div>
 						</div>
@@ -403,24 +421,24 @@
 						<div data-view="semifinalright" class="stage semifinal-right collapsed">
 							<div class="matches">
 								<div data-bind="match in semifinalright.matches" class="match boxed">
-									<div class="knockoutstageteam" data-bind="parseTeam1Name(match.id)"></div>
-									<div>
-										<div class="teamicon">
+									<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
+									<div class="centered">
+										<div class="teamicon left">
 											<img data-bind="match.team1.icon"/>
 										</div>
-										<div>
-											<div>
+										<div class="score">
+											<div class="regular">
 												<span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span>
 											</div>
-											<div data-bind-class="parsePenaltiesTaken(match.id)">
+											<div data-bind-class="parsePenaltiesTaken(match.id)" class="penalties">
 												(<span data-bind="match.penalty1"></span> - <span data-bind="match.penalty2"></span>)
 											</div>
 										</div>
-										<div class="teamicon">
+										<div class="teamicon right">
 											<img data-bind="match.team2.icon"/>
 										</div>
 									</div>
-									<div class="knockoutstageteam" data-bind="parseTeam2Name(match.id)"></div>
+									<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
 								</div>
 							</div>
 						</div>
@@ -430,24 +448,24 @@
 						<div data-view="quarterfinalright" class="stage quarterfinal collapsed">
 							<div class="matches">
 								<div data-bind="match in quarterfinalright.matches" class="match boxed">
-									<div class="knockoutstageteam" data-bind="parseTeam1Name(match.id)"></div>
-									<div>
-										<div class="teamicon">
+									<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
+									<div class="centered">
+										<div class="teamicon left">
 											<img data-bind="match.team1.icon"/>
 										</div>
-										<div>
-											<div>
+										<div class="score">
+											<div class="regular">
 												<span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span>
 											</div>
-											<div data-bind-class="parsePenaltiesTaken(match.id)">
+											<div data-bind-class="parsePenaltiesTaken(match.id)" class="penalties">
 												(<span data-bind="match.penalty1"></span> - <span data-bind="match.penalty2"></span>)
 											</div>
 										</div>
-										<div class="teamicon">
-											<img cdata-bind="match.team2.icon"/>
+										<div class="teamicon right">
+											<img data-bind="match.team2.icon"/>
 										</div>
 									</div>
-									<div class="knockoutstageteam" data-bind="parseTeam2Name(match.id)"></div>
+									<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
 								</div>
 							</div>
 						</div>
@@ -457,24 +475,24 @@
 						<div data-view="roundof16right" class="stage roundof16">
 							<div class="matches">
 								<div data-bind="match in roundof16right.matches" class="match boxed">
-									<div class="knockoutstageteam" data-bind="parseTeam1Name(match.id)"></div>
-									<div>
+									<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
+									<div class="centered">
 										<div class="teamicon">
 											<img data-bind="match.team1.icon"/>
 										</div>
-										<div>
-											<div>
+										<div class="score">
+											<div class="regular left">
 												<span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span>
 											</div>
-											<div data-bind-class="parsePenaltiesTaken(match.id)">
+											<div data-bind-class="parsePenaltiesTaken(match.id)" class="penalties">
 												(<span data-bind="match.penalty1"></span> - <span data-bind="match.penalty2"></span>)
 											</div>
 										</div>
-										<div class="teamicon">
+										<div class="teamicon right">
 											<img data-bind="match.team2.icon"/>
 										</div>
 									</div>
-									<div class="knockoutstageteam" data-bind="parseTeam2Name(match.id)"></div>
+									<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
 								</div>
 							</div>
 						</div>
@@ -486,7 +504,7 @@
 <!----------------------------------------------------------------------------->
 <!-- rules -------------------------------------------------------------------->
 <!----------------------------------------------------------------------------->
-			<div id="rules" data-role="page" class="narrow-page">
+			<div id="rules" data-role="page">
 				<h1>Regels</h1>
 			</div>			
 
@@ -494,7 +512,7 @@
 <!----------------------------------------------------------------------------->
 <!-- users -------------------------------------------------------------------->
 <!----------------------------------------------------------------------------->
-			<div id="users" data-role="page" class="narrow-page">
+			<div id="users" data-role="page">
 				<h1>Users</h1>
 				<div data-view="users">
 					<div data-bind="user in users">
@@ -510,7 +528,7 @@
 <!----------------------------------------------------------------------------->
 <!-- teams -------------------------------------------------------------------->
 <!----------------------------------------------------------------------------->
-			<div id="teams" data-role="page" class="narrow-page">
+			<div id="teams" data-role="page">
 				<div data-view="teams">
 					<h1>Teams</h1>
 					<table class="teams">
@@ -539,7 +557,7 @@
 <!----------------------------------------------------------------------------->
 <!-- matches ------------------------------------------------------------------>
 <!----------------------------------------------------------------------------->
-			<div id="matches" data-role="page" class="narrow-page">
+			<div id="matches" data-role="page">
 				<div data-view="groups">
 					<h1>Groups</h1>
 					<table class="groups">

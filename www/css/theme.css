@@ -72,8 +72,8 @@ h2{
 }
 .group{
 	display: inline-block;
-	width: 40%;
-	min-width: 278px;
+	width: 30%;
+	min-width: 265px;
 	margin: 0 20px 20px 0;
 	padding: 5px;
 }
@@ -126,7 +126,7 @@ div.teamicon img{
 	height: 418px;
 }
 .collapsed{
-	width: 8%;
+	width: 7%;
 	font-size: 0.8em;
 }
 .spacer{
@@ -138,12 +138,21 @@ div.teamicon img{
 }
 .spacer img{
 	position: absolute;
-	top: 50%;
-	transform: translate(0,-50%);
+	top: 0;
+	left: 0;
 	width: 100%;
 	height: 100%;
 }
-.stage .matches{
+.spacer img.flip-ud-lr{
+	-moz-transform: scale(-1,-1);
+    -o-transform: scale(-1,-1);
+    -webkit-transform: scale(-1,-1);
+    transform: scale(-1,-1);
+    filter: FlipHV;
+    -ms-filter: "FlipHV";
+}
+
+.knockoutstage .matches{
 	position: absolute;
 	top: 50%;
 	transform: translate(0,-50%);
@@ -151,20 +160,50 @@ div.teamicon img{
 }
 
 
-.stage .matches .match{
+.knockoutstage .matches .match{
+	position: relative;
 	height: 120px;
-	margin: 10px 0 10px 0;
+	margin: 10px 0;
 	cursor: pointer;
 }
 .roundof16 .matches .match{
 	height: 90px;
 }
 .quarterfinal .matches .match{
-	margin: 90px 0 90px 0;
+	margin: 85px 0;
 }
 .semifinal .matches .match{
 	margin: 0 0 90px 0;
 }
 .semifinal-right .matches .match{
-	margin: 90px 0 0 0;
+	margin: 85px 0 0 0;
+}
+
+.knockoutstage .match .teamname-top{
+	position: absolute;
+	top: 5px;
+	width: 100%;
+}
+.knockoutstage .match .teamname-bot{
+	position: absolute;
+	bottom: 5px;
+	width: 100%;
+}
+.knockoutstage .match .centered{
+	position: absolute;
+	top: 50%;
+	transform: translate(0,-50%);
+	width: 100%;
+}
+.knockoutstage .match .teamicon{
+	display: inline-block;
+	width: 20%;
+	min-width: 20px;
+	max-width: 40px;
+	text-align: left;
+}
+.knockoutstage .match .score{
+	display: inline-block;
+	width: 50%;
+	min-width: 45px;
 }

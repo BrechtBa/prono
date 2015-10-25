@@ -39,6 +39,23 @@ app.view.functions.parseTeam2Name = function(matchid){
 		return app.model.matches[matchid].team2.name;
 	}
 }
+app.view.functions.parseTeam1Abr = function(matchid){
+	console.log(app.model.matches[matchid].team1)
+	if(typeof app.model.matches[matchid].team1 == "undefined"){
+		return app.model.matches[matchid].defaultteam1;
+	}
+	else{
+		return app.model.matches[matchid].team1.abr;
+	}
+}
+app.view.functions.parseTeam2Abr = function(matchid){
+	if(typeof app.model.matches[matchid].team2 == "undefined"){
+		return app.model.matches[matchid].defaultteam2;
+	}
+	else{
+		return app.model.matches[matchid].team2.abr;
+	}
+}
 app.view.functions.parseTeam1Icon = function(matchid){
 	if(typeof app.model.matches[matchid].team1 == "undefined"){
 		return "images/flags/XXX.png";
