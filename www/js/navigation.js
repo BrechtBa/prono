@@ -14,7 +14,7 @@ $(document).ready(function(){
 	// open page
 	$(document).on('click tap','a[href^="#"]',function(event){
 		event.preventDefault();
-		
+
 		var target = $(this).attr('href');
 		if( target!='#' && target!='#close' && $(target).attr('data-role')=='page' ){
 			//change the window hash
@@ -23,6 +23,7 @@ $(document).ready(function(){
 		}
 	});
 	$(window).on('hashchange',function(event){
+		event.preventDefault();
 		$('[data-role="page"]').hide()
 		$(window.location.hash).show()
 	});

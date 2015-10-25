@@ -124,6 +124,8 @@ div.teamicon img{
 	width: 22%;
 	margin-top: -10px;
 	height: 418px;
+    transition: width 0.5s;
+	-webkit-transition: width 0.5s;
 }
 .collapsed{
 	width: 7%;
@@ -209,5 +211,5 @@ div.teamicon img{
 .knockoutstage .match .score{
 	display: inline-block;
 	width: 50%;
-	min-width: 45px;
+	min-width: 50px;
 }

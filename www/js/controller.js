@@ -23,7 +23,6 @@ $(document).ready(function(){
 	// event triggered when a user logs in
 	$(document).on('loggedin',function(event,data){
 		console.log('user is logged in');
-		window.location.hash = '#ranking';
 		
 		$(document).trigger('usersModelGet');
 		$(document).trigger('teamsModelGet');
@@ -266,15 +265,19 @@ $(document).ready(function(){
 // Bets score                                                                 //
 ////////////////////////////////////////////////////////////////////////////////
 	$(document).on('click tap','#prono [data-bind^="match in "]',function(event){
-		var id = $(event.target).parents('[data-bind^="match in "]').attr('data-id');
-		app.model.editbetscore.put(1,{
-			'id': app.model.userbetsscore[id].id,
-			'match_id': app.model.userbetsscore[id].match.id,
-			'score1':   app.model.userbetsscore[id].score1,
-			'score2':   app.model.userbetsscore[id].score2,
-		});
-		// open the popup
-		$(document).trigger('openPopup',['#editbetscore']);
+
+		var classlist = $(this).parents('.stage').attr('class').split(/\s+/);
+		if(classlist.indexOf('collapsed')<0){
+			var id = $(event.target).parents('[data-bind^="match in "]').attr('data-id');
+			app.model.editbetscore.put(1,{
+				'id': app.model.userbetsscore[id].id,
+				'match_id': app.model.userbetsscore[id].match.id,
+				'score1':   app.model.userbetsscore[id].score1,
+				'score2':   app.model.userbetsscore[id].score2,
+			});
+			// open the popup
+			$(document).trigger('openPopup',['#editbetscore']);
+		}
 	});
 	$(document).on('submit','#editbetscore form',function(event){
 		event.preventDefault();

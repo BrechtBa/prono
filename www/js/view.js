@@ -132,185 +132,33 @@ app.view.functions.parseBetScore2 = function(matchid){
 
 
 
-
-
-
-/*
+////////////////////////////////////////////////////////////////////////////////
+// View functionality                                                         //
+///////////////////////////////////////////////////////////////////////////////
 // JQuery wrapper
 $(document).ready(function(){
-	
-////////////////////////////////////////////////////////////////////////////////
-// Users                                                                      //
-////////////////////////////////////////////////////////////////////////////////	
-	app.add_view('users',$('[data-view="users"]'),{
-	});
-	
-	app.add_view('ranking',$('[data-view="ranking"]'),{
-	});
+	$(document).on('click tap','.stage',function(event){
+		event.preventDefault();
+		$('.stage').addClass('collapsed');
 
-////////////////////////////////////////////////////////////////////////////////
-// Teams                                                                      //
-////////////////////////////////////////////////////////////////////////////////
-	app.add_view('teams',$('[data-view="teams"]'),{
-	});
-	
-	app.add_view('editteam',$('[data-view="editteam"]'),{
-	});
+		var classlist = $(this).attr('class').split(/\s+/);
 
-////////////////////////////////////////////////////////////////////////////////
-// Groups                                                                     //
-////////////////////////////////////////////////////////////////////////////////
-	app.add_view('groups',$('[data-view="groups"]'),{
+		if(classlist.indexOf('roundof16')>0){
+			$('.roundof16').removeClass('collapsed');
+		}
+		if(classlist.indexOf('quarterfinal')>0){
+			$('.quarterfinal').removeClass('collapsed');
+		}
+		if(classlist.indexOf('semifinal')>0 || classlist.indexOf('semifinal-right')>0){
+			$('.semifinal').removeClass('collapsed');
+			$('.semifinal-right').removeClass('collapsed');
+		}	
+		if(classlist.indexOf('final')>0){
+			$('.final').removeClass('collapsed');
+		}
 	});
-	
-	app.add_view('editgroup',$('[data-view="editgroup"]'),{
-	});
-
-
-////////////////////////////////////////////////////////////////////////////////
-// Matches                                                                    //
-////////////////////////////////////////////////////////////////////////////////
-	app.add_view('matches',$('[data-view="matches"]'),{
-		'parseDate': app.view.functions.parseDate,
-		'parseTeam1Name': app.view.functions.parseTeam1Name,
-		'parseTeam2Name': app.view.functions.parseTeam2Name,
-		'parseScore': app.view.functions.parseScore,
-		'parsePenaltiesTaken': app.view.functions.parsePenaltiesTaken
-	});
-	
-	app.add_view('editmatch',$('[data-view="editmatch"]'),{
-		'parseDate': app.view.functions.parseDate
-	});
-	
-	app.add_view('editmatchscore',$('[data-view="editmatchscore"]'),{
-	});
-
-	
-
-////////////////////////////////////////////////////////////////////////////////
-// Results                                                                    //
-////////////////////////////////////////////////////////////////////////////////
-	app.add_view('groupstage',$('[data-view="groupstage"]'),{
-		'parseTeam1Name': app.view.functions.parseTeam1Name,
-		'parseTeam2Name': app.view.functions.parseTeam2Name,
-		'parseScore': app.view.functions.parseScore,
-		'parsePenaltiesTaken': app.view.functions.parsePenaltiesTaken
-	});
-
-	app.add_view('roundof16left',$('[data-view="roundof16left"]'),{
-		'parseTeam1Name': app.view.functions.parseTeam1Name,
-		'parseTeam2Name': app.view.functions.parseTeam2Name,
-		'parseScore': app.view.functions.parseScore,
-		'parsePenaltiesTaken': app.view.functions.parsePenaltiesTaken
-	});
-	app.add_view('roundof16right',$('[data-view="roundof16right"]'),{
-		'parseTeam1Name': app.view.functions.parseTeam1Name,
-		'parseTeam2Name': app.view.functions.parseTeam2Name,
-		'parseScore': app.view.functions.parseScore,
-		'parsePenaltiesTaken': app.view.functions.parsePenaltiesTaken
-	});
-
-	app.add_view('quarterfinalleft',$('[data-view="quarterfinalleft"]'),{
-		'parseTeam1Name': app.view.functions.parseTeam1Name,
-		'parseTeam2Name': app.view.functions.parseTeam2Name,
-		'parseScore': app.view.functions.parseScore,
-		'parsePenaltiesTaken': app.view.functions.parsePenaltiesTaken
-	});
-	app.add_view('quarterfinalright',$('[data-view="quarterfinalright"]'),{
-		'parseTeam1Name': app.view.functions.parseTeam1Name,
-		'parseTeam2Name': app.view.functions.parseTeam2Name,
-		'parseScore': app.view.functions.parseScore,
-		'parsePenaltiesTaken': app.view.functions.parsePenaltiesTaken
-	});
-
-	app.add_view('semifinalleft',$('[data-view="semifinalleft"]'),{
-		'parseTeam1Name': app.view.functions.parseTeam1Name,
-		'parseTeam2Name': app.view.functions.parseTeam2Name,
-		'parseScore': app.view.functions.parseScore,
-		'parsePenaltiesTaken': app.view.functions.parsePenaltiesTaken
-	});
-	app.add_view('semifinalright',$('[data-view="semifinalright"]'),{
-		'parseTeam1Name': app.view.functions.parseTeam1Name,
-		'parseTeam2Name': app.view.functions.parseTeam2Name,
-		'parseScore': app.view.functions.parseScore,
-		'parsePenaltiesTaken': app.view.functions.parsePenaltiesTaken
-	});
-
-	app.add_view('final',$('[data-view="final"]'),{
-		'parseTeam1Name': app.view.functions.parseTeam1Name,
-		'parseTeam2Name': app.view.functions.parseTeam2Name,
-		'parseScore': app.view.functions.parseScore,
-		'parsePenaltiesTaken': app.view.functions.parsePenaltiesTaken
-	});
-
-
-////////////////////////////////////////////////////////////////////////////////
-// User Bets                                                                  //
-////////////////////////////////////////////////////////////////////////////////
-	app.add_view('userbetsscoregroupstage',$('[data-view="userbetsscoregroupstage"]'),{
-		'parseTeam1Name': app.view.functions.parseTeam1Name,
-		'parseTeam2Name': app.view.functions.parseTeam2Name,
-		'parseBetScore1': app.view.functions.parseBetScore1,
-		'parseBetScore2': app.view.functions.parseBetScore2
-	});
-
-	app.add_view('userbetsscoreroundof16left',$('[data-view="userbetsscoreroundof16left"]'),{
-		'parseTeam1Name': app.view.functions.parseTeam1Name,
-		'parseTeam2Name': app.view.functions.parseTeam2Name,
-		'parseBetScore1': app.view.functions.parseBetScore1,
-		'parseBetScore2': app.view.functions.parseBetScore2
-	});
-	app.add_view('userbetsscoreroundof16right',$('[data-view="userbetsscoreroundof16right"]'),{
-		'parseTeam1Name': app.view.functions.parseTeam1Name,
-		'parseTeam2Name': app.view.functions.parseTeam2Name,
-		'parseBetScore1': app.view.functions.parseBetScore1,
-		'parseBetScore2': app.view.functions.parseBetScore2
-	});
-
-	app.add_view('userbetsscorequarterfinalleft',$('[data-view="userbetsscorequarterfinalleft"]'),{
-		'parseTeam1Name': app.view.functions.parseTeam1Name,
-		'parseTeam2Name': app.view.functions.parseTeam2Name,
-		'parseBetScore1': app.view.functions.parseBetScore1,
-		'parseBetScore2': app.view.functions.parseBetScore2
-	});
-	app.add_view('userbetsscorequarterfinalright',$('[data-view="userbetsscorequarterfinalright"]'),{
-		'parseTeam1Name': app.view.functions.parseTeam1Name,
-		'parseTeam2Name': app.view.functions.parseTeam2Name,
-		'parseBetScore1': app.view.functions.parseBetScore1,
-		'parseBetScore2': app.view.functions.parseBetScore2
-	});
-
-	app.add_view('userbetsscoresemifinalleft',$('[data-view="userbetsscoresemifinalleft"]'),{
-		'parseTeam1Name': app.view.functions.parseTeam1Name,
-		'parseTeam2Name': app.view.functions.parseTeam2Name,
-		'parseBetScore1': app.view.functions.parseBetScore1,
-		'parseBetScore2': app.view.functions.parseBetScore2
-	});
-	app.add_view('userbetsscoresemifinalright',$('[data-view="userbetsscoresemifinalright"]'),{
-		'parseTeam1Name': app.view.functions.parseTeam1Name,
-		'parseTeam2Name': app.view.functions.parseTeam2Name,
-		'parseBetScore1': app.view.functions.parseBetScore1,
-		'parseBetScore2': app.view.functions.parseBetScore2
-	});
-
-	app.add_view('userbetsscorefinalright',$('[data-view="userbetsscorefinalright"]'),{
-		'parseTeam1Name': app.view.functions.parseTeam1Name,
-		'parseTeam2Name': app.view.functions.parseTeam2Name,
-		'parseBetScore1': app.view.functions.parseBetScore1,
-		'parseBetScore2': app.view.functions.parseBetScore2
-	});
-
-	app.add_view('editbetscore',$('[data-view="editbetscore"]'),{
-		'parseTeam1Name': app.view.functions.parseTeam1Name,
-		'parseTeam2Name': app.view.functions.parseTeam2Name,
-		'parseBetScore1': app.view.functions.parseBetScore1,
-		'parseBetScore2': app.view.functions.parseBetScore2
-	});
-
 });
 
-
-*/
 
 
 

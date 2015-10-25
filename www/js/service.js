@@ -142,7 +142,8 @@ app.service.user = {
 			if(result.status>0){
 				// store the token in webstorage
 				localStorage.setItem('token', result.token);
-				that.login()
+				that.login();
+				window.location.hash = '#ranking';
 			}
 		});
 	},
