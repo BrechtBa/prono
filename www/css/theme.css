@@ -183,11 +183,13 @@ div.teamicon img{
 	position: absolute;
 	top: 5px;
 	width: 100%;
+	z-index: 1;
 }
 .knockoutstage .match .teamname-bot{
 	position: absolute;
 	bottom: 5px;
 	width: 100%;
+	z-index: 1;
 }
 .knockoutstage .match .centered{
 	position: absolute;
@@ -201,6 +203,8 @@ div.teamicon img{
 	min-width: 20px;
 	max-width: 40px;
 	text-align: left;
+	margin-bottom: -5px;
+	z-index: -1;
 }
 .knockoutstage .match .score{
 	display: inline-block;

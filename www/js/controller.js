@@ -57,7 +57,7 @@ $(document).ready(function(){
 ////////////////////////////////////////////////////////////////////////////////
 	// add a team
 	$(document).on('click tap','[data-view="teams"] [data-control="add"]',function(event){
-		app.model.teams.post({'name':'','abr':'','icon':''});
+		app.model.teams.post({'name':'','abr':'','icon':'','iso_icon':'_blank'});
 	});
 	// edit a team
 	$(document).on('click tap','[data-view="teams"] [data-control="edit"]',function(event){
@@ -67,6 +67,7 @@ $(document).ready(function(){
 			'name': app.model.teams[id]['name'],
 			'abr':  app.model.teams[id]['abr'],
 			'icon': app.model.teams[id]['icon'],
+			'iso_icon': app.model.teams[id]['iso_icon'],
 		});
 		// open the popup
 		$(document).trigger('openPopup',['#editteam']);
@@ -79,7 +80,7 @@ $(document).ready(function(){
 		app.model.teams.put(id,{
 			'name': $('#editteam').find('[name="name"]').val(),
 			'abr':  $('#editteam').find('[name="abr"]').val(),
-			'icon': $('#editteam').find('[name="icon"]').val()
+			'iso_icon': $('#editteam').find('[name="iso_icon"]').val()
 		});
 
 		// close the popup

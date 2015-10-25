@@ -43,6 +43,7 @@ app.add_model('teams',{
 				that[team.id]['name'] = team.name;
 				that[team.id]['abr'] = team.abr;
 				that[team.id]['icon'] = team.icon;
+				that[team.id]['iso_icon'] = team.iso_icon;
 			});
 			$(document).trigger('teamsViewUpdate');
 			$(document).trigger('groupsModelGet');
@@ -55,6 +56,7 @@ app.add_model('teams',{
 				that[result.id]['name'] = result.name;
 				that[result.id]['abr'] = result.abr;
 				that[result.id]['icon'] = result.icon;
+				that[result.id]['iso_icon'] = result.iso_icon;
 				
 				$(document).trigger('teamsViewUpdate');
 				$(document).trigger('matchesViewUpdate');
@@ -69,6 +71,7 @@ app.add_model('teams',{
 				that[result.id]['name'] = result.name;
 				that[result.id]['abr'] = result.abr;
 				that[result.id]['icon'] = result.icon;
+				that[result.id]['iso_icon'] = result.iso_icon;
 				
 				$(document).trigger('teamsViewUpdate');
 			});
@@ -95,6 +98,7 @@ app.add_model('editteam',{
 		that['name'] = data['name'];
 		that['abr'] = data['abr'];
 		that['icon'] = data['icon'];
+		that['iso_icon'] = data['iso_icon'];
 		
 		$(document).trigger('editteamViewUpdate');
 	},

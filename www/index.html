@@ -99,11 +99,11 @@
 							<div class="matches">
 								<div data-bind="match in group.matches orderby date" class="match">
 									<div data-bind="parseTeam1Name(match.id)" class="teamname"></div>
-									<div class="teamicon"><img data-bind="match.team1.icon"/></div>
+									<div class="teamicon"><img data-bind="parseTeam1Icon(match.id)"/></div>
 									<div class="score">
 										<span data-bind="parseBetScore1(match.id)"></span> - <span data-bind="parseBetScore2(match.id)"></span>
 									</div>
-									<div class="teamicon"><img data-bind="match.team2.icon"/></div>
+									<div class="teamicon"><img data-bind="parseTeam2Icon(match.id)"/></div>
 									<div data-bind="parseTeam2Name(match.id)" class="teamname text-right"></div>
 								</div>
 							</div>
@@ -117,7 +117,7 @@
 									<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
 									<div class="centered">
 										<div class="teamicon left">
-											<img data-bind="match.team1.icon"/>
+											<img data-bind="parseTeam1Icon(match.id)"/>
 										</div>
 										<div class="score">
 											<div class="regular">
@@ -125,7 +125,7 @@
 											</div>
 										</div>
 										<div class="teamicon right">
-											<img data-bind="match.team2.icon"/>
+											<img data-bind="parseTeam2Icon(match.id)n"/>
 										</div>
 									</div>
 									<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
@@ -141,7 +141,7 @@
 									<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
 									<div class="centered">
 										<div class="teamicon left">
-											<img data-bind="match.team1.icon"/>
+											<img data-bind="parseTeam1Icon(match.id)"/>
 										</div>
 										<div class="score">
 											<div class="regular">
@@ -149,7 +149,7 @@
 											</div>
 										</div>
 										<div class="teamicon right">
-											<img data-bind="match.team2.icon"/>
+											<img data-bind="parseTeam2Icon(match.id)"/>
 										</div>
 									</div>
 									<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
@@ -165,7 +165,7 @@
 									<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
 									<div class="centered">
 										<div class="teamicon left">
-											<img data-bind="match.team1.icon"/>
+											<img data-bind="parseTeam1Icon(match.id)"/>
 										</div>
 										<div class="score">
 											<div class="regular">
@@ -173,7 +173,7 @@
 											</div>
 										</div>
 										<div class="teamicon right">
-											<img data-bind="match.team2.icon"/>
+											<img data-bind="parseTeam2Icon(match.id)"/>
 										</div>
 									</div>
 									<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
@@ -189,7 +189,7 @@
 									<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
 									<div class="centered">
 										<div class="teamicon left">
-											<img data-bind="match.team1.icon"/>
+											<img data-bind="parseTeam1Icon(match.id)"/>
 										</div>
 										<div class="score">
 											<div class="regular">
@@ -197,7 +197,7 @@
 											</div>
 										</div>
 										<div class="teamicon right">
-											<img data-bind="match.team2.icon"/>
+											<img data-bind="parseTeam2Icon(match.id)"/>
 										</div>
 									</div>
 									<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
@@ -213,7 +213,7 @@
 									<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
 									<div class="centered">
 										<div class="teamicon left">
-											<img data-bind="match.team1.icon"/>
+											<img data-bind="parseTeam1Icon(match.id)"/>
 										</div>
 										<div class="score">
 											<div class="regular">
@@ -221,7 +221,7 @@
 											</div>
 										</div>
 										<div class="teamicon right">
-											<img data-bind="match.team2.icon"/>
+											<img data-bind="parseTeam2Icon(match.id)"/>
 										</div>
 									</div>
 									<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
@@ -237,7 +237,7 @@
 									<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
 									<div class="centered">
 										<div class="teamicon left">
-											<img data-bind="match.team1.icon"/>
+											<img data-bind="parseTeam1Icon(match.id)"/>
 										</div>
 										<div class="score">
 											<div class="regular">
@@ -245,7 +245,7 @@
 											</div>
 										</div>
 										<div class="teamicon right">
-											<img data-bind="match.team2.icon"/>
+											<img data-bind="parseTeam2Icon(match.id)"/>
 										</div>
 									</div>
 									<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
@@ -261,7 +261,7 @@
 									<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
 									<div class="centered">
 										<div class="teamicon left">
-											<img data-bind="match.team1.icon"/>
+											<img data-bind="parseTeam1Icon(match.id)"/>
 										</div>
 										<div class="score">
 											<div class="regular">
@@ -269,7 +269,7 @@
 											</div>
 										</div>
 										<div class="teamicon right">
-											<img data-bind="match.team2.icon"/>
+											<img data-bind="parseTeam2Icon(match.id)"/>
 										</div>
 									</div>
 									<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
@@ -295,11 +295,11 @@
 							<div class="matches">
 								<div data-bind="match in group.matches orderby date" class="match">
 									<div data-bind="parseTeam1Name(match.id)" class="teamname"></div>
-									<div class="teamicon"><img data-bind="match.team1.icon"/></div>
+									<div class="teamicon"><img data-bind="parseTeam1Icon(match.id)"/></div>
 									<div class="score">
 										<span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span>
 									</div>
-									<div class="teamicon"><img data-bind="match.team2.icon"/></div>
+									<div class="teamicon"><img data-bind="parseTeam2Icon(match.id)"/></div>
 									<div data-bind="parseTeam2Name(match.id)" class="teamname text-right"></div>
 								</div>
 							</div>
@@ -316,7 +316,7 @@
 									<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
 									<div class="centered">
 										<div class="teamicon left">
-											<img data-bind="match.team1.icon"/>
+											<img data-bind="parseTeam1Icon(match.id)"/>
 										</div>
 										<div class="score">
 											<div class="regular">
@@ -327,7 +327,7 @@
 											</div>
 										</div>
 										<div class="teamicon right">
-											<img data-bind="match.team2.icon"/>
+											<img data-bind="parseTeam2Icon(match.id)"/>
 										</div>
 									</div>
 									<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
@@ -343,7 +343,7 @@
 									<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
 									<div class="centered">
 										<div class="teamicon left">
-											<img data-bind="match.team1.icon"/>
+											<img data-bind="parseTeam1Icon(match.id)"/>
 										</div>
 										<div class="score">
 											<div class="regular">
@@ -354,7 +354,7 @@
 											</div>
 										</div>
 										<div class="teamicon right">
-											<img data-bind="match.team2.icon"/>
+											<img data-bind="parseTeam2Icon(match.id)"/>
 										</div>
 									</div>
 									<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
@@ -370,7 +370,7 @@
 									<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
 									<div class="centered">
 										<div class="teamicon left">
-											<img data-bind="match.team1.icon"/>
+											<img data-bind="parseTeam1Icon(match.id)"/>
 										</div>
 										<div class="score">
 											<div class="regular">
@@ -381,7 +381,7 @@
 											</div>
 										</div>
 										<div class="teamicon right">
-											<img data-bind="match.team2.icon"/>
+											<img data-bind="parseTeam2Icon(match.id)"/>
 										</div>
 									</div>
 									<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
@@ -397,7 +397,7 @@
 									<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
 									<div class="centered">
 										<div class="teamicon left">
-											<img data-bind="match.team1.icon"/>
+											<img data-bind="parseTeam1Icon(match.id)"/>
 										</div>
 										<div class="score">
 											<div class="regular">
@@ -408,7 +408,7 @@
 											</div>
 										</div>
 										<div class="teamicon right">
-											<img data-bind="match.team2.icon"/>
+											<img data-bind="parseTeam2Icon(match.id)"/>
 										</div>
 									</div>
 									<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
@@ -424,7 +424,7 @@
 									<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
 									<div class="centered">
 										<div class="teamicon left">
-											<img data-bind="match.team1.icon"/>
+											<img data-bind="parseTeam1Icon(match.id)"/>
 										</div>
 										<div class="score">
 											<div class="regular">
@@ -435,7 +435,7 @@
 											</div>
 										</div>
 										<div class="teamicon right">
-											<img data-bind="match.team2.icon"/>
+											<img data-bind="parseTeam2Icon(match.id)"/>
 										</div>
 									</div>
 									<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
@@ -451,7 +451,7 @@
 									<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
 									<div class="centered">
 										<div class="teamicon left">
-											<img data-bind="match.team1.icon"/>
+											<img data-bind="parseTeam1Icon(match.id)"/>
 										</div>
 										<div class="score">
 											<div class="regular">
@@ -462,7 +462,7 @@
 											</div>
 										</div>
 										<div class="teamicon right">
-											<img data-bind="match.team2.icon"/>
+											<img data-bind="parseTeam2Icon(match.id)"/>
 										</div>
 									</div>
 									<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
@@ -478,7 +478,7 @@
 									<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
 									<div class="centered">
 										<div class="teamicon">
-											<img data-bind="match.team1.icon"/>
+											<img data-bind="parseTeam1Icon(match.id)"/>
 										</div>
 										<div class="score">
 											<div class="regular left">
@@ -489,7 +489,7 @@
 											</div>
 										</div>
 										<div class="teamicon right">
-											<img data-bind="match.team2.icon"/>
+											<img data-bind="parseTeam2Icon(match.id)"/>
 										</div>
 									</div>
 									<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
@@ -544,7 +544,7 @@
 							<td data-bind="team.id"></td>
 							<td data-bind="team.name"></td>
 							<td data-bind="team.abr"></td>
-							<td><img class="teamicon" data-bind="team.icon"/></td>
+							<td><img class="teamicon" data-bind="parseTeamIcon(team.id)"/></td>
 							<td><button data-control="edit" class="btn">edit</button></td>
 							<td><button data-control="delete" class="btn">delete</button></td>
 						</tr>
@@ -690,8 +690,12 @@
 					<input type="text" name="abr" data-bind="editteam.abr"/>
 				</div>
 				<div>
-					<label>Icon</label>
+					<label>Icon url</label>
 					<input type="test" name="icon" data-bind="editteam.icon"/>
+				</div>
+				<div>
+					<label>Iso-icon-code</label>
+					<input type="test" name="iso_icon" data-bind="editteam.iso_icon"/>
 				</div>
 				<input type="submit" value="Submit" class="btn"/>
 			</form>

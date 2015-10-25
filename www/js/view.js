@@ -40,7 +40,6 @@ app.view.functions.parseTeam2Name = function(matchid){
 	}
 }
 app.view.functions.parseTeam1Abr = function(matchid){
-	console.log(app.model.matches[matchid].team1)
 	if(typeof app.model.matches[matchid].team1 == "undefined"){
 		return app.model.matches[matchid].defaultteam1;
 	}
@@ -56,20 +55,34 @@ app.view.functions.parseTeam2Abr = function(matchid){
 		return app.model.matches[matchid].team2.abr;
 	}
 }
-app.view.functions.parseTeam1Icon = function(matchid){
-	if(typeof app.model.matches[matchid].team1 == "undefined"){
-		return "images/flags/XXX.png";
+
+app.view.functions.parseTeamIcon = function(teamid){
+	if(app.model.teams[teamid].icon == ''){
+		if(app.model.teams[teamid].iso_icon == ''){
+			return 'images/flags/_blank.png';
+		}
+		else{
+			return 'images/flags/'+app.model.teams[teamid].iso_icon+'.png';
+		}
 	}
 	else{
-		return app.model.matches[matchid].team1.icon;
+		return app.model.teams[teamid].icon;
+	}
+}
+app.view.functions.parseTeam1Icon = function(matchid){
+	if(typeof app.model.matches[matchid].team1 == "undefined"){
+		return "images/flags/_blank.png";
+	}
+	else{
+		return app.view.functions.parseTeamIcon(app.model.matches[matchid].team1.id);
 	}
 }
 app.view.functions.parseTeam2Icon = function(matchid){
 	if(typeof app.model.matches[matchid].team2 == "undefined"){
-		return "images/flags/XXX.png";
+		return "images/flags/_blank.png";
 	}
 	else{
-		return app.model.matches[matchid].team2.icon;
+		return app.view.functions.parseTeamIcon(app.model.matches[matchid].team2.id);
 	}
 }
 app.view.functions.parseScore = function(score){
