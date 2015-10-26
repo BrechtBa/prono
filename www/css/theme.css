@@ -19,7 +19,6 @@ div[data-role=content]{
 	background-image:    -ms-linear-gradient( #DD0000,#440000 ); 
 	background-image:     -o-linear-gradient( #DD0000,#440000 ); 
 	background-image:        linear-gradient( #DD0000,#440000 );
-	background-attachment: fixed;
 }
 div[data-role=fixed-footer]{
 	color: #000000;
