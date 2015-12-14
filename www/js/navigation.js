@@ -3,7 +3,7 @@ $(document).ready(function(){
 
 ////////////////////////////////////////////////////////////////////////////////
 // Pages                                                                      //
-////////////////////////////////////////////////////////////////////////////////	
+////////////////////////////////////////////////////////////////////////////////
 	$('[data-role=page]').hide();
 	if(window.location.hash==""){
 		$('[data-role=page]').first().show();
@@ -11,23 +11,24 @@ $(document).ready(function(){
 	else{
 		$(window.location.hash).show()
 	}
-	// open page
-	$(document).on('click tap','a[href^="#"]',function(event){
-		event.preventDefault();
 
+	// open page
+	$(document).on('click tap','[href^="#"]',function(event){
+		event.preventDefault();
 		var target = $(this).attr('href');
-		if( target!='#' && target!='#close' && $(target).attr('data-role')=='page' ){
+		if( target!='#' && target!='#close' && $(target).attr('data-role')=='page' ){			
 			//change the window hash
 			window.location.hash = this.hash;
 			event.stopPropagation();
 		}
 	});
+
 	$(window).on('hashchange',function(event){
 		event.preventDefault();
 		$('[data-role="page"]').hide()
 		$(window.location.hash).show()
 	});
-	
+
 ////////////////////////////////////////////////////////////////////////////////
 // Panel                                                                      //
 ////////////////////////////////////////////////////////////////////////////////
@@ -35,7 +36,7 @@ $(document).ready(function(){
 	$('[data-role=overlaypanel]').hide();
 	var openPanels = [];
 	// open panel
-	$(document).on('click tap','a[href^="#"]',function(event){
+	$(document).on('click tap','[href^="#"]',function(event){
 		event.preventDefault();
 		
 		var target = $(this).attr('href');
@@ -53,7 +54,7 @@ $(document).ready(function(){
 		event.stopPropagation();
 	});
 	// hide the panel when clicking on a link with a #attribute
-	$(document).on('click tap','[data-role^=panel] a[href^="#"]',function(event){
+	$(document).on('click tap','[data-role^=panel] [href^="#"]',function(event){
 		event.preventDefault();
 		$(document).trigger('closePanel');
 	});
@@ -80,7 +81,7 @@ $(document).ready(function(){
 	$('[data-role=overlay]').hide();
 	var openPopups = [];
 	// open popup
-	$(document).on('click tap','a[href^="#"]',function(event){
+	$(document).on('click tap','[href^="#"]',function(event){
 		event.preventDefault();
 		
 		var target = $(this).attr('href');
@@ -98,7 +99,7 @@ $(document).ready(function(){
 		event.stopPropagation();
 	});
 	// hide the popup when clicking on a link with a #attribute
-	$(document).on('click tap','[data-role^="popup"] a[href^="#"]',function(event){
+	$(document).on('click tap','[data-role^="popup"] [href^="#"]',function(event){
 		event.preventDefault();
 		$(document).trigger('closePopup');
 	});

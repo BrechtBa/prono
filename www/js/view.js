@@ -139,22 +139,25 @@ app.view.functions.parseBetScore2 = function(matchid){
 $(document).ready(function(){
 	$(document).on('click tap','.stage',function(event){
 		event.preventDefault();
-		$('.stage').addClass('collapsed');
+		var parent = $(event.target).parents('.knockoutstage');
+
+		parent.find('.stage').addClass('collapsed');
 
 		var classlist = $(this).attr('class').split(/\s+/);
 
 		if(classlist.indexOf('roundof16')>0){
-			$('.roundof16').removeClass('collapsed');
+			parent.find('.roundof16').removeClass('collapsed');
 		}
+
 		if(classlist.indexOf('quarterfinal')>0){
-			$('.quarterfinal').removeClass('collapsed');
+			parent.find('.quarterfinal').removeClass('collapsed');
 		}
 		if(classlist.indexOf('semifinal')>0 || classlist.indexOf('semifinal-right')>0){
-			$('.semifinal').removeClass('collapsed');
-			$('.semifinal-right').removeClass('collapsed');
+			parent.find('.semifinal').removeClass('collapsed');
+			parent.find('.semifinal-right').removeClass('collapsed');
 		}	
 		if(classlist.indexOf('final')>0){
-			$('.final').removeClass('collapsed');
+			parent.find('.final').removeClass('collapsed');
 		}
 	});
 });
