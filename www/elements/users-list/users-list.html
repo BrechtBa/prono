@@ -1,0 +1,131 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animations.html">
+
+<dom-module id="users-list">
+	<template>
+
+		<style>
+			:host{
+				display: block;
+				width: 100%;
+			}
+			table {
+				border-collapse: collapse;
+				border-spacing: 0;
+				width: 100%;
+			}
+			tr:nth-child(even) {
+				background: #f7f7f7;
+			}
+			th, td {
+				padding: 8px;
+				text-align: left;
+				border-bottom: 1px solid #dddddd;
+				cursor: pointer;
+			}
+			paper-button.main{
+      			background: #5C82C3;
+      			color: #ffffff;
+    		}
+		</style>
+
+		<iron-ajax id="ajaxGet" url="../../api/index.php/auth" method="GET" handle-as="json" last-response="{{ajaxGetResponse}}" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="ajaxPut" method="PUT" handle-as="json" on-response="handleAjaxPutResponse" last-response="{{ajaxPutResponse}}" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="ajaxDelete" method="DELETE" handle-as="json" on-response="handleAjaxDeleteResponse" last-response="{{ajaxDeleteResponse}}" debounce-duration="300"></iron-ajax>
+
+		<table>
+			<tr>
+				<th>id</th>
+				<th>login</th>
+			</tr>
+			<template is="dom-repeat" items="{{ajaxGetResponse}}">
+				<tr on-tap="userDetailsDialog">
+					<td>{{item.id}}</td>
+					<td>{{item.login}}</td>
+				</tr>
+			</template>
+		</table>
+
+		<paper-dialog id="userDetails" entry-animation="scale-up-animation" exit-animation="fade-out-animation">
+			<h2>{{detailLogin}}</h2>
+			<paper-input id="permission" label="Permission:" value="{{detailPermission}}" auto-validate pattern="[0-9]" error-message="0-9"></paper-input>
+			<div class="buttons">
+				<paper-button raised on-tap="resetPassword">Reset password</paper-button>
+				<paper-button raised on-tap="deleteUser">Delete</paper-button>
+			</div>
+			<div class="buttons">
+				<paper-button raised class="main" on-tap="saveDetails">Save</paper-button>
+			</div>
+		</paper-dialog>
+
+	</template>
+
+	<script>
+		Polymer({
+			is: 'users-list',
+			properties: {
+				token: {
+					type: 'String',
+					value: '',
+					notify: true,
+					observer: 'tokenChanged'
+				}
+			},
+			ready: function(){
+				this.detailId = 0;
+			},
+			tokenChanged: function(){
+				if( this.token != ''){
+					this.$.ajaxGet.headers['Authentication'] = this.token;
+					this.$.ajaxGet.generateRequest();
+				}
+			},
+			userDetailsDialog: function(event){
+				this.detailId = event.model.get('item.id');
+
+				var id = -1;		
+				for(var i=0; i < this.ajaxGetResponse.length; i++){
+					if( this.ajaxGetResponse[i].id == this.detailId ){
+						id = i;
+						break;
+					}
+				}
+				
+				this.detailLogin = this.ajaxGetResponse[id].login;
+				this.detailPermission = this.ajaxGetResponse[id].permission;
+
+				this.$.userDetails.open()
+			},
+			saveDetails: function(event){
+				this.$.ajaxPut.url = 'api/index.php/auth/'+this.detailId
+				this.$.ajaxPut.headers['Authentication'] = this.token;
+				this.$.ajaxPut.body = JSON.stringify({'permission':this.detailPermission});
+				this.$.ajaxPut.generateRequest();
+				this.$.userDetails.close();
+			},
+			handleAjaxPutResponse: function(event,request){
+				var headers = request.xhr.getAllResponseHeaders();
+				this.$.ajaxGet.headers['Authentication'] = this.token;
+				this.$.ajaxGet.generateRequest();
+			},
+			deleteUser: function(){
+				this.$.ajaxDelete.url = 'api/index.php/auth/'+this.detailId
+				this.$.ajaxDelete.headers['Authentication'] = this.token;
+				this.$.ajaxDelete.generateRequest();
+				this.$.userDetails.close();
+			},
+			handleAjaxDeleteResponse: function(event,request){
+				var headers = request.xhr.getAllResponseHeaders();
+				this.$.ajaxGet.headers['Authentication'] = this.token;
+				this.$.ajaxGet.generateRequest();
+			},
+			resetPassword: function(){
+				console.log('Not implemented yet');
+			}
+		});
+	</script>
+
+</dom-module>

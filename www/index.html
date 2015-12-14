@@ -1,823 +1,148 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+
+<html lang="">
+
 	<head>
-		<title>Prono</title>
+		<meta charset="utf-8">
+		<meta name="description" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="generator" content="Polymer App"/>
+		<title>Polymer App</title>
+		<!-- Place favicon.ico in the `app/` directory -->
 
-		<meta charset='utf-8'/>
-		<meta name='viewport' content='width=device-width, initial-scale=1'/>
-		<meta name='mobile-web-app-capable' content='yes' />
-		<meta name='apple-mobile-web-app-capable' content='yes' />
-		<meta name='apple-mobile-web-app-status-bar-style' content='black-translucent' />
-		<meta http-equiv='expires' content='0' />
+		<!-- Chrome for Android theme color -->
+		<meta name="theme-color" content="#2E3AA1">
 
-		<link rel='icon' href='images/icon/64.png'/>
-		<link rel='apple-touch-icon' href='images/icon/128.png'/>
+		<!-- Web Application Manifest -->
+		<link rel="manifest" href="manifest.json">
 
-		<!-- frameworks -->
-		<script src='lib/jquery-1.11.0.min.js'></script>
-		
-		<!-- custom -->
-		<script type='text/javascript' src='js/app.js'></script>
-		<script type='text/javascript' src='js/service.js'></script>
-		<script type='text/javascript' src='js/navigation.js'></script>
-		<script type='text/javascript' src='js/model.js'></script>		
-		<script type='text/javascript' src='js/view.js'></script>
-		<script type='text/javascript' src='js/controller.js'></script>
-		
+		<!-- Tile color for Win8 -->
+		<meta name="msapplication-TileColor" content="#3372DF">
 
-		<link rel='stylesheet' type='text/css' href='css/layout.css'/>
-		<link rel='stylesheet' type='text/css' href='css/widgets.css'/>
-		<link rel='stylesheet' type='text/css' href='css/theme.css'/>
-		
+		<!-- Add to homescreen for Chrome on Android -->
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="application-name" content="Polymer App">
+		<link rel="icon" sizes="192x192" href="images/touch/chrome-touch-icon-192x192.png">
+
+		<!-- Add to homescreen for Safari on iOS -->
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="apple-mobile-web-app-title" content="Polymer App">
+		<link rel="apple-touch-icon" href="images/touch/apple-touch-icon.png">
+
+		<!-- Tile icon for Win8 (144x144) -->
+		<meta name="msapplication-TileImage" content="images/touch/ms-touch-icon-144x144-precomposed.png">
+
+		<!-- build:css styles/main.css -->
+		<link rel="stylesheet" href="styles/main.css">
+		<!-- endbuild-->
+
+		<!-- build:js bower_components/webcomponentsjs/webcomponents-lite.min.js -->
+		<script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+		<!-- endbuild -->
+
+		<!-- will be replaced with elements/elements.vulcanized.html -->
+		<link rel="import" href="elements/elements.html">
+		<!-- endreplace-->
+
+		<!-- For shared styles, shared-styles.html import in elements.html -->
+		<style is="custom-style" include="shared-styles"></style>
+
 	</head>
-	<body>
-		<div id="header" data-role="fixed-header">
-			<div>
-				<h1>Prono</h1>
-				<a href="#menu" class="absolute-right"><img src="lib/images/icons-png/bars-black.png" class="icon"></a>
-			</div>
-		</div>
-		<nav id="menu" data-role="panel-right">
-			<ul data-role="listview" data-view="menu">
-				<li class="no-sides"><a href='#ranking'>Rangschikking</a></li>
-				<li class="no-sides"><a href='#prono'>Pronostiek</a></li>
-				<li class="no-sides"><a href='#results'>Resultaten</a></li>
-				<li class="no-sides"><a href='#rules'>Regels</a></li>
-				<li class="no-sides" data-bind-class="parseDisplay(user.permission)"><a href='#users'>Users</a></li>
-				<li class="no-sides" data-bind-class="parseDisplay(user.permission)"><a href='#teams'>Teams</a></li>
-				<li class="no-sides" data-bind-class="parseDisplay(user.permission)"><a href='#matches'>Matches</a></li>
-				<li class="no-sides"><a href='#' data-control="logout">Logout</a></li>
-			</ul>
-		</nav>	
-		
-		
-		
-		<div id="content" data-role="content">
 
-<!----------------------------------------------------------------------------->
-<!-- login -------------------------------------------------------------------->
-<!----------------------------------------------------------------------------->
-			<div id="login" data-role="page">
-				<h1>Login</h1>
-				<form>
-					<div>
-						<label>Username</label>
-						<input type="text" name="username"/>
-					</div>
-					<div>
-						<label>Password</label>
-						<input type="password" name="password"/>
-					</div>
-					<input type="submit" value="Submit" class="btn"/>
-				</form>
-				<a href="#register">registreren</a>
-			</div>
-			
-			<div id="ranking" data-role="page" class="narrow-page">
-				<div data-view="ranking">
-					<h1>Rangschikking</h1>
-					<ol class="ranking">
-						<li data-bind="user in users orderby points reversed">
-							<span data-bind="user.username">username</span>
-							<span data-bind="user.points">points</span>
-						</li>
-					</ol>
-				</div>
-			</div>
-
-<!----------------------------------------------------------------------------->
-<!-- prono -------------------------------------------------------------------->
-<!----------------------------------------------------------------------------->	
-			<div id="prono" data-role="page">		
-				<h1>Prono</h1>
-				
-				<h2>Groepsfase</h2>
-				<div data-view="userbetsscoregroupstage">
-					<div class="groups">
-						<div data-bind="group in groupstage" class="group boxed">
-							<h3>Groep <span data-bind="group.name"></span></h3>
-							<div class="matches">
-								<div data-bind="match in group.matches orderby date" class="match">
-									<div data-bind="parseTeam1Name(match.id)" class="teamname"></div>
-									<div class="teamicon"><img data-bind="parseTeam1Icon(match.id)"/></div>
-									<div class="score">
-										<span data-bind="parseBetScore1(match.id)"></span> - <span data-bind="parseBetScore2(match.id)"></span>
-									</div>
-									<div class="teamicon"><img data-bind="parseTeam2Icon(match.id)"/></div>
-									<div data-bind="parseTeam2Name(match.id)" class="teamname text-right"></div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>	
-				
-				<h2>Knockout fase</h2>
-				<div class="knockoutstage">
-					<div data-view="userbetsscoreroundof16left" class="stage roundof16">
-						<div class="matches">
-							<div data-bind="match in roundof16left.matches" class="match boxed">
-								<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
-								<div class="centered">
-									<div class="teamicon left">
-										<img data-bind="parseTeam1Icon(match.id)"/>
-									</div>
-									<div class="score">
-										<div class="regular">
-											<span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span>
-										</div>
-									</div>
-									<div class="teamicon right">
-										<img data-bind="parseTeam2Icon(match.id)n"/>
-									</div>
-								</div>
-								<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
-							</div>
-						</div>
-					</div>
-					<div class="spacer">
-						<img src="images/connection_roundof16.png"/>
-					</div>
-					<div data-view="userbetsscorequarterfinalleft" class="stage quarterfinal collapsed">
-						<div class="matches">
-							<div data-bind="match in quarterfinalleft.matches" class="match boxed">
-								<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
-								<div class="centered">
-									<div class="teamicon left">
-										<img data-bind="parseTeam1Icon(match.id)"/>
-									</div>
-									<div class="score">
-										<div class="regular">
-											<span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span>
-										</div>
-									</div>
-									<div class="teamicon right">
-										<img data-bind="parseTeam2Icon(match.id)"/>
-									</div>
-								</div>
-								<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
-							</div>
-						</div>
-					</div>
-					<div class="spacer">
-						<img src="images/connection_quarterfinal.png"/>
-					</div>
-					<div data-view="userbetsscoresemifinalleft" class="stage semifinal collapsed">
-						<div class="matches">
-							<div data-bind="match in semifinalleft.matches" class="match boxed">
-								<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
-								<div class="centered">
-									<div class="teamicon left">
-										<img data-bind="parseTeam1Icon(match.id)"/>
-									</div>
-									<div class="score">
-										<div class="regular">
-											<span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span>
-										</div>
-									</div>
-									<div class="teamicon right">
-										<img data-bind="parseTeam2Icon(match.id)"/>
-									</div>
-								</div>
-								<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
-							</div>
-						</div>
-					</div>
-					<div class="spacer">
-						<img src="images/connection_semifinal.png"/>
-					</div>
-					<div data-view="userbetsscorefinal" class="stage final collapsed">
-						<div class="matches">
-							<div data-bind="match in final.matches" class="match boxed">
-								<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
-								<div class="centered">
-									<div class="teamicon left">
-										<img data-bind="parseTeam1Icon(match.id)"/>
-									</div>
-									<div class="score">
-										<div class="regular">
-											<span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span>
-										</div>
-									</div>
-									<div class="teamicon right">
-										<img data-bind="parseTeam2Icon(match.id)"/>
-									</div>
-								</div>
-								<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
-							</div>
-						</div>
-					</div>
-					<div class="spacer">
-						<img src="images/connection_semifinal.png" class="flip-ud-lr"/>
-					</div>
-					<div data-view="userbetsscoresemifinalright" class="stage semifinal-right collapsed">
-						<div class="matches">
-							<div data-bind="match in semifinalright.matches" class="match boxed">
-								<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
-								<div class="centered">
-									<div class="teamicon left">
-										<img data-bind="parseTeam1Icon(match.id)"/>
-									</div>
-									<div class="score">
-										<div class="regular">
-											<span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span>
-										</div>
-									</div>
-									<div class="teamicon right">
-										<img data-bind="parseTeam2Icon(match.id)"/>
-									</div>
-								</div>
-								<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
-							</div>
-						</div>
-					</div>
-					<div class="spacer">
-						<img src="images/connection_quarterfinal.png" class="flip-ud-lr"/>
-					</div>
-					<div data-view="userbetsscorequarterfinalright" class="stage quarterfinal collapsed">
-						<div class="matches">
-							<div data-bind="match in quarterfinalright.matches" class="match boxed">
-								<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
-								<div class="centered">
-									<div class="teamicon left">
-										<img data-bind="parseTeam1Icon(match.id)"/>
-									</div>
-									<div class="score">
-										<div class="regular">
-											<span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span>
-										</div>
-									</div>
-									<div class="teamicon right">
-										<img data-bind="parseTeam2Icon(match.id)"/>
-									</div>
-								</div>
-								<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
-							</div>
-						</div>
-					</div>
-					<div class="spacer">
-						<img src="images/connection_roundof16.png" class="flip-ud-lr"/>
-					</div>
-					<div data-view="userbetsscoreroundof16right" class="stage roundof16">
-						<div class="matches">
-							<div data-bind="match in roundof16right.matches" class="match boxed">
-								<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
-								<div class="centered">
-									<div class="teamicon left">
-										<img data-bind="parseTeam1Icon(match.id)"/>
-									</div>
-									<div class="score">
-										<div class="regular">
-											<span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span>
-										</div>
-									</div>
-									<div class="teamicon right">
-										<img data-bind="parseTeam2Icon(match.id)"/>
-									</div>
-								</div>
-								<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
+	<body unresolved class="fullbleed layout vertical">
+		<span id="browser-sync-binding"></span>
+		<template is="dom-bind" id="app">
 			
 
-<!----------------------------------------------------------------------------->
-<!-- results ------------------------------------------------------------------>
-<!----------------------------------------------------------------------------->
-			<div id="results" data-role="page">			
-				<h1>Resultaten</h1>
-				
-				<h2>Groepsfase</h2>
-				<div data-view="groupstage">
-					<div class="groups">
-						<div data-bind="group in groupstage" class="group boxed">
-							<h3>Groep <span data-bind="group.name"></span></h3>
-							<div class="matches">
-								<div data-bind="match in group.matches orderby date" class="match">
-									<div data-bind="parseTeam1Name(match.id)" class="teamname"></div>
-									<div class="teamicon"><img data-bind="parseTeam1Icon(match.id)"/></div>
-									<div class="score">
-										<span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span>
-									</div>
-									<div class="teamicon"><img data-bind="parseTeam2Icon(match.id)"/></div>
-									<div data-bind="parseTeam2Name(match.id)" class="teamname text-right"></div>
-								</div>
-							</div>
+			<section id="login" hidden="{{checkToken(token)}}" class="horizontal layout center-justified center">
+				<div>
+					<h2 class="page-title">Polymer App</h2>
+					<login-form token={{token}}></login-form>
+				</div>
+			</section>
+
+			<paper-drawer-panel id="paperDrawerPanel" responsive-width="800px">
+				<!-- Drawer Scroll Header Panel -->
+				<paper-scroll-header-panel drawer fixed>
+
+					<!-- Drawer Toolbar -->
+					<paper-toolbar id="drawerToolbar">
+						<span class="paper-font-title">Menu</span>
+					</paper-toolbar>
+
+					<!-- Drawer Content -->
+					<paper-menu class="list" attr-for-selected="data-route" selected="[[route]]">
+
+
+						<a data-route="home" href="{{baseUrl}}" hidden="{{!checkRoute('home',token)}}">
+							<iron-icon icon="home"></iron-icon>
+							<span>Home</span>
+						</a>
+						<a data-route="users" href="users" hidden="{{!checkRoute('users',token)}}">
+							<iron-icon icon="info"></iron-icon>
+							<span>Users</span>
+						</a>
+						<a data-route="logout" href="logout" hidden="{{!checkRoute('logout',token)}}">
+							<iron-icon icon="arrow-back"></iron-icon>
+							<span>Logout</span>
+						</a>
+
+					</paper-menu>
+
+				</paper-scroll-header-panel>
+
+				<!-- Main Area -->
+				<paper-scroll-header-panel main id="headerPanelMain" condenses="true">
+
+					<!-- Main Toolbar -->
+					<paper-toolbar id="mainToolbar" class="tall">
+						<paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
+						<span class="flex"></span>
+
+						<!-- Application name -->
+						<div class="middle middle-container center horizontal layout">
+							<div class="app-name">Polymer App</div>
 						</div>
-					</div>
-				</div>
 
-				<h2>Knockout fase</h2>
-				<div class="knockoutstage">
-					<div data-view="roundof16left" class="stage roundof16">
-						<div class="matches">
-							<div data-bind="match in roundof16left.matches" class="match boxed">
-								<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
-								<div class="centered">
-									<div class="teamicon left">
-										<img data-bind="parseTeam1Icon(match.id)"/>
-									</div>
-									<div class="score">
-										<div class="regular">
-											<span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span>
-										</div>
-										<div data-bind-class="parsePenaltiesTaken(match.id)" class="penalties">
-											(<span data-bind="match.penalty1"></span> - <span data-bind="match.penalty2"></span>)
-										</div>
-									</div>
-									<div class="teamicon right">
-										<img data-bind="parseTeam2Icon(match.id)"/>
-									</div>
-								</div>
-								<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
-							</div>
+						<!-- Application sub title -->
+						<div class="bottom bottom-container center horizontal layout">
+							<div class="bottom-title paper-font-subhead">Subtitle</div>
 						</div>
+
+					</paper-toolbar>
+
+					<!-- Main Content -->
+					<div class="content">
+						<iron-pages attr-for-selected="data-route" selected="{{route}}">
+
+							<section data-route="home">
+								<paper-material elevation="1">
+									<h2 class="page-title">Home</h2>
+								</paper-material>
+							</section>
+
+							<section data-route="users">
+								<paper-material elevation="1">
+									<h2 class="page-title">Users</h2>
+									<users-list token="{{token}}"></users-list>
+								</paper-material>
+							</section>
+
+						</iron-pages>
 					</div>
-					<div class="spacer">
-						<img src="images/connection_roundof16.png"/>
-					</div>
-					<div data-view="quarterfinalleft" class="stage quarterfinal collapsed">
-						<div class="matches">
-							<div data-bind="match in quarterfinalleft.matches" class="match boxed">
-								<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
-								<div class="centered">
-									<div class="teamicon left">
-										<img data-bind="parseTeam1Icon(match.id)"/>
-									</div>
-									<div class="score">
-										<div class="regular">
-											<span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span>
-										</div>
-										<div data-bind-class="parsePenaltiesTaken(match.id)" class="penalties">
-											(<span data-bind="match.penalty1"></span> - <span data-bind="match.penalty2"></span>)
-										</div>
-									</div>
-									<div class="teamicon right">
-										<img data-bind="parseTeam2Icon(match.id)"/>
-									</div>
-								</div>
-								<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
-							</div>
-						</div>
-					</div>
-					<div class="spacer">
-						<img src="images/connection_quarterfinal.png"/>
-					</div>
-					<div data-view="semifinalleft" class="stage semifinal collapsed">
-						<div class="matches">
-							<div data-bind="match in semifinalleft.matches" class="match boxed">
-								<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
-								<div class="centered">
-									<div class="teamicon left">
-										<img data-bind="parseTeam1Icon(match.id)"/>
-									</div>
-									<div class="score">
-										<div class="regular">
-											<span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span>
-										</div>
-										<div data-bind-class="parsePenaltiesTaken(match.id)" class="penalties">
-											(<span data-bind="match.penalty1"></span> - <span data-bind="match.penalty2"></span>)
-										</div>
-									</div>
-									<div class="teamicon right">
-										<img data-bind="parseTeam2Icon(match.id)"/>
-									</div>
-								</div>
-								<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
-							</div>
-						</div>
-					</div>
-					<div class="spacer">
-						<img src="images/connection_semifinal.png"/>
-					</div>
-					<div data-view="final" class="stage final collapsed">
-						<div class="matches">
-							<div data-bind="match in final.matches" class="match boxed">
-								<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
-								<div class="centered">
-									<div class="teamicon left">
-										<img data-bind="parseTeam1Icon(match.id)"/>
-									</div>
-									<div class="score">
-										<div class="regular">
-											<span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span>
-										</div>
-										<div data-bind-class="parsePenaltiesTaken(match.id)" class="penalties">
-											(<span data-bind="match.penalty1"></span> - <span data-bind="match.penalty2"></span>)
-										</div>
-									</div>
-									<div class="teamicon right">
-										<img data-bind="parseTeam2Icon(match.id)"/>
-									</div>
-								</div>
-								<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
-							</div>
-						</div>
-					</div>
-					<div class="spacer">
-						<img src="images/connection_semifinal.png" class="flip-ud-lr"/>
-					</div>
-					<div data-view="semifinalright" class="stage semifinal-right collapsed">
-						<div class="matches">
-							<div data-bind="match in semifinalright.matches" class="match boxed">
-								<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
-								<div class="centered">
-									<div class="teamicon left">
-										<img data-bind="parseTeam1Icon(match.id)"/>
-									</div>
-									<div class="score">
-										<div class="regular">
-											<span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span>
-										</div>
-										<div data-bind-class="parsePenaltiesTaken(match.id)" class="penalties">
-											(<span data-bind="match.penalty1"></span> - <span data-bind="match.penalty2"></span>)
-										</div>
-									</div>
-									<div class="teamicon right">
-										<img data-bind="parseTeam2Icon(match.id)"/>
-									</div>
-								</div>
-								<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
-							</div>
-						</div>
-					</div>
-					<div class="spacer">
-						<img src="images/connection_quarterfinal.png" class="flip-ud-lr"/>
-					</div>
-					<div data-view="quarterfinalright" class="stage quarterfinal collapsed">
-						<div class="matches">
-							<div data-bind="match in quarterfinalright.matches" class="match boxed">
-								<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
-								<div class="centered">
-									<div class="teamicon left">
-										<img data-bind="parseTeam1Icon(match.id)"/>
-									</div>
-									<div class="score">
-										<div class="regular">
-											<span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span>
-										</div>
-										<div data-bind-class="parsePenaltiesTaken(match.id)" class="penalties">
-											(<span data-bind="match.penalty1"></span> - <span data-bind="match.penalty2"></span>)
-										</div>
-									</div>
-									<div class="teamicon right">
-										<img data-bind="parseTeam2Icon(match.id)"/>
-									</div>
-								</div>
-								<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
-							</div>
-						</div>
-					</div>
-					<div class="spacer">
-						<img src="images/connection_roundof16.png" class="flip-ud-lr"/>
-					</div>
-					<div data-view="roundof16right" class="stage roundof16">
-						<div class="matches">
-							<div data-bind="match in roundof16right.matches" class="match boxed">
-								<div data-bind="parseTeam1Abr(match.id)" class="teamname-top"></div>
-								<div class="centered">
-									<div class="teamicon">
-										<img data-bind="parseTeam1Icon(match.id)"/>
-									</div>
-									<div class="score">
-										<div class="regular left">
-											<span data-bind="parseScore(match.score1)"></span> - <span data-bind="parseScore(match.score2)"></span>
-										</div>
-										<div data-bind-class="parsePenaltiesTaken(match.id)" class="penalties">
-											(<span data-bind="match.penalty1"></span> - <span data-bind="match.penalty2"></span>)
-										</div>
-									</div>
-									<div class="teamicon right">
-										<img data-bind="parseTeam2Icon(match.id)"/>
-									</div>
-								</div>
-								<div data-bind="parseTeam2Abr(match.id)" class="teamname-bot"></div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
+				</paper-scroll-header-panel>
+			</paper-drawer-panel>
 
+			<paper-toast id="toast">
+				<span class="toast-hide-button" role="button" tabindex="0" onclick="app.$.toast.hide()">close</span>
+			</paper-toast>
 
-<!----------------------------------------------------------------------------->
-<!-- rules -------------------------------------------------------------------->
-<!----------------------------------------------------------------------------->
-			<div id="rules" data-role="page">
-				<h1>Regels</h1>
-			</div>			
+		</template>
 
-
-<!----------------------------------------------------------------------------->
-<!-- users -------------------------------------------------------------------->
-<!----------------------------------------------------------------------------->
-			<div id="users" data-role="page">
-				<h1>Users</h1>
-				<div data-view="users">
-					<div data-bind="user in users">
-						<span data-bind="user.id">id</span>
-						<span data-bind="user.username">username</span>
-						<button data-control="reset password" class="btn">reset password</button>
-						<button data-control="delete" class="btn">delete</button>
-					</div>
-				</div>
-			</div>
-
-
-<!----------------------------------------------------------------------------->
-<!-- teams -------------------------------------------------------------------->
-<!----------------------------------------------------------------------------->
-			<div id="teams" data-role="page">
-				<div data-view="teams">
-					<h1>Teams</h1>
-					<table class="teams">
-						<tr>
-							<td>id</td>
-							<td>Name</td>
-							<td>Abr.</td>
-							<td></td>
-							<td></td>
-							<td></td>
-						</tr>
-						<tr data-bind="team in teams">
-							<td data-bind="team.id"></td>
-							<td data-bind="team.name"></td>
-							<td data-bind="team.abr"></td>
-							<td><img class="teamicon" data-bind="parseTeamIcon(team.id)"/></td>
-							<td><button data-control="edit" class="btn">edit</button></td>
-							<td><button data-control="delete" class="btn">delete</button></td>
-						</tr>
-					</table>	
-					<button data-control="add" class="btn">Add Team</button>
-				</div>
-			</div>
-
-
-<!----------------------------------------------------------------------------->
-<!-- matches ------------------------------------------------------------------>
-<!----------------------------------------------------------------------------->
-			<div id="matches" data-role="page">
-				<div data-view="groups">
-					<h1>Groups</h1>
-					<table class="groups">
-						<tr data-bind="group in groups">
-							<td data-bind="group.id"></td>
-							<td data-bind="group.name"></td>
-							<td data-bind="group.team1.name"></td>
-							<td data-bind="group.team2.name"></td>
-							<td><button data-control="edit" class="btn">edit</button></td>
-							<td><button data-control="delete" class="btn">delete</button></td>
-						</tr>
-					</table>
-					<button data-control="add" class="btn">Add Group</button>
-				</div>
-
-				<div data-view="matches">
-					<h1>Matches</h1>
-					<table class="matches">
-						<tr data-bind="match in matches">
-							<td data-bind="match.id"></td>
-							<td data-bind="parseTeam1Name(match.id)"></td>
-							<td> - </td>
-							<td data-bind="parseTeam2Name(match.id)"></td>
-							<td data-bind="parseDate(match.date)"></td>
-							<td data-bind="match.stage"></td>
-							<td data-bind="match.group.name"></td>
-							<td data-bind="match.position"></td>
-							<td>
-								<div>
-									<span data-bind="parseScore(match.score1)"></span>
-									<span> - </span>
-									<span data-bind="parseScore(match.score2)"></span>
-								</div>
-								<div data-bind-class="parsePenaltiesTaken(match.id)">
-									(<span data-bind="match.penalty1"></span>
-									<span> - </span>
-									<span data-bind="match.penalty2"></span>)
-								</div>
-							</td>
-							<td><button data-control="edit" class="btn">edit</button></td>
-							<td><button data-control="editscore" class="btn">edit score</button></td>
-							<td><button data-control="delete" class="btn">delete</button></td>
-						</tr>
-					</table>
-					<button data-control="add" class="btn">Add Match</button>
-				</div>
-
-
-			</div>
-
-		</div>
-
-		
-<!-- popups ------------------------------------------------------------------->
-
-<!----------------------------------------------------------------------------->
-<!-- register ----------------------------------------------------------------->
-<!----------------------------------------------------------------------------->
-		<div id="register" data-role="popup">
-			<a href='#' class='close'></a>
-			<form>
-				<div>
-					<label>Username</label>
-					<input type="text" name="username"/>
-				</div>
-				<div>
-					<label>Password</label>
-					<input type="password" name="password"/>
-				</div>
-				<div>
-					<label>Herhaal password</label>
-					<input type="password" name="password2"/>
-				</div>
-				<input type="submit" value="Submit" class="btn"/>
-			</form>
-		</div>
-
-<!----------------------------------------------------------------------------->
-<!-- message ------------------------------------------------------------------>
-<!----------------------------------------------------------------------------->
-		<div id="message" data-role="popup">
-			<a href='#' class='close'></a>
-		</div>
-
-
-<!----------------------------------------------------------------------------->
-<!-- editbetcore -------------------------------------------------------------->
-<!----------------------------------------------------------------------------->
-		<div id="editbetscore" data-role="popup">
-			<a href='#' class='close'></a>
-			<form data-view="editbetscore">
-				<div class="hidden">
-					<label>id</label>
-					<input type="text" name="id" data-bind="editbetscore.id"/>
-				</div>
-				<div data-bind="parseTeam1Name(editbetscore.match.id)"></div>
-				<div><img class="teamicon" data-bind="editbetscore.match.team1.icon"/></div>
-				<div>
-					<span>
-						<label>score1</label>
-						<input type="text" name="score1" data-bind="parseBetScore1(editbetscore.match.id)"/>
-					</span> - 
-					<span>
-						<label>score2</label>
-						<input type="text" name="score2" data-bind="eparseBetScore2(editbetscore.match.id)"/>
-					</span>
-				</div>
-				<div><img class="teamicon" data-bind="editbetscore.match.team2.icon"/></div>
-				<div data-bind="parseTeam2Name(editbetscore.match.id)"></div>
-				<input type="submit" value="Submit" class="btn"/>
-			</form>
-		</div>
-
-<!----------------------------------------------------------------------------->
-<!-- editteam ----------------------------------------------------------------->
-<!----------------------------------------------------------------------------->
-		<div id="editteam" data-role="popup">
-			<a href='#' class='close'></a>
-			<form data-view="editteam">
-				<div class="hidden">
-					<label>id</label>
-					<input type="text" name="id" data-bind="editteam.id"/>
-				</div>
-				<div>
-					<label>Name</label>
-					<input type="text" name="name" data-bind="editteam.name"/>
-				</div>
-				<div>
-					<label>Abreviation</label>
-					<input type="text" name="abr" data-bind="editteam.abr"/>
-				</div>
-				<div>
-					<label>Icon url</label>
-					<input type="test" name="icon" data-bind="editteam.icon"/>
-				</div>
-				<div>
-					<label>Iso-icon-code</label>
-					<input type="test" name="iso_icon" data-bind="editteam.iso_icon"/>
-				</div>
-				<input type="submit" value="Submit" class="btn"/>
-			</form>
-		</div>
-
-<!----------------------------------------------------------------------------->
-<!-- editmatch ---------------------------------------------------------------->
-<!----------------------------------------------------------------------------->
-		<div id="editmatch" data-role="popup">
-			<a href='#' class='close'></a>
-			<form data-view="editmatch">
-				<div class="hidden">
-					<label>id</label>
-					<input type="text" name="id" data-bind="editmatch.id"/>
-				</div>
-				<div>
-					<label>Team 1</label>
-					<select name="team1" data-bind="editmatch.team1.id">
-						<option value="1" data-bind="team.name in teams">Team 1</option>
-					</select>
-				</div>
-				<div>
-					<label>Team 2</label>
-					<select name="team2" data-bind="editmatch.team2.id">
-						<option value="1" data-bind="team.name in teams">Team 2</option>
-					</select>
-				</div>
-				<div>
-					<label>Default Team 1</label>
-					<input type="text" name="defaultteam1" data-bind="editmatch.defaultteam1"/>
-				</div>
-				<div>
-					<label>Default Team 2</label>
-					<input type="text" name="defaultteam2" data-bind="editmatch.defaultteam2"/>
-				</div>
-				<div>
-					<label>Date</label>
-					<input type="text" name="date" data-bind="parseDate(editmatch.date)" placeholder="dd-mm-yyyy HH:MM"/>
-				</div>
-				<div>
-					<label>Stage</label>
-					<input type="text" name="stage" data-bind="editmatch.stage"/>
-				</div>
-				<div>
-					<label>Group</label>
-					<select name="group" data-bind="editmatch.group">
-						<option value="1" data-bind="group.name in groups">Group</option>
-					</select>
-				</div>
-				<div>
-					<label>Position</label>
-					<input type="text" name="position" data-bind="editmatch.position"/>
-				</div>
-				<input type="submit" value="Submit" class="btn"/>
-			</form>
-		</div>
-		
-
-<!----------------------------------------------------------------------------->
-<!-- editmatchscore ----------------------------------------------------------->
-<!----------------------------------------------------------------------------->
-		<div id="editmatchscore" data-role="popup">
-			<a href='#' class='close'></a>
-			<form data-view="editmatchscore">
-				<div class="hidden">
-					<label>id</label>
-					<input type="text" name="id" data-bind="editmatch.id"/>
-				</div>
-				<div>
-					<label>score1</label>
-					<input type="text" name="score1" data-bind="editmatch.score1"/>
-				</div>
-				<div>
-					<label>score2</label>
-					<input type="text" name="score2" data-bind="editmatch.score2"/>
-				</div>
-				<div>
-					<label>penalty1</label>
-					<input type="text" name="penalty1" data-bind="editmatch.penalty1"/>
-				</div>
-				<div>
-					<label>penalty2</label>
-					<input type="text" name="penalty2" data-bind="editmatch.penalty2"/>
-				</div>
-				
-				<input type="submit" value="Submit" class="btn"/>
-			</form>
-		</div>
-		
-<!----------------------------------------------------------------------------->
-<!-- editgroup ---------------------------------------------------------------->
-<!----------------------------------------------------------------------------->
-		<div id="editgroup" data-role="popup">
-			<a href='#' class='close'></a>
-			<form data-view="editgroup">
-				<div class="hidden">
-					<label>id</label>
-					<input type="text" name="id" data-bind="editgroup.id"/>
-				</div>
-				<div>
-					<label>Name</label>
-					<input type="text" name="name" data-bind="editgroup.name"/>
-				</div>
-				<div>
-					<label>Winner</label>
-					<select name="team1" data-bind="editgroup.team1.id">
-						<option value="1" data-bind="team.name in teams">Team 1</option>
-					</select>
-				</div>
-				<div>
-					<label>Second</label>
-					<select name="team2" data-bind="editgroup.team2.id">
-						<option value="1" data-bind="team.name in teams">Team 2</option>
-					</select>
-				</div>
-				<input type="submit" value="Submit" class="btn"/>
-			</form>
-		</div>
-
-
-		<div  id="overlay" data-role="overlay">
-		</div>
-		<div  id="overlaypanel" data-role="overlaypanel">
-		</div>
+		<!-- build:js scripts/app.js -->
+		<script src="scripts/app.js"></script>
+		<!-- endbuild-->
 	</body>
+
 </html>

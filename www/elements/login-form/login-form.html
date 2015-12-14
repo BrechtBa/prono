@@ -1,0 +1,144 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/iron-localstorage/iron-localstorage.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animations.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input-error.html">
+<link rel="import" href="../../elements/custom-validator/custom-validator.html">
+
+<dom-module id="login-form">
+	<template>
+
+		<style>
+			:host{
+			}
+			paper-button{
+				background: #4E6386;
+      			color: #fff;
+			}
+    		paper-button.main{
+      			background: #5C82C3;
+      			color: #fff;
+    		}
+			.container{
+				position: relative;
+				min-height: 4px;
+			}
+			.hidden{
+				display: none;
+			}
+			#loginform paper-input{
+				--paper-input-container-color: var(--login-paper-input-container-color);
+				--paper-input-container-focus-color: var(--login-paper-input-container-focus-color);
+				--paper-input-container-input-color: var(--login-paper-input-container-input-color);
+			}
+		</style>
+
+		<iron-localstorage name="token" value="{{token}}"></iron-localstorage>
+
+		<iron-ajax id="loginajax" url="../../api/authenticate.php" method="POST" handle-as="json" on-response="parseLoginResponse" last-response="{{loginResponse}}" on-error="parseLoginError" debounce-duration="300"></iron-ajax>
+
+		<form is="iron-form" id="loginform" method="POST" on-iron-form-submit="loginFormAjaxSubmit">
+			<paper-input id="login" label="Login:" required></paper-input>
+			<paper-input id="password" label="Password:" type="password" required></paper-input>
+			<paper-button raised class="main" on-tap="loginFormSubmit">Login</paper-button>
+			<paper-button raised on-tap="registerDialog">Register</paper-button>
+			<button type="submit" class="hidden">Native Submit</button>
+		</form>
+
+
+		<iron-ajax id="registerajax" url="../../api/register.php" method="POST" handle-as="json" on-response="parseRegisterResponse" last-response="{{registerResponse}}" on-error="parseRegisterError" debounce-duration="300"></iron-ajax>
+
+		<paper-dialog id="register" entry-animation="scale-up-animation" exit-animation="fade-out-animation">
+			<h2>Register</h2>
+			<form is="iron-form" id="registerform" method="POST" on-iron-form-submit="registerFormAjaxSubmit">
+				<div class="container"><paper-input-error id="logintaken">Login is taken</paper-input-error></div>
+				<paper-input id="newlogin" label="Login:" required auto-validate error-message="required"></paper-input>
+				<paper-input id="newpassword" label="Password:" type="password" required auto-validate error-message="required"></paper-input>
+				<paper-input id="newpasswordrepeat" label="Repeat Password:" type="password" required auto-validate error-message="does not match" validator='passwordValidator'></paper-input>
+				<custom-validator id="passwordValidator" validator-name="passwordValidator"></custom-validator>
+				<div class="buttons">
+					<paper-button raised class="main" on-tap="registerFormSubmit">Register</paper-button>
+					<button type="submit" class="hidden">Native Submit</button>
+				</div>
+			</form>
+		</paper-dialog>
+
+	</template>
+
+	<script>
+		Polymer({
+			is: 'login-form',
+			properties: {
+				token: {
+					type: 'String',
+					value: '',
+					notify: true,
+					observer: 'tokenChanged'
+				}
+			},
+			ready: function(){
+				this.$.passwordValidator.validate = this.passwordValidator.bind(this);
+			},
+			loginFormSubmit: function(){
+				this.$.loginform.submit();
+			},
+			loginFormAjaxSubmit: function(event){
+				this.$.loginajax.body = JSON.stringify({'login':this.$.login.value,'password':this.$.password.value});
+    			this.$.loginajax.generateRequest();
+			},
+			registerDialog: function(){
+				this.$.register.open()
+			},
+			registerFormSubmit: function(){
+				this.$.registerform.submit();
+			},
+			registerFormAjaxSubmit: function(event){
+				this.$.registerajax.body = JSON.stringify({'login':this.$.newlogin.value,'password':this.$.newpassword.value});
+    			this.$.registerajax.generateRequest();
+			},
+			passwordValidator: function(){
+				if(this.$.newpassword.value == this.$.newpasswordrepeat.value){
+            		return true;
+				}
+				else{
+            		return false;
+				}
+			},
+			parseLoginResponse: function(){
+				if(this.loginResponse != ''){
+					this.token = this.loginResponse;
+					this.fire('login-form-success');
+				}
+			},
+			parseLoginError: function(){
+				this.fire('login-form-error');
+				app.$.toast.text = 'Login or password are incorrect';
+				app.$.toast.show();
+			},
+			parseRegisterResponse: function(){
+				if(this.registerResponse >0 ){
+					this.$.logintaken._setInvalid(false);
+					this.$.loginajax.body = JSON.stringify({'login':this.$.newlogin.value,'password':this.$.newpassword.value});
+    				this.$.loginajax.generateRequest();
+					this.$.register.close();
+				}
+			},
+			parseRegisterError: function(){
+				this.$.logintaken._setInvalid(true);
+			},
+			logout: function(){
+				this.token = '';
+			},
+			tokenChanged: function(){
+			}
+		});
+	</script>
+
+</dom-module>

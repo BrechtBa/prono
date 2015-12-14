@@ -1,0 +1,64 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+
+<dom-module id="ajax-test-put">
+	<template>
+
+		<paper-material elevation="1">
+			<h2>test-ajax-put:</h2>
+			<iron-ajax id="ajax" url="../../api/index.php/auth" method="PUT" handle-as="json" on-response="handleResponse" last-response="{{ajaxResponse}}" debounce-duration="300"></iron-ajax>
+			<iron-ajax id="ajaxGet" url="../../api/index.php/auth" method="GET" handle-as="json" last-response="{{ajaxGetResponse}}" debounce-duration="300"></iron-ajax>
+			<paper-button on-tap="sendRequest">Generate put request</paper-button>
+
+			<paper-material elevation="2">
+				<h3>Response:</3>
+				<div>{{parsedresponse}}</div>
+			</paper-material>
+		</paper-material>
+
+	</template>
+	<script>
+		Polymer({
+			is: 'ajax-test-put',
+			properties: {
+				token: {
+					type: 'String',
+					value: 'eyJhbGciOiJTSEEyNTYiLCJ0eXAiOiJKV1QifQ==.eyJ1c2VyX2lkIjoiMSIsInBlcm1pc3Npb24iOiI5IiwidmFsaWRfdXJpIjp7IlBPU1QiOlsiKiJdLCJHRVQiOlsiKiJdLCJQVVQiOlsiKiJdLCJERUxFVEUiOlsiKiJdfSwidmFsaWRfZGF0YSI6W119.YTQzOGYwNzZjYjkwYTg5ZWZhZWI3MGM4MWM2ODBmMzU3OGE1OGEzNDZmOGQzZjVjMmIzNzJhODFjNGFjMjEzOQ=='
+				},
+				userid: {
+					type: 'String',
+					value: '2'
+				}
+			},
+			ready: function(){
+				console.log('ready');
+			},
+			sendRequest: function(){
+				if( this.token != ''){
+					
+					this.$.ajax.headers['Authentication'] = this.token;
+					this.$.ajax.url = 'api/index.php/auth/'+this.userid;
+					this.$.ajax.body = JSON.stringify({'permission': Math.ceil(9*Math.random()) });
+					
+					console.log('generate request');
+					this.$.ajax.generateRequest();
+				}
+			},
+			handleResponse:function(event,request){
+				var headers = request.xhr.getAllResponseHeaders();
+
+				console.log('response:');
+				console.log(this.ajaxResponse);
+				console.log(headers);
+				this.$.ajaxGet.headers['Authentication'] = this.token;
+				this.$.ajaxGet.generateRequest();
+				this.parsedresponse = JSON.stringify(this.ajaxGetResponse);
+			}
+		});
+	</script>
+</dom-module>
+
+	
