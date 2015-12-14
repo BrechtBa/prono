@@ -8,7 +8,7 @@
 	var app = document.querySelector('#app');
 
 	// Sets app default base URL
-	app.baseUrl = '/testserver/polymerapp/';
+	app.baseUrl = '/prono/';
 	if (window.location.port === '') {  // if production
 		// Uncomment app.baseURL below and
 		// set app.baseURL to '/your-pathname/' if running from folder in production
@@ -53,7 +53,7 @@
 					allowed =  true;
 				}
 				else if(payload['permission']>=1){
-					if( ['login','home','logout'].indexOf(route)>-1 ){
+					if( ['login','ranking','pron','results','logout'].indexOf(route)>-1 ){
 						allowed = true
 					}
 				}

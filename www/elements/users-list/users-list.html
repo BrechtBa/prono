@@ -32,7 +32,7 @@
     		}
 		</style>
 
-		<iron-ajax id="ajaxGet" url="../../api/index.php/auth" method="GET" handle-as="json" last-response="{{ajaxGetResponse}}" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="ajaxGet" url="../../api/index.php/users" method="GET" handle-as="json" last-response="{{ajaxGetResponse}}" debounce-duration="300"></iron-ajax>
 		<iron-ajax id="ajaxPut" method="PUT" handle-as="json" on-response="handleAjaxPutResponse" last-response="{{ajaxPutResponse}}" debounce-duration="300"></iron-ajax>
 		<iron-ajax id="ajaxDelete" method="DELETE" handle-as="json" on-response="handleAjaxDeleteResponse" last-response="{{ajaxDeleteResponse}}" debounce-duration="300"></iron-ajax>
 
@@ -100,7 +100,7 @@
 				this.$.userDetails.open()
 			},
 			saveDetails: function(event){
-				this.$.ajaxPut.url = 'api/index.php/auth/'+this.detailId
+				this.$.ajaxPut.url = 'api/index.php/users/'+this.detailId
 				this.$.ajaxPut.headers['Authentication'] = this.token;
 				this.$.ajaxPut.body = JSON.stringify({'permission':this.detailPermission});
 				this.$.ajaxPut.generateRequest();
@@ -112,7 +112,7 @@
 				this.$.ajaxGet.generateRequest();
 			},
 			deleteUser: function(){
-				this.$.ajaxDelete.url = 'api/index.php/auth/'+this.detailId
+				this.$.ajaxDelete.url = 'api/index.php/users/'+this.detailId
 				this.$.ajaxDelete.headers['Authentication'] = this.token;
 				this.$.ajaxDelete.generateRequest();
 				this.$.userDetails.close();

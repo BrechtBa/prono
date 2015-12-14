@@ -15,7 +15,7 @@
 		// set the PDO error mode to exception
 		$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-		$query = sprintf( "SELECT * FROM auth WHERE login='%s' AND password='%s'" ,$post_data['login'], create_hash($post_data['password']));
+		$query = sprintf( "SELECT * FROM %s WHERE login='%s' AND password='%s'" ,AUTH_TABLE, $post_data['login'], create_hash($post_data['password']));
 
 		$stmt = $db->query($query);
 		$stmt->setFetchMode(PDO::FETCH_ASSOC);

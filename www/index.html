@@ -57,7 +57,7 @@
 
 			<section id="login" hidden="{{checkToken(token)}}" class="horizontal layout center-justified center">
 				<div>
-					<h2 class="page-title">Polymer App</h2>
+					<h2 class="page-title">Prono</h2>
 					<login-form token={{token}}></login-form>
 				</div>
 			</section>
@@ -74,10 +74,25 @@
 					<!-- Drawer Content -->
 					<paper-menu class="list" attr-for-selected="data-route" selected="[[route]]">
 
-
-						<a data-route="home" href="{{baseUrl}}" hidden="{{!checkRoute('home',token)}}">
-							<iron-icon icon="home"></iron-icon>
-							<span>Home</span>
+						<a data-route="ranking" href="{{baseUrl}}" hidden="{{!checkRoute('ranking',token)}}">
+							<iron-icon icon="info"></iron-icon>
+							<span>Ranking</span>
+						</a>
+						<a data-route="pron" href="pron" hidden="{{!checkRoute('pron',token)}}">
+							<iron-icon icon="info"></iron-icon>
+							<span>Prono</span>
+						</a>
+						<a data-route="results" href="results" hidden="{{!checkRoute('results',token)}}">
+							<iron-icon icon="info"></iron-icon>
+							<span>Results</span>
+						</a>
+						<a data-route="teams" href="teams" hidden="{{!checkRoute('teams',token)}}">
+							<iron-icon icon="info"></iron-icon>
+							<span>Teams</span>
+						</a>
+						<a data-route="matches" href="matches" hidden="{{!checkRoute('matches',token)}}">
+							<iron-icon icon="info"></iron-icon>
+							<span>Matches</span>
 						</a>
 						<a data-route="users" href="users" hidden="{{!checkRoute('users',token)}}">
 							<iron-icon icon="info"></iron-icon>
@@ -102,12 +117,12 @@
 
 						<!-- Application name -->
 						<div class="middle middle-container center horizontal layout">
-							<div class="app-name">Polymer App</div>
+							<div class="app-name">Prono</div>
 						</div>
 
 						<!-- Application sub title -->
 						<div class="bottom bottom-container center horizontal layout">
-							<div class="bottom-title paper-font-subhead">Subtitle</div>
+							<div class="bottom-title paper-font-subhead">Soccer betting for fun</div>
 						</div>
 
 					</paper-toolbar>
@@ -116,9 +131,35 @@
 					<div class="content">
 						<iron-pages attr-for-selected="data-route" selected="{{route}}">
 
-							<section data-route="home">
+							<section data-route="ranking">
 								<paper-material elevation="1">
-									<h2 class="page-title">Home</h2>
+									<h2 class="page-title">Ranking</h2>
+								</paper-material>
+							</section>
+
+							<section data-route="pron">
+								<paper-material elevation="1">
+									<h2 class="page-title">Prono</h2>
+								</paper-material>
+							</section>
+
+							<section data-route="results">
+								<paper-material elevation="1">
+									<h2 class="page-title">Results</h2>
+								</paper-material>
+							</section>
+
+							<section data-route="teams">
+								<paper-material elevation="1">
+									<h2 class="page-title">Teams</h2>
+
+								</paper-material>
+							</section>
+
+							<section data-route="matches">
+								<paper-material elevation="1">
+									<h2 class="page-title">Matches</h2>
+
 								</paper-material>
 							</section>
 

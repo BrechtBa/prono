@@ -13,7 +13,7 @@
 		// set the PDO error mode to exception
 		$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-		$query = sprintf( "SELECT count(*) FROM auth WHERE login='%s'" ,$post_data['login']);
+		$query = sprintf( "SELECT count(*) FROM %s WHERE login='%s'" ,AUTH_TABLE,$post_data['login']);
 		$stmt = $db->prepare($query);
 		$stmt->execute();
 		$numRows = $stmt->fetchColumn();	
@@ -21,7 +21,7 @@
 		if( $numRows==0 ){
 
 			// set the users permissions
-			$query = "SELECT count(*) FROM auth";
+			$query = sprintf( "SELECT count(*) FROM %s",AUTH_TABLE);
 			$stmt = $db->prepare($query);
 			$stmt->execute();
 			$numUsers = $stmt->fetchColumn();	
@@ -34,7 +34,7 @@
 
 			// add the user to the database
 			// generate query
-			$query = sprintf( "INSERT INTO auth (login,password,permission)  VALUES ('%s','%s','%s')" ,$post_data['login'],create_hash($post_data['password']),$permission );
+			$query = sprintf( "INSERT INTO %s (login,password,permission)  VALUES ('%s','%s','%s')" ,AUTH_TABLE,$post_data['login'],create_hash($post_data['password']),$permission );
 			$id = $query;
 			$stmt = $db->prepare($query);
 			$stmt->execute();

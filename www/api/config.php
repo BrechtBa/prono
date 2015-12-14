@@ -7,6 +7,7 @@
 	define("PASSWORD_SALT", "prono");
 	define("JWT_KEY", "prono");
 
+	define("AUTH_TABLE", "users");
 	define("ADMIN_PERMISSION", 9);   // 1st user to register when there are no users will recieve admin permissions
 	define("DEFAULT_PERMISSION", 1);
 	
