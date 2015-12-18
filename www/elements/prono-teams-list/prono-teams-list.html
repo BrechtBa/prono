@@ -46,13 +46,13 @@
 
 		
 		<template is="dom-repeat" id="teamsList" items="{{teams}}" sort="_sortTeams">
-			<paper-card elevation="1" class="horizontal layout" on-click="editTeam">
+			<paper-card elevation="1" class="horizontal layout" on-tap="editTeam">
 				<div class="id">{{item.id}}</div>
 				<div class="flex">
 					<div class="name">{{item.name}}</div>
 					<div class="abr">{{item.abr}}</div>
 				</div>
-				<img class="icon"  src="{{parseIcon(item.iso_icon,item.icon)}}">
+				<img class="icon" src="{{parseIcon(item.iso_icon,item.icon)}}">
 			</paper-card>
 		</template>
 		<paper-button raised on-tap="addTeam">Add team</paper-button>

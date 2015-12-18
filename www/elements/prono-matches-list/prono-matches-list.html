@@ -57,7 +57,7 @@
 		<iron-ajax id="ajaxDelete" method="DELETE" handle-as="json" on-response="handleAjaxDeleteResponse" last-response="{{ajaxDeleteResponse}}" debounce-duration="300"></iron-ajax>
 
 		<template is="dom-repeat" id="matchesList" items="{{matchess}}" sort="_sortMatches">
-			<paper-card elevation="1" on-click="editMatch" class="horizontal layout">
+			<paper-card elevation="1" on-tap="editMatch" class="horizontal layout">
 				<div class="id">
 					{{item.id}}
 				</div>
