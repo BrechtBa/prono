@@ -142,10 +142,14 @@
 
 							<section class="page" data-route="config">
 								
+								<h2 class="page-title">Matches</h2>
+								<prono-matches-list token="{{token}}" teams="{{teams}}" groups="{{groups}}" matchess="{{matchess}}"></prono-matches-list>
+
+								<h2 class="page-title">Groups</h2>
+
 								<h2 class="page-title">Teams</h2>
 								<prono-teams-list token="{{token}}" teams="{{teams}}"></prono-teams-list>
 
-								<h2 class="page-title">Matches</h2>
 							</section>
 
 							<section class="page" data-route="users">
@@ -162,7 +166,7 @@
 				<span class="toast-hide-button" role="button" tabindex="0" onclick="app.$.toast.hide()">close</span>
 			</paper-toast>
 
-			<prono-model id="model" token="{{token}}" teams="{{teams}}" groups="{{groups}}" matches="{{matches}}"></prono-model>
+			<prono-model id="model" token="{{token}}" teams="{{teams}}" groups="{{groups}}" matchess="{{matchess}}"></prono-model>
 
 		</template>
 

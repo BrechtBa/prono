@@ -1,0 +1,350 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animations.html">
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
+
+<dom-module is="prono-matches-list">
+	<template>
+
+		<style>
+			:host{
+			}
+			paper-card{
+      			margin-bottom: 5px;
+				cursor: pointer;
+				padding: 10px;
+    		}
+			.id{
+				width: 30px;
+			}
+			.date{
+				text-align: right;
+			}
+			.teams{
+				margin-top: 8px;
+				font-size: 18px;
+			}
+			.team{
+				text-align: center;
+			}
+			.score{
+				width: 100px;
+				text-align: center;
+			}
+
+			paper-button.main{
+      			background: #5C82C3;
+      			color: #ffffff;
+    		}
+			.closeDialog{
+				position: absolute;
+				top: -20px;
+				right: 10px;
+				margin: 0px;
+			}
+		</style>
+		
+		<iron-ajax id="ajaxPost" method="POST" handle-as="json" on-response="handleAjaxPostResponse" last-response="{{ajaxPostResponse}}" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="ajaxPut" method="PUT" handle-as="json" on-response="handleAjaxPutResponse" last-response="{{ajaxPutResponse}}" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="ajaxDelete" method="DELETE" handle-as="json" on-response="handleAjaxDeleteResponse" last-response="{{ajaxDeleteResponse}}" debounce-duration="300"></iron-ajax>
+
+		<template is="dom-repeat" id="matchesList" items="{{matchess}}" sort="_sortMatches">
+			<paper-card elevation="1" on-click="editMatch" class="horizontal layout">
+				<div class="id">
+					{{item.id}}
+				</div>
+				<div class="flex vertical layout">
+					<div class="horizontal layout">
+						<div class="date flex">
+							{{formatDate(item.date)}}
+						</div>
+					</div>
+					<div class="horizontal layout center">
+						<div class="flex-1">Stage: {{item.stage}}</div>
+						<div class="flex-2">Group: {{formatGroupName(item.grp,groups)}}</div>
+					</div>
+					<div class="teams horizontal layout">
+						<div class="team flex-1">
+							<div>{{item.defaultteam1}}</div>
+							<div>{{formatTeamName(item.team1,teams)}}</div>
+						</div>
+						<div class="score horizontal layout center center-justified">
+							<div><span>{{formatScore(item.score1)}}</span> - <span>{{formatScore(item.score2)}}</span></div>
+							<div hidden="{{!penaltiesTaken(item)}}">(<span>{{item.penalty1}}</span> - <span>{{item.penalty2}}</span>)</div>												
+						</div>
+						<div class="team flex-1">
+							<div>{{item.defaultteam2}}</div>
+							<div>{{formatTeamName(item.team2,teams)}}</div>
+						</div>
+					</div>
+				</div>
+			</paper-card>
+		</template>
+		<paper-button raised on-tap="addMatch">Add match</paper-button>
+	
+	
+		<paper-dialog id="editMatch" entry-animation="scale-up-animation" exit-animation="fade-out-animation">
+			<paper-dialog-scrollable>
+				<paper-input label="id" value={{newid}}></paper-input>
+				<paper-input label="Date" value={{newdate}} auto-validate pattern="[0-9][0-9]-[0-9][0-9]-[0-9][0-9][0-9][0-9] [0-9][0-9]:[0-9][0-9]" error-message="dd-mm-yyyy HH:MM"></paper-input>
+				<div class="horizontal layout wrap">
+					<div class="flex-4">
+						<paper-input label="Stage" value={{match.stage}}></paper-input>
+					</div>
+					<div class="flex"></div>
+					<div class="flex-4">
+						<paper-dropdown-menu label="Group">
+							<paper-menu class="dropdown-content" attr-for-selected="value" selected="{{match.grp}}">
+								<paper-item value="0"></paper-item>
+								<template is="dom-repeat" items="{{groups}}">
+									<paper-item value="{{item.id}}">{{item.name}}</paper-item>
+								</template>
+							</paper-menu>
+						</paper-dropdown-menu>
+					</div>
+					<div class="flex"></div>
+					<div class="flex-4">
+						<paper-input label="Position" value={{match.position}}></paper-input>
+					</div>
+				</div>
+				<div class="horizontal layout wrap">
+					<div class="flex-5">
+						<paper-input label="Default team 1" value={{match.defaultteam1}}></paper-input>
+					</div>
+					<div class="flex"></div>
+					<div class="flex-5">
+						<paper-input label="Default team 2" value={{match.defaultteam2}}></paper-input>
+					</div>
+				</div>	
+				<div class="horizontal layout wrap">
+					<div class="flex-5">
+						<paper-dropdown-menu id="team1" label="Team 1">
+							<paper-menu class="dropdown-content" attr-for-selected="value" selected="{{match.team1}}">
+								<paper-item value="0"></paper-item>
+								<template is="dom-repeat" items="{{teams}}" sort="_sortTeams">
+									<paper-item value="{{item.id}}">{{item.name}}</paper-item>
+								</template>
+							</paper-menu>
+						</paper-dropdown-menu>
+					</div>
+					<div class="flex"></div>
+					<div class="flex-5">
+						<paper-dropdown-menu id="team2" label="Team 2">
+							<paper-menu class="dropdown-content" attr-for-selected="value" selected="{{match.team2}}">
+								<paper-item value="0"></paper-item>
+								<template is="dom-repeat" items="{{teams}}" sort="_sortTeams">
+									<paper-item value="{{item.id}}">{{item.name}}</paper-item>
+								</template>
+							</paper-menu>
+						</paper-dropdown-menu>
+					</div>
+				</div>	
+				<div class="horizontal layout wrap">
+					<div class="flex-5">
+						<paper-input label="Score 1" value={{newscore1}} auto-validate pattern="[0-9]*" error-message="not a valid score"></paper-input>
+					</div>
+					<div class="flex"></div>
+					<div class="flex-5">
+						<paper-input label="score 2" value={{newscore2}} auto-validate pattern="[0-9]*" error-message="not a valid score"></paper-input>
+					</div>
+				</div>
+				<div class="horizontal layout wrap">
+					<div class="flex-5">
+						<paper-input label="Penalty 1" value={{newpenalty1}} auto-validate pattern="[0-9]*" error-message="not a valid score"></paper-input>
+					</div>
+					<div class="flex"></div>
+					<div class="flex-5">
+						<paper-input label="Penalty 2" value={{newpenalty2}} auto-validate pattern="[0-9]*" error-message="not a valid score"></paper-input>
+					</div>
+				</div>
+				<div class="buttons">
+					<paper-button raised class="main" on-tap="saveMatch">Save</paper-button>
+					<paper-button raised on-tap="deleteMatch">Delete</paper-button>
+				</div>
+				<a class='closeDialog' on-tap="closeDialog">close</a>
+			 </paper-dialog-scrollable>
+		</paper-dialog>
+
+	</template>
+	<script>
+		Polymer({
+			is: 'prono-matches-list',
+			properties: {
+				token: {
+					type: 'String',
+					value: '',
+					notify: true
+				},
+				teams: {
+					type: 'Array',
+					notify: true
+				},
+				groups: {
+					type: 'Array',
+					notify: true
+				},
+				matchess: {
+					type: 'Array',
+					notify: true
+				}
+			},
+			ready: function(){
+			},
+			closeDialog: function(){
+				this.$.editMatch.close();
+			},
+			editMatch: function(e){
+				this.match = this.$.matchesList.itemForElement(e.target);
+				// some properties need to be formatted
+				this.newid = this.match.id;
+				this.newdate = this.formatDate(this.match.date);
+				this.newscore1 = this.formatScore(this.match.score1);
+				this.newscore2 = this.formatScore(this.match.score2);
+				this.newpenalty1 = this.formatScore(this.match.penalty1);
+				this.newpenalty2 = this.formatScore(this.match.penalty2);
+
+				this.$.editMatch.open();
+			},
+			saveMatch: function(){
+				this.$.ajaxPut.url = 'api/index.php/matches/'+this.match.id
+				this.$.ajaxPut.headers['Authentication'] = this.token;
+
+				// javascript only accepts mm-dd-yyyy format so reformatting is in order
+				var parts = this.newdate.split(' ');
+				var dateparts = parts[0].split('-');
+				var timeparts = parts[1].split(':');
+   				var date = Date.parse(dateparts[1]+'-'+dateparts[0]+'-'+dateparts[2]+' '+timeparts[0]+':'+timeparts[1])/1000;
+
+				var score1 = this.newscore1;
+				if(score1 == ''){
+					score1 = -1;
+				}
+				var score2 = this.newscore2;
+				if(score2 == ''){
+					score2 = -1;
+				}
+
+				var penalty1 = this.newpenalty1;
+				if(penalty1 == ''){
+					penalty1 = -1;
+				}
+				var penalty2 = this.newpenalty2;
+				if(penalty2 == ''){
+					penalty2 = -1;
+				}
+
+				this.$.ajaxPut.body = JSON.stringify({'id':this.newid,'date':date,'stage':this.match.stage,'grp':this.match.grp,'position':this.match.position,'defaultteam1':this.match.defaultteam1,'defaultteam2':this.match.defaultteam2,'team1':this.match.team1,'team2':this.match.team2,'score1':score1,'score2':score2,'penalty1':penalty1,'penalty2':penalty2});		
+				this.$.ajaxPut.generateRequest();
+				this.$.editMatch.close();
+			},
+			handleAjaxPutResponse: function(event,request){
+				var headers = request.xhr.getAllResponseHeaders();
+				app.$.model.fire('get-matches');
+			},
+			addMatch: function(){
+				this.$.ajaxPost.url = 'api/index.php/matches/';
+				this.$.ajaxPost.headers['Authentication'] = this.token;
+				this.$.ajaxPost.generateRequest();
+			},
+			handleAjaxPostResponse: function(event,request){
+				var headers = request.xhr.getAllResponseHeaders();
+				app.$.model.fire('get-matches');
+			},
+			deleteTeam: function(){
+				this.$.ajaxDelete.url = 'api/index.php/matches/'+this.match.id;
+				this.$.ajaxDelete.headers['Authentication'] = this.token;
+				this.$.ajaxDelete.generateRequest();
+				this.$.editMatch.close();
+			},
+			handleAjaxDeleteResponse: function(event,request){
+				var headers = request.xhr.getAllResponseHeaders();
+				app.$.model.fire('get-matches');
+			},
+			/*getIndex: function(id,list){
+				var ind = -1;
+				list.forEach(function(item,index){
+					if(item.id == id){
+						ind = index;
+					}
+				});
+				return ind;
+			},*/
+			formatDate: function(timestamp){
+				var date = new Date(timestamp * 1000);
+				var day = date.getDate();
+				var month = (date.getMonth()+1)
+				var year = date.getFullYear();
+				var hours = date.getHours();
+				var minutes = date.getMinutes();
+				return (day < 10? '0' : '') + day + '-' + (month < 10? '0' : '') + month + '-' + date.getFullYear() + ' ' + (hours < 10? '0' : '') + hours + ':' +  (minutes < 10? '0' : '') + minutes;
+			},
+			formatScore: function(score){
+				if(score<0){
+					return '';
+				}
+				else{
+					return score;
+				}
+			},
+			formatTeamName: function(id,teams){
+				var name = '';
+				teams.forEach(function(item){
+					if(item.id == id){
+						name = item.name;
+					}
+				});
+				return name;
+			},
+			formatGroupName: function(id,groups){
+				var name = '';
+				groups.forEach(function(item){
+					if(item.id == id){
+						name = item.name;
+					}
+				});
+				return name;
+			},
+			penaltiesTaken: function(match){
+				if(match.penalty1 > -1 || match.penalty2 > -1){
+					return true;
+				}
+				else{
+					return false;
+				}
+			},
+			_sortMatches: function(a, b) {  
+  
+				if(parseInt(a.id) > parseInt(b.id)){
+					return 1;
+				}
+				else if(parseInt(a.id) < parseInt(b.id)){
+					return -1;
+				}
+				else{
+					return 0;
+				}
+			},
+			_sortTeams: function(a, b) {  
+  
+				if(parseInt(a.name) > parseInt(b.name)){
+					return 1;
+				}
+				else if(parseInt(a.name) < parseInt(b.name)){
+					return -1;
+				}
+				else{
+					return 0;
+				}
+			},
+			
+		});
+	</script>
+</dom-module>
