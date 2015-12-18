@@ -1,0 +1,192 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+
+<dom-module is="prono-match-list">
+	<template>
+		<style>
+			:host{
+			}
+			paper-card{
+				padding: 10px;
+			}
+			paper-card .id{
+				width: 30px;
+			}
+			paper-card .data{
+				text-align: right;
+			}
+			paper-card .team{
+				text-align: center;
+			}
+			paper-card .score{
+				width: 100px;
+				text-align: center;
+			}
+			.buttons{
+			
+			}
+			.main{
+			
+			}
+			.hidden{
+				display: none;
+			}
+		</style>
+		
+		<iron-ajax id="getAjax" method="GET" url="../../api/index.php/matches" last-response="{{getAjaxResponse}}" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="postAjax" method="POST" url="../../api/index.php/matches" on-response="getAjax" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="putAjax" method="PUT" on-response="getAjax" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="deleteAjax" method="DELETE" on-response="getAjax" debounce-duration="300"></iron-ajax>
+		
+		<template is="dom-repeat" items="getAjaxResponse">
+			<paper-card elevation="1" on-click="editDetails">
+				<div class="horizontal layout">
+					<div class="id">
+						{{item.id}}
+					</div>
+					<div class="date flex">
+						{{formatDate(item.date)}}
+					</div>
+				</div>
+				<div class="horizontal layout">
+					<div class="flex-1">{{item.stage}}</div>
+					<div class="flex-2">{{formatGroupName(item.group,groups)}}</div>
+				</div>
+				<div class="horizontal layout">
+					<div class="team flex-1">
+						<div>{{item.default_team1)}}</div>
+						<div>{{formatTeamName(item.team1,teams)}}</div>
+					</div>
+					<div class="score">
+						<div><span>{{item.score1}}</span> - <span>{{item.score2}}</span></div>
+						<div hidden="{{!penaltiesTaken(item)}}">(<span>{{item.penalty1}}</span> - <span>{{item.penalty2}}</span>)</div>												
+					</div>
+					<div class="team flex-1">
+						<div>{{item.default_team2)}}</div>
+						<div>{{formatTeamName(item.teams,teams)}}</div>
+					</div>
+				</div>
+			</paper-card>
+		</template>
+		<paper-button>Add team</paper-button>
+	
+	
+		<paper-dialog>
+			<form is="iron-form">
+				<paper-input label="Date" value={{details.date}}></paper-input>
+				<paper-input label="Stage" value={{details.stage}}></paper-input>
+				
+				<paper-dropdown-menu label="Group">
+					<paper-menu class="dropdown-content">
+						<template is="dom-repeat" items="groups">
+							<paper-item>item.name</paper-item>
+						</template>
+					</paper-menu>
+				</paper-dropdown-menu>
+				
+				<div class="horizontal layout wrap">
+					<div class="flex">
+						<paper-input label="Default team 1" value={{details.default_team1}}></paper-input>
+					</div>
+					<div class="flex">
+						<paper-input label="Default team 1" value={{details.default_team2}}></paper-input>
+					</div>
+				</div>	
+				<div class="horizontal layout wrap">
+					<div class="flex">
+						<paper-dropdown-menu id="team1" label="Team 1">
+							<paper-menu class="dropdown-content">
+								<template is="dom-repeat" items="teams">
+									<paper-item>item.name</paper-item>
+								</template>
+							</paper-menu>
+						</paper-dropdown-menu>
+					</div>
+					<div class="flex">
+						<paper-dropdown-menu id="team2" label="Team 2">
+							<paper-menu class="dropdown-content">
+								<template is="dom-repeat" items="teams">
+									<paper-item>item.name</paper-item>
+								</template>
+							</paper-menu>
+						</paper-dropdown-menu>
+					</div>
+				</div>	
+				<div class="horizontal layout wrap">
+					<div class="flex">
+						<paper-input id="score1" label="Score 1" value={{details.score1}} auto-validate pattern="[0-9]*" error-message="not a valid score"></paper-input>
+					</div>
+					<div class="flex">
+						<paper-input id="score2" label="score 2" value={{details.score2}} auto-validate pattern="[a-zA-Z]*" error-message="not a valid score"></paper-input>
+					</div>
+				</div>
+				<div class="buttons">
+					<paper-button class="main" id="save">Save</paper-button>
+					<paper-button id="delete">Delete</paper-button>
+					<input type="submit" class="hidden">
+				</div>
+			</form>
+		</paper-dialog>
+	</template>
+	<script>
+		Polymer({
+			is: 'prono-match-list',
+			properties: {
+				token: {
+					type: 'String',
+					value: '',
+					observer: 'tokenChanged'
+				},
+				teams: {
+					type: 'Object'
+				}
+				groups: {
+					type: 'Object'
+				}
+			},
+			tokenChanged: function(){
+				if(app.checkToken(this.token)){
+					this.getAjax();
+				}
+			},
+			getAjax: function(){
+				this.$.getAjax.headers['Authentication'] = this.token;
+				this.$.getAjax.generateRequest();
+			},
+			editDetails: function(){
+				// get the current match id
+				var id = 1;
+				
+				// fill in the match details
+				this.details = this.getAjaxResponse[id];
+				
+				// open the dialog
+				this.$.editDetails.open();
+			}
+			formatDate: function(timestamp){
+				return '01-01-2015 20:00';
+			},
+			formatTeamName: function(id,teams){
+				if(id in teams){
+					return teams[id].name;
+				}
+				else{
+					return '';
+				}
+			},
+			formatGroupName: function(id,groups){
+				return groups[id].name;
+			},
+			penaltiesTaken: function(match){
+				if(match.penalty1 > -1 || match.penalty2 > -1){
+					return true;
+				}
+				else{
+					return false;
+				}
+			}
+			
+		});
+	</script>
+</dom-module>

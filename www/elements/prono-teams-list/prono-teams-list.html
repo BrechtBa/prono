@@ -1,0 +1,146 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animations.html">
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
+
+<dom-module id="prono-teams-list">
+	<template>
+
+		<style>
+			:host{
+				display: block;
+				width: 100%;
+			}
+			paper-card{
+      			margin-bottom: 5px;
+				cursor: pointer;
+				padding: 10px;
+    		}
+			.id{
+				width: 30px;
+			}
+			.icon{
+				width: 45px;
+				height: 45px;
+			}
+			paper-button.main{
+      			background: #5C82C3;
+      			color: #ffffff;
+    		}
+			.closeDialog{
+				position: absolute;
+				top: 5px;
+				right: -15px;
+				margin: 0px;
+			}
+		</style>
+
+		<iron-ajax id="ajaxPost" method="POST" handle-as="json" on-response="handleAjaxPostResponse" last-response="{{ajaxPostResponse}}" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="ajaxPut" method="PUT" handle-as="json" on-response="handleAjaxPutResponse" last-response="{{ajaxPutResponse}}" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="ajaxDelete" method="DELETE" handle-as="json" on-response="handleAjaxDeleteResponse" last-response="{{ajaxDeleteResponse}}" debounce-duration="300"></iron-ajax>
+
+		
+		<template is="dom-repeat" id="teamsList" items="{{teams}}" sort="_sortTeams">
+			<paper-card elevation="1" class="horizontal layout" on-click="editTeam">
+				<div class="id">{{item.id}}</div>
+				<div class="flex">
+					<div class="name">{{item.name}}</div>
+					<div class="abr">{{item.abr}}</div>
+				</div>
+				<img class="icon"  src="images/flags/{{item.iso_icon}}.png">
+			</paper-card>
+		</template>
+		<paper-button raised on-tap="addTeam">Add team</paper-button>
+
+		<paper-dialog id="editTeam" entry-animation="scale-up-animation" exit-animation="fade-out-animation">
+			<paper-input id="id" label="id:" value="{{newid}}"></paper-input>
+			<paper-input id="name" label="Name:" value="{{team.name}}"></paper-input>
+			<paper-input id="abr" label="Abreviation:" value="{{team.abr}}"></paper-input>
+			<paper-input id="iso" label="ISO icon code:" value="{{team.iso_icon}}"></paper-input>
+			<paper-input id="icon" label="icon url:" value="{{team.icon}}"></paper-input>
+			<div class="buttons">
+				<paper-button raised class="main" on-tap="saveTeam">Save</paper-button>
+				<paper-button raised on-tap="deleteTeam">Delete</paper-button>
+			</div>
+			<a class='closeDialog' on-tap="closeDialog">close</a>
+		</paper-dialog>
+	
+
+	</template>
+
+	<script>
+		Polymer({
+			is: 'prono-teams-list',
+			properties: {
+				token: {
+					type: 'String',
+					value: '',
+					notify: true
+				},
+				teams: {
+					type: 'Array',
+					notify: true
+				}
+			},
+			ready: function(){
+			},
+			closeDialog: function(){
+				this.$.editTeam.close();
+			},
+			editTeam: function(e){
+				this.team = this.$.teamsList.itemForElement(e.target);
+				this.newid = this.team.id;
+				this.$.editTeam.open();
+				console.log(this.team);
+			},
+			saveTeam: function(){
+				console.log(this.team);
+				this.$.ajaxPut.url = 'api/index.php/teams/'+this.team.id
+				this.$.ajaxPut.headers['Authentication'] = this.token;
+				this.$.ajaxPut.body = JSON.stringify({'id':this.newid,'name':this.team.name,'abr':this.team.abr,'iso_icon':this.team.iso_icon,'icon':this.team.icon});
+				this.$.ajaxPut.generateRequest();
+				this.$.editTeam.close();
+			},
+			handleAjaxPutResponse: function(event,request){
+				var headers = request.xhr.getAllResponseHeaders();
+				app.$.model.fire('get-teams');
+			},
+			addTeam: function(){
+				this.$.ajaxPost.url = 'api/index.php/teams/';
+				this.$.ajaxPost.headers['Authentication'] = this.token;
+				this.$.ajaxPost.generateRequest();
+			},
+			handleAjaxPostResponse: function(event,request){
+				var headers = request.xhr.getAllResponseHeaders();
+				app.$.model.fire('get-teams');
+			},
+			deleteTeam: function(){
+				this.$.ajaxDelete.url = 'api/index.php/teams/'+this.team.id;
+				this.$.ajaxDelete.headers['Authentication'] = this.token;
+				this.$.ajaxDelete.generateRequest();
+				this.$.editTeam.close();
+			},
+			handleAjaxDeleteResponse: function(event,request){
+				var headers = request.xhr.getAllResponseHeaders();
+				app.$.model.fire('get-teams');
+			},
+			_sortTeams: function(a, b) {  
+  
+				if(parseInt(a.id) > parseInt(b.id)){
+					return 1;
+				}
+				else if(parseInt(a.id) < parseInt(b.id)){
+					return -1;
+				}
+				else{
+					return 0;
+				}
+			},
+		});
+	</script>
+
+</dom-module>

@@ -1,0 +1,76 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+
+<dom-module id="prono-model">
+	<template>
+
+		<style>
+		</style>
+
+		<iron-ajax id="getTeams" url="../../api/index.php/teams" method="GET" handle-as="json" last-response="{{teams}}" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="getGroups" url="../../api/index.php/groups" method="GET" handle-as="json" last-response="{{groups}}" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="getMatches" url="../../api/index.php/matches" method="GET" handle-as="json" last-response="{{matches}}" debounce-duration="300"></iron-ajax>
+		
+	</template>
+
+	<script>
+		Polymer({
+			is: 'prono-model',
+			properties: {
+				token: {
+					type: 'String',
+					value: '',
+					notify: true,
+					observer: 'tokenChanged'
+				},
+				groups: {
+					type: 'Array',
+					notify: true
+				},
+				teams: {
+					type: 'Array',
+					notify: true
+				},
+				matches: {
+					type: 'Array',
+					notify: true
+				},
+			},
+			listeners: {
+				'get-teams': 'getTeams',
+				'get-groups': 'getGroups',
+				'get-matches': 'getMatches',
+			},
+			tokenChanged: function(){
+				if( this.token != ''){
+
+					this.getTeams();
+
+					this.$.getGroups.headers['Authentication'] = this.token;
+					this.$.getMatches.headers['Authentication'] = this.token;
+					
+
+					this.$.getGroups.generateRequest();
+					this.$.getMatches.generateRequest();
+				}
+			},
+			getTeams: function(){
+				console.log('getting teams');
+				this.$.getTeams.headers['Authentication'] = this.token;
+				this.$.getTeams.generateRequest();
+			},
+			getGroups: function(){
+				console.log('getting groups');
+				this.$.getGroups.headers['Authentication'] = this.token;
+				this.$.getGroups.generateRequest();
+			},
+			getMatches: function(){
+				console.log('getting matches');
+				this.$.getMatches.headers['Authentication'] = this.token;
+				this.$.getMatches.generateRequest();
+			},
+		});
+	</script>
+
+</dom-module>

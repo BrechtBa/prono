@@ -54,7 +54,6 @@
 		<span id="browser-sync-binding"></span>
 		<template is="dom-bind" id="app">
 			
-
 			<section id="login" hidden="{{checkToken(token)}}" class="horizontal layout center-justified center">
 				<div>
 					<h2 class="page-title">Prono</h2>
@@ -86,13 +85,9 @@
 							<iron-icon icon="info"></iron-icon>
 							<span>Results</span>
 						</a>
-						<a data-route="teams" href="teams" hidden="{{!checkRoute('teams',token)}}">
+						<a data-route="config" href="config" hidden="{{!checkRoute('config',token)}}">
 							<iron-icon icon="info"></iron-icon>
-							<span>Teams</span>
-						</a>
-						<a data-route="matches" href="matches" hidden="{{!checkRoute('matches',token)}}">
-							<iron-icon icon="info"></iron-icon>
-							<span>Matches</span>
+							<span>Config</span>
 						</a>
 						<a data-route="users" href="users" hidden="{{!checkRoute('users',token)}}">
 							<iron-icon icon="info"></iron-icon>
@@ -131,43 +126,31 @@
 					<div class="content">
 						<iron-pages attr-for-selected="data-route" selected="{{route}}">
 
-							<section data-route="ranking">
-								<paper-material elevation="1">
-									<h2 class="page-title">Ranking</h2>
-								</paper-material>
+							<section class="page" data-route="ranking">
+								<h2 class="page-title">Ranking</h2>
 							</section>
 
-							<section data-route="pron">
-								<paper-material elevation="1">
-									<h2 class="page-title">Prono</h2>
-								</paper-material>
+							<section class="page" data-route="pron">
+								<h2 class="page-title">Prono</h2>
+
 							</section>
 
-							<section data-route="results">
-								<paper-material elevation="1">
-									<h2 class="page-title">Results</h2>
-								</paper-material>
+							<section class="page" data-route="results">
+								<h2 class="page-title">Results</h2>
+
 							</section>
 
-							<section data-route="teams">
-								<paper-material elevation="1">
-									<h2 class="page-title">Teams</h2>
+							<section class="page" data-route="config">
+								
+								<h2 class="page-title">Teams</h2>
+								<prono-teams-list token="{{token}}" teams="{{teams}}"></prono-teams-list>
 
-								</paper-material>
+								<h2 class="page-title">Matches</h2>
 							</section>
 
-							<section data-route="matches">
-								<paper-material elevation="1">
-									<h2 class="page-title">Matches</h2>
-
-								</paper-material>
-							</section>
-
-							<section data-route="users">
-								<paper-material elevation="1">
-									<h2 class="page-title">Users</h2>
-									<users-list token="{{token}}"></users-list>
-								</paper-material>
+							<section class="page" data-route="users">
+								<h2 class="page-title">Users</h2>
+								<users-list token="{{token}}"></users-list>
 							</section>
 
 						</iron-pages>
@@ -178,6 +161,8 @@
 			<paper-toast id="toast">
 				<span class="toast-hide-button" role="button" tabindex="0" onclick="app.$.toast.hide()">close</span>
 			</paper-toast>
+
+			<prono-model id="model" token="{{token}}" teams="{{teams}}" groups="{{groups}}" matches="{{matches}}"></prono-model>
 
 		</template>
 
