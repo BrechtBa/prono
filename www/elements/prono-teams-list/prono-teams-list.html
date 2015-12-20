@@ -8,6 +8,9 @@
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
 
+<link rel="import" href="../../elements/prono-dialog/prono-dialog.html">
+<link rel="import" href="../../elements/prono-team-icon/prono-team-icon.html">
+
 <dom-module id="prono-teams-list">
 	<template>
 
@@ -24,7 +27,7 @@
 			.id{
 				width: 30px;
 			}
-			.icon{
+			.teamicon{
 				width: 45px;
 				height: 45px;
 			}
@@ -37,6 +40,7 @@
 				top: -20px;
 				right: 10px;
 				margin: 0px;
+				cursor: pointer;
 			}
 		</style>
 
@@ -45,32 +49,29 @@
 		<iron-ajax id="ajaxDelete" method="DELETE" handle-as="json" on-response="handleAjaxDeleteResponse" last-response="{{ajaxDeleteResponse}}" debounce-duration="300"></iron-ajax>
 
 		
-		<template is="dom-repeat" id="teamsList" items="{{teams}}" sort="_sortTeams">
+		<template is="dom-repeat" items="{{teams}}" sort="_sortTeams">
 			<paper-card elevation="1" class="horizontal layout" on-tap="editTeam">
 				<div class="id">{{item.id}}</div>
 				<div class="flex">
 					<div class="name">{{item.name}}</div>
 					<div class="abr">{{item.abr}}</div>
 				</div>
-				<img class="icon" src="{{parseIcon(item.iso_icon,item.icon)}}">
+				<prono-team-icon class="teamicon" team="{{item}}"></prono-team-icon>
 			</paper-card>
 		</template>
 		<paper-button raised on-tap="addTeam">Add team</paper-button>
 
-		<paper-dialog id="editTeam" entry-animation="scale-up-animation" exit-animation="fade-out-animation">
-			<paper-dialog-scrollable>
-				<paper-input id="id" label="id:" value="{{newid}}"></paper-input>
-				<paper-input id="name" label="Name:" value="{{team.name}}"></paper-input>
-				<paper-input id="abr" label="Abreviation:" value="{{team.abr}}"></paper-input>
-				<paper-input id="iso" label="ISO icon code:" value="{{team.iso_icon}}"></paper-input>
-				<paper-input id="icon" label="icon url:" value="{{team.icon}}"></paper-input>
-				<div class="buttons">
-					<paper-button raised class="main" on-tap="saveTeam">Save</paper-button>
-					<paper-button raised on-tap="deleteTeam">Delete</paper-button>
-				</div>
-				<a class='closeDialog' on-tap="closeDialog">close</a>
-			</paper-dialog-scrollable>
-		</paper-dialog>
+		<prono-dialog id="editTeam">
+			<paper-input id="id" label="id:" value="{{newid}}"></paper-input>
+			<paper-input id="name" label="Name:" value="{{team.name}}"></paper-input>
+			<paper-input id="abr" label="Abreviation:" value="{{team.abr}}"></paper-input>
+			<paper-input id="iso" label="ISO icon code:" value="{{team.iso_icon}}"></paper-input>
+			<paper-input id="icon" label="icon url:" value="{{team.icon}}"></paper-input>
+			<div class="buttons">
+				<paper-button raised class="button-main" on-tap="saveTeam">Save</paper-button>
+				<paper-button raised on-tap="deleteTeam">Delete</paper-button>
+			</div>
+		</prono-dialog>
 	
 
 	</template>
@@ -95,7 +96,7 @@
 				this.$.editTeam.close();
 			},
 			editTeam: function(e){
-				this.team = this.$.teamsList.itemForElement(e.target);
+				this.team = e.model.__data__.item
 				this.newid = this.team.id;
 				this.$.editTeam.open();
 			},

@@ -1,8 +1,7 @@
 
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
-<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
-<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="../../bower_components/paper-item/paper-item.html">
@@ -10,6 +9,9 @@
 <link rel="import" href="../../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
+
+<link rel="import" href="../../elements/prono-dialog/prono-dialog.html">
+<link rel="import" href="../../elements/prono-team-icon/prono-team-icon.html">
 
 <dom-module is="prono-matches-list">
 	<template>
@@ -39,7 +41,6 @@
 				width: 100px;
 				text-align: center;
 			}
-
 			paper-button.main{
       			background: #5C82C3;
       			color: #ffffff;
@@ -49,6 +50,7 @@
 				top: -20px;
 				right: 10px;
 				margin: 0px;
+				cursor: pointer;
 			}
 		</style>
 		
@@ -56,7 +58,7 @@
 		<iron-ajax id="ajaxPut" method="PUT" handle-as="json" on-response="handleAjaxPutResponse" last-response="{{ajaxPutResponse}}" debounce-duration="300"></iron-ajax>
 		<iron-ajax id="ajaxDelete" method="DELETE" handle-as="json" on-response="handleAjaxDeleteResponse" last-response="{{ajaxDeleteResponse}}" debounce-duration="300"></iron-ajax>
 
-		<template is="dom-repeat" id="matchesList" items="{{matchess}}" sort="_sortMatches">
+		<template is="dom-repeat" items="{{matchess}}" sort="_sortMatches">
 			<paper-card elevation="1" on-tap="editMatch" class="horizontal layout">
 				<div class="id">
 					{{item.id}}
@@ -91,87 +93,84 @@
 		<paper-button raised on-tap="addMatch">Add match</paper-button>
 	
 	
-		<paper-dialog id="editMatch" entry-animation="scale-up-animation" exit-animation="fade-out-animation">
-			<paper-dialog-scrollable>
-				<paper-input label="id" value={{newid}}></paper-input>
-				<paper-input label="Date" value={{newdate}} auto-validate pattern="[0-9][0-9]-[0-9][0-9]-[0-9][0-9][0-9][0-9] [0-9][0-9]:[0-9][0-9]" error-message="dd-mm-yyyy HH:MM"></paper-input>
-				<div class="horizontal layout wrap">
-					<div class="flex-4">
-						<paper-input label="Stage" value={{match.stage}}></paper-input>
-					</div>
-					<div class="flex"></div>
-					<div class="flex-4">
-						<paper-dropdown-menu label="Group">
-							<paper-menu class="dropdown-content" attr-for-selected="value" selected="{{match.grp}}">
-								<paper-item value="0"></paper-item>
-								<template is="dom-repeat" items="{{groups}}">
-									<paper-item value="{{item.id}}">{{item.name}}</paper-item>
-								</template>
-							</paper-menu>
-						</paper-dropdown-menu>
-					</div>
-					<div class="flex"></div>
-					<div class="flex-4">
-						<paper-input label="Position" value={{match.position}}></paper-input>
-					</div>
+		<prono-dialog id="editMatch">
+			<paper-input label="id" value={{newid}}></paper-input>
+			<paper-input label="Date" value={{newdate}} auto-validate pattern="[0-9][0-9]-[0-9][0-9]-[0-9][0-9][0-9][0-9] [0-9][0-9]:[0-9][0-9]" error-message="dd-mm-yyyy HH:MM"></paper-input>
+			<div class="horizontal layout wrap">
+				<div class="flex-4">
+					<paper-input label="Stage" value={{match.stage}}></paper-input>
 				</div>
-				<div class="horizontal layout wrap">
-					<div class="flex-5">
-						<paper-input label="Default team 1" value={{match.defaultteam1}}></paper-input>
-					</div>
-					<div class="flex"></div>
-					<div class="flex-5">
-						<paper-input label="Default team 2" value={{match.defaultteam2}}></paper-input>
-					</div>
-				</div>	
-				<div class="horizontal layout wrap">
-					<div class="flex-5">
-						<paper-dropdown-menu id="team1" label="Team 1">
-							<paper-menu class="dropdown-content" attr-for-selected="value" selected="{{match.team1}}">
-								<paper-item value="0"></paper-item>
-								<template is="dom-repeat" items="{{teams}}" sort="_sortTeams">
-									<paper-item value="{{item.id}}">{{item.name}}</paper-item>
-								</template>
-							</paper-menu>
-						</paper-dropdown-menu>
-					</div>
-					<div class="flex"></div>
-					<div class="flex-5">
-						<paper-dropdown-menu id="team2" label="Team 2">
-							<paper-menu class="dropdown-content" attr-for-selected="value" selected="{{match.team2}}">
-								<paper-item value="0"></paper-item>
-								<template is="dom-repeat" items="{{teams}}" sort="_sortTeams">
-									<paper-item value="{{item.id}}">{{item.name}}</paper-item>
-								</template>
-							</paper-menu>
-						</paper-dropdown-menu>
-					</div>
-				</div>	
-				<div class="horizontal layout wrap">
-					<div class="flex-5">
-						<paper-input label="Score 1" value={{newscore1}} auto-validate pattern="[0-9]*" error-message="not a valid score"></paper-input>
-					</div>
-					<div class="flex"></div>
-					<div class="flex-5">
-						<paper-input label="score 2" value={{newscore2}} auto-validate pattern="[0-9]*" error-message="not a valid score"></paper-input>
-					</div>
+				<div class="flex"></div>
+				<div class="flex-4">
+					<paper-dropdown-menu label="Group">
+						<paper-menu class="dropdown-content" attr-for-selected="value" selected="{{match.grp}}">
+							<paper-item value="0"></paper-item>
+							<template is="dom-repeat" items="{{groups}}">
+								<paper-item value="{{item.id}}">{{item.name}}</paper-item>
+							</template>
+						</paper-menu>
+					</paper-dropdown-menu>
 				</div>
-				<div class="horizontal layout wrap">
-					<div class="flex-5">
-						<paper-input label="Penalty 1" value={{newpenalty1}} auto-validate pattern="[0-9]*" error-message="not a valid score"></paper-input>
-					</div>
-					<div class="flex"></div>
-					<div class="flex-5">
-						<paper-input label="Penalty 2" value={{newpenalty2}} auto-validate pattern="[0-9]*" error-message="not a valid score"></paper-input>
-					</div>
+				<div class="flex"></div>
+				<div class="flex-4">
+					<paper-input label="Position" value={{match.position}}></paper-input>
 				</div>
-				<div class="buttons">
-					<paper-button raised class="main" on-tap="saveMatch">Save</paper-button>
-					<paper-button raised on-tap="deleteMatch">Delete</paper-button>
+			</div>
+			<div class="horizontal layout wrap">
+				<div class="flex-5">
+					<paper-input label="Default team 1" value={{match.defaultteam1}}></paper-input>
 				</div>
-				<a class='closeDialog' on-tap="closeDialog">close</a>
-			 </paper-dialog-scrollable>
-		</paper-dialog>
+				<div class="flex"></div>
+				<div class="flex-5">
+					<paper-input label="Default team 2" value={{match.defaultteam2}}></paper-input>
+				</div>
+			</div>	
+			<div class="horizontal layout wrap">
+				<div class="flex-5">
+					<paper-dropdown-menu id="team1" label="Team 1">
+						<paper-menu class="dropdown-content" attr-for-selected="value" selected="{{match.team1}}">
+							<paper-item value="0"></paper-item>
+							<template is="dom-repeat" items="{{teams}}" sort="_sortTeams">
+								<paper-item value="{{item.id}}">{{item.name}}</paper-item>
+							</template>
+						</paper-menu>
+					</paper-dropdown-menu>
+				</div>
+				<div class="flex"></div>
+				<div class="flex-5">
+					<paper-dropdown-menu id="team2" label="Team 2">
+						<paper-menu class="dropdown-content" attr-for-selected="value" selected="{{match.team2}}">
+							<paper-item value="0"></paper-item>
+							<template is="dom-repeat" items="{{teams}}" sort="_sortTeams">
+								<paper-item value="{{item.id}}">{{item.name}}</paper-item>
+							</template>
+						</paper-menu>
+					</paper-dropdown-menu>
+				</div>
+			</div>	
+			<div class="horizontal layout wrap">
+				<div class="flex-5">
+					<paper-input label="Score 1" value={{newscore1}} auto-validate pattern="[0-9]*" error-message="not a valid score"></paper-input>
+				</div>
+				<div class="flex"></div>
+				<div class="flex-5">
+					<paper-input label="score 2" value={{newscore2}} auto-validate pattern="[0-9]*" error-message="not a valid score"></paper-input>
+				</div>
+			</div>
+			<div class="horizontal layout wrap">
+				<div class="flex-5">
+					<paper-input label="Penalty 1" value={{newpenalty1}} auto-validate pattern="[0-9]*" error-message="not a valid score"></paper-input>
+				</div>
+				<div class="flex"></div>
+				<div class="flex-5">
+					<paper-input label="Penalty 2" value={{newpenalty2}} auto-validate pattern="[0-9]*" error-message="not a valid score"></paper-input>
+				</div>
+			</div>
+			<div class="buttons">
+				<paper-button raised class="button-main" on-tap="saveMatch">Save</paper-button>
+				<paper-button raised on-tap="deleteMatch">Delete</paper-button>
+			</div>
+		</prono-dialog>
 
 	</template>
 	<script>
@@ -202,7 +201,8 @@
 				this.$.editMatch.close();
 			},
 			editMatch: function(e){
-				this.match = this.$.matchesList.itemForElement(e.target);
+				this.match = e.model.__data__.item
+
 				// some properties need to be formatted
 				this.newid = this.match.id;
 				this.newdate = this.formatDate(this.match.date);

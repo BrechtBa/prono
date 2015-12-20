@@ -8,6 +8,9 @@
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
 
+<link rel="import" href="../../elements/prono-dialog/prono-dialog.html">
+<link rel="import" href="../../elements/prono-team-icon/prono-team-icon.html">
+
 <dom-module id="prono-groupstage">
 	<template>
 
@@ -29,7 +32,7 @@
 				width: 60px;
 				text-align: center;
 			}
-			.icon{
+			.teamicon{
 				width: 30px;
 				height: 30px;
 			}
@@ -45,25 +48,26 @@
     		}
 			.closeDialog{
 				position: absolute;
-				top: -20px;
-				right: 10px;
+				top: 5px;
+				right: -15px;
 				margin: 0px;
+				cursor: pointer;
 			}
 		</style>
 
 		<iron-ajax id="ajaxPut" method="PUT" handle-as="json" on-response="handleAjaxPutResponse" last-response="{{ajaxPutResponse}}" debounce-duration="300"></iron-ajax>
 		<div class="horizontal layout wrap center-justified">
 
-			<template is="dom-repeat" id="groupsList" items="{{groups}}">
+			<template is="dom-repeat" items="{{groups}}">
 				<paper-card elevation="1" class="group vertical layout">
 					<h3>Group {{item.name}}</h3>
 					<div class="matches">
-						<template is="dom-repeat" id="matchesList" items="{{matchess}}" filter="{{filterGroupMatches(item.id)}}">
+						<template is="dom-repeat" items="{{matchess}}" filter="{{filterGroupMatches(item.id)}}">
 							<div class="match horizontal layout center center-justified" on-tap="editScore">
 								<div class="teamname left flex">{{formatTeamName(item.team1,teams)}}</div>
-								<div class="teamicon"><img class="icon" src="{{parseIcon(item.team1,teams)}}"></div>
+								<div><prono-team-icon class="teamicon" team="{{getTeam(item.team1,teams)}}"></prono-team-icon></div>
 								<div class="score">{{formatScore(item.score1)}} - {{formatScore(item.score2)}}</div>
-								<div class="teamicon"><img class="icon" src="{{parseIcon(item.team2,teams)}}"></div>
+								<div><prono-team-icon class="teamicon" team="{{getTeam(item.team2,teams)}}"></prono-team-icon></div>
 								<div class="teamname right flex">{{formatTeamName(item.team2,teams)}}</div>
 							</div>
 						</template>
@@ -73,10 +77,13 @@
 
 		<div class="horizontal layout wrap">
 
-
+		<prono-score-dialog id="editScore" teams="{{teams}}" token="{{token}}" match="{{match}}" score="{{score}}" user="{{user}}"></prono-score-dialog>
+		
 	</template>
 
 	<script>
+		//"
+		//team="{{getTeam(item.team2,teams)}}"
 		Polymer({
 			is: 'prono-groupstage',
 			properties: {
@@ -105,13 +112,21 @@
 			ready: function(){
 			},
 			closeDialog: function(){
-				//this.$.editScore.close();
+				this.$.editScore.close();
 			},
 			editScore: function(e){
-				console.log(e);
-				console.log(e.target);
-				//this.match = this.$.matchesList.itemForElement(e.target);
-				//console.log(this.match);
+				this.match = e.model.__data__.item;
+				if(this.user==0){
+					// check permission
+					if(true){ 
+						this.score = {'score1':this.match.score1,'score2':this.match.score2};
+						this.$.editScore.open();
+					}
+				}
+				else{
+					this.score = {'score1':0,'score2':0};
+					this.$.editScore.open();
+				}
 			},
 			saveScore: function(){
 				/*this.$.ajaxPut.url = 'api/index.php/prono/'+this.team.id
@@ -125,7 +140,6 @@
 				app.$.model.fire('get-teams');*/
 			},
 			filterGroupMatches: function(id){
-
 				return function(item){
 					return (item.grp == id);
 			  	};
@@ -139,29 +153,21 @@
 				});
 				return name;
 			},
+			getTeam: function(id,teams){
+				var team = {};
+				teams.forEach(function(item){
+					if(item.id == id){					
+						team = item;
+					}
+				});
+				return team;
+			},
 			formatScore: function(score){
 				if(score<0){
 					return '';
 				}
 				else{
 					return score;
-				}
-			},
-			parseIcon: function(id,teams){
-				var iso_icon='';
-				var icon = '';
-				teams.forEach(function(item){
-					if(item.id == id){
-						iso_icon = item.iso_icon;
-						icon = item.icon;
-					}
-				});
-
-				if(iso_icon != ''){
-					return 'images/flags/'+iso_icon+'.png';
-				}
-				else{
-					return icon;
 				}
 			},
 			_sortMatches: function(a, b) {  
