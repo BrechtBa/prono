@@ -23,7 +23,7 @@
     // the valid request strings will be parsed using sprintf( ,$user['id'])
 	// '*' implies all requests are valid
 	$valid_uri = [1 => ['POST' => ['table_b'], 
-                        'GET' => ['table_a','table_b/user_id/%s'],
+                        'GET' => ['teams','matches','groups','table_b/user_id/%s'],
                         'PUT' => ['table_b/user_id/%s'],
                         'DELETE' => ['table_b/user_id/%s']],
 				  9 => ['POST' => ['*'],

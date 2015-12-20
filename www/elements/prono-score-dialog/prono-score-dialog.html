@@ -41,17 +41,13 @@
 				<div class="vertical layout center-justified">
 					<div class="teamname">{{formatTeamName(match.team1,teams)}}</div>
 					<div class="horizontal layout center center-justified">
-						<div>
-							<img class="teamicon" src="{{formatTeamIcon(match.team1,teams)}}">
-						</div>
+						<prono-team-icon class="teamicon" team="{{getTeam(match.team1,teams)}}"></prono-team-icon>
 					
 						<div class="flex-2 score"><paper-input label="" auto-validate pattern="[0-9]*" error-message="not a valid score" value={{score1}}></paper-input></div>
 						<div class="flex-1 score dash"> - </div>
 						<div class="flex-2 score"><paper-input label="" auto-validate pattern="[0-9]*" error-message="not a valid score" value={{score2}}></paper-input></div>
 					
-						<div>
-							<img class="teamicon" src="{{formatTeamIcon(match.team2,teams)}}">
-						</div>
+						<prono-team-icon class="teamicon" team="{{getTeam(match.team2,teams)}}"></prono-team-icon>
 					</div>
 					<div class="teamname">{{formatTeamName(match.team2,teams)}}</div>
 				</div>
@@ -74,18 +70,17 @@
 					type: 'Object'
 				},
 				teams: {
-					type: 'Array'
+					type: 'Array',
+					value: []
 				},
 				user: {
 					type: 'Number'
 				},
 				score1: {
 					type: 'Number',
-					computed: 'formatScore(score.score1)'
 				},
 				score2: {
 					type: 'Number',
-					computed: 'formatScore(score.score2)'
 				},
 			},
 			close: function(){
@@ -93,6 +88,8 @@
 			},
 			open: function(){
 				this.$.dialog.open();
+				this.score1 = this.formatScore(this.score.score1);
+				this.score2 = this.formatScore(this.score.score2);
 			},
 			save: function(){
 				if(this.user==0){
@@ -116,6 +113,7 @@
 				console.log(this.$.ajaxPut.url);
 				console.log(this.$.ajaxPut.body);
 				//this.$.ajaxPut.generateRequest();
+				this.close();
 	
 			},
 			formatTeamName: function(id,teams){
@@ -127,22 +125,14 @@
 				});
 				return name;
 			},
-			formatTeamIcon: function(id,teams){
-				var iso_icon='';
-				var icon = '';
+			getTeam: function(id,teams){
+				var team = {};
 				teams.forEach(function(item){
-					if(item.id == id){
-						iso_icon = item.iso_icon;
-						icon = item.icon;
+					if(item.id == id){					
+						team = item;
 					}
 				});
-
-				if(iso_icon != ''){
-					return 'images/flags/'+iso_icon+'.png';
-				}
-				else{
-					return icon;
-				}
+				return team;
 			},
 			formatScore: function(score){
 				if(score<0){

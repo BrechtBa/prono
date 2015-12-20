@@ -8,7 +8,8 @@
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
 
-<link rel="import" href="../../elements/prono-dialog/prono-dialog.html">
+<link rel="import" href="../../elements/parse-token/parse-token.html">
+<link rel="import" href="../../elements/prono-score-dialog/prono-score-dialog.html"
 <link rel="import" href="../../elements/prono-team-icon/prono-team-icon.html">
 
 <dom-module id="prono-groupstage">
@@ -54,7 +55,7 @@
 				cursor: pointer;
 			}
 		</style>
-
+		<parse-token token="{{token}}" payload="{{tokenPayload}}"></parse-token>
 		<iron-ajax id="ajaxPut" method="PUT" handle-as="json" on-response="handleAjaxPutResponse" last-response="{{ajaxPutResponse}}" debounce-duration="300"></iron-ajax>
 		<div class="horizontal layout wrap center-justified">
 
@@ -78,12 +79,9 @@
 		<div class="horizontal layout wrap">
 
 		<prono-score-dialog id="editScore" teams="{{teams}}" token="{{token}}" match="{{match}}" score="{{score}}" user="{{user}}"></prono-score-dialog>
-		
 	</template>
 
 	<script>
-		//"
-		//team="{{getTeam(item.team2,teams)}}"
 		Polymer({
 			is: 'prono-groupstage',
 			properties: {
@@ -118,7 +116,7 @@
 				this.match = e.model.__data__.item;
 				if(this.user==0){
 					// check permission
-					if(true){ 
+					if(this.tokenPayload.permission > 5){ 
 						this.score = {'score1':this.match.score1,'score2':this.match.score2};
 						this.$.editScore.open();
 					}

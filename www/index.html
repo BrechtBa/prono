@@ -132,7 +132,7 @@
 
 							<section class="page" data-route="pron">
 								<h2 class="page-title">Prono</h2>
-
+								<prono-groupstage token="{{token}}" teams="{{teams}}" groups="{{groups}}" matchess="{{matchess}}" user="{{tokenPayload.user_id}}"></prono-groupstage>
 							</section>
 
 							<section class="page" data-route="results">
@@ -166,6 +166,7 @@
 				<span class="toast-hide-button" role="button" tabindex="0" onclick="app.$.toast.hide()">close</span>
 			</paper-toast>
 
+			<parse-token token="{{token}}" payload="{{tokenPayload}}"></parse-token>
 			<prono-model id="model" token="{{token}}" teams="{{teams}}" groups="{{groups}}" matchess="{{matchess}}"></prono-model>
 
 		</template>

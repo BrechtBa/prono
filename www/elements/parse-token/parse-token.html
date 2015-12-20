@@ -1,0 +1,42 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module is="parse-token">
+	<template>
+		<style>
+			:host{
+			}
+		</style>
+
+	</template>
+	<script>
+		Polymer({
+			is: 'parse-token',
+			properties: {
+				token: {
+					type: 'String',
+					value: '',
+					observer: 'tokenChanged'
+				},
+				payload: {
+					type: 'Object',
+					notify: true
+				},
+				header: {
+					type: 'Object'
+				}
+			},
+			tokenChanged: function(token){
+				try{
+					var parts = token.split('.');
+					this.header = JSON.parse(atob(parts[0]));
+					this.payload = JSON.parse(atob(parts[1]));
+				}
+				catch(e){
+					this.header = {};
+					this.payload = {};
+				}
+			}
+		});
+	</script>
+</dom-module>

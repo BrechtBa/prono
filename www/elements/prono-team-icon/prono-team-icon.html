@@ -28,15 +28,12 @@
 			},
 			getSrc: function(team){
 				var src = 'images/flags/_blank.png';
-				if(team != {}){
-					if(team.iso_icon != ''){
+				if(typeof team != 'undefined' && team != {}){
+					if(typeof team.iso_icon != 'undefined' && team.iso_icon != ''){
 						return 'images/flags/'+team.iso_icon+'.png';
 					}
-					else if(team.icon != ''){
+					else if(typeof team.icon != 'undefined' && team.icon != ''){
 						return team.icon;
-					}
-					else{
-						return 'images/flags/_blank.png';
 					}
 				}
 				return src;
