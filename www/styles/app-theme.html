@@ -14,29 +14,43 @@
 
 	:root {
 		--dark-primary-color: #303F9F;
-		--default-primary-color: #3F51B5;
+		--default-primary-color: #ffffff;
 		--light-primary-color: #C5CAE9;
-		--text-primary-color: #ffffff; /*text/icons*/
+		--text-primary-color: #ffffff;
+		--text-secondary-color: #222222;
 		--accent-color: #FF4081;
-		--primary-background-color: #ffffff;
-		--primary-text-color: #212121;
-		--secondary-text-color: #727272;
+		--background-primary-color: linear-gradient( #DD0000,#440000 );
+		--background-secondary-color: #ffffff;
 		--disabled-text-color: #bdbdbd;
 		--divider-color: #B6B6B6;
 
     	/* Components */
 
 		/* paper-drawer-panel */
-		--drawer-menu-color: #ffffff;
+		--drawer-background-color: #fafafa;
+		--drawer-text-color: #111111;
 		--drawer-border-color: 1px solid #ccc;
 		--drawer-toolbar-border-color: 1px solid rgba(0, 0, 0, 0.22);
 
     	/* paper-menu */
-		--paper-menu-background-color: #fff;
+		--paper-menu-background-color: #ffffff;
 		--menu-link-color: #111111;
+		--menu-link-selected-color: #aaaaaa;
+
+
+		/* paper-button */
+		--button-background-color: #ffffff;
+		--button-text-color: #222222;
+		--button-background-primary-color: #d8a031; 
+		--button-text-primary-color: #ffffff;
 	}
 
 /* General styles */
+	body{
+		background: var(--background-primary-color);
+		font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+		color: var(--text-primary-color);
+	}
 	#login{
 		position:fixed;
 		top: 0;
@@ -44,9 +58,8 @@
 		left: 0;
 		right: 0;
 		z-index:11;
-		background: var(--default-primary-color);
+		background: var(--background-primary-color);
 		padding: 10px;
-
 		color: var(--text-primary-color);
 	}
 	#login > div{
@@ -62,28 +75,35 @@
  	section.page{
 		padding: 10px;
 	}
+	#mainToolbar{
+		color: var(--text-secondary-color);
+		background-color: var(--background-secondary-color);
+		box-shadow: inset 0px -10px 6px -5px rgba(0, 0, 0, 0.7);
+	}
 	#drawerToolbar {
-		color: var(--secondary-text-color);
-		background-color: var(--drawer-menu-color);
+		color: var(--drawer-text-color);
+		background-color: var(--drawer-background-color);
 		border-bottom: var(--drawer-toolbar-border-color);
 	}
 
-	paper-scroll-header-panel {
+	paper-scroll-header-panel{
 		height: 100%;
 
 		--paper-scroll-header-panel-shadow: {
-			  height: 24px;
-			  box-shadow: inset 0 24px 4px -4px rgba(0,0,0,0.4);
+			height: 6px;
+			bottom: -6px;
+			/*box-shadow: inset 0px 5px 6px -3px rgba(0, 0, 0, 0.4);*/
 		};
 	}
 
-	paper-material {
+	paper-material{
 		border-radius: 2px;
 		height: 100%;
 		padding: 16px 0 16px 0;
 		width: calc(98.66% - 16px);
 		margin: 16px auto;
-		background: white;
+		background: var(--background-secondary-color);
+		color: var(--text-secondary-color);
 	}
 
 	paper-menu iron-icon {
@@ -92,7 +112,7 @@
 	}
 
 	.paper-menu > .iron-selected {
-		color: var(--default-primary-color);
+		color: var(--menu-link-selected-color);
 	}
 
 	paper-menu a {

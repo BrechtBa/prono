@@ -20,14 +20,20 @@
 				display: block;
 				width: 100%;
 			}
-			paper-card{
+			paper-material{
       			margin: 5px;
 				cursor: pointer;
 				padding: 10px;
+				background: var(--background-secondary-color);
+				color: var(--text-secondary-color);
+				border-radius: 2px;
     		}
-			paper-card.group{
+			paper-material.group{
 				width: 100%;
 				max-width: 360px;
+			}
+			paper-material h3{
+				margin-top: 0px;
 			}
 			.score{
 				width: 60px;
@@ -43,10 +49,6 @@
 			.teamname.right{
 				text-align: right;
 			}
-			paper-button.main{
-      			background: #5C82C3;
-      			color: #ffffff;
-    		}
 			.closeDialog{
 				position: absolute;
 				top: 5px;
@@ -59,7 +61,7 @@
 		<div class="horizontal layout wrap center-justified">
 
 			<template is="dom-repeat" items="{{groups}}">
-				<paper-card elevation="1" class="group vertical layout">
+				<paper-material elevation="2" class="group vertical layout">
 					<h3>Group {{item.name}}</h3>
 					<div class="matches">
 						<template is="dom-repeat" items="{{matchess}}" filter="{{filterGroupMatches(item.id)}}">
@@ -72,7 +74,7 @@
 							</div>
 						</template>
 					</div>
-				</paper-card>
+				</paper-material>
 			</template>
 
 		<div class="horizontal layout wrap">

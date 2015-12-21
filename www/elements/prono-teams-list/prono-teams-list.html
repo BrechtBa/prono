@@ -23,7 +23,17 @@
       			margin-bottom: 5px;
 				cursor: pointer;
 				padding: 10px;
+				background: var(--background-secondary-color);
+				color: var(--text-secondary-color);
     		}
+			paper-button{
+				background: var(--button-background-color);
+				color: var(--button-text-color);
+			}
+			paper-button.primary{
+				background: var(--button-background-primary-color);
+				color: var(--button-text-primary-color);
+			}
 			.id{
 				width: 30px;
 			}
@@ -31,10 +41,6 @@
 				width: 45px;
 				height: 45px;
 			}
-			paper-button.main{
-      			background: #5C82C3;
-      			color: #ffffff;
-    		}
 			.closeDialog{
 				position: absolute;
 				top: -20px;
@@ -50,7 +56,7 @@
 
 		
 		<template is="dom-repeat" items="{{teams}}" sort="_sortTeams">
-			<paper-card elevation="1" class="horizontal layout" on-tap="editTeam">
+			<paper-card elevation="2" class="horizontal layout" on-tap="editTeam">
 				<div class="id">{{item.id}}</div>
 				<div class="flex">
 					<div class="name">{{item.name}}</div>
@@ -68,7 +74,7 @@
 			<paper-input id="iso" label="ISO icon code:" value="{{team.iso_icon}}"></paper-input>
 			<paper-input id="icon" label="icon url:" value="{{team.icon}}"></paper-input>
 			<div class="buttons">
-				<paper-button raised class="button-main" on-tap="saveTeam">Save</paper-button>
+				<paper-button raised class="primary" on-tap="saveTeam">Save</paper-button>
 				<paper-button raised on-tap="deleteTeam">Delete</paper-button>
 			</div>
 		</prono-dialog>

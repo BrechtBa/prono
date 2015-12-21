@@ -12,6 +12,14 @@
 		<style>
 			:host{
 			}
+			paper-button{
+				background: var(--button-background-color);
+				color: var(--button-text-color);
+			}
+			paper-button.primary{
+				background: var(--button-background-primary-color);
+				color: var(--button-text-primary-color);
+			}
 			.teamname{
 				text-align: center;
 				margin-top: 10px;
@@ -53,7 +61,7 @@
 					<div class="teamname">{{formatTeamName(match.team2,teams)}}</div>
 				</div>
 				<div class="buttons">
-					<paper-button raised class="button-main" on-tap="formSubmit">Save</paper-button>
+					<paper-button raised class="primary" on-tap="formSubmit">Save</paper-button>
 					<input type="submit" class="hidden">
 				</div>
 			</form>

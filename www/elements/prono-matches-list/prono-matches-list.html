@@ -23,7 +23,17 @@
       			margin-bottom: 5px;
 				cursor: pointer;
 				padding: 10px;
+				background: var(--background-secondary-color);
+				color: var(--text-secondary-color);
     		}
+			paper-button{
+				background: var(--button-background-color);
+				color: var(--button-text-color);
+			}
+			paper-button.primary{
+				background: var(--button-background-primary-color);
+				color: var(--button-text-primary-color);
+			}
 			.id{
 				width: 30px;
 			}
@@ -41,10 +51,6 @@
 				width: 100px;
 				text-align: center;
 			}
-			paper-button.main{
-      			background: #5C82C3;
-      			color: #ffffff;
-    		}
 			.closeDialog{
 				position: absolute;
 				top: -20px;
@@ -59,7 +65,7 @@
 		<iron-ajax id="ajaxDelete" method="DELETE" handle-as="json" on-response="handleAjaxDeleteResponse" last-response="{{ajaxDeleteResponse}}" debounce-duration="300"></iron-ajax>
 
 		<template is="dom-repeat" items="{{matchess}}" sort="_sortMatches">
-			<paper-card elevation="1" on-tap="editMatch" class="horizontal layout">
+			<paper-card elevation="2" on-tap="editMatch" class="horizontal layout">
 				<div class="id">
 					{{item.id}}
 				</div>
@@ -167,7 +173,7 @@
 				</div>
 			</div>
 			<div class="buttons">
-				<paper-button raised class="button-main" on-tap="saveMatch">Save</paper-button>
+				<paper-button raised class="primary" on-tap="saveMatch">Save</paper-button>
 				<paper-button raised on-tap="deleteMatch">Delete</paper-button>
 			</div>
 		</prono-dialog>
