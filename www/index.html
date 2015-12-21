@@ -132,7 +132,7 @@
 
 							<section class="page" data-route="pron">
 								<h2 class="page-title">Prono</h2>
-								<prono-groupstage token="{{token}}" teams="{{teams}}" groups="{{groups}}" matchess="{{matchess}}" user="{{tokenPayload.user_id}}"></prono-groupstage>
+								<prono-groupstage token="{{token}}" teams="{{teams}}" groups="{{groups}}" matchess="{{matchess}}" user="{{tokenPayload.user_id}}" bets-score="{{betsScore}}"></prono-groupstage>
 							</section>
 
 							<section class="page" data-route="results">
@@ -167,7 +167,7 @@
 			</paper-toast>
 
 			<parse-token token="{{token}}" payload="{{tokenPayload}}"></parse-token>
-			<prono-model id="model" token="{{token}}" teams="{{teams}}" groups="{{groups}}" matchess="{{matchess}}"></prono-model>
+			<prono-model id="model" token="{{token}}" teams="{{teams}}" groups="{{groups}}" matchess="{{matchess}}" bets-score="{{betsScore}}"></prono-model>
 
 		</template>
 

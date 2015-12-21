@@ -2,15 +2,19 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 
+<link rel="import" href="../../elements/parse-token/parse-token.html">
+
 <dom-module id="prono-model">
 	<template>
 
 		<style>
 		</style>
 
+		<parse-token token="{{token}}" payload="{{tokenPayload}}"></parse-token>
 		<iron-ajax id="getTeams" url="../../api/index.php/teams" method="GET" handle-as="json" last-response="{{teams}}" debounce-duration="300"></iron-ajax>
 		<iron-ajax id="getGroups" url="../../api/index.php/groups" method="GET" handle-as="json" last-response="{{groups}}" debounce-duration="300"></iron-ajax>
 		<iron-ajax id="getMatches" url="../../api/index.php/matches" method="GET" handle-as="json" last-response="{{matchess}}" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="getBetsScore" url="../../api/index.php/bets_score" method="GET" handle-as="json" last-response="{{betsScore}}" debounce-duration="300"></iron-ajax>
 		
 	</template>
 
@@ -36,22 +40,29 @@
 					type: 'Array',
 					notify: true
 				},
+				betsScore: {
+					type: 'Array',
+					notify: true
+				},
 			},
 			listeners: {
 				'get-teams': 'getTeams',
 				'get-groups': 'getGroups',
 				'get-matches': 'getMatches',
+				'get-bets-score': 'getBetsScore',
 			},
 			tokenChanged: function(){
 				if( this.token != ''){
 					this.getTeams();
 					this.getGroups();
 					this.getMatches();
+					this.getBetsScore();
 				}
 				else{
 					this.teams = [];
 					this.groups = [];
 					this.matchess = [];
+					this.betsScore = [];
 				}
 			},
 			getTeams: function(){
@@ -69,6 +80,12 @@
 				this.$.getMatches.headers['Authentication'] = this.token;
 				this.$.getMatches.generateRequest();
 			},
+			getBetsScore: function(){
+				console.log('getting bets score for user ' +this.tokenPayload.user_id);
+				this.$.getBetsScore.headers['Authentication'] = this.token;
+				this.$.getBetsScore.url = 'api/index.php/bets_score/user_id/'+this.tokenPayload.user_id
+				this.$.getBetsScore.generateRequest();
+			}
 		});
 	</script>
 

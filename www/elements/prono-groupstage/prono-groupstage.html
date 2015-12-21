@@ -56,7 +56,6 @@
 			}
 		</style>
 		<parse-token token="{{token}}" payload="{{tokenPayload}}"></parse-token>
-		<iron-ajax id="ajaxPut" method="PUT" handle-as="json" on-response="handleAjaxPutResponse" last-response="{{ajaxPutResponse}}" debounce-duration="300"></iron-ajax>
 		<div class="horizontal layout wrap center-justified">
 
 			<template is="dom-repeat" items="{{groups}}">
@@ -67,7 +66,7 @@
 							<div class="match horizontal layout center center-justified" on-tap="editScore">
 								<div class="teamname left flex">{{formatTeamName(item.team1,teams)}}</div>
 								<div><prono-team-icon class="teamicon" team="{{getTeam(item.team1,teams)}}"></prono-team-icon></div>
-								<div class="score">{{formatScore(item.score1)}} - {{formatScore(item.score2)}}</div>
+								<div class="score">{{getScore1(item,user,betsScore)}} - {{getScore2(item,user,betsScore)}}</div>
 								<div><prono-team-icon class="teamicon" team="{{getTeam(item.team2,teams)}}"></prono-team-icon></div>
 								<div class="teamname right flex">{{formatTeamName(item.team2,teams)}}</div>
 							</div>
@@ -92,7 +91,8 @@
 				},
 				user: {
 					type: 'Number',
-					notify: true
+					notify: true,
+					value: 0
 				},
 				teams: {
 					type: 'Array',
@@ -105,6 +105,11 @@
 				matchess: {
 					type: 'Array',
 					notify: true
+				},
+				betsScore: {
+					type: 'Array',
+					notify: true,
+					value: []
 				},
 			},
 			ready: function(){
@@ -122,20 +127,16 @@
 					}
 				}
 				else{
-					this.score = {'score1':0,'score2':0};
+					this.score = {'score1':-1,'score2':-1};
+					that = this;
+					// find the match in the bets list
+					this.betsScore.forEach(function(item){
+						if(item.match_id==that.match.id){
+							that.score = {'score1':item.score1,'score2':item.score2};
+						}
+					});
 					this.$.editScore.open();
 				}
-			},
-			saveScore: function(){
-				/*this.$.ajaxPut.url = 'api/index.php/prono/'+this.team.id
-				this.$.ajaxPut.headers['Authentication'] = this.token;
-				this.$.ajaxPut.body = JSON.stringify({'id':this.newid,'name':this.team.name,'abr':this.team.abr,'iso_icon':this.team.iso_icon,'icon':this.team.icon});
-				this.$.ajaxPut.generateRequest();
-				this.$.editTeam.close();*/
-			},
-			handleAjaxPutResponse: function(event,request){
-				/*var headers = request.xhr.getAllResponseHeaders();
-				app.$.model.fire('get-teams');*/
 			},
 			filterGroupMatches: function(id){
 				return function(item){
@@ -161,12 +162,42 @@
 				return team;
 			},
 			formatScore: function(score){
+				var val = '';
 				if(score<0){
-					return '';
+					val = '';
 				}
 				else{
-					return score;
+					val = score;
 				}
+				return val;
+			},
+			getScore1: function(match,user,betsScore){
+				var score = -1;
+				if(user==0){
+					score = match.score1;
+				}
+				else{
+					betsScore.forEach(function(item){
+						if(item.match_id == match.id){
+							score = item.score1
+						}
+					});
+				}
+				return this.formatScore(score);
+			},
+			getScore2: function(match,user,betsScore){
+				var score = -1;
+				if(user==0){
+					score = match.score2;	
+				}
+				else{
+					betsScore.forEach(function(item){
+						if(item.match_id == match.id){
+							score = item.score2
+						}
+					});
+				}
+				return this.formatScore(score);
 			},
 			_sortMatches: function(a, b) {  
   
