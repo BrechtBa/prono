@@ -26,9 +26,11 @@
 			}
 			.score{
 				text-align: center;
+				width: 80px;
 			}
 			.dash{
 				margin-top: 10px;
+				width: 40px;
 			}
 			.teamicon{
 				width: 45px;
@@ -46,23 +48,21 @@
 		<iron-ajax id="ajaxPut" method="PUT" handle-as="json" on-response="handleAjaxPutResponse" last-response="{{ajaxPutResponse}}" debounce-duration="300"></iron-ajax>
 
 		<prono-dialog id="dialog">
-			<form is="iron-form" id="form" on-iron-form-submit="save">
+			<form is="iron-form" id="form" method="post" on-iron-form-submit="save" action="/">
 				<div class="vertical layout center-justified">
-					<div class="teamname">{{formatTeamName(match.team1,teams)}}</div>
+					<div class="teamname flex">{{formatTeamName(match.team1,teams)}}</div>
 					<div class="horizontal layout center center-justified">
 						<prono-team-icon class="teamicon" team="{{getTeam(match.team1,teams)}}"></prono-team-icon>
-					
-						<div class="flex-2 score"><paper-number-input label="" auto-validate pattern="[0-9]*" error-message="x" value={{score1}}></paper-input></div>
-						<div class="flex-1 score dash"> - </div>
-						<div class="flex-2 score"><paper-number-input label="" auto-validate pattern="[0-9]*" error-message="x" value={{score2}}></paper-input></div>
-					
+						<div class="score"><paper-number-input label="" auto-validate pattern="[0-9]*" error-message="x" value={{score1}}></paper-input></div>
+						<div class="score dash"> - </div>
+						<div class="score"><paper-number-input label="" auto-validate pattern="[0-9]*" error-message="x" value={{score2}}></paper-input></div>
 						<prono-team-icon class="teamicon" team="{{getTeam(match.team2,teams)}}"></prono-team-icon>
 					</div>
-					<div class="teamname">{{formatTeamName(match.team2,teams)}}</div>
+					<div class="teamname flex">{{formatTeamName(match.team2,teams)}}</div>
 				</div>
 				<div class="buttons">
 					<paper-button raised class="primary" on-tap="formSubmit">Save</paper-button>
-					<input type="submit" class="hidden">
+					<button type="submit" class="hidden">Save</button>
 				</div>
 			</form>
 		</prono-dialog>

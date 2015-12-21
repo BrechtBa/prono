@@ -264,7 +264,7 @@
 				var headers = request.xhr.getAllResponseHeaders();
 				app.$.model.fire('get-matches');
 			},
-			deleteTeam: function(){
+			deleteMatch: function(){
 				this.$.ajaxDelete.url = 'api/index.php/matches/'+this.match.id;
 				this.$.ajaxDelete.headers['Authentication'] = this.token;
 				this.$.ajaxDelete.generateRequest();
