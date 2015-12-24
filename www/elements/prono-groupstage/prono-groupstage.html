@@ -33,6 +33,16 @@
 				width: 100%;
 				max-width: 360px;
 			}
+			.disabled .group::after{
+				content: "";
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background-color: rgba(1,1,1,0.3);
+				border-radius: 2px;
+			}
 			paper-material h3{
 				margin-top: 0px;
 			}
@@ -52,7 +62,7 @@
 			}
 		</style>
 		<parse-token token="{{token}}" payload="{{tokenPayload}}"></parse-token>
-		<div class="horizontal layout wrap center-justified">
+		<div class$="{{disabledClass(currentStage,user)}} horizontal layout wrap center-justified">
 
 			<template is="dom-repeat" items="{{groups}}">
 				<paper-material elevation="2" class="group vertical layout">
@@ -107,6 +117,11 @@
 					notify: true,
 					value: []
 				},
+				currentStage:{
+					type: 'Number',
+					notify: true,
+					value: -1
+				}
 			},
 			ready: function(){
 			},
@@ -119,7 +134,7 @@
 						this.$.editScore.open();
 					}
 				}
-				else{
+				else if(this.currentStage==0){
 					this.score = {'score1':-1,'score2':-1};
 					that = this;
 					// find the match in the bets list
@@ -135,6 +150,14 @@
 				return function(item){
 					return (item.grp == id);
 			  	};
+			},
+			disabledClass: function(currentStage,user){
+				if(currentStage==0 || user==0){
+					return '';
+				}
+				else{
+					return 'disabled';
+				}
 			},
 			getTeam: function(id,teams){
 				var team = {};

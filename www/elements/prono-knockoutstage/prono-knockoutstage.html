@@ -104,7 +104,7 @@
 		<div class="horizontal layout center-justified">
 			<div class="flex horizontal layout center">
 				<template is="dom-repeat" items="{{getStages(matchess)}}" as="stage">
-					<div class$="stage {{stageClass(stage)}} {{collapsedClass(stage,expandedStage)}} {{disabledClass(stage,currentStage)}} vertical-layout ">
+					<div class$="stage {{stageClass(stage)}} {{collapsedClass(stage,expandedStage)}} {{disabledClass(stage,currentStage,user)}} vertical-layout ">
 						<template is="dom-repeat" items="{{stage.matches}}" as="match">
 							
 							<template is="dom-if" if="{{addSpacerBefore(stage,match)}}">
@@ -251,8 +251,8 @@
 			stageClass: function(stage){
 				return 'stage-'+stage.id;
 			},
-			disabledClass: function(stage,currentStage){
-				if(stage.id==currentStage || this.user==0){
+			disabledClass: function(stage,currentStage,user){
+				if(stage.id==currentStage || user==0){
 					return '';
 				}
 				else{
