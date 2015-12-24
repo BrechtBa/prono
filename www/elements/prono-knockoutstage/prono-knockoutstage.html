@@ -1,0 +1,403 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animations.html">
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
+
+<link rel="import" href="../../elements/parse-token/parse-token.html">
+<link rel="import" href="../../elements/prono-score-dialog/prono-score-dialog.html">
+<link rel="import" href="../../elements/prono-team-name/prono-team-name.html">
+<link rel="import" href="../../elements/prono-team-icon/prono-team-icon.html">
+
+<dom-module id="prono-knockoutstage">
+	<template>
+
+		<style>
+			:host{
+				display: block;
+				width: 100%;
+			}
+			.stage{
+				transition: width 0.5s;
+				-webkit-transition: width 0.5s;
+			}
+			.stage.expanded{
+				@apply(--layout-flex-7);
+			}
+			.stage.collapsed{
+				@apply(--layout-flex-2);
+			}
+			paper-material{
+      			margin: 5px;
+				padding: 0px;
+				background: var(--background-secondary-color);
+				color: var(--text-secondary-color);
+				border-radius: 2px;
+    		}
+			paper-material h3{
+				margin-top: 0px;
+			}
+
+			.match{
+				height: 80px;
+				cursor: pointer;
+				overflow: hidden;
+				text-align: center;
+			}
+			.disabled .match::after{
+				content: "";
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background-color: rgba(1,1,1,0.3);
+				border-radius: 2px;
+			}
+			.spacer{
+				height: 80px;
+			}
+			.stage-4 .spacer{
+				height: 50px;
+			}
+			@media (min-height: 521px){
+				.match{
+					height: 120px;
+				}
+				.spacer{
+					height: 120px;
+				}
+				.stage-4 .spacer{
+					height: 80px;
+				}
+			}
+			.score{
+				text-align: center;
+			}
+			.dash{
+				width: 15px;
+			}
+			.teamicon{
+				width: 90%;
+				max-width: 30px;
+				height: auto;
+				margin-top: 5px;
+				margin-bottom: 5px;
+			}
+
+			.teamname{
+				text-align: center;
+				margin-top: 5px;
+				margin-bottom: 5px;
+			}
+			.teamname.left{
+			}
+			.teamname.right{
+			}
+		</style>
+		<parse-token token="{{token}}" payload="{{tokenPayload}}"></parse-token>
+
+		<div class="horizontal layout center-justified">
+			<div class="flex horizontal layout center">
+				<template is="dom-repeat" items="{{getStages(matchess)}}" as="stage">
+					<div class$="stage {{stageClass(stage)}} {{collapsedClass(stage,expandedStage)}} {{disabledClass(stage,currentStage)}} vertical-layout ">
+						<template is="dom-repeat" items="{{stage.matches}}" as="match">
+							
+							<template is="dom-if" if="{{addSpacerBefore(stage,match)}}">
+								<div class="spacer"></div>
+							</template>
+
+							<paper-material elevation="2" class="match vertical layout" on-tap="editScore">
+								<div class="teamname left" hidden="{{hideTeamName(stage,expandedStage)}}">
+									<prono-team-name team="{{getTeam(match.team1,teams)}}" default="{{match.defaultteam1}}" abr="{{abreviateTeamName(stage,expandedStage)}}"></prono-team-name>
+								</div>
+								<div class$="flex {{iconLayoutClass(stage,expandedStage)}} layout center center-justified">
+									<div class="flex">
+										<prono-team-icon class="teamicon" team="{{getTeam(match.team1,teams)}}"></prono-team-icon>
+									</div>
+									<div class$="score flex {{scoreLayoutClass(stage,expandedStage)}} layout center center-justified">
+										<div>{{getScore1(match,user,betsScore)}}</div>
+										<div class="dash">-</div>
+										<div>{{getScore2(match,user,betsScore)}}</div>
+									</div>
+									<div class="flex">
+										<prono-team-icon class="teamicon" team="{{getTeam(match.team2,teams)}}"></prono-team-icon>
+									</div>
+								</div>
+								<div class="teamname right" hidden="{{hideTeamName(stage,expandedStage)}}">
+									<prono-team-name team="{{getTeam(match.team2,teams)}}" default="{{match.defaultteam2}}" abr="{{abreviateTeamName(stage,expandedStage)}}"></prono-team-name>
+								</div>
+							</paper-material>
+							
+							<template is="dom-if" if="{{addSpacerAfter(stage,match)}}">
+								<div class="spacer"></div>
+							</template>
+
+
+						</template>
+					</div>
+				</template>
+			</div>
+
+
+		<prono-score-dialog id="editScore" teams="{{teams}}" token="{{token}}" match="{{match}}" score="{{score}}" user="{{user}}"></prono-score-dialog>
+	</template>
+
+	<script>
+		Polymer({
+			is: 'prono-knockoutstage',
+			properties: {
+				token: {
+					type: 'String',
+					value: '',
+					notify: true
+				},
+				user: {
+					type: 'Number',
+					notify: true,
+					value: 0
+				},
+				teams: {
+					type: 'Array',
+					notify: true
+				},
+				groups: {
+					type: 'Array',
+					notify: true
+				},
+				matchess: {
+					type: 'Array',
+					notify: true
+				},
+				betsScore: {
+					type: 'Array',
+					notify: true,
+					value: []
+				},
+				currentStage:{
+					type: 'Number',
+					notify: true,
+					value: -1
+				}	
+			},
+			ready: function(){
+				this.expandedStage = 0;
+			},
+			getStages: function(matches){
+				var tempstages = []
+				matches.forEach(function(item){
+					if(item.stage>0 && tempstages.indexOf(item.stage)<0 && item.stage>2){
+						tempstages.push(item.stage);
+					}
+				});
+
+				// sort tempstages
+				tempstages.sort(function(a, b){return a-b}).reverse();
+				this.expandedStage = tempstages[0];
+
+
+
+				var stages = []
+
+				//left side
+				tempstages.forEach(function(stage){
+					var tempmatches = [];
+					matches.forEach(function(match){
+						if(match.stage == stage && match.position < stage/4+1){
+							tempmatches.push(match);
+						}
+					});
+					stages.push({'id':stage-0,'matches':tempmatches,'side':'left'});
+				});
+
+				//final
+				var stage = 2;
+				var teams = [];
+				var tempmatches = [];
+				matches.forEach(function(match){
+					if(match.stage == stage){
+						tempmatches.push(match);
+					}
+				});
+				stages.push({'id':stage-0,'matches':tempmatches,'side':'final'});
+
+				//right side
+				tempstages.reverse().forEach(function(stage){		
+					var tempmatches = [];
+					matches.forEach(function(match){
+						if(match.stage == stage && match.position > stage/4){
+							tempmatches.push(match);
+						}
+					});
+					stages.push({'id':stage-0,'matches':tempmatches,'side':'right'});
+				});
+
+				return stages;
+			},
+			addSpacerAfter: function(stage,match){
+				return ( (stage.id==8 && (match.position==1 || match.position==3)) || (stage.id==4 && match.position==1) );
+			},
+			addSpacerBefore: function(stage,match){
+				return ( (stage.id==4 && match.position==2) );
+			},
+			stageClass: function(stage){
+				return 'stage-'+stage.id;
+			},
+			disabledClass: function(stage,currentStage){
+				if(stage.id==currentStage || this.user==0){
+					return '';
+				}
+				else{
+					return 'disabled';
+				}
+			},
+			isCollapsed: function(stage,expandedStage){
+				return (stage.id != expandedStage);
+			},
+			collapsedClass: function(stage,expandedStage){
+				if(this.isCollapsed(stage,expandedStage) && this.isSmall()){
+					return 'collapsed';
+				}
+				else{
+					return 'expanded';
+				}
+			},
+			isTiny: function(){
+				var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+				return (w<500);
+			},
+			isSmall: function(){
+				var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+				return (w<1200);
+			},
+			hideTeamName: function(stage,expandedStage){
+				return (this.isTiny() && this.isCollapsed(stage,expandedStage));
+			},
+			abreviateTeamName: function(stage,expandedStage){
+				return (this.isSmall() && this.isCollapsed(stage,expandedStage));
+			},
+			iconLayoutClass: function(stage,expandedStage){
+				if(this.isTiny()){
+					return 'vertical';
+				}
+				else if(this.isSmall() && this.isCollapsed(stage,expandedStage)){
+					return 'vertical';
+				}
+				else{
+					return 'horizontal';
+				}
+			},
+			scoreLayoutClass: function(stage,expandedStage){
+				if(this.isTiny() && this.isCollapsed(stage,expandedStage)){
+					return 'vertical';
+				}
+				else{
+					return 'horizontal';
+				}
+			},
+			expandStage: function(stage){
+				this.expandedStage = stage;
+			},
+			editScore: function(e){
+				this.match = e.model.__data__.match;
+				if(this.match.stage == this.expandedStage || !this.isSmall()){
+					if(this.user==0){
+						// check permission
+						if(this.tokenPayload.permission > 5){ 
+							this.score = {'score1':this.match.score1,'score2':this.match.score2};
+							this.$.editScore.open();
+						}
+					}
+					else if(this.match.stage==this.currentStage){
+						this.score = {'score1':-1,'score2':-1};
+						that = this;
+						// find the match in the bets list
+						this.betsScore.forEach(function(item){
+							if(item.match_id==that.match.id){
+								that.score = {'score1':item.score1,'score2':item.score2};
+							}
+						});
+						this.$.editScore.open();
+					}
+				}
+				else{
+					this.expandedStage = this.match.stage;
+				}
+			},
+
+			formatTeamName: function(id,teams){
+				var name = '';
+				teams.forEach(function(item){
+					if(item.id == id){
+						name = item.name;
+					}
+				});
+				return name;
+			},
+			getTeam: function(id,teams){
+				var team = {};
+				teams.forEach(function(item){
+					if(item.id == id){					
+						team = item;
+					}
+				});
+				return team;
+			},
+			formatScore: function(score){
+				var val = '';
+				if(score<0){
+					val = '';
+				}
+				else{
+					val = score;
+				}
+				return val;
+			},
+			getScore1: function(match,user,betsScore){
+				var score = -1;
+				if(user==0){
+					score = match.score1;
+				}
+				else{
+					betsScore.forEach(function(item){
+						if(item.match_id == match.id){
+							score = item.score1
+						}
+					});
+				}
+				return this.formatScore(score);
+			},
+			getScore2: function(match,user,betsScore){
+				var score = -1;
+				if(user==0){
+					score = match.score2;	
+				}
+				else{
+					betsScore.forEach(function(item){
+						if(item.match_id == match.id){
+							score = item.score2
+						}
+					});
+				}
+				return this.formatScore(score);
+			},
+			_sortMatches: function(a, b) {  
+  
+				if(parseInt(a.date) > parseInt(b.date)){
+					return 1;
+				}
+				else if(parseInt(a.date) < parseInt(b.date)){
+					return -1;
+				}
+				else{
+					return 0;
+				}
+			},
+		});
+	</script>
+
+</dom-module>

@@ -9,7 +9,8 @@
 <link rel="import" href="../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
 
 <link rel="import" href="../../elements/parse-token/parse-token.html">
-<link rel="import" href="../../elements/prono-score-dialog/prono-score-dialog.html"
+<link rel="import" href="../../elements/prono-score-dialog/prono-score-dialog.html">
+<link rel="import" href="../../elements/prono-team-name/prono-team-name.html">
 <link rel="import" href="../../elements/prono-team-icon/prono-team-icon.html">
 
 <dom-module id="prono-groupstage">
@@ -49,13 +50,6 @@
 			.teamname.right{
 				text-align: right;
 			}
-			.closeDialog{
-				position: absolute;
-				top: 5px;
-				right: -15px;
-				margin: 0px;
-				cursor: pointer;
-			}
 		</style>
 		<parse-token token="{{token}}" payload="{{tokenPayload}}"></parse-token>
 		<div class="horizontal layout wrap center-justified">
@@ -66,11 +60,11 @@
 					<div class="matches">
 						<template is="dom-repeat" items="{{matchess}}" filter="{{filterGroupMatches(item.id)}}">
 							<div class="match horizontal layout center center-justified" on-tap="editScore">
-								<div class="teamname left flex">{{formatTeamName(item.team1,teams)}}</div>
+								<div class="teamname left flex"><prono-team-name team="{{getTeam(item.team1,teams)}}" default="{{item.defaultteam1}}"></prono-team-name></div>
 								<div><prono-team-icon class="teamicon" team="{{getTeam(item.team1,teams)}}"></prono-team-icon></div>
 								<div class="score">{{getScore1(item,user,betsScore)}} - {{getScore2(item,user,betsScore)}}</div>
 								<div><prono-team-icon class="teamicon" team="{{getTeam(item.team2,teams)}}"></prono-team-icon></div>
-								<div class="teamname right flex">{{formatTeamName(item.team2,teams)}}</div>
+								<div class="teamname right flex"><prono-team-name team="{{getTeam(item.team2,teams)}}" default="{{item.defaultteam2}}"></prono-team-name></div>
 							</div>
 						</template>
 					</div>
@@ -116,9 +110,6 @@
 			},
 			ready: function(){
 			},
-			closeDialog: function(){
-				this.$.editScore.close();
-			},
 			editScore: function(e){
 				this.match = e.model.__data__.item;
 				if(this.user==0){
@@ -144,15 +135,6 @@
 				return function(item){
 					return (item.grp == id);
 			  	};
-			},
-			formatTeamName: function(id,teams){
-				var name = '';
-				teams.forEach(function(item){
-					if(item.id == id){
-						name = item.name;
-					}
-				});
-				return name;
 			},
 			getTeam: function(id,teams){
 				var team = {};
