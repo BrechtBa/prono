@@ -26,7 +26,7 @@
 				-webkit-transition: width 0.5s;
 			}
 			.stage.expanded{
-				@apply(--layout-flex-7);
+				@apply(--layout-flex-5);
 			}
 			.stage.collapsed{
 				@apply(--layout-flex-2);
@@ -197,8 +197,12 @@
 
 				// sort tempstages
 				tempstages.sort(function(a, b){return a-b}).reverse();
-				this.expandedStage = tempstages[0];
-
+				if(tempstages.indexOf(this.currentStage)<0){
+					this.expandedStage = tempstages[0];
+				}
+				else{
+					this.expandedStage = this.currentStage;
+				}
 
 
 				var stages = []
@@ -274,8 +278,12 @@
 				var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
 				return (w<1200);
 			},
+			isLow: function(){
+				var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+				return (h<400);
+			},
 			hideTeamName: function(stage,expandedStage){
-				return (this.isTiny() && this.isCollapsed(stage,expandedStage));
+				return ( (this.isTiny() || this.isLow()) && this.isCollapsed(stage,expandedStage));
 			},
 			abreviateTeamName: function(stage,expandedStage){
 				return (this.isSmall() && this.isCollapsed(stage,expandedStage));
