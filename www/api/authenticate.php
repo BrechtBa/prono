@@ -37,10 +37,10 @@
 			$result = jwt_decode(getallheaders()['authentication']);
 		}
 
+		
 		if( $result['status'] == 1 && $result['exp'] <= time() ){
 			// the token is valid and a new token can be requested
-			$payload = ['user_id'=>$result['payload']['id'],'permission'=>$result['payload']['permission']];
-			$settoken = true;
+			$payload = ['user_id'=>$result['payload']['user_id'],'permission'=>$result['payload']['permission']];
 		}
 	}
 
