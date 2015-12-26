@@ -15,8 +15,8 @@
 		$result = jwt_decode(getallheaders()['authentication']);
 	}
 
-	//$result = ['status'=>1, 'payload'=>['user_id'=>1,'permission'=>1,'valid_uri'=>['POST' => ['*'], 'GET' => ['*'], 'PUT' => ['*'], 'DELETE' => []],'valid_data'=>['user_id'=>1]]];
-	if( $result['status'] == 1 ){
+	//$result = ['status'=>1, 'payload'=>['user_id'=>1,'permission'=>1,'exp'=>1233456789,'db_exp'=>1233456789,'valid_uri'=>['POST' => ['*'], 'GET' => ['*'], 'PUT' => ['*'], 'DELETE' => []],'valid_data'=>['user_id'=>1]]];
+	if( $result['status'] == 1 && $result['exp']<= time() && $result['db_exp']<= time() ){
 		// set valid uri from payload
 		$valid_uri = $result['payload']['valid_uri'];
 		$valid_data = $result['payload']['valid_data'];
