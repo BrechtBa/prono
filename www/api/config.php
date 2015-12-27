@@ -12,8 +12,66 @@
 	define("DEFAULT_PERMISSION", 1);
 	
 
+
+	// Perform actions to set the payload
 	$exp = time()+60*24*3600;
-	$db_exp = time()+1*3600;
+
+
+	//connect to the database
+	$db = new PDO('mysql:host='.MYSQL_HOST.';dbname='.MYSQL_DATABASE.';charset=utf8', MYSQL_USER, MYSQL_PASSWORD);
+	// set the PDO error mode to exception
+	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+
+
+	// get the current stage
+	$temp = [];
+	$stage = -1;
+	$db_exp = $exp;
+	$tempstages = array(0, 16, 8, 4, 2);
+	foreach( $tempstages as $tempstage){
+		// check if all matches of the stage are in the future
+		$query = sprintf( "SELECT count(*) FROM matches WHERE stage='%s'", $tempstage );
+		$stmt = $db->prepare($query);
+		$stmt->execute(); 
+		$number1 = $stmt->fetchColumn();
+
+		$query = sprintf( "SELECT count(*) FROM matches WHERE stage='%s' AND date>'%s'", $tempstage, time()+3600 );
+		$stmt = $db->prepare($query);
+		$stmt->execute(); 
+		$number2 = $stmt->fetchColumn();
+
+		if( $number1 == $number2 ){
+			// set user data in the json web token
+			$stage = $tempstage;
+			
+			// get the 1st match of the stage
+			$query = sprintf( "SELECT * FROM matches WHERE stage='%s' ORDER BY date LIMIT 1" ,$tempstage );
+			$stmt = $db->query($query);
+			$stmt->setFetchMode(PDO::FETCH_ASSOC);
+			if( $match = $stmt->fetch() ){
+				$db_exp = $match['date']-1*3600;
+			}
+			break;
+		}
+
+	}
+
+
+
+
+	// close the database connection
+	$db = null;
+
+	
+
+	// JWT data
+	// data is placed in the jwt payload under the specified field
+	// keys can not match "exp", "", "user_id", "permission", "valid_uri" or "valid_data"
+	// example :
+	// $jwt_data = ['mydata' => 5];
+	$jwt_data = ['stage' => $stage];
+
 
 
 
@@ -45,10 +103,5 @@
                   ];
 
 
-	// JWT data
-	// data is placed in the jwt payload under the specified field
-	// keys can not match "exp", "", "user_id", "permission", "valid_uri" or "valid_data"
-	// example :
-	// $jwt_data = ['mydata' => 5];
-	$jwt_data = [];
+
 ?>

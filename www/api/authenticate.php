@@ -26,6 +26,11 @@
 		if( $user = $stmt->fetch() ){
 			// set user data in the json web token
 			$payload = ['user_id'=>$user['id'],'permission'=>$user['permission']];
+
+			// add expiration data
+			foreach($expires as $key => $val){
+				$payload[$key] = $val;
+			}
 		}
 		$db = null;
 	}
@@ -40,18 +45,20 @@
 		
 		if( $result['status'] == 1 && $result['exp'] <= time() ){
 			// the token is valid and a new token can be requested
-			$payload = ['user_id'=>$result['payload']['user_id'],'permission'=>$result['payload']['permission']];
+			$payload = [ 'user_id'=>$result['payload']['user_id'] , 'permission'=>$result['payload']['permission'] ];
+
+			// add expiration data
+			foreach($expires as $key => $val){
+				$payload[$key] = $val;
+			}
+			// keep the old expiration date
+			$payload['exp'] = $result['payload']['exp'];
 		}
 	}
 
 
 	// add data to the token payload
 	if( isset($payload['user_id']) ){
-
-		// add expiration data
-		foreach($expires as $key => $val){
-			$payload[$key] = $val;
-		}
 
 		// parse the valid uri's to replace %s with the user id
 		$user_valid_uri = [];
