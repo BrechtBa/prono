@@ -108,7 +108,7 @@
 					this.$.ajaxPut.url = 'api/index.php/matches/'+this.match.id;
 				}
 				else{
-					this.$.ajaxPut.url = 'api/index.php/bets_score/match_id/'+this.match.id+'/user_id/'+this.user;
+					this.$.ajaxPut.url = 'api/index.php/bets_score/user_id/'+this.user+'/match_id/'+this.match.id;
 				}
 				this.$.ajaxPut.headers['Authentication'] = this.token;
 

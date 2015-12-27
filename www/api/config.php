@@ -22,8 +22,6 @@
 	// set the PDO error mode to exception
 	$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-
-
 	// get the current stage
 	$temp = [];
 	$stage = -1;
@@ -57,6 +55,14 @@
 
 	}
 
+	// get all matches of the current stage
+	$query = sprintf( "SELECT * FROM matches WHERE stage='%s'" ,$stage);
+	$stmt = $db->query($query);
+	$stmt->setFetchMode(PDO::FETCH_ASSOC);
+	$matches = [];
+	while($row = $stmt->fetch()){
+		$matches[] = $row;
+	}
 
 
 
@@ -85,10 +91,17 @@
 	// all uri's are checked to be allowed according to the values below and the user permission
     // the valid request strings will be parsed using sprintf( ,$user['id'])
 	// '*' implies all requests are valid
-	$valid_uri = [1 => ['POST' => ['table_b'], 
-                        'GET' => ['teams','matches','groups','table_b/user_id/%s'],
-                        'PUT' => ['table_b/user_id/%s'],
-                        'DELETE' => ['table_b/user_id/%s']],
+	$put = [];
+	foreach( $matches as $match){
+		//$put[] = sprintf('bets_score/match_id/%s/user_id/%s',$match['id']);
+		$put[] = 'bets_score/user_id/%s/match_id/'.$match['id'];
+	
+	}
+
+	$valid_uri = [1 => ['POST' => ['bets_score'], 
+                        'GET' => ['teams','matches','groups','bets_score/user_id/%s'],
+                        'PUT' => $put,
+                        'DELETE' => ['']],
 				  9 => ['POST' => ['*'],
 						'GET' => ['*'],
 					    'PUT' => ['*'],

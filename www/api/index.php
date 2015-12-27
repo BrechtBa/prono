@@ -66,7 +66,7 @@
 					}
 					if($valid){
 						// generate query
-						$query = sprintf( "INSERT INTO %s (%s)  VALUES (%s)" ,$loc[0],implode(',',$keys),implode(',',$vals) );
+						$query = sprintf( "INSERT INTO %s (%s) VALUES (%s)" ,$loc[0],implode(',',$keys),implode(',',$vals) );
 						$stmt = $db->prepare($query);
 						$stmt->execute();
 

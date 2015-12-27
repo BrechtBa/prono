@@ -13,8 +13,10 @@
 		<parse-token token="{{token}}" payload="{{tokenPayload}}"></parse-token>
 		<iron-ajax id="getTeams" url="../../api/index.php/teams" method="GET" handle-as="json" last-response="{{teams}}" debounce-duration="300"></iron-ajax>
 		<iron-ajax id="getGroups" url="../../api/index.php/groups" method="GET" handle-as="json" last-response="{{groups}}" debounce-duration="300"></iron-ajax>
-		<iron-ajax id="getMatches" url="../../api/index.php/matches" method="GET" handle-as="json" last-response="{{matchess}}" debounce-duration="300"></iron-ajax>
-		<iron-ajax id="getBetsScore" url="../../api/index.php/bets_score" method="GET" handle-as="json" last-response="{{betsScore}}" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="getMatches" url="../../api/index.php/matches" method="GET" handle-as="json" last-response="{{matchess}}" on-response="handleGetMatchesResponse"  debounce-duration="300"></iron-ajax>
+		<iron-ajax id="getBetsScore" url="../../api/index.php/bets_score" method="GET" handle-as="json" last-response="{{betsScore}}" on-response="handleGetBetsScoreResponse" debounce-duration="300"></iron-ajax>
+		
+		<iron-ajax id="postBetsScore" url="../../api/index.php/bets_score" method="POST" handle-as="json" last-response="{{betsScore}}" debounce-duration="300"></iron-ajax>
 		
 	</template>
 
@@ -30,18 +32,22 @@
 				},
 				groups: {
 					type: 'Array',
+					value: [],
 					notify: true
 				},
 				teams: {
 					type: 'Array',
+					value: [],
 					notify: true
 				},
 				matchess: {
 					type: 'Array',
+					value: [],
 					notify: true
 				},
 				betsScore: {
 					type: 'Array',
+					value: [],
 					notify: true
 				},
 			},
@@ -56,7 +62,6 @@
 					this.getTeams();
 					this.getGroups();
 					this.getMatches();
-					this.getBetsScore();
 				}
 				else{
 					this.teams = [];
@@ -80,11 +85,34 @@
 				this.$.getMatches.headers['Authentication'] = this.token;
 				this.$.getMatches.generateRequest();
 			},
+			handleGetMatchesResponse: function(){
+				this.getBetsScore();
+			},
 			getBetsScore: function(){
 				console.log('getting bets score for user ' +this.tokenPayload.user_id);
 				this.$.getBetsScore.headers['Authentication'] = this.token;
 				this.$.getBetsScore.url = 'api/index.php/bets_score/user_id/'+this.tokenPayload.user_id
 				this.$.getBetsScore.generateRequest();
+			},
+			handleGetBetsScoreResponse: function(){
+				that = this;
+				that.matchess.forEach(function(match){
+					// check if the match_id is in betsScore
+					var found = false;
+					that.betsScore.forEach(function(bet){
+						if(bet.match_id == match.id){
+							found = true;
+						}
+					});
+
+					if(!found){
+						// post the match
+						that.$.postBetsScore.headers['Authentication'] = that.token;
+						that.$.postBetsScore.url = 'api/index.php/bets_score';
+						that.$.postBetsScore.body = JSON.stringify({'user_id':that.tokenPayload.user_id,'match_id':match.id,'score1':-1,'score2':-1,'penalty1':-1,'penalty2':-1});
+						that.$.postBetsScore.generateRequest();
+					}
+				});
 			}
 		});
 	</script>
