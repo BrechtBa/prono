@@ -124,6 +124,7 @@
 
 							<section class="page" data-route="ranking">
 								<h2 class="page-title">Ranking</h2>
+								<prono-ranking token="{{token}}" users="{{users}}"></prono-ranking>
 							</section>
 
 							<section class="page" data-route="pron">
@@ -170,7 +171,7 @@
 
 			<renew-token token="{{token}}"></renew-token>
 			<parse-token token="{{token}}" payload="{{tokenPayload}}"></parse-token>
-			<prono-model id="model" token="{{token}}" teams="{{teams}}" groups="{{groups}}" matchess="{{matchess}}" bets-score="{{betsScore}}"></prono-model>
+			<prono-model id="model" token="{{token}}" teams="{{teams}}" groups="{{groups}}" matchess="{{matchess}}" bets-score="{{betsScore}}" rules="{{rules}}" users="{{users}}"></prono-model>
 
 		</template>
 

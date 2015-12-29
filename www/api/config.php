@@ -99,7 +99,7 @@
 	}
 
 	$valid_uri = [1 => ['POST' => ['bets_score'], 
-                        'GET' => ['teams','matches','groups','bets_score/user_id/%s'],
+                        'GET' => ['teams','matches','groups','bets_score/user_id/%s','user_profiles'],
                         'PUT' => $put,
                         'DELETE' => ['']],
 				  9 => ['POST' => ['*'],

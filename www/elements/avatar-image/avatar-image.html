@@ -1,0 +1,40 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module is="avatar-image">
+	<template>
+		<style>
+			:host{
+				display: inline-block;
+			}
+		    img{
+				height: var(--size, 40px); 
+				width: var(--size, 40px); 
+				border-radius: var(--border-radius, 20px); 
+				box-sizing: border-box;
+				background-color: var(--background-color, #dddddd); 
+			}
+		</style>
+
+		<img src="{{getSrc(user)}}">
+	
+	</template>
+	<script>
+		Polymer({
+			is: 'avatar-image',
+			properties: {
+				user: {
+					type: 'Object',
+					value: {}
+				}
+			},
+			getSrc: function(user){
+				var src = 'images/avatars/_blank.png';
+				if(typeof user != 'undefined' && user != {} && user.avatar !=''){
+					src = user.avatar;
+				}
+				return src;
+			}
+		});
+	</script>
+</dom-module>
