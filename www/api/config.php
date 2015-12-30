@@ -91,16 +91,21 @@
 	// all uri's are checked to be allowed according to the values below and the user permission
     // the valid request strings will be parsed using sprintf( ,$user['id'])
 	// '*' implies all requests are valid
-	$put = [];
+	$put1 = [];
+
+	$put1[] = 'user_profiles/user_id/%s';
+	if($stage==0){
+		$put1[] = 'bets_team/user_id/%s';
+		$put1[] = 'bets_stage/user_id/%s';
+		$put1[] = 'bets_number/user_id/%s';
+	}	
 	foreach( $matches as $match){
-		//$put[] = sprintf('bets_score/match_id/%s/user_id/%s',$match['id']);
-		$put[] = 'bets_score/user_id/%s/match_id/'.$match['id'];
-	
+		$put1[] = 'bets_score/user_id/%s/match_id/'.$match['id'];
 	}
 
-	$valid_uri = [1 => ['POST' => ['bets_score'], 
+	$valid_uri = [1 => ['POST' => ['bets_score','user_profiles'], 
                         'GET' => ['teams','matches','groups','bets_score/user_id/%s','user_profiles'],
-                        'PUT' => $put,
+                        'PUT' => $put1,
                         'DELETE' => ['']],
 				  9 => ['POST' => ['*'],
 						'GET' => ['*'],

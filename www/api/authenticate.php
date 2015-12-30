@@ -25,7 +25,7 @@
 
 		if( $user = $stmt->fetch() ){
 			// set user data in the json web token
-			$payload = ['user_id'=>$user['id'],'permission'=>$user['permission']];
+			$payload = ['user_id'=>$user['id'], 'login'=>$user['login'], 'permission'=>$user['permission']];
 
 			// add expiration data
 			foreach($expires as $key => $val){
@@ -45,7 +45,7 @@
 		
 		if( $result['status'] == 1 && $result['exp'] <= time() ){
 			// the token is valid and a new token can be requested
-			$payload = [ 'user_id'=>$result['payload']['user_id'] , 'permission'=>$result['payload']['permission'] ];
+			$payload = [ 'user_id'=>$result['payload']['user_id'], 'login'=>$result['payload']['login']  , 'permission'=>$result['payload']['permission'] ];
 
 			// add expiration data
 			foreach($expires as $key => $val){

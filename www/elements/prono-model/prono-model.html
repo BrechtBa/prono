@@ -17,11 +17,12 @@
 		<iron-ajax id="getMatches" url="../../api/index.php/matches" method="GET" handle-as="json" last-response="{{matchess}}" on-response="handleGetMatchesResponse"  debounce-duration="300"></iron-ajax>
 		<iron-ajax id="getBetsScore" url="../../api/index.php/bets_score" method="GET" handle-as="json" last-response="{{betsScore}}" on-response="handleGetBetsScoreResponse" debounce-duration="300"></iron-ajax>
 		
-		<iron-ajax id="postBetsScore" url="../../api/index.php/bets_score" method="POST" handle-as="json" last-response="{{betsScore}}" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="postBetsScore" url="../../api/index.php/bets_score" method="POST" handle-as="json" debounce-duration="300"></iron-ajax>
 		
 		<iron-ajax id="getRules" url="../../api/index.php/rules/1" method="GET" handle-as="json" last-response="{{rules}}" debounce-duration="300"></iron-ajax>
-		<iron-ajax id="getUsers" url="../../api/index.php/user_profiles" method="GET" handle-as="json" last-response="{{users}}" on-response="handleGetUsersResponse" debounce-duration="300"></iron-ajax>		
-		<iron-ajax id="putUsers" url="../../api/index.php/user_profiles" method="PUT" handle-as="json" on-response="handlePutUsersResponse" debounce-duration="300"></iron-ajax>		
+		<iron-ajax id="getUserProfiles" url="../../api/index.php/user_profiles" method="GET" handle-as="json" last-response="{{users}}" on-response="handleGetUserProfilesResponse" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="putUserProfiles" url="../../api/index.php/user_profiles" method="PUT" handle-as="json" on-response="handlePutUserProfilesResponse" debounce-duration="300"></iron-ajax>		
+		<iron-ajax id="postUserProfiles" url="../../api/index.php/user_profiles" method="POST" handle-as="json" on-response="handlePostUserProfiles" debounce-duration="300"></iron-ajax>
 		
 		<iron-ajax id="getAllBetsScore" url="../../api/index.php/bets_score" method="GET" handle-as="json" last-response="{{allBetsScore}}" on-response="handleGetAllBetsScoreResponse" debounce-duration="300"></iron-ajax>
 		
@@ -110,8 +111,8 @@
 			},
 			getUsers: function(){
 				console.log('getting users');
-				this.$.getUsers.headers['Authentication'] = this.token;
-				this.$.getUsers.generateRequest();
+				this.$.getUserProfiles.headers['Authentication'] = this.token;
+				this.$.getUserProfiles.generateRequest();
 			},
 			getTeams: function(){
 				console.log('getting teams');
@@ -140,13 +141,24 @@
 					this.$.getAllBetsScore.generateRequest();
 				}
 			},
-			handleGetUsersResponse: function(){
-				that = this;	
-				that.users.forEach(function(user){
-					if(user.user_id == that.tokenPayload.user_id){
-						that.user = user;
-					}
+			handleGetUserProfilesResponse: function(){
+				that = this;
+				var user = that.users.filter(function( item ) {
+					return item.user_id == that.tokenPayload.user_id;
 				});
+				if(user.length>0){
+					that.user = user[0];
+				}
+				else{
+					// the user has no profile, it must be created
+					that.$.postUserProfiles.headers['Authentication'] = that.token;
+					that.$.postUserProfiles.url = 'api/index.php/user_profiles';
+					that.$.postUserProfiles.body = JSON.stringify({'user_id': that.tokenPayload.user_id, 'name': that.tokenPayload.login, 'avatar': ''});
+					that.$.postUserProfiles.generateRequest();
+				}
+			},
+			handlePostUserProfiles: function(){
+				this.getUsers();
 			},
 			handleGetMatchesResponse: function(){
 				this.getBetsScore();
@@ -177,7 +189,7 @@
 			},
 			handleGetAllBetsScoreResponse: function(){
 			},
-			handlePutUsersResponse: function(){
+			handlePutUserProfilesResponse: function(){
 				this.getUsers();
 			},
 			calculatePoints: function(){
@@ -209,10 +221,10 @@
 							user.points = points;
 
 							// write points to database
-							that.$.putUsers.headers['Authentication'] = that.token;
-							that.$.putUsers.url = 'api/index.php/user_profiles/user_id/'+user.id;
-							that.$.putUsers.body = JSON.stringify({'points':points});
-							that.$.putUsers.generateRequest();
+							that.$.putUserProfiles.headers['Authentication'] = that.token;
+							that.$.putUserProfiles.url = 'api/index.php/user_profiles/user_id/'+user.id;
+							that.$.putUserProfiles.body = JSON.stringify({'points':points});
+							that.$.putUserProfiles.generateRequest();
 						});
 					}
 				}

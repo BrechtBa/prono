@@ -2,9 +2,13 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/iron-form/iron-form.html">
 
 <link rel="import" href="../../elements/avatar-image/avatar-image.html">
 <link rel="import" href="../../elements/file-input/file-input.html">
+<link rel="import" href="../../elements/custom-validator/custom-validator.html">
+<link rel="import" href="../../elements/default-dialog/default-dialog.html">
 
 <dom-module id="user-profile">
 	<template>
@@ -20,8 +24,10 @@
 				padding: 10px;
 				background: var(--background-secondary-color);
 				color: var(--text-secondary-color);
+				width: 100%;
     		}
 			.buttons{
+				margin-top: 20px;
 				text-align: right;
 			}
 			paper-button{
@@ -32,24 +38,21 @@
 				background: var(--button-background-primary-color);
 				color: var(--button-text-primary-color);
 			}
+			.avatar{
+				--size: 80px;
+				--radius: 40px;
+			}
 			.name{
 				padding: 10px;
 			}
 			.hidden{
 				display: none;
 			}
-			default-dialog .avatar{
-				--size: 80px;
-			}
 			
 		</style>
 
-		<!--<iron-ajax id="getUserProfile" url="../../api/index.php/user_profiles" method="GET" handle-as="json" last-response="{{ajaxGetResponse}}" debounce-duration="300"></iron-ajax>
-<iron-ajax id="ajaxDelete" method="DELETE" handle-as="json" on-response="handleAjaxDeleteResponse" last-response="{{ajaxDeleteResponse}}" debounce-duration="300"></iron-ajax>-->
-
 		<iron-ajax id="putUserProfile" method="PUT" handle-as="json" on-response="handlePutUserProfileResponse" last-response="{{putUserProfileResponse}}" debounce-duration="300"></iron-ajax>
 		
-
 		<paper-card elevation="2">
 			<div class="horizontal layout center">
 				<avatar-image class="avatar" user="{{user}}"></avatar-image>
@@ -82,7 +85,10 @@
 
 		<default-dialog id="changePasswordDialog">
 			<form is="iron-form" id="changePasswordForm" method="post" on-iron-form-submit="savePassword" action="/">
-				
+				<paper-input id="oldpassword" label="Old password:" type="password" required auto-validate error-message="required"></paper-input>
+				<paper-input id="newpassword" label="New password:" type="password" required auto-validate error-message="required"></paper-input>
+				<paper-input id="newpasswordrepeat" label="Repeat new Password:" type="password" required auto-validate error-message="does not match" validator="passwordValidator"></paper-input>
+				<custom-validator id="passwordValidator" validator-name="passwordValidator"></custom-validator>
 			</form>
 			<div class="buttons">
 				<paper-button raised class="primary" on-tap="changePasswordFormSubmit">Save</paper-button>
@@ -108,6 +114,7 @@
 				}
 			},
 			ready: function(){
+				this.$.passwordValidator.validate = this.passwordValidator.bind(this);
 			},
 			setNewAvatar: function(e,detail){
 				this.set('newuser.avatar', detail.url);
@@ -125,10 +132,10 @@
 				this.newuser = {'user_id': this.user.user_id, 'name': this.user.name, 'avatar': this.user.avatar};
 				this.$.changeProfileDialog.open();
 			},
-			changePasswordDialog: function(){
-				this.$.changePasswordDialog.open();
-			},
 			changeProfileFormSubmit: function(){
+				this.$.changeProfileForm.submit();
+			},
+			saveProfile: function(){
 				this.$.changeProfileDialog.close();
 
 				this.$.putUserProfile.headers['Authentication'] = this.token;
@@ -136,14 +143,36 @@
 				this.$.putUserProfile.body = JSON.stringify({'name': this.newuser.name, 'avatar': this.newuser.avatar});
 
 				this.$.putUserProfile.generateRequest();
-				
 			},
 			handlePutUserProfileResponse: function(){
 				this.set('user.name', this.newuser.name);
 				this.set('user.avatar', this.newuser.avatar);
 				app.$.model.fire('get-users');
-			}
+			},
+			changePasswordDialog: function(){
+				this.$.changePasswordDialog.open();
+			},
+			changePasswordFormSubmit: function(){
+				this.$.changePasswordForm.submit();
+			},
+			savePassword: function(){
+				this.$.changePasswordDialog.close();
 
+				/*this.$.putUserProfile.headers['Authentication'] = this.token;
+				this.$.putUserProfile.url = 'api/index.php/user_profiles/user_id/'+this.user.user_id;
+				this.$.putUserProfile.body = JSON.stringify({'name': this.newuser.name, 'avatar': this.newuser.avatar});
+
+				this.$.putUserProfile.generateRequest();*/
+
+			},
+			passwordValidator: function(){
+				if(this.$.newpassword.value == this.$.newpasswordrepeat.value){
+            		return true;
+				}
+				else{
+            		return false;
+				}
+			}
 		});
 	</script>
 
