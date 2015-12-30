@@ -20,7 +20,7 @@
 		<iron-ajax id="postBetsScore" url="../../api/index.php/bets_score" method="POST" handle-as="json" last-response="{{betsScore}}" debounce-duration="300"></iron-ajax>
 		
 		<iron-ajax id="getRules" url="../../api/index.php/rules/1" method="GET" handle-as="json" last-response="{{rules}}" debounce-duration="300"></iron-ajax>
-		<iron-ajax id="getUsers" url="../../api/index.php/user_profiles" method="GET" handle-as="json" last-response="{{users}}" debounce-duration="300"></iron-ajax>		
+		<iron-ajax id="getUsers" url="../../api/index.php/user_profiles" method="GET" handle-as="json" last-response="{{users}}" on-response="handleGetUsersResponse" debounce-duration="300"></iron-ajax>		
 		<iron-ajax id="putUsers" url="../../api/index.php/user_profiles" method="PUT" handle-as="json" on-response="handlePutUsersResponse" debounce-duration="300"></iron-ajax>		
 		
 		<iron-ajax id="getAllBetsScore" url="../../api/index.php/bets_score" method="GET" handle-as="json" last-response="{{allBetsScore}}" on-response="handleGetAllBetsScoreResponse" debounce-duration="300"></iron-ajax>
@@ -46,8 +46,11 @@
 				users: {
 					type: 'Array',
 					value: [],
-					notify: true,
-					observer: 'usersChanged'
+					notify: true
+				},
+				user: {
+					type: 'Object',
+					notify: true
 				},
 				groups: {
 					type: 'Array',
@@ -80,6 +83,7 @@
 				'get-groups': 'getGroups',
 				'get-matches': 'getMatches',
 				'get-bets-score': 'getBetsScore',
+				'get-users': 'getUsers',
 			},
 			tokenChanged: function(){
 				if( this.token != ''){
@@ -99,22 +103,10 @@
 					this.betsScore = [];
 				}
 			},
-			usersChanged: function(users, oldusers){
-				if( users!=[] && oldusers==[] ){
-					if(this.tokenPayload.permission>5){
-						console.log('go');
-						this.calculatePoints();
-					}
-				}
-			},
 			getRules: function(){
 				console.log('getting rules');
 				this.$.getRules.headers['Authentication'] = this.token;
 				this.$.getRules.generateRequest();
-
-				if(this.tokenPayload.permission>5){
-					this.calculatePoints();
-				}
 			},
 			getUsers: function(){
 				console.log('getting users');
@@ -136,13 +128,6 @@
 				this.$.getMatches.headers['Authentication'] = this.token;
 				this.$.getMatches.generateRequest();
 			},
-			handleGetMatchesResponse: function(){
-				this.getBetsScore();
-				
-				if(this.tokenPayload.permission>5){
-					this.calculatePoints();
-				}
-			},
 			getBetsScore: function(){
 				console.log('getting bets score for user ' +this.tokenPayload.user_id);
 				this.$.getBetsScore.headers['Authentication'] = this.token;
@@ -153,6 +138,21 @@
 				if(this.tokenPayload.permission>5){
 					this.$.getAllBetsScore.headers['Authentication'] = this.token;
 					this.$.getAllBetsScore.generateRequest();
+				}
+			},
+			handleGetUsersResponse: function(){
+				that = this;	
+				that.users.forEach(function(user){
+					if(user.user_id == that.tokenPayload.user_id){
+						that.user = user;
+					}
+				});
+			},
+			handleGetMatchesResponse: function(){
+				this.getBetsScore();
+				
+				if(this.tokenPayload.permission>5){
+					this.calculatePoints();
 				}
 			},
 			handleGetBetsScoreResponse: function(){
@@ -176,9 +176,6 @@
 				});
 			},
 			handleGetAllBetsScoreResponse: function(){
-				if(this.tokenPayload.permission>5){
-					this.calculatePoints();
-				}
 			},
 			handlePutUsersResponse: function(){
 				this.getUsers();
@@ -213,7 +210,7 @@
 
 							// write points to database
 							that.$.putUsers.headers['Authentication'] = that.token;
-							that.$.putUsers.url = 'api/index.php/user_profiles/'+user.id;
+							that.$.putUsers.url = 'api/index.php/user_profiles/user_id/'+user.id;
 							that.$.putUsers.body = JSON.stringify({'points':points});
 							that.$.putUsers.generateRequest();
 						});

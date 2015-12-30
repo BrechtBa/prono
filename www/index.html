@@ -81,6 +81,10 @@
 							<iron-icon icon="info"></iron-icon>
 							<span>Results</span>
 						</a>
+						<a data-route="profile" href="profile" hidden="{{!checkRoute('profile',token)}}">
+							<iron-icon icon="info"></iron-icon>
+							<span>Profile</span>
+						</a>
 						<a data-route="config" href="config" hidden="{{!checkRoute('config',token)}}">
 							<iron-icon icon="info"></iron-icon>
 							<span>Config</span>
@@ -143,8 +147,12 @@
 								<prono-knockoutstage token="{{token}}" teams="{{teams}}" groups="{{groups}}" matchess="{{matchess}}" user="0"></prono-knockoutstage>
 							</section>
 
+							<section class="page" data-route="profile">
+								<h2 class="page-title">Profile</h2>
+								<user-profile token="{{token}}" user="{{user}}"></user-profile>
+							</section>
+
 							<section class="page" data-route="config">
-								
 								<h2 class="page-title">Matches</h2>
 								<prono-matches-list token="{{token}}" teams="{{teams}}" groups="{{groups}}" matchess="{{matchess}}"></prono-matches-list>
 
@@ -152,7 +160,6 @@
 
 								<h2 class="page-title">Teams</h2>
 								<prono-teams-list token="{{token}}" teams="{{teams}}"></prono-teams-list>
-
 							</section>
 
 							<section class="page" data-route="users">
@@ -171,7 +178,7 @@
 
 			<renew-token token="{{token}}"></renew-token>
 			<parse-token token="{{token}}" payload="{{tokenPayload}}"></parse-token>
-			<prono-model id="model" token="{{token}}" teams="{{teams}}" groups="{{groups}}" matchess="{{matchess}}" bets-score="{{betsScore}}" rules="{{rules}}" users="{{users}}"></prono-model>
+			<prono-model id="model" token="{{token}}" teams="{{teams}}" groups="{{groups}}" matchess="{{matchess}}" bets-score="{{betsScore}}" rules="{{rules}}" users="{{users}}" user="{{user}}"></prono-model>
 
 		</template>
 

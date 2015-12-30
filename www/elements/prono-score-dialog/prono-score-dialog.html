@@ -4,7 +4,7 @@
 <link rel="import" href="../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 
-<link rel="import" href="../../elements/prono-dialog/prono-dialog.html">
+<link rel="import" href="../../elements/default-dialog/default-dialog.html">
 <link rel="import" href="../../elements/paper-number-input/paper-number-input.html">
 
 <dom-module is="prono-score-dialog">
@@ -47,7 +47,7 @@
 		
 		<iron-ajax id="ajaxPut" method="PUT" handle-as="json" on-response="handleAjaxPutResponse" last-response="{{ajaxPutResponse}}" debounce-duration="300"></iron-ajax>
 
-		<prono-dialog id="dialog">
+		<default-dialog id="dialog">
 			<form is="iron-form" id="form" method="post" on-iron-form-submit="save" action="/">
 				<div class="vertical layout center-justified">
 					<div class="teamname flex">{{formatTeamName(match.team1,teams)}}</div>
@@ -65,7 +65,7 @@
 					<button type="submit" class="hidden">Save</button>
 				</div>
 			</form>
-		</prono-dialog>
+		</default-dialog>
 			
 	</template>
 	<script>

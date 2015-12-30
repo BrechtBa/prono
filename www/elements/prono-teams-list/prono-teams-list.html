@@ -8,7 +8,7 @@
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
 
-<link rel="import" href="../../elements/prono-dialog/prono-dialog.html">
+<link rel="import" href="../../elements/default-dialog/default-dialog.html">
 <link rel="import" href="../../elements/prono-team-icon/prono-team-icon.html">
 
 <dom-module id="prono-teams-list">
@@ -67,7 +67,7 @@
 		</template>
 		<paper-button raised on-tap="addTeam">Add team</paper-button>
 
-		<prono-dialog id="editTeam">
+		<default-dialog id="editTeam">
 			<paper-input id="id" label="id:" value="{{newid}}"></paper-input>
 			<paper-input id="name" label="Name:" value="{{team.name}}"></paper-input>
 			<paper-input id="abr" label="Abreviation:" value="{{team.abr}}"></paper-input>
@@ -77,7 +77,7 @@
 				<paper-button raised class="primary" on-tap="saveTeam">Save</paper-button>
 				<paper-button raised on-tap="deleteTeam">Delete</paper-button>
 			</div>
-		</prono-dialog>
+		</default-dialog>
 	
 
 	</template>

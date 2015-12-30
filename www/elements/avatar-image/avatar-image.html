@@ -7,17 +7,19 @@
 			:host{
 				display: inline-block;
 			}
-		    img{
-				height: var(--size, 40px); 
-				width: var(--size, 40px); 
-				border-radius: var(--border-radius, 20px); 
-				box-sizing: border-box;
-				background-color: var(--background-color, #dddddd); 
+			.circular {
+				width: var(--size,40px);
+				height: var(--size,40px);
+				border-radius: var(--radius,20px);
+				-webkit-border-radius: var(--radius,20px);
+				-moz-border-radius: var(--radius,20px);
+				background-position: center center; 
+				background-size: cover !important;
 			}
 		</style>
 
-		<img src="{{getSrc(user)}}">
-	
+		<div class="circular" style$="background: url( {{getSrc(user.avatar)}} ) no-repeat;"></div>
+
 	</template>
 	<script>
 		Polymer({
@@ -26,14 +28,15 @@
 				user: {
 					type: 'Object',
 					value: {}
-				}
+				},
 			},
-			getSrc: function(user){
-				var src = 'images/avatars/_blank.png';
-				if(typeof user != 'undefined' && user != {} && user.avatar !=''){
-					src = user.avatar;
+			getSrc: function(src){
+				var temp = 'images/avatars/_blank.png';
+				
+				if(src != 'undefined' && src != ''){
+					temp = src;
 				}
-				return src;
+				return temp;
 			}
 		});
 	</script>

@@ -10,7 +10,7 @@
 <link rel="import" href="../../bower_components/paper-card/paper-card.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
 
-<link rel="import" href="../../elements/prono-dialog/prono-dialog.html">
+<link rel="import" href="../../elements/default-dialog/default-dialog.html">
 <link rel="import" href="../../elements/prono-team-icon/prono-team-icon.html">
 
 <dom-module is="prono-matches-list">
@@ -99,7 +99,7 @@
 		<paper-button raised on-tap="addMatch">Add match</paper-button>
 	
 	
-		<prono-dialog id="editMatch">
+		<default-dialog id="editMatch">
 			<paper-input label="id" value={{newid}}></paper-input>
 			<paper-input label="Date" value={{newdate}} auto-validate pattern="[0-9][0-9]-[0-9][0-9]-[0-9][0-9][0-9][0-9] [0-9][0-9]:[0-9][0-9]" error-message="dd-mm-yyyy HH:MM"></paper-input>
 			<div class="horizontal layout wrap">
@@ -176,7 +176,7 @@
 				<paper-button raised class="primary" on-tap="saveMatch">Save</paper-button>
 				<paper-button raised on-tap="deleteMatch">Delete</paper-button>
 			</div>
-		</prono-dialog>
+		</default-dialog>
 
 	</template>
 	<script>
