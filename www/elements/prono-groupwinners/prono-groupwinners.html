@@ -1,0 +1,189 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animations.html">
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
+
+<link rel="import" href="../../elements/parse-token/parse-token.html">
+<link rel="import" href="../../elements/prono-score-dialog/prono-score-dialog.html">
+<link rel="import" href="../../elements/prono-team-name/prono-team-name.html">
+<link rel="import" href="../../elements/prono-team-icon/prono-team-icon.html">
+
+<dom-module id="prono-groupwinners">
+	<template>
+
+		<style>
+			:host{
+				display: block;
+				width: 100%;
+			}
+			paper-button{
+				background: var(--button-background-color);
+				color: var(--button-text-color);
+			}
+			paper-button.primary{
+				background: var(--button-background-primary-color);
+				color: var(--button-text-primary-color);
+			}
+			.teamicon{
+				width: 30px;
+				height: 30px;
+			}
+			.teamname{
+				padding-left: 20px;
+			}
+			.hidden{
+				display: none;
+			}
+		</style>
+		<parse-token token="{{token}}" payload="{{tokenPayload}}"></parse-token>
+		<iron-ajax id="ajaxPut" method="PUT" handle-as="json" on-response="handleAjaxPutResponse" debounce-duration="300"></iron-ajax>
+
+
+		<div on-tap="editWinners">
+			<div class="horizontal layout center">
+				<div class="flex">Winner:</div>
+				<prono-team-icon class="teamicon" team="{{getTeam(group.team1,teams)}}"></prono-team-icon>
+				<prono-team-name class="flex-2 teamname" team="{{getTeam(group.team1,teams)}}" default=""></prono-team-name>
+			</div>
+			<div class="horizontal layout center">
+				<div class="flex">Runner up:</div>
+				<prono-team-icon class="teamicon" team="{{getTeam(group.team2,teams)}}"></prono-team-icon>
+				<prono-team-name class="flex-2 teamname" team="{{getTeam(group.team2,teams)}}" default=""></prono-team-name>
+			</div>
+		</div>
+
+		<default-dialog id="editWinners">
+			<form is="iron-form" id="form" method="post" on-iron-form-submit="save" action="/">
+				<div>
+					<paper-dropdown-menu label="Winner">
+						<paper-menu class="dropdown-content" attr-for-selected="value" selected="{{group.team1}}">
+							<paper-item value="0"></paper-item>
+							<template is="dom-repeat" items="{{teams}}" as="team" filter="{{filterGroupTeams(group.id,matchess)}}">
+								<paper-item value="{{team.id}}">{{team.name}}</paper-item>
+							</template>
+						</paper-menu>
+					</paper-dropdown-menu>
+
+					<paper-dropdown-menu label="Runner up">
+						<paper-menu class="dropdown-content" attr-for-selected="value" selected="{{group.team2}}">
+							<paper-item value="0"></paper-item>
+							<template is="dom-repeat" items="{{teams}}" as="team" filter="{{filterGroupTeams(group.id,matchess)}}">
+								<paper-item value="{{team.id}}">{{team.name}}</paper-item>
+							</template>
+						</paper-menu>
+					</paper-dropdown-menu>
+				</div>
+				<div class="buttons">
+					<paper-button raised class="primary" on-tap="formSubmit">Save</paper-button>
+					<button type="submit" class="hidden">Save</button>
+				</div>
+			</form>
+		</default-dialog>
+
+	</template>
+
+	<script>
+		Polymer({
+			is: 'prono-groupwinners',
+			properties: {
+				token: {
+					type: 'String',
+					value: '',
+					notify: true
+				},
+				user: {
+					type: 'Number',
+					notify: true,
+					value: 0
+				},
+				teams: {
+					type: 'Array',
+				},
+				matchess: {
+					type: 'Array',
+				},
+				group: {
+					type: 'Object',
+				},
+				betsTeam: {
+					type: 'Array',
+					notify: true,
+					value: []
+				}
+			},
+			ready: function(){
+			},
+			editWinners: function(){
+				this.$.editWinners.open();
+			},
+			filterGroupTeams: function(id,matchess){
+				// find the matches in the group				
+				var matches = matchess.filter(function( match ){
+					return ( match.grp == id );
+				});
+				var team_ids = [];
+				matches.forEach(function(match){
+					if(team_ids.indexOf(match.team1) == -1){
+						team_ids.push( match.team1 );
+					}
+					if(team_ids.indexOf(match.team2) == -1){
+						team_ids.push( match.team2 );
+					}
+				});
+
+				return function(item){
+					return ( team_ids.indexOf(item.id) > -1 );
+			  	};
+			},
+			disabledClass: function(currentStage,user){
+				if(currentStage==0 || user==0){
+					return '';
+				}
+				else{
+					return 'disabled';
+				}
+			},
+			getTeam: function(id,teams){
+				var team = {};
+				teams.forEach(function(item){
+					if(item.id == id){					
+						team = item;
+					}
+				});
+				return team;
+			},
+			formSubmit: function(){
+				this.$.form.submit();
+			},
+			save: function(){
+				this.$.editWinners.close();
+
+
+				this.$.ajaxPut.headers['Authentication'] = this.token;
+
+				if(this.user==0){
+					this.$.ajaxPut.url = 'api/index.php/groups/'+this.group.id;
+					this.$.ajaxPut.body = JSON.stringify({'team1':this.group.team1,'team2':this.group.team2});
+					this.$.ajaxPut.generateRequest();
+				}
+				else{
+					this.$.ajaxPut.url = 'api/index.php/bets_team/user_id/'+this.user+'/stage/0';
+					this.$.ajaxPut.body = JSON.stringify({'team_id':this.group.team1});
+
+				}
+
+				console.log( this.$.ajaxPut.url );
+				console.log( this.$.ajaxPut.body );
+
+				
+				
+			}
+		});
+	</script>
+
+</dom-module>

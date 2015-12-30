@@ -12,6 +12,7 @@
 <link rel="import" href="../../elements/prono-score-dialog/prono-score-dialog.html">
 <link rel="import" href="../../elements/prono-team-name/prono-team-name.html">
 <link rel="import" href="../../elements/prono-team-icon/prono-team-icon.html">
+<link rel="import" href="../../elements/prono-groupwinners/prono-groupwinners.html">
 
 <dom-module id="prono-groupstage">
 	<template>
@@ -60,6 +61,9 @@
 			.teamname.right{
 				text-align: right;
 			}
+			prono-groupwinners{
+				margin-top: 20px;
+			}
 		</style>
 		<parse-token token="{{token}}" payload="{{tokenPayload}}"></parse-token>
 		<div class$="{{disabledClass(currentStage,user)}} horizontal layout wrap center-justified">
@@ -78,10 +82,12 @@
 							</div>
 						</template>
 					</div>
+
+					<prono-groupwinners token="{{token}}" user="{{user}}" group="{{item}}" teams="{{teams}}" matchess="{{matchess}}"></prono-groupwinners>
 				</paper-material>
 			</template>
 
-		<div class="horizontal layout wrap">
+		</div>
 
 		<prono-score-dialog id="editScore" teams="{{teams}}" token="{{token}}" match="{{match}}" score="{{score}}" user="{{user}}"></prono-score-dialog>
 	</template>
