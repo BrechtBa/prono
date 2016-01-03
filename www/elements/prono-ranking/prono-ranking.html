@@ -25,6 +25,13 @@
 				background: var(--background-secondary-color);
 				color: var(--text-secondary-color);
     		}
+			paper-card.me{
+				margin-left: 5px;
+				margin-right: -5px;
+			}
+			.ranking{
+				width: 30px;
+			}
 			.name{
 				padding: 10px;
 			}
@@ -34,11 +41,12 @@
 			
 		</style>
 
-		<template is="dom-repeat" items="{{users}}" as="user" sort="_sortUsers">
-			<paper-card elevation="2" class="horizontal layout center" on-tap="showDetails">
-				<avatar-image class="avatar" user="{{user}}"></avatar-image>
-				<div class="flex name">{{user.name}}</div>
-				<div class="points">{{user.points}}</div>
+		<template is="dom-repeat" items="{{users}}" as="item" sort="_sortUsers">
+			<paper-card elevation="2" class$="horizontal layout center {{userClass(item,user)}}" on-tap="showDetails">
+				<div class="ranking">{{ranking(index)}}</div>
+				<avatar-image class="avatar" user="{{item}}"></avatar-image>
+				<div class="flex name">{{item.name}}</div>
+				<div class="points">{{item.points}}</div>
 			</paper-card>
 		</template>
 
@@ -60,7 +68,20 @@
 				users: {
 					type: 'Array',
 					value: []
+				},
+				user: {
+					type: 'Object'
 				}
+			},
+			userClass: function(user1,user2){
+				var cl = '';
+				if(user1.user_id == user2.user_id){
+					cl = 'me';
+				}
+				return cl;
+			},
+			ranking: function(index){
+				return index+1;
 			},
 			_getAvatar: function(src){
 				if(src==''){
