@@ -165,17 +165,10 @@
 
 
 				this.$.ajaxPut.headers['Authentication'] = this.token;
-
-				if(this.user==0){
-					this.$.ajaxPut.url = 'api/index.php/groups/'+this.group.id;
-					this.$.ajaxPut.body = JSON.stringify({'team1':this.group.team1,'team2':this.group.team2});
-					this.$.ajaxPut.generateRequest();
-				}
-				else{
-					this.$.ajaxPut.url = 'api/index.php/bets_team/user_id/'+this.user+'/stage/0';
-					this.$.ajaxPut.body = JSON.stringify({'team_id':this.group.team1});
-
-				}
+			
+				this.$.ajaxPut.url = 'api/index.php/prono_team/user_id/'+this.user+'/stage/0';
+				this.$.ajaxPut.body = JSON.stringify({'team_id':this.group.team1});
+				
 
 				console.log( this.$.ajaxPut.url );
 				console.log( this.$.ajaxPut.body );

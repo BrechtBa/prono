@@ -120,9 +120,9 @@
 										<prono-team-icon class="teamicon" team="{{getTeam(match.team1,teams)}}"></prono-team-icon>
 									</div>
 									<div class$="score flex {{scoreLayoutClass(stage,expandedStage)}} layout center center-justified">
-										<div>{{getScore1(match,user,betsScore)}}</div>
+										<div>{{getScore1(match,user,pronoScore)}}</div>
 										<div class="dash">-</div>
-										<div>{{getScore2(match,user,betsScore)}}</div>
+										<div>{{getScore2(match,user,pronoScore)}}</div>
 									</div>
 									<div class="flex">
 										<prono-team-icon class="teamicon" team="{{getTeam(match.team2,teams)}}"></prono-team-icon>
@@ -154,33 +154,24 @@
 				token: {
 					type: 'String',
 					value: '',
-					notify: true
 				},
 				user: {
 					type: 'Number',
-					notify: true,
 					value: 0
 				},
 				teams: {
 					type: 'Array',
-					notify: true
-				},
-				groups: {
-					type: 'Array',
-					notify: true
 				},
 				matchess: {
 					type: 'Array',
 					notify: true
 				},
-				betsScore: {
+				pronoScore: {
 					type: 'Array',
-					notify: true,
-					value: []
+					notify: true
 				},
 				currentStage:{
 					type: 'Number',
-					notify: true,
 					value: -1
 				}	
 			},
@@ -323,8 +314,8 @@
 					else if(this.match.stage==this.currentStage){
 						this.score = {'score1':-1,'score2':-1};
 						that = this;
-						// find the match in the bets list
-						this.betsScore.forEach(function(item){
+						// find the match in the prono list
+						this.pronoScore.forEach(function(item){
 							if(item.match_id==that.match.id){
 								that.score = {'score1':item.score1,'score2':item.score2};
 							}
@@ -365,31 +356,39 @@
 				}
 				return val;
 			},
-			getScore1: function(match,user,betsScore){
+			getScore1: function(match,user,pronoScore){
 				var score = -1;
 				if(user==0){
 					score = match.score1;
 				}
 				else{
-					betsScore.forEach(function(item){
-						if(item.match_id == match.id){
-							score = item.score1
-						}
-					});
+					try{
+						pronoScore.forEach(function(item){
+							if(item.match_id == match.id){
+								score = item.score1
+							}
+						});
+					}
+					catch(e){
+					}
 				}
 				return this.formatScore(score);
 			},
-			getScore2: function(match,user,betsScore){
+			getScore2: function(match,user,pronoScore){
 				var score = -1;
 				if(user==0){
 					score = match.score2;	
 				}
 				else{
-					betsScore.forEach(function(item){
-						if(item.match_id == match.id){
-							score = item.score2
-						}
-					});
+					try{
+						pronoScore.forEach(function(item){
+							if(item.match_id == match.id){
+								score = item.score2
+							}
+						});
+					}
+					catch(e){
+					}	
 				}
 				return this.formatScore(score);
 			},

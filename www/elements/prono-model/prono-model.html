@@ -14,17 +14,24 @@
 		
 		<iron-ajax id="getTeams" url="../../api/index.php/teams" method="GET" handle-as="json" last-response="{{teams}}" debounce-duration="300"></iron-ajax>
 		<iron-ajax id="getGroups" url="../../api/index.php/groups" method="GET" handle-as="json" last-response="{{groups}}" debounce-duration="300"></iron-ajax>
-		<iron-ajax id="getMatches" url="../../api/index.php/matches" method="GET" handle-as="json" last-response="{{matchess}}" on-response="handleGetMatchesResponse"  debounce-duration="300"></iron-ajax>
-		<iron-ajax id="getBetsScore" url="../../api/index.php/bets_score" method="GET" handle-as="json" last-response="{{betsScore}}" on-response="handleGetBetsScoreResponse" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="getMatches" url="../../api/index.php/matches" method="GET" handle-as="json" last-response="{{matchess}}" debounce-duration="300"></iron-ajax>
 		
-		<iron-ajax id="postBetsScore" url="../../api/index.php/bets_score" method="POST" handle-as="json" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="getPronoScore" url="../../api/index.php/prono_score" method="GET" handle-as="json" last-response="{{pronoScore}}" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="getPronoTeam" url="../../api/index.php/prono_team" method="GET" handle-as="json" last-response="{{pronoTeam}}" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="getPronoStage" url="../../api/index.php/prono_stage" method="GET" handle-as="json" last-response="{{pronoStage}}" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="getPronoNumber" url="../../api/index.php/prono_number" method="GET" handle-as="json" last-response="{{pronoNumber}}" debounce-duration="300"></iron-ajax>
+		
+		<iron-ajax id="postPronoScore" url="../../api/index.php/prono_score" method="POST" handle-as="json" on-response="handlePostPronoScoreResponse" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="postPronoTeam" url="../../api/index.php/prono_team" method="POST" handle-as="json" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="postPronoStage" url="../../api/index.php/prono_stage" method="POST" handle-as="json" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="postPronoNumber" url="../../api/index.php/prono_number" method="POST" handle-as="json" debounce-duration="300"></iron-ajax>
 		
 		<iron-ajax id="getRules" url="../../api/index.php/rules/1" method="GET" handle-as="json" last-response="{{rules}}" debounce-duration="300"></iron-ajax>
-		<iron-ajax id="getUserProfiles" url="../../api/index.php/user_profiles" method="GET" handle-as="json" last-response="{{users}}" on-response="handleGetUserProfilesResponse" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="getUserProfiles" url="../../api/index.php/user_profiles" method="GET" handle-as="json" last-response="{{users}}" debounce-duration="300"></iron-ajax>
 		<iron-ajax id="putUserProfiles" url="../../api/index.php/user_profiles" method="PUT" handle-as="json" on-response="handlePutUserProfilesResponse" debounce-duration="300"></iron-ajax>		
-		<iron-ajax id="postUserProfiles" url="../../api/index.php/user_profiles" method="POST" handle-as="json" on-response="handlePostUserProfiles" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="postUserProfiles" url="../../api/index.php/user_profiles" method="POST" handle-as="json" on-response="handlePostUserProfilesResponse" debounce-duration="300"></iron-ajax>
 		
-		<iron-ajax id="getAllBetsScore" url="../../api/index.php/bets_score" method="GET" handle-as="json" last-response="{{allBetsScore}}" on-response="handleGetAllBetsScoreResponse" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="getAllPronoScore" url="../../api/index.php/prono_score" method="GET" handle-as="json" last-response="{{allPronoScore}}" debounce-duration="300"></iron-ajax>
 		
 
 	</template>
@@ -41,67 +48,76 @@
 				},
 				rules: {
 					type: 'Array',
-					value: [],
 					notify: true
 				},
 				users: {
 					type: 'Array',
-					value: [],
 					notify: true
 				},
 				user: {
 					type: 'Object',
 					notify: true
 				},
-				groups: {
-					type: 'Array',
-					value: [],
-					notify: true
-				},
 				teams: {
 					type: 'Array',
-					value: [],
 					notify: true
 				},
 				matchess: {
 					type: 'Array',
-					value: [],
 					notify: true
 				},
-				betsScore: {
+				groups: {
 					type: 'Array',
-					value: [],
+					notify: true,
+					computed: 'getGroups(matchess)'
+				},
+				stages: {
+					type: 'Array',
+					notify: true,
+					computed: 'getStages(matchess)'
+				},
+				pronoScore: {
+					type: 'Array',
 					notify: true
 				},
-				allBetsScore: {
+				pronoTeam: {
 					type: 'Array',
-					value: [],
+					notify: true
+				},
+				allPronoScore: {
+					type: 'Array',
 					notify: false
 				},
 			},
 			listeners: {
-				'get-teams': 'getTeams',
-				'get-groups': 'getGroups',
-				'get-matches': 'getMatches',
-				'get-bets-score': 'getBetsScore',
+				'get-rules': 'getRules',
 				'get-users': 'getUsers',
+				'get-teams': 'getTeams',
+				'get-matches': 'getMatches',
+				'get-prono-score': 'getPronoScoreEvent',
+				'get-prono-team': 'getPronoTeamEvent',
+			},
+			observers: [
+				'checkUserProfile(token,tokenPayload,users)',
+				'getPronoScore(token,tokenPayload,matchess)',
+				'checkPronoScore(token,tokenPayload,matchess,pronoScore)',
+				'getPronoTeam(token,tokenPayload,groups,stages,teams)',
+				'calculatePoints(token,tokenPayload,users,rules,groups,stages,teams,matchess,allPronoScore)'
+			],
+			ready: function(){
+				this.userprofilePosted = false;
+				this.pronoScorePosted = [];
 			},
 			tokenChanged: function(){
 				if( this.token != ''){
 					this.getRules();
 					this.getUsers();
 					this.getTeams();
-					this.getGroups();
 					this.getMatches();
+
 					if(this.tokenPayload.permission>5){
-						this.getAllBetsScore();
+						this.getAllPronoScore();
 					}
-				}
-				else{
-					this.teams = [];
-					this.groups = [];
-					this.matchess = [];
-					this.betsScore = [];
 				}
 			},
 			getRules: function(){
@@ -119,117 +135,191 @@
 				this.$.getTeams.headers['Authentication'] = this.token;
 				this.$.getTeams.generateRequest();
 			},
-			getGroups: function(){
-				console.log('getting groups');
-				this.$.getGroups.headers['Authentication'] = this.token;
-				this.$.getGroups.generateRequest();
-			},
 			getMatches: function(){
 				console.log('getting matches');
 				this.$.getMatches.headers['Authentication'] = this.token;
 				this.$.getMatches.generateRequest();
 			},
-			getBetsScore: function(){
-				console.log('getting bets score for user ' +this.tokenPayload.user_id);
-				this.$.getBetsScore.headers['Authentication'] = this.token;
-				this.$.getBetsScore.url = 'api/index.php/bets_score/user_id/'+this.tokenPayload.user_id
-				this.$.getBetsScore.generateRequest();
-			},
-			getAllBetsScore: function(){
-				if(this.tokenPayload.permission>5){
-					this.$.getAllBetsScore.headers['Authentication'] = this.token;
-					this.$.getAllBetsScore.generateRequest();
-				}
-			},
-			handleGetUserProfilesResponse: function(){
-				that = this;
-				var user = that.users.filter(function( item ) {
-					return item.user_id == that.tokenPayload.user_id;
+			getGroups: function(matchess){
+				var groups = [];
+				matchess.forEach(function(match){
+					if(match.stage == 0 && groups.indexOf(match.grp)==-1){
+						groups.push(match.grp);
+					}
 				});
-				if(user.length>0){
-					that.user = user[0];
-				}
-				else{
-					// the user has no profile, it must be created
-					that.$.postUserProfiles.headers['Authentication'] = that.token;
-					that.$.postUserProfiles.url = 'api/index.php/user_profiles';
-					that.$.postUserProfiles.body = JSON.stringify({'user_id': that.tokenPayload.user_id, 'name': that.tokenPayload.login, 'avatar': ''});
-					that.$.postUserProfiles.generateRequest();
+				return groups;
+			},
+			getStages: function(matchess){
+				var stages = [];				
+				matchess.forEach(function(match){
+					if(match.stage > 0 && stages.indexOf(match.stage)==-1){
+						stages.push(match.stage);
+					}
+				});
+				return stages;
+			},
+			getPronoScoreEvent: function(){
+				this.getPronoScore(this.token,this.tokenPayload);
+			},
+			getPronoScore: function(token,tokenPayload,matchess){
+				console.log('getting prono score for user ' + tokenPayload.user_id);
+				this.$.getPronoScore.headers['Authentication'] = token;
+				this.$.getPronoScore.url = 'api/index.php/prono_score/user_id/'+ tokenPayload.user_id
+				this.$.getPronoScore.generateRequest();
+			},
+			getPronoTeamEvent: function(){
+				this.getPronoTeam(this.token,this.tokenPayload);
+			},
+			getPronoTeam: function(token,tokenPayload,groups,stages,teams){
+				console.log('getting prono team for user ' +tokenPayload.user_id);
+				this.$.getPronoTeam.headers['Authentication'] = token;
+				this.$.getPronoTeam.url = 'api/index.php/prono_team/user_id/'+tokenPayload.user_id
+				this.$.getPronoTeam.generateRequest();
+			},
+			getPronoStage: function(){
+				console.log('getting prono stage for user ' +this.tokenPayload.user_id);
+				this.$.getPronoStage.headers['Authentication'] = this.token;
+				this.$.getPronoStage.url = 'api/index.php/prono_stage/user_id/'+this.tokenPayload.user_id
+				this.$.getPronoStage.generateRequest();
+			},
+			getPronoNumber: function(){
+				console.log('getting prono number for user ' +this.tokenPayload.user_id);
+				this.$.getPronoNumber.headers['Authentication'] = this.token;
+				this.$.getPronoNumber.url = 'api/index.php/prono_number/user_id/'+this.tokenPayload.user_id
+				this.$.getPronoNumber.generateRequest();
+			},
+			getAllPronoScore: function(){
+				if(this.tokenPayload.permission>5){
+					this.$.getAllPronoScore.headers['Authentication'] = this.token;
+					this.$.getAllPronoScore.generateRequest();
 				}
 			},
-			handlePostUserProfiles: function(){
+			checkUserProfile: function(token,tokenPayload,users){
+				var that = this;
+				var user = users.filter(function( item ) {
+					return item.user_id == tokenPayload.user_id;
+				});
+				if(user.length > 0){
+					this.user = user[0];
+				}
+				else if(!that.userprofilePosted){
+					// the user has no profile, it must be created
+					that.$.postUserProfiles.headers['Authentication'] = token;
+					that.$.postUserProfiles.url = 'api/index.php/user_profiles';
+					that.$.postUserProfiles.body = JSON.stringify({'user_id': tokenPayload.user_id, 'name': tokenPayload.login, 'avatar': ''});
+					that.$.postUserProfiles.generateRequest();
+					that.userprofilePosted = true;
+				}
+			},
+			handlePostUserProfilesResponse: function(){
 				this.getUsers();
 			},
-			handleGetMatchesResponse: function(){
-				this.getBetsScore();
-				
-				if(this.tokenPayload.permission>5){
-					this.calculatePoints();
-				}
-			},
-			handleGetBetsScoreResponse: function(){
-				that = this;
-				that.matchess.forEach(function(match){
-					// check if the match_id is in betsScore
+			checkPronoScore: function(token,tokenPayload,matchess,pronoScore){
+				var that = this;
+
+				matchess.forEach(function(match){
+					// check if the match_id is in pronoScore
 					var found = false;
-					that.betsScore.forEach(function(bet){
-						if(bet.match_id == match.id){
+					if(pronoScore != null){
+						pronoScore.forEach(function(prono){
+							if(prono.match_id == match.id){
+								found = true;
+							}
+						});
+					}
+
+					if(!found && that.pronoScorePosted.indexOf(match.id)==-1 ){
+						console.log(match.id);
+						// the match has no prono, it must be created
+						that.$.postPronoScore.headers['Authentication'] = that.token;
+						that.$.postPronoScore.url = 'api/index.php/prono_score';
+						that.$.postPronoScore.body = JSON.stringify({'user_id':tokenPayload.user_id,'match_id':match.id,'score1':-1,'score2':-1,'penalty1':-1,'penalty2':-1});
+						that.$.postPronoScore.generateRequest();
+						that.pronoScorePosted.push(match.id);
+					}
+					
+				});
+			},
+			handlePostPronoScoreResponse: function(){
+				this.getPronoScore(this.token,this.tokenPayload,this.matchess);
+			},
+			checkPronoTeam: function(token,tokenPayload,groups,stages,pronoTeam){
+				var that = this;
+				// check which prono's should be present
+				var pronos = []
+				// group winner and runner up
+				groups.forEach(function(group){
+					pronos.push(group + '1');
+					pronos.push(group + '2');
+				});
+				// knockoutstage teams
+				stages.forEach(function(stage){
+					for(var i=1; i<=stage; i++){
+						pronos.push('stage' + stage + '_'+ i);
+					}
+				});
+
+				pronos.forEach(function(prono){
+					// check if the prono is in pronoTeam
+					var found = false;
+					pronoTeam.forEach(function(tempprono){
+						if(tempprono.prono == prono){
 							found = true;
 						}
 					});
 
 					if(!found){
-						// post the match
-						that.$.postBetsScore.headers['Authentication'] = that.token;
-						that.$.postBetsScore.url = 'api/index.php/bets_score';
-						that.$.postBetsScore.body = JSON.stringify({'user_id':that.tokenPayload.user_id,'match_id':match.id,'score1':-1,'score2':-1,'penalty1':-1,'penalty2':-1});
-						that.$.postBetsScore.generateRequest();
+						// post the prono
+						that.$.postPronoTeam.headers['Authentication'] = that.token;
+						that.$.postPronoTeam.url = 'api/index.php/prono_team';
+						that.$.postPronoTeam.body = JSON.stringify({'user_id':that.tokenPayload.user_id,'prono':prono,'team_id':-1});
+						that.$.postPronoTeam.generateRequest();
 					}
 				});
 			},
-			handleGetAllBetsScoreResponse: function(){
+			handlePostPronoTeamResponse: function(){
+				this.getPronoTeam();
 			},
 			handlePutUserProfilesResponse: function(){
 				this.getUsers();
 			},
-			calculatePoints: function(){
-				if(this.tokenPayload.permission>5){
+			calculatePoints: function(token,tokenPayload,users,rules,groups,stages,teams,matchess,allPronoScore){
+				if(tokenPayload.permission>5){
 
-					if( this.rules != [] && this.users != [] && this.groups != [] && this.teams != [] && this.matchess != [] && this.allBetsScore.length > 0 ){
-						var that = this;
-						console.log('calculate points')
-						that.users.forEach(function(user){
-							var points = 0;
+					var that = this;
+					console.log('calculate points')
+					users.forEach(function(user){
+						var points = 0;
 
-							// get the users score bets
-							var bets = that.allBetsScore.filter(function( bet ){
-								return ( bet.user_id==user.id );
-							});
+						// get the users score prono
+						var prono = allPronoScore.filter(function( prono ){
+							return ( prono.user_id==user.id );
+						});
+						
+						points += that.countCorrectResults(prono,0)*3;//*that.rules[0]['groupstage_result'];	
+						points += that.countCorrectResults(prono,16)*6;//*that.rules[0]['knockoutstage_result'];	
+						points += that.countCorrectResults(prono,8)*6;//*that.rules[0]['knockoutstage_result'];	
+						points += that.countCorrectResults(prono,4)*6;//*that.rules[0]['knockoutstage_result'];	
+						points += that.countCorrectResults(prono,2)*6;//*that.rules[0]['knockoutstage_result'];	
 
-							points += that.countCorrectResults(bets,0)*3;//*that.rules[0]['groupstage_result'];	
-							points += that.countCorrectResults(bets,16)*6;//*that.rules[0]['knockoutstage_result'];	
-							points += that.countCorrectResults(bets,8)*6;//*that.rules[0]['knockoutstage_result'];	
-							points += that.countCorrectResults(bets,4)*6;//*that.rules[0]['knockoutstage_result'];	
-							points += that.countCorrectResults(bets,2)*6;//*that.rules[0]['knockoutstage_result'];	
+						points += that.countCorrectScores(prono,0)*4;//*that.rules[0]['groupstage_score'];	
+						points += that.countCorrectScores(prono,16)*8;//*that.rules[0]['knockoutstage_score'];	
+						points += that.countCorrectScores(prono,8)*8;//*that.rules[0]['knockoutstage_score'];	
+						points += that.countCorrectScores(prono,4)*8;//*that.rules[0]['knockoutstage_score'];	
+						points += that.countCorrectScores(prono,2)*8;//*that.rules[0]['knockoutstage_score'];	
+				
 
-							points += that.countCorrectScores(bets,0)*4;//*that.rules[0]['groupstage_score'];	
-							points += that.countCorrectScores(bets,16)*8;//*that.rules[0]['knockoutstage_score'];	
-							points += that.countCorrectScores(bets,8)*8;//*that.rules[0]['knockoutstage_score'];	
-							points += that.countCorrectScores(bets,4)*8;//*that.rules[0]['knockoutstage_score'];	
-							points += that.countCorrectScores(bets,2)*8;//*that.rules[0]['knockoutstage_score'];	
-
-							user.points = points;
-
+						if(user.points != points){
 							// write points to database
 							that.$.putUserProfiles.headers['Authentication'] = that.token;
 							that.$.putUserProfiles.url = 'api/index.php/user_profiles/user_id/'+user.id;
 							that.$.putUserProfiles.body = JSON.stringify({'points':points});
 							that.$.putUserProfiles.generateRequest();
-						});
-					}
+						}
+					});		
 				}
 			},
-			countCorrectResults(bets,stage){
+			countCorrectResults(prono,stage){
 				var that = this;
 				
 				// get the matches of the stage
@@ -240,12 +330,12 @@
 				var count = 0;
 				matches.forEach(function(match){
 					// find the users bet					
-					var bet = bets.filter(function( bet ){
+					var bet = prono.filter(function( bet ){
 						return ( bet.match_id==match.id );
 					});
 					bet = bet[0];
-					
-					if(match.score1>-1 && match.score2 >-1){
+
+					if(typeof bet != 'undefined' && match.score1>-1 && match.score2 >-1 && bet.score1>-1 && bet.score2 >-1){
 						if( (bet.score1>bet.score2 && match.score1>match.score2) || (bet.score1<bet.score2 && match.score1<match.score2) || (bet.score1==bet.score2 && match.score1==match.score2) ){
 							count += 1;
 						}
@@ -254,7 +344,7 @@
 				});
 				return count;
 			},
-			countCorrectScores(bets,stage){
+			countCorrectScores(prono,stage){
 				var that = this;
 				
 				// get the matches of the stage
@@ -265,12 +355,12 @@
 				var count = 0;
 				matches.forEach(function(match){
 					// find the users bet					
-					var bet = bets.filter(function( bet ){
+					var bet = prono.filter(function( bet ){
 						return ( bet.match_id==match.id );
 					});
 					bet = bet[0];
 					
-					if(match.score1>-1 && match.score2 >-1){
+					if(typeof bet != 'undefined' && match.score1>-1 && match.score2 >-1 && bet.score1>-1 && bet.score2 >-1){
 						if( (bet.score1==match.score1 && bet.score2==match.score2) ){
 							count += 1;
 						}

@@ -77,7 +77,7 @@
 					</div>
 					<div class="horizontal layout center">
 						<div class="flex-1">Stage: {{item.stage}}</div>
-						<div class="flex-2">Group: {{formatGroupName(item.grp,groups)}}</div>
+						<div class="flex-2">Group: {{item.grp}}</div>
 					</div>
 					<div class="teams horizontal layout">
 						<div class="team flex-1">
@@ -108,14 +108,7 @@
 				</div>
 				<div class="flex"></div>
 				<div class="flex-4">
-					<paper-dropdown-menu label="Group">
-						<paper-menu class="dropdown-content" attr-for-selected="value" selected="{{match.grp}}">
-							<paper-item value="0"></paper-item>
-							<template is="dom-repeat" items="{{groups}}">
-								<paper-item value="{{item.id}}">{{item.name}}</paper-item>
-							</template>
-						</paper-menu>
-					</paper-dropdown-menu>
+					<paper-input label="Group" value={{match.grp}}></paper-input>
 				</div>
 				<div class="flex"></div>
 				<div class="flex-4">
