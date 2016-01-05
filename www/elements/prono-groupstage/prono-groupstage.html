@@ -83,7 +83,7 @@
 						</template>
 					</div>
 
-					<prono-groupwinners token="{{token}}" user="{{user}}" group="{{item}}" teams="{{teams}}" matchess="{{matchess}}"></prono-groupwinners>
+					<prono-groupwinners token="{{token}}" user="{{user}}" group="{{group}}" teams="{{teams}}" matchess="{{matchess}}" prono-team="{{pronoTeam}}"></prono-groupwinners>
 				</paper-material>
 			</template>
 
@@ -114,6 +114,10 @@
 					type: 'Array',
 				},
 				pronoScore: {
+					type: 'Array',
+					value: []
+				},
+				pronoTeam: {
 					type: 'Array',
 					value: []
 				},
