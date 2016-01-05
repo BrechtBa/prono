@@ -75,8 +75,12 @@
 			},
 			userClass: function(user1,user2){
 				var cl = '';
-				if(user1.user_id == user2.user_id){
-					cl = 'me';
+				try{
+					if(user1.user_id == user2.user_id){
+						cl = 'me';
+					}
+				}
+				catch(e){
 				}
 				return cl;
 			},

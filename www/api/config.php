@@ -104,7 +104,7 @@
 	}
 
 	$valid_uri = [1 => ['POST' => ['prono_score','prono_team','prono_stage','prono_number','user_profiles'], 
-                        'GET' => ['teams','matches','groups','prono_score/user_id/%s','user_profiles'],
+                        'GET' => ['user_profiles','teams','matches','groups','prono_score/user_id/%s','prono_team/user_id/%s'],
                         'PUT' => $put1,
                         'DELETE' => ['']],
 				  9 => ['POST' => ['*'],
