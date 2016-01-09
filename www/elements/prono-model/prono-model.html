@@ -16,8 +16,8 @@
 		<iron-ajax id="getGroups" url="../../api/index.php/groups" method="GET" handle-as="json" last-response="{{groups}}" debounce-duration="300"></iron-ajax>
 		<iron-ajax id="getMatches" url="../../api/index.php/matches" method="GET" handle-as="json" last-response="{{matchess}}" debounce-duration="300"></iron-ajax>
 		
-		<iron-ajax id="getPronoScore" url="../../api/index.php/prono_score" method="GET" handle-as="json" last-response="{{pronoScore}}" debounce-duration="300"></iron-ajax>
-		<iron-ajax id="getPronoTeam" url="../../api/index.php/prono_team" method="GET" handle-as="json" last-response="{{pronoTeam}}" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="getPronoScore" url="../../api/index.php/prono_score" method="GET" handle-as="json" last-response="{{pronoScore}}" on-response="checkPronoScore" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="getPronoTeam" url="../../api/index.php/prono_team" method="GET" handle-as="json" last-response="{{pronoTeam}}"  on-response="checkPronoTeam" debounce-duration="300"></iron-ajax>
 		<iron-ajax id="getPronoStage" url="../../api/index.php/prono_stage" method="GET" handle-as="json" last-response="{{pronoStage}}" debounce-duration="300"></iron-ajax>
 		<iron-ajax id="getPronoNumber" url="../../api/index.php/prono_number" method="GET" handle-as="json" last-response="{{pronoNumber}}" debounce-duration="300"></iron-ajax>
 		
@@ -27,7 +27,7 @@
 		<iron-ajax id="postPronoNumber" url="../../api/index.php/prono_number" method="POST" handle-as="json" debounce-duration="300"></iron-ajax>
 		
 		<iron-ajax id="getRules" url="../../api/index.php/rules/1" method="GET" handle-as="json" last-response="{{rules}}" debounce-duration="300"></iron-ajax>
-		<iron-ajax id="getUserProfiles" url="../../api/index.php/user_profiles" method="GET" handle-as="json" last-response="{{users}}" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="getUserProfiles" url="../../api/index.php/user_profiles" method="GET" handle-as="json" last-response="{{users}}" on-response="checkUserProfile" debounce-duration="300"></iron-ajax>
 		<iron-ajax id="putUserProfiles" url="../../api/index.php/user_profiles" method="PUT" handle-as="json" on-response="handlePutUserProfilesResponse" debounce-duration="300"></iron-ajax>		
 		<iron-ajax id="postUserProfiles" url="../../api/index.php/user_profiles" method="POST" handle-as="json" on-response="handlePostUserProfilesResponse" debounce-duration="300"></iron-ajax>
 		
@@ -98,11 +98,8 @@
 				'get-prono-team': 'getPronoTeamEvent',
 			},
 			observers: [
-				'checkUserProfile(token,tokenPayload,users)',
 				'getPronoScore(token,tokenPayload,matchess)',
-				'checkPronoScore(token,tokenPayload,matchess,pronoScore)',
 				'getPronoTeam(token,tokenPayload,groups,stages,teams)',
-				'checkPronoTeam(token,tokenPayload,groups,stages,pronoTeam)',
 				'calculatePoints(token,tokenPayload,users,rules,groups,stages,teams,matchess,allPronoScore)'
 			],
 			tokenChanged: function(){
@@ -128,7 +125,8 @@
 					this.$.getUserProfiles.generateRequest();
 				}
 				else{
-					this.users = null;
+					this.users = [];
+					this.user = {};
 				}
 			},
 			getTeams: function(){
@@ -199,7 +197,7 @@
 					this.$.getPronoScore.generateRequest();
 				}
 				catch(e){
-					this.pronoScore = null;
+					this.pronoScore = [];
 				}
 			},
 			getPronoTeamEvent: function(){
@@ -213,7 +211,7 @@
 					this.$.getPronoTeam.generateRequest();
 				}
 				catch(e){
-					this.pronoTeam = null;
+					this.pronoTeam = [];
 				}
 			},
 			getPronoStage: function(token,tokenPayload,stages){
@@ -224,7 +222,7 @@
 					this.$.getPronoStage.generateRequest();
 				}
 				catch(e){
-					this.pronoStage = null;
+					this.pronoStage = [];
 				}
 			},
 			getPronoNumber: function(token,tokenPayload){
@@ -235,78 +233,89 @@
 					this.$.getPronoNumber.generateRequest();
 				}
 				catch(e){
-					this.pronoNumber = null;
+					this.pronoNumber = [];
 				}
 			},
-			checkUserProfile: function(token,tokenPayload,users){
+			checkUserProfile: function(){
 				try{
 					var that = this;
-					var user = users.filter(function( item ) {
-						return item.user_id == tokenPayload.user_id;
+					var user = that.users.filter(function( item ) {
+						return item.user_id == that.tokenPayload.user_id;
 					});
 					if(user.length > 0){
 						this.user = user[0];
 					}
 					else{
 						// the user has no profile, it must be created
-						that.$.postUserProfiles.headers['Authentication'] = token;
+						that.$.postUserProfiles.headers['Authentication'] = this.token;
 						that.$.postUserProfiles.url = 'api/index.php/user_profiles';
-						that.$.postUserProfiles.body = JSON.stringify({'user_id': tokenPayload.user_id, 'name': tokenPayload.login, 'avatar': ''});
+						that.$.postUserProfiles.body = JSON.stringify({'user_id': this.tokenPayload.user_id, 'name': this.tokenPayload.login, 'avatar': ''});
 						that.$.postUserProfiles.generateRequest();
 					}
 				}
 				catch(e){
-					this.user = null;
+					this.user = {};
 				}
 			},
 			handlePostUserProfilesResponse: function(){
 				this.getUsers();
 			},
-			checkPronoScore: function(token,tokenPayload,matchess,pronoScore){
+			checkPronoScore: function(){
 				try{
 					var that = this;
-
-					matchess.forEach(function(match){
+					var reload = false;
+					this.matchess.forEach(function(match){
 				
 						// check if the match_id is in pronoScore
 						var found = false;
-						pronoScore.forEach(function(prono){
+						that.pronoScore.forEach(function(prono){
 							if(prono.match_id == match.id){
 								found = true;
 							}
 						});
 
 						if(!found ){
+							reload = true;
 							// the match has no prono, it must be created
+							var data = {'user_id':that.tokenPayload.user_id,'match_id':match.id,'score1':-1,'score2':-1,'penalty1':-1,'penalty2':-1};
+							
 							that.$.postPronoScore.headers['Authentication'] = that.token;
 							that.$.postPronoScore.url = 'api/index.php/prono_score';
-							that.$.postPronoScore.body = JSON.stringify({'user_id':tokenPayload.user_id,'match_id':match.id,'score1':-1,'score2':-1,'penalty1':-1,'penalty2':-1});
+							that.$.postPronoScore.body = JSON.stringify(data);
 							that.$.postPronoScore.generateRequest();
+							that.push('pronoScore',data);
 						}
 					});
+					if(reload){
+						// wait for a while						
+						setTimeout(function(){
+							that.getPronoScore(that.token,that.tokenPayload,that.matchess);
+						},5000);
+					}
 				}
 				catch(e){
 				}
 			},
 			handlePostPronoScoreResponse: function(){
-				this.getPronoScore(this.token,this.tokenPayload,this.matchess);
 			},
-			checkPronoTeam: function(token,tokenPayload,groups,stages,pronoTeam){
+			checkPronoTeam: function(){
 				try{
 					var that = this;
 					// check which prono's should be present
 					var pronos = []
 					// group winner and runner up
-					groups.forEach(function(group){
+					this.groups.forEach(function(group){
 						pronos.push(group + '1');
 						pronos.push(group + '2');
 					});
 					// knockoutstage teams
-					stages.forEach(function(stage){
+					this.stages.forEach(function(stage){
 						for(var i=1; i<=stage; i++){
 							pronos.push('stage' + stage + '_'+ i);
 						}
 					});
+
+					var reload = false;
 					pronos.forEach(function(prono){
 						// check if the prono is in pronoTeam
 						var found = false;
@@ -317,19 +326,28 @@
 						});
 
 						if(!found){
+							reload = true;
 							// post the prono
+							var data = {'user_id':that.tokenPayload.user_id,'prono':prono,'team_id':-1};
 							that.$.postPronoTeam.headers['Authentication'] = that.token;
 							that.$.postPronoTeam.url = 'api/index.php/prono_team';
-							that.$.postPronoTeam.body = JSON.stringify({'user_id':that.tokenPayload.user_id,'prono':prono,'team_id':-1});
+							that.$.postPronoTeam.body = JSON.stringify(data);
 							that.$.postPronoTeam.generateRequest();
+							that.push('pronoTeam',data);
+							console.log(data);
 						}
 					});
+					if(reload){
+						// wait for a while						
+						setTimeout(function(){
+							that.getPronoTeam(that.token,that.tokenPayload,that.groups,that.stages,that.teams);
+						},5000);
+					}
 				}
 				catch(e){
 				}
 			},
 			handlePostPronoTeamResponse: function(){
-				this.getPronoTeam();
 			},
 			handlePutUserProfilesResponse: function(){
 				this.getUsers();
@@ -339,37 +357,37 @@
 
 					var that = this;
 					console.log('calculate points')
-					if(users!= null){
-						users.forEach(function(user){
-							var points = 0;
 
-							// get the users score prono
-							var prono = allPronoScore.filter(function( prono ){
-								return ( prono.user_id==user.id );
-							});
-							
-							points += that.countCorrectResults(prono,0)*3;//*that.rules[0]['groupstage_result'];	
-							points += that.countCorrectResults(prono,16)*6;//*that.rules[0]['knockoutstage_result'];	
-							points += that.countCorrectResults(prono,8)*6;//*that.rules[0]['knockoutstage_result'];	
-							points += that.countCorrectResults(prono,4)*6;//*that.rules[0]['knockoutstage_result'];	
-							points += that.countCorrectResults(prono,2)*6;//*that.rules[0]['knockoutstage_result'];	
+					users.forEach(function(user){
+						var points = 0;
 
-							points += that.countCorrectScores(prono,0)*4;//*that.rules[0]['groupstage_score'];	
-							points += that.countCorrectScores(prono,16)*8;//*that.rules[0]['knockoutstage_score'];	
-							points += that.countCorrectScores(prono,8)*8;//*that.rules[0]['knockoutstage_score'];	
-							points += that.countCorrectScores(prono,4)*8;//*that.rules[0]['knockoutstage_score'];	
-							points += that.countCorrectScores(prono,2)*8;//*that.rules[0]['knockoutstage_score'];	
-				
-
-							if(user.points != points){
-								// write points to database
-								that.$.putUserProfiles.headers['Authentication'] = that.token;
-								that.$.putUserProfiles.url = 'api/index.php/user_profiles/user_id/'+user.id;
-								that.$.putUserProfiles.body = JSON.stringify({'points':points});
-								that.$.putUserProfiles.generateRequest();
-							}
+						// get the users score prono
+						var prono = allPronoScore.filter(function( prono ){
+							return ( prono.user_id==user.id );
 						});
-					}	
+						
+						points += that.countCorrectResults(prono,0)*3;//*that.rules[0]['groupstage_result'];	
+						points += that.countCorrectResults(prono,16)*6;//*that.rules[0]['knockoutstage_result'];	
+						points += that.countCorrectResults(prono,8)*6;//*that.rules[0]['knockoutstage_result'];	
+						points += that.countCorrectResults(prono,4)*6;//*that.rules[0]['knockoutstage_result'];	
+						points += that.countCorrectResults(prono,2)*6;//*that.rules[0]['knockoutstage_result'];	
+
+						points += that.countCorrectScores(prono,0)*4;//*that.rules[0]['groupstage_score'];	
+						points += that.countCorrectScores(prono,16)*8;//*that.rules[0]['knockoutstage_score'];	
+						points += that.countCorrectScores(prono,8)*8;//*that.rules[0]['knockoutstage_score'];	
+						points += that.countCorrectScores(prono,4)*8;//*that.rules[0]['knockoutstage_score'];	
+						points += that.countCorrectScores(prono,2)*8;//*that.rules[0]['knockoutstage_score'];	
+			
+
+						if(user.points != points){
+							// write points to database
+							that.$.putUserProfiles.headers['Authentication'] = that.token;
+							that.$.putUserProfiles.url = 'api/index.php/user_profiles/user_id/'+user.id;
+							that.$.putUserProfiles.body = JSON.stringify({'points':points});
+							that.$.putUserProfiles.generateRequest();
+						}
+					});
+					
 				}
 			},
 			countCorrectResults(prono,stage){

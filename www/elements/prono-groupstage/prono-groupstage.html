@@ -13,6 +13,7 @@
 <link rel="import" href="../../elements/prono-team-name/prono-team-name.html">
 <link rel="import" href="../../elements/prono-team-icon/prono-team-icon.html">
 <link rel="import" href="../../elements/prono-groupwinners/prono-groupwinners.html">
+<link rel="import" href="../../elements/prono-groupranking/prono-groupranking.html">
 
 <dom-module id="prono-groupstage">
 	<template>
@@ -64,6 +65,9 @@
 			prono-groupwinners{
 				margin-top: 20px;
 			}
+			prono-groupranking{
+				margin-top: 20px;
+			}
 		</style>
 		<parse-token token="{{token}}" payload="{{tokenPayload}}"></parse-token>
 		<div class$="{{disabledClass(currentStage,user)}} horizontal layout wrap center-justified">
@@ -82,8 +86,15 @@
 							</div>
 						</template>
 					</div>
+					
+					<template is="dom-if" if="{{showGroupWinners(user)}}">
+						<prono-groupwinners token="{{token}}" user="{{user}}" group="{{group}}" teams="{{teams}}" matchess="{{matchess}}" prono-team="{{pronoTeam}}"></prono-groupwinners>
+					</template>
 
-					<prono-groupwinners token="{{token}}" user="{{user}}" group="{{group}}" teams="{{teams}}" matchess="{{matchess}}" prono-team="{{pronoTeam}}"></prono-groupwinners>
+					<template is="dom-if" if="{{showGroupRanking(user)}}">
+						<prono-groupranking token="{{token}}" group="{{group}}" teams="{{teams}}" matchess="{{matchess}}"></prono-groupranking>
+					</template>
+
 				</paper-material>
 			</template>
 
@@ -161,6 +172,12 @@
 				else{
 					return 'disabled';
 				}
+			},
+			showGroupWinners: function(user){
+				return (user!=0);
+			},
+			showGroupRanking: function(user){
+				return (user==0);
 			},
 			getTeam: function(id,teams){
 				var team = {};

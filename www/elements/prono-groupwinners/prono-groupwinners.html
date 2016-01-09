@@ -131,10 +131,15 @@
 				this.$.editWinners.open();
 			},
 			filterGroupTeams: function(group,matchess){
-				// find the matches in the group				
-				var matches = matchess.filter(function( match ){
-					return ( match.grp == group );
-				});
+				// find the matches in the group
+				try{			
+					var matches = matchess.filter(function( match ){
+						return ( match.grp == group );
+					});
+				}
+				catch(e){
+					var matches = [];
+				}
 				var team_ids = [];
 				matches.forEach(function(match){
 					if(team_ids.indexOf(match.team1) == -1){
@@ -149,44 +154,44 @@
 					return ( team_ids.indexOf(item.id) > -1 );
 			  	};
 			},
-			disabledClass: function(currentStage,user){
-				if(currentStage==0 || user==0){
-					return '';
-				}
-				else{
-					return 'disabled';
-				}
-			},
 			getWinner: function(group,teams,pronoTeam){
 				var team = {};
 				var id = -1;
-				pronoTeam.forEach(function(item){
-					if(item.prono == group + '1'){					
-						id = item.team_id;
-					}
-				});
+				try{
+					pronoTeam.forEach(function(item){
+						if(item.prono == group + '1'){					
+							id = item.team_id;
+						}
+					});
 
-				teams.forEach(function(item){
-					if(item.id == id){					
-						team = item;
-					}
-				});
+					teams.forEach(function(item){
+						if(item.id == id){					
+							team = item;
+						}
+					});
+				}
+				catch(e){
+				}
 				return team;
 			},
 			getRunnerup: function(group,teams,pronoTeam){
 				var team = {};
 				var id = -1;
-				pronoTeam.forEach(function(item){
-					if(item.prono == group + '2'){					
-						id = item.team_id;
-					}
-				});
+				try{
+					pronoTeam.forEach(function(item){
+						if(item.prono == group + '2'){					
+							id = item.team_id;
+						}
+					});
 
-				teams.forEach(function(item){
-					if(item.id == id){					
-						team = item;
-					}
-				});
+					teams.forEach(function(item){
+						if(item.id == id){					
+							team = item;
+						}
+					});
+				}
+				catch(e){
+				}
 				return team;
 			},
 			getTeam: function(id,teams){

@@ -1,0 +1,188 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animations.html">
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
+
+<link rel="import" href="../../elements/parse-token/parse-token.html">
+<link rel="import" href="../../elements/default-dialog/default-dialog.html">
+<link rel="import" href="../../elements/prono-team-name/prono-team-name.html">
+<link rel="import" href="../../elements/prono-team-icon/prono-team-icon.html">
+
+<dom-module id="prono-groupranking">
+	<template>
+
+		<style>
+			:host{
+				display: block;
+				width: 100%;
+			}
+			paper-button{
+				background: var(--button-background-color);
+				color: var(--button-text-color);
+			}
+			paper-button.primary{
+				background: var(--button-background-primary-color);
+				color: var(--button-text-primary-color);
+			}
+			h4{
+				margin: 0;
+			}
+			.teamicon{
+				width: 30px;
+				height: 30px;
+			}
+			.teamname{
+				padding-left: 20px;
+			}
+			.points{
+				width: 50px;
+			}
+			#editPoints .points{
+				margin-left: 10px;
+			}
+			#editPoints .points paper-number-input{
+				margin-top: -16px;
+			}
+			.hidden{
+				display: none;
+			}
+		</style>
+		<parse-token token="{{token}}" payload="{{tokenPayload}}"></parse-token>
+		<iron-ajax id="ajaxPut" method="PUT" handle-as="json" on-response="handleAjaxPutResponse" debounce-duration="300"></iron-ajax>
+
+		<h4>Ranking</h4>
+		<div on-tap="editPoints">
+			<template is="dom-repeat" items="{{teams}}" as="team" filter="{{filterGroupTeams(group,matchess)}}" sort="_sortTeams">
+				<div class="horizontal layout center">
+					<prono-team-icon class="teamicon" team="{{team}}"></prono-team-icon>
+					<prono-team-name class="flex-2 teamname" team="{{team}}" default=""></prono-team-name>
+					<div class="points">{{roundPoints(team.groupstage_points)}}</div>
+				</div>
+			</template>
+		</div>
+
+		<default-dialog id="editPoints">
+			<form is="iron-form" id="form" method="post" on-iron-form-submit="save" action="/">
+				<div>
+					<template is="dom-repeat" items="{{newTeams}}" as="team" sort="_sortTeams">
+						<div class="horizontal layout center">
+							<prono-team-icon class="teamicon" team="{{team}}"></prono-team-icon>
+							<prono-team-name class="flex-2 teamname" team="{{team}}" default=""></prono-team-name>
+							<div class="points"><paper-number-input label="" auto-validate pattern="[0-9.]*" error-message="x" value={{team.groupstage_points}}></paper-input></div>
+						</div>
+					</template>
+				</div>
+				<div class="buttons">
+					<paper-button raised class="primary" on-tap="formSubmit">Save</paper-button>
+					<button type="submit" class="hidden">Save</button>
+				</div>
+			</form>
+		</default-dialog>
+
+	</template>
+
+	<script>
+		Polymer({
+			is: 'prono-groupranking',
+			properties: {
+				token: {
+					type: 'String',
+					value: ''
+				},
+				teams: {
+					type: 'Array',
+				},
+				matchess: {
+					type: 'Array',
+				},
+				group: {
+					type: 'String',
+				}
+			},
+			ready: function(){
+			},
+			roundPoints: function(points){
+				return Math.floor(parseFloat(points));
+			},
+			editPoints: function(){
+				var that = this;
+				if(that.tokenPayload.permission > 5){ 
+					that.newTeams = [];
+					filter = that.filterGroupTeams(that.group,that.matchess);
+					that.teams.forEach(function(team){
+						if( filter(team) ){
+							that.push('newTeams', team);
+						}
+					});
+					that.$.editPoints.open();
+
+					// bug in polymer, manually center dynamically populated dialogs issue # 68
+					that.async(function() {
+		            	that.$.editPoints.center();
+		          	});
+				}
+			},
+			filterGroupTeams: function(group,matchess){
+				// find the matches in the group
+				try{				
+					var matches = matchess.filter(function( match ){
+						return ( match.grp == group );
+					});
+				}
+				catch(e){
+					var matches = [];
+				}
+				var team_ids = [];
+				
+				matches.forEach(function(match){
+					if(team_ids.indexOf(match.team1) == -1){
+						team_ids.push( match.team1 );
+					}
+					if(team_ids.indexOf(match.team2) == -1){
+						team_ids.push( match.team2 );
+					}
+				});
+				return function(item){
+					return ( team_ids.indexOf(item.id) > -1 );
+			  	};
+			},
+			formSubmit: function(){
+				console.log('submit')
+				this.$.form.submit();
+			},
+			save: function(){
+				console.log('save')
+				this.$.editPoints.close();
+
+				this.$.ajaxPut.headers['Authentication'] = this.token;
+				var that = this;
+				this.newTeams.forEach( function(team){
+					that.$.ajaxPut.url = 'api/index.php/teams/'+team.id;
+					that.$.ajaxPut.body = JSON.stringify({'groupstage_points': team.groupstage_points});
+					that.$.ajaxPut.generateRequest();
+				});
+			},
+			handleAjaxPutResponse: function(e){
+				app.$.model.fire('get-teams');
+			},
+			_sortTeams: function(a, b) {  
+  
+				if(parseFloat(a.groupstage_points) > parseFloat(b.groupstage_points)){
+					return -1;
+				}
+				else if(parseFloat(a.groupstage_points) < parseFloat(b.groupstage_points)){
+					return 1;
+				}
+				else{
+					return 0;
+				}
+			},
+		});
+	</script>
+
+</dom-module>
