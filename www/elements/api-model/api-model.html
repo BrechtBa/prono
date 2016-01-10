@@ -1,0 +1,148 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+
+
+<dom-module id="api-model">
+	<template>
+
+		<style>
+		</style>
+
+		<iron-ajax id="post" method="POST" handle-as="json" last-response="{{postResponse}}" on-response="handlePostResponse" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="get" method="GET" handle-as="json" last-response="{{getResponse}}" on-response="handleGetResponse" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="put" method="PUT" handle-as="json" last-response="{{putResponse}}" on-response="handlePutResponse" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="delete" method="DELETE" handle-as="json" last-response="{{deleteResponse}}" on-response="handleDeleteResponse" debounce-duration="300"></iron-ajax>
+
+
+	</template>
+
+	<script>
+		Polymer({
+			is: 'api-model',
+			properties: {
+				token: {
+					type: 'String',
+					value: '',
+					observer: 'tokenChanged'
+				},
+				model: {
+					type: 'Object',
+					notify: true
+				},
+				url: {
+					type: 'String'
+				}
+			},
+			listeners: {
+			},
+			observers: [
+			],
+			ready: function(){
+				var that = this;
+				that.model = {
+					data: [],
+					post: function(data){
+						that.post(data);
+					},
+					get: function(id){
+						that.get(id);
+					},
+					put: function(selector,data){
+						that.put(selector,data);
+					},
+					delete: function(id){
+						that.delete(id);
+					},
+					filterById: function(id){
+						var item = this.data.filter(function(item){
+							return (item.id == id);
+						});
+						return item[0];
+					}
+				}
+			},
+			tokenChanged: function(token){
+				try{
+					var parts = token.split('.');
+					this.header = JSON.parse(atob(parts[0]));
+					this.payload = JSON.parse(atob(parts[1]));
+
+					// set headers
+					this.$.get.headers['Authentication'] = this.token;
+					this.$.post.headers['Authentication'] = this.token;
+					this.$.put.headers['Authentication'] = this.token;
+					this.$.delete.headers['Authentication'] = this.token;
+				}
+				catch(e){
+					// the token is not a JWT
+					this.model.data = [];
+					this.header = {};
+					this.payload = {};
+				}
+			},
+			post: function(data){
+				this.$.post.url = this.url;
+
+				this.$.post.body = JSON.stringify(data);
+				this.$.post.generateRequest();
+			},
+			handlePostResponse(e,request){
+				var location = request.xhr.getResponseHeader('Location');
+				var parts = location.split('/');
+				var id = parts[1];
+
+				// this might not work due to permissions in the api
+				this.get('id/'+id);
+			},
+			get: function(selector){
+				if(typeof selector == 'undefined'){
+					this.$.get.url = this.url;
+				}
+				else{
+					this.$.get.url = this.url + '/' + selector;
+				}
+				this.$.get.generateRequest();
+			},
+			handleGetResponse: function(){
+				var that = this;
+				this.getResponse.forEach(function(item){
+					// check if the item id is in model data
+					if(typeof that.model.data == 'undefined'){
+						that.model.data = [];
+					}
+					var modelitem = that.model.filterById(item.id);
+
+					if(typeof modelitem == 'undefined'){
+						that.push('model.data',item);
+					}
+					else{
+						for(var k in item) modelitem[k] = item[k];
+					}
+				});
+				console.log(this.model);
+			},
+			put: function(selector,data){
+				this.$.put.url = this.url + '/' + selector;
+
+				this.$.put.body = JSON.stringify(data);
+				this.$.put.generateRequest();
+			},
+			handlePutResponse: function(e,request){
+				var location = request.xhr.getResponseHeader('Location');
+				var parts = location.split('/');
+				var selector = parts.slice(1).join('/');
+
+				this.get(selector);
+			},
+			delete: function(selector){
+				this.$.delete.url = this.url + '/' + selector;
+				this.$.delete.generateRequest();
+			},
+			handleDeleteResponse(e,request){
+				this.get();
+			}
+		});
+	</script>
+
+</dom-module>

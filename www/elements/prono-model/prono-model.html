@@ -3,6 +3,7 @@
 <link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
 
 <link rel="import" href="../../elements/parse-token/parse-token.html">
+<link rel="import" href="../../elements/api-model/api-model.html">
 
 <dom-module id="prono-model">
 	<template>
@@ -11,7 +12,19 @@
 		</style>
 
 		<parse-token token="{{token}}" payload="{{tokenPayload}}"></parse-token>
+
+		<!--<api-model token="[[token]]" url="api/index.php/teams" model="{{teamsModel}}"></api-model>
+		<api-model token="[[token]]" url="api/index.php/matches" model="{{matchesModel}}"></api-model>
+
+		<api-model token="[[token]]" url="api/index.php/rules" model="{{rulesModel}}"></api-model>
+		<api-model token="[[token]]" url="api/index.php/users_profiles" model="{{usersModel}}"></api-model>
+
+		<api-model token="[[token]]" url="api/index.php/prono_score/user_id/{{}}" model="{{pronoScoreModel}}"></api-model>
+		<api-model token="[[token]]" url="api/index.php/prono_team" model="{{pronoTeamModel}}"></api-model>
+		<api-model token="[[token]]" url="api/index.php/prono_stage" model="{{pronoStageModel}}"></api-model>
+		<api-model token="[[token]]" url="api/index.php/prono_number" model="{{pronoNumberModel}}"></api-model>-->
 		
+
 		<iron-ajax id="getTeams" url="../../api/index.php/teams" method="GET" handle-as="json" last-response="{{teams}}" debounce-duration="300"></iron-ajax>
 		<iron-ajax id="getGroups" url="../../api/index.php/groups" method="GET" handle-as="json" last-response="{{groups}}" debounce-duration="300"></iron-ajax>
 		<iron-ajax id="getMatches" url="../../api/index.php/matches" method="GET" handle-as="json" last-response="{{matchess}}" debounce-duration="300"></iron-ajax>

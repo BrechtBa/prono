@@ -152,18 +152,33 @@
 						switch(sizeof($loc)){
 							case 2:
 								$query = sprintf( "UPDATE %s SET %s WHERE id=%s" ,$loc[0],implode(',',$keyvals),$loc[1] );
+								$id_query = sprintf( "SELECT id FROM %s WHERE id=%s" ,$loc[0],$loc[1] );
 								break;
 							case 3:
 								$query = sprintf( "UPDATE %s SET %s WHERE %s='%s'" ,$loc[0],implode(',',$keyvals),$loc[1],$loc[2] );
+								$id_query = sprintf( "SELECT id FROM %s WHERE %s='%s'" ,$loc[0],$loc[1],$loc[2] );
 								break;
 							case 5:
 								$query = sprintf( "UPDATE %s SET %s WHERE %s='%s' AND %s='%s'" ,$loc[0],implode(',',$keyvals),$loc[1],$loc[2],$loc[3],$loc[4] );
+								$id_query = sprintf( "SELECT id FROM %s WHERE %s='%s' AND %s='%s'" ,$loc[0],$loc[1],$loc[2],$loc[3],$loc[4] );
 								break;
 						}
 
 						$stmt = $db->prepare($query);
 						$stmt->execute();
 
+
+						// generate the uri to get the last inserted item
+						/*$stmt = $db->query($id_query);
+						$stmt->setFetchMode(PDO::FETCH_ASSOC);
+						$row = $stmt->fetch();
+						$id = $row['id'];*/
+
+						
+						//$response_location = sprintf('%s/%s',$loc[0],$id);
+
+						// return the selector used in the put request as location
+						$response_location = implode ('/',$loc);
 						$response_http = response_http(201);
 					}
 					else{
