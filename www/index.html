@@ -128,36 +128,36 @@
 
 							<section class="page" data-route="ranking">
 								<h2 class="page-title">Ranking</h2>
-								<prono-ranking token="[[token]]" users="[[users]]" user="[[user]]"></prono-ranking>
+								<!--<prono-ranking token="{{token}}" users-model="{{usersModel}}" user="{{user}}"></prono-ranking>-->
 							</section>
 
 							<section class="page" data-route="pron">
-								<h2 class="page-title">Prono</h2>
+								<!--<h2 class="page-title">Prono</h2>
 								<h3 class="page-title">Group stage</h3>
 								<prono-groupstage token="[[token]]" teams="[[teams]]" groups="[[groups]]" matchess="[[matchess]]" user="[[tokenPayload.user_id]]" current-stage="[[tokenPayload.stage]]" prono-score="[[pronoScore]]" prono-team="[[pronoTeam]]"></prono-groupstage>
 								<h3 class="page-title">Knockout stage</h3>
-								<prono-knockoutstage token="[[token]]" teams="[[teams]]" matchess="[[matchess]]" user="[[tokenPayload.user_id]]" current-stage="[[tokenPayload.stage]]" prono-score="[[pronoScore]]"></prono-knockoutstage>
+								<prono-knockoutstage token="[[token]]" teams="[[teams]]" matchess="[[matchess]]" user="[[tokenPayload.user_id]]" current-stage="[[tokenPayload.stage]]" prono-score="[[pronoScore]]"></prono-knockoutstage>-->
 							</section>
 
 							<section class="page" data-route="results">
-								<h2 class="page-title">Results</h2>
+								<!--<h2 class="page-title">Results</h2>
 								<h3 class="page-title">Group stage</h3>
 								<prono-groupstage token="[[token]]" teams="[[teams]]" groups="[[groups]]" matchess="[[matchess]]" user="0"></prono-groupstage>
 								<h3 class="page-title">Knockout stage</h3>
-								<prono-knockoutstage token="[[token]]" teams="[[teams]]" matchess="[[matchess]]" user="0"></prono-knockoutstage>
+								<prono-knockoutstage token="[[token]]" teams="[[teams]]" matchess="[[matchess]]" user="0"></prono-knockoutstage>-->
 							</section>
 
 							<section class="page" data-route="profile">
-								<h2 class="page-title">Profile</h2>
-								<user-profile token="[[token]]" user="[[user]]"></user-profile>
+								<!--<h2 class="page-title">Profile</h2>
+								<user-profile token="[[token]]" user="[[user]]"></user-profile>-->
 							</section>
 
 							<section class="page" data-route="config">
 								<h2 class="page-title">Matches</h2>
-								<prono-matches-list token="[[token]]" teams="[[teams]]" groups="[[groups]]" matchess="[[matchess]]"></prono-matches-list>
+								<!--<prono-matches-list token="[[token]]" teams="[[teams]]" groups="[[groups]]" matchess="[[matchess]]"></prono-matches-list>-->
 
 								<h2 class="page-title">Teams</h2>
-								<prono-teams-list token="[[token]]" teams="[[teams]]"></prono-teams-list>
+								<!--<prono-teams-list token="[[token]]" teams="[[teams]]"></prono-teams-list>-->
 							</section>
 
 							<section class="page" data-route="users">
@@ -176,7 +176,7 @@
 
 			<renew-token token="{{token}}"></renew-token>
 			<parse-token token="{{token}}" payload="{{tokenPayload}}"></parse-token>
-			<prono-model id="model" token="{{token}}" teams="{{teams}}" groups="{{groups}}" matchess="{{matchess}}" prono-score="{{pronoScore}}" prono-team="{{pronoTeam}}" rules="{{rules}}" users="{{users}}" user="{{user}}"></prono-model>
+			<prono-model id="model" token="[[token]]" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" prono-score-model="{{pronoScoreModel}}" prono-team-model="{{pronoTeamModel}}" rules-model="{{rulesModel}}" users-model="{{usersModel}}" groups="{{groups}}" stages="{{stages}}" user="{{user}}"></prono-model>
 	
 		</template>
 

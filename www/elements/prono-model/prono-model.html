@@ -13,39 +13,19 @@
 
 		<parse-token token="{{token}}" payload="{{tokenPayload}}"></parse-token>
 
-		<!--<api-model token="[[token]]" url="api/index.php/teams" model="{{teamsModel}}"></api-model>
-		<api-model token="[[token]]" url="api/index.php/matches" model="{{matchesModel}}"></api-model>
+		<api-model id="teamsModel" token="[[token]]" url="../../api/index.php/teams" model="{{teamsModel}}"></api-model>
+		<api-model id="matchesModel" token="[[token]]" url="../../api/index.php/matches" model="{{matchesModel}}"></api-model>
 
-		<api-model token="[[token]]" url="api/index.php/rules" model="{{rulesModel}}"></api-model>
-		<api-model token="[[token]]" url="api/index.php/users_profiles" model="{{usersModel}}"></api-model>
+		<api-model id="rulesModel" token="[[token]]" url="../../api/index.php/rules" model="{{rulesModel}}"></api-model>
+		<api-model id="usersModel" token="[[token]]" url="../../api/index.php/user_profiles" model="{{usersModel}}" on-change="checkUserProfile"></api-model>
 
-		<api-model token="[[token]]" url="api/index.php/prono_score/user_id/{{}}" model="{{pronoScoreModel}}"></api-model>
-		<api-model token="[[token]]" url="api/index.php/prono_team" model="{{pronoTeamModel}}"></api-model>
-		<api-model token="[[token]]" url="api/index.php/prono_stage" model="{{pronoStageModel}}"></api-model>
-		<api-model token="[[token]]" url="api/index.php/prono_number" model="{{pronoNumberModel}}"></api-model>-->
-		
-
-		<iron-ajax id="getTeams" url="../../api/index.php/teams" method="GET" handle-as="json" last-response="{{teams}}" debounce-duration="300"></iron-ajax>
-		<iron-ajax id="getGroups" url="../../api/index.php/groups" method="GET" handle-as="json" last-response="{{groups}}" debounce-duration="300"></iron-ajax>
-		<iron-ajax id="getMatches" url="../../api/index.php/matches" method="GET" handle-as="json" last-response="{{matchess}}" debounce-duration="300"></iron-ajax>
-		
-		<iron-ajax id="getPronoScore" url="../../api/index.php/prono_score" method="GET" handle-as="json" last-response="{{pronoScore}}" on-response="checkPronoScore" debounce-duration="300"></iron-ajax>
-		<iron-ajax id="getPronoTeam" url="../../api/index.php/prono_team" method="GET" handle-as="json" last-response="{{pronoTeam}}"  on-response="checkPronoTeam" debounce-duration="300"></iron-ajax>
-		<iron-ajax id="getPronoStage" url="../../api/index.php/prono_stage" method="GET" handle-as="json" last-response="{{pronoStage}}" debounce-duration="300"></iron-ajax>
-		<iron-ajax id="getPronoNumber" url="../../api/index.php/prono_number" method="GET" handle-as="json" last-response="{{pronoNumber}}" debounce-duration="300"></iron-ajax>
-		
-		<iron-ajax id="postPronoScore" url="../../api/index.php/prono_score" method="POST" handle-as="json" on-response="handlePostPronoScoreResponse" debounce-duration="300"></iron-ajax>
-		<iron-ajax id="postPronoTeam" url="../../api/index.php/prono_team" method="POST" handle-as="json" debounce-duration="300"></iron-ajax>
-		<iron-ajax id="postPronoStage" url="../../api/index.php/prono_stage" method="POST" handle-as="json" debounce-duration="300"></iron-ajax>
-		<iron-ajax id="postPronoNumber" url="../../api/index.php/prono_number" method="POST" handle-as="json" debounce-duration="300"></iron-ajax>
-		
-		<iron-ajax id="getRules" url="../../api/index.php/rules/1" method="GET" handle-as="json" last-response="{{rules}}" debounce-duration="300"></iron-ajax>
-		<iron-ajax id="getUserProfiles" url="../../api/index.php/user_profiles" method="GET" handle-as="json" last-response="{{users}}" on-response="checkUserProfile" debounce-duration="300"></iron-ajax>
-		<iron-ajax id="putUserProfiles" url="../../api/index.php/user_profiles" method="PUT" handle-as="json" on-response="handlePutUserProfilesResponse" debounce-duration="300"></iron-ajax>		
-		<iron-ajax id="postUserProfiles" url="../../api/index.php/user_profiles" method="POST" handle-as="json" on-response="handlePostUserProfilesResponse" debounce-duration="300"></iron-ajax>
-		
-		<iron-ajax id="getAllPronoScore" url="../../api/index.php/prono_score" method="GET" handle-as="json" last-response="{{allPronoScore}}" debounce-duration="300"></iron-ajax>
-		
+		<api-model id="pronoScoreModel" token="[[token]]" url="../../api/index.php/prono_score/user_id/{{user.id}}" model="{{pronoScoreModel}}" on-change="checkPronoScore"></api-model>
+		<api-model id="pronoTeamModel" token="[[token]]" url="../../api/index.php/prono_team/user_id/{{user.id}}" model="{{pronoTeamModel}}" on-change="checkPronoTeam"></api-model>
+		<api-model id="pronoStageModel" token="[[token]]" url="../../api/index.php/prono_stage/user_id/{{tokenPayload.user_id}}" model="{{pronoStageModel}}"></api-model>
+		<api-model id="pronoNumberModel" token="[[token]]" url="../../api/index.php/prono_number/user_id/{{tokenPayload.user_id}}" model="{{pronoNumberModel}}"></api-model>
+	
+		<api-model id="allPronoScoreModel" token="[[token]]" url="../../api/index.php/prono_score/" model="{{allPronoScoreModel}}"></api-model>	
+		<api-model id="allPronoTeamModel" token="[[token]]" url="../../api/index.php/prono_team/" model="{{allPronoTeamModel}}"></api-model>	
 
 	</template>
 
@@ -56,266 +36,169 @@
 				token: {
 					type: 'String',
 					value: '',
-					notify: true,
 					observer: 'tokenChanged'
 				},
-				rules: {
+				rulesModel: {
 					type: 'Array',
 					notify: true
 				},
-				users: {
+				usersModel: {
+					type: 'Array',
+					notify: true
+				},
+				teamsModel: {
+					type: 'Array',
+					notify: true
+				},
+				matchesModel: {
+					type: 'Array',
+					notify: true
+				},
+				pronoScoreModel: {
+					type: 'Array',
+					notify: true
+				},
+				pronoTeamModel: {
+					type: 'Array',
+					notify: true
+				},
+				allPronoScoreModel: {
+					type: 'Array',
+					notify: false
+				},
+				groups: {
+					type: 'Array',
+					notify: true
+				},
+				stages: {
 					type: 'Array',
 					notify: true
 				},
 				user: {
 					type: 'Object',
-					notify: true
-				},
-				teams: {
-					type: 'Array',
-					notify: true
-				},
-				matchess: {
-					type: 'Array',
-					notify: true
-				},
-				groups: {
-					type: 'Array',
 					notify: true,
-					computed: 'getGroups(matchess)'
-				},
-				stages: {
-					type: 'Array',
-					notify: true,
-					computed: 'getStages(matchess)'
-				},
-				pronoScore: {
-					type: 'Array',
-					notify: true
-				},
-				pronoTeam: {
-					type: 'Array',
-					notify: true
-				},
-				allPronoScore: {
-					type: 'Array',
-					notify: false
+					value: {}
 				},
 			},
 			listeners: {
-				'get-rules': 'getRules',
-				'get-users': 'getUsers',
-				'get-teams': 'getTeams',
-				'get-matches': 'getMatches',
-				'get-prono-score': 'getPronoScoreEvent',
-				'get-prono-team': 'getPronoTeamEvent',
 			},
 			observers: [
-				'getPronoScore(token,tokenPayload,matchess)',
-				'getPronoTeam(token,tokenPayload,groups,stages,teams)',
-				'calculatePoints(token,tokenPayload,users,rules,groups,stages,teams,matchess,allPronoScore)'
+				'getGroups(matchesModel)',
+				'getStages(matchesModel)',
+				'getPronoScore(user,matchesModel)',
+				'getPronoTeam(user,groups,stages)',
+				'calculatePoints(usersModel,matchesModel,allPronoScoreModel)',
 			],
 			tokenChanged: function(){
-				this.getRules();
-				this.getUsers();
-				this.getTeams();
-				this.getMatches();
-			},
-			getRules: function(){
-				if( this.token != ''){
-					console.log('getting rules');
-					this.$.getRules.headers['Authentication'] = this.token;
-					this.$.getRules.generateRequest();
+				try{
+					console.log('loading models');
+					this.$.rulesModel.get();
+					this.$.usersModel.get();
+					this.$.teamsModel.get();
+					this.$.matchesModel.get();
+
+					if(this.tokenPayload.permission > 5){
+						console.log('loading confidential models');
+						this.$.allPronoScoreModel.get();
+					}
 				}
-				else{
-					this.rules = [];
-				}
-			},
-			getUsers: function(){
-				if( this.token != ''){
-					console.log('getting users');
-					this.$.getUserProfiles.headers['Authentication'] = this.token;
-					this.$.getUserProfiles.generateRequest();
-				}
-				else{
-					this.users = [];
-					this.user = {};
+				catch(e){
+
 				}
 			},
-			getTeams: function(){
-				if( this.token != ''){
-					console.log('getting teams');
-					this.$.getTeams.headers['Authentication'] = this.token;
-					this.$.getTeams.generateRequest();
-				}
-				else{
-					this.teams = [];
-				}
-			},
-			getMatches: function(){
-				if( this.token != ''){
-					console.log('getting matches');
-					this.$.getMatches.headers['Authentication'] = this.token;
-					this.$.getMatches.generateRequest();
-				}
-				else{
-					this.matchess = [];
-				}
-				this.getAllPronoScore();
-			},
-			getAllPronoScore: function(){
-				if(this.token != '' && this.tokenPayload.permission>5){
-					console.log('getting all prono score');
-					this.$.getAllPronoScore.headers['Authentication'] = this.token;
-					this.$.getAllPronoScore.generateRequest();
-				}
-				else{
-					this.allPronoScore = [];
-				}
-			},
-			getGroups: function(matchess){
+			getGroups: function(matchesModel){
+				console.log('get groups');
 				var groups = [];
-				try{
-					matchess.forEach(function(match){
-						if(match.stage == 0 && groups.indexOf(match.grp)==-1){
-							groups.push(match.grp);
-						}
-					});
-				}
-				catch(e){
-				}
-				return groups;
+				this.matchesModel.forEach(function(match){
+					if(match.stage == 0 && groups.indexOf(match.grp)==-1){
+						groups.push(match.grp);
+					}
+				});
+				this.groups = groups;
 			},
-			getStages: function(matchess){
+			getStages: function(matchesModel){
 				var stages = [];
-				try{
-					matchess.forEach(function(match){
-						if(match.stage > 0 && stages.indexOf(match.stage)==-1){
-							stages.push(match.stage);
-						}
-					});
-				}				
-				catch(e){
-				}
-				return stages;
+				this.matchesModel.forEach(function(match){
+					if(match.stage > 0 && stages.indexOf(match.stage)==-1){
+						stages.push(match.stage);
+					}
+				});
+				this.stages = stages;
 			},
-			getPronoScoreEvent: function(){
-				this.getPronoScore(this.token,this.tokenPayload);
-			},
-			getPronoScore: function(token,tokenPayload,matchess){
-				try{
-					console.log('getting prono score for user ' + tokenPayload.user_id);
-					this.$.getPronoScore.headers['Authentication'] = token;
-					this.$.getPronoScore.url = 'api/index.php/prono_score/user_id/'+ tokenPayload.user_id
-					this.$.getPronoScore.generateRequest();
-				}
-				catch(e){
-					this.pronoScore = [];
+			getPronoScore: function(user,matchesModel){
+				if( typeof user.id != 'undefined' && matchesModel.length > 0 ){
+					this.$.pronoScoreModel.get();
 				}
 			},
-			getPronoTeamEvent: function(){
-				this.getPronoTeam(this.token,this.tokenPayload);
-			},
-			getPronoTeam: function(token,tokenPayload,groups,stages,teams){
-				try{
-					console.log('getting prono team for user ' +tokenPayload.user_id);
-					this.$.getPronoTeam.headers['Authentication'] = token;
-					this.$.getPronoTeam.url = 'api/index.php/prono_team/user_id/'+tokenPayload.user_id
-					this.$.getPronoTeam.generateRequest();
-				}
-				catch(e){
-					this.pronoTeam = [];
+			getPronoTeam: function(user,groups,stages){
+				if( typeof user.id != 'undefined' && groups.length > 0 && stages.length > 0){
+					this.$.pronoTeamModel.get();
 				}
 			},
-			getPronoStage: function(token,tokenPayload,stages){
-				try{
-					console.log('getting prono stage for user ' +tokenPayload.user_id);
-					this.$.getPronoStage.headers['Authentication'] = token;
-					this.$.getPronoStage.url = 'api/index.php/prono_stage/user_id/'+tokenPayload.user_id
-					this.$.getPronoStage.generateRequest();
-				}
-				catch(e){
-					this.pronoStage = [];
-				}
+			getPronoStage: function(user,stages){
+				this.$.pronoStageModel.get();
 			},
-			getPronoNumber: function(token,tokenPayload){
-				try{
-					console.log('getting prono number for user ' +tokenPayload.user_id);
-					this.$.getPronoNumber.headers['Authentication'] = token;
-					this.$.getPronoNumber.url = 'api/index.php/prono_number/user_id/'+tokenPayload.user_id
-					this.$.getPronoNumber.generateRequest();
-				}
-				catch(e){
-					this.pronoNumber = [];
-				}
+			getPronoNumber: function(user){
+				this.$.pronoNumberModel.get();
 			},
 			checkUserProfile: function(){
+				console.log('check user profile');
 				try{
 					var that = this;
-					var user = that.users.filter(function( item ) {
-						return item.user_id == that.tokenPayload.user_id;
-					});
-					if(user.length > 0){
-						this.user = user[0];
+					
+					if( typeof that.tokenPayload.user_id != 'undefined' ){
+						var user = that.usersModel.filter(function( item ) {
+							return item.user_id == that.tokenPayload.user_id;
+						});
+						if(user.length > 0){
+							this.user = user[0];
+						}
+						else{
+							console.log('create user profile');
+							// the user has no profile, it must be created
+							that.$.usersModel.post({'user_id': this.tokenPayload.user_id, 'name': this.tokenPayload.login, 'avatar': ''});
+						}
 					}
 					else{
-						// the user has no profile, it must be created
-						that.$.postUserProfiles.headers['Authentication'] = this.token;
-						that.$.postUserProfiles.url = 'api/index.php/user_profiles';
-						that.$.postUserProfiles.body = JSON.stringify({'user_id': this.tokenPayload.user_id, 'name': this.tokenPayload.login, 'avatar': ''});
-						that.$.postUserProfiles.generateRequest();
+						this.user = {};
 					}
 				}
 				catch(e){
 					this.user = {};
 				}
 			},
-			handlePostUserProfilesResponse: function(){
-				this.getUsers();
-			},
 			checkPronoScore: function(){
+				console.log('check prono score');
 				try{
 					var that = this;
-					var reload = false;
-					this.matchess.forEach(function(match){
+					this.matchesModel.every(function(match){
 				
 						// check if the match_id is in pronoScore
 						var found = false;
-						that.pronoScore.forEach(function(prono){
+						that.pronoScoreModel.forEach(function(prono){
 							if(prono.match_id == match.id){
 								found = true;
 							}
 						});
 
 						if(!found ){
-							reload = true;
+							console.log(that.pronoScoreModel);
 							// the match has no prono, it must be created
-							var data = {'user_id':that.tokenPayload.user_id,'match_id':match.id,'score1':-1,'score2':-1,'penalty1':-1,'penalty2':-1};
-							
-							that.$.postPronoScore.headers['Authentication'] = that.token;
-							that.$.postPronoScore.url = 'api/index.php/prono_score';
-							that.$.postPronoScore.body = JSON.stringify(data);
-							that.$.postPronoScore.generateRequest();
-							that.push('pronoScore',data);
+							console.log('adding prono score '+match.id);
+							that.$.pronoScoreModel.post({'user_id':that.tokenPayload.user_id,'match_id':match.id,'score1':-1,'score2':-1,'penalty1':-1,'penalty2':-1});
 						}
+						return found;
 					});
-					if(reload){
-						// wait for a while						
-						setTimeout(function(){
-							that.getPronoScore(that.token,that.tokenPayload,that.matchess);
-						},5000);
-					}
 				}
 				catch(e){
 				}
 			},
-			handlePostPronoScoreResponse: function(){
-			},
 			checkPronoTeam: function(){
+				console.log('check prono team');
 				try{
 					var that = this;
 					// check which prono's should be present
-					var pronos = []
+					var pronos = [];
 					// group winner and runner up
 					this.groups.forEach(function(group){
 						pronos.push(group + '1');
@@ -327,55 +210,38 @@
 							pronos.push('stage' + stage + '_'+ i);
 						}
 					});
-
-					var reload = false;
-					pronos.forEach(function(prono){
+					
+					pronos.every(function(prono){
 						// check if the prono is in pronoTeam
 						var found = false;
-						pronoTeam.forEach(function(tempprono){
+						that.pronoTeamModel.forEach(function(tempprono){
 							if(tempprono.prono == prono){
 								found = true;
 							}
 						});
 
 						if(!found){
-							reload = true;
 							// post the prono
-							var data = {'user_id':that.tokenPayload.user_id,'prono':prono,'team_id':-1};
-							that.$.postPronoTeam.headers['Authentication'] = that.token;
-							that.$.postPronoTeam.url = 'api/index.php/prono_team';
-							that.$.postPronoTeam.body = JSON.stringify(data);
-							that.$.postPronoTeam.generateRequest();
-							that.push('pronoTeam',data);
-							console.log(data);
+							console.log('adding prono team '+prono);
+							that.$.pronoTeamModel.post({'user_id':that.tokenPayload.user_id,'prono':prono,'team_id':-1});
 						}
+						return found;
 					});
-					if(reload){
-						// wait for a while						
-						setTimeout(function(){
-							that.getPronoTeam(that.token,that.tokenPayload,that.groups,that.stages,that.teams);
-						},5000);
-					}
 				}
 				catch(e){
 				}
 			},
-			handlePostPronoTeamResponse: function(){
-			},
-			handlePutUserProfilesResponse: function(){
-				this.getUsers();
-			},
-			calculatePoints: function(token,tokenPayload,users,rules,groups,stages,teams,matchess,allPronoScore){
-				if(tokenPayload.permission>5){
+			calculatePoints: function(usersModel,matchesModel,allPronoScoreModel){
+				if(this.tokenPayload.permission>5 && usersModel.length>0 && matchesModel.length>0 && allPronoScoreModel.length>0){
 
 					var that = this;
 					console.log('calculate points')
 
-					users.forEach(function(user){
+					that.usersModel.forEach(function(user){
 						var points = 0;
 
 						// get the users score prono
-						var prono = allPronoScore.filter(function( prono ){
+						var prono = that.allPronoScoreModel.filter(function( prono ){
 							return ( prono.user_id==user.id );
 						});
 						
@@ -394,10 +260,7 @@
 
 						if(user.points != points){
 							// write points to database
-							that.$.putUserProfiles.headers['Authentication'] = that.token;
-							that.$.putUserProfiles.url = 'api/index.php/user_profiles/user_id/'+user.id;
-							that.$.putUserProfiles.body = JSON.stringify({'points':points});
-							that.$.putUserProfiles.generateRequest();
+							that.$.usersModel.put('user_id/'+user.id,{'points':points});
 						}
 					});
 					
@@ -407,7 +270,7 @@
 				var that = this;
 				
 				// get the matches of the stage
-				var matches = that.matchess.filter(function( match ){
+				var matches = that.matchesModel.filter(function( match ){
 					return ( match.stage==stage );
 				});
 
@@ -432,7 +295,7 @@
 				var that = this;
 				
 				// get the matches of the stage
-				var matches = that.matchess.filter(function( match ){
+				var matches = that.matchesModel.filter(function( match ){
 					return ( match.stage==stage );
 				});
 
