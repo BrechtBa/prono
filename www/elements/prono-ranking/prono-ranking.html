@@ -41,7 +41,7 @@
 			
 		</style>
 
-		<template is="dom-repeat" items="{{users}}" as="item" sort="_sortUsers">
+		<template is="dom-repeat" items="{{usersModel}}" as="item" sort="_sortUsers">
 			<paper-card elevation="2" class$="horizontal layout center {{userClass(item,user)}}" on-tap="showDetails">
 				<div class="ranking">{{ranking(index)}}</div>
 				<avatar-image class="avatar" user="{{item}}"></avatar-image>
@@ -65,7 +65,7 @@
 					type: 'String',
 					value: ''
 				},
-				users: {
+				usersModel: {
 					type: 'Array',
 					value: []
 				},

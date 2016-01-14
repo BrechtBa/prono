@@ -76,23 +76,23 @@
 				<paper-material elevation="2" class="group vertical layout">
 					<h3>Group {{group}}</h3>
 					<div class="matches">
-						<template is="dom-repeat" items="{{matchess}}" as="match" filter="{{filterGroupMatches(group)}}">
+						<template is="dom-repeat" items="{{matchesModel}}" as="match" filter="{{filterGroupMatches(group)}}">
 							<div class="match horizontal layout center center-justified" on-tap="editScore">
-								<div class="teamname left flex"><prono-team-name team="{{getTeam(match.team1,teams)}}" default="{{match.defaultteam1}}"></prono-team-name></div>
-								<div><prono-team-icon class="teamicon" team="{{getTeam(match.team1,teams)}}"></prono-team-icon></div>
+								<div class="teamname left flex"><prono-team-name team="{{getTeam(match.team1,teamsModel)}}" default="{{match.defaultteam1}}"></prono-team-name></div>
+								<div><prono-team-icon class="teamicon" team="{{getTeam(match.team1,teamsModel)}}"></prono-team-icon></div>
 								<div class="score">{{getScore1(match,user,pronoScore)}} - {{getScore2(match,user,pronoScore)}}</div>
-								<div><prono-team-icon class="teamicon" team="{{getTeam(match.team2,teams)}}"></prono-team-icon></div>
-								<div class="teamname right flex"><prono-team-name team="{{getTeam(match.team2,teams)}}" default="{{match.defaultteam2}}"></prono-team-name></div>
+								<div><prono-team-icon class="teamicon" team="{{getTeam(match.team2,teamsModel)}}"></prono-team-icon></div>
+								<div class="teamname right flex"><prono-team-name team="{{getTeam(match.team2,teamsModel)}}" default="{{match.defaultteam2}}"></prono-team-name></div>
 							</div>
 						</template>
 					</div>
 					
 					<template is="dom-if" if="{{showGroupWinners(user)}}">
-						<prono-groupwinners token="{{token}}" user="{{user}}" group="{{group}}" teams="{{teams}}" matchess="{{matchess}}" prono-team="{{pronoTeam}}"></prono-groupwinners>
+						<prono-groupwinners token="{{token}}" user="{{user}}" group="{{group}}" teams="{{teamsModel}}" matches-model="{{matchesModel}}" prono-team-model="{{pronoTeamModel}}"></prono-groupwinners>
 					</template>
 
 					<template is="dom-if" if="{{showGroupRanking(user)}}">
-						<prono-groupranking token="{{token}}" group="{{group}}" teams="{{teams}}" matchess="{{matchess}}"></prono-groupranking>
+						<prono-groupranking token="{{token}}" group="{{group}}" teamsModel="{{teamsModel}}" matchesModel="{{matchesModel}}"></prono-groupranking>
 					</template>
 
 				</paper-material>
@@ -115,22 +115,22 @@
 					type: 'Number',
 					value: 0
 				},
-				teams: {
+				teamsModel: {
 					type: 'Array'
+				},
+				matchesModel: {
+					type: 'Array',
+				},
+				pronoScoreModel: {
+					type: 'Array',
+					value: []
+				},
+				pronoTeamModel: {
+					type: 'Array',
+					value: []
 				},
 				groups: {
 					type: 'Array'
-				},
-				matchess: {
-					type: 'Array',
-				},
-				pronoScore: {
-					type: 'Array',
-					value: []
-				},
-				pronoTeam: {
-					type: 'Array',
-					value: []
 				},
 				currentStage:{
 					type: 'Number',

@@ -77,7 +77,7 @@
 						</div>
 						<div class="score horizontal layout center center-justified">
 							<div><span>{{formatScore(match.score1)}}</span> - <span>{{formatScore(match.score2)}}</span></div>
-							<div hidden="{{!penaltiesTaken(item)}}">(<span>{{match.penalty1}}</span> - <span>{{match.penalty2}}</span>)</div>												
+							<div hidden="{{!penaltiesTaken(match)}}">(<span>{{match.penalty1}}</span> - <span>{{match.penalty2}}</span>)</div>												
 						</div>
 						<div class="team flex-1">
 							<div>{{match.defaultteam2}}</div>
@@ -119,7 +119,7 @@
 					<paper-dropdown-menu id="team1" label="Team 1">
 						<paper-menu class="dropdown-content" attr-for-selected="value" selected="{{match.team1}}">
 							<paper-item value="0"></paper-item>
-							<template is="dom-repeat" items="{{teams}}" as="team" sort="_sortTeams">
+							<template is="dom-repeat" items="{{teamsModel}}" as="team" sort="_sortTeams">
 								<paper-item value="{{team.id}}">{{team.name}}</paper-item>
 							</template>
 						</paper-menu>
@@ -130,7 +130,7 @@
 					<paper-dropdown-menu id="team2" label="Team 2">
 						<paper-menu class="dropdown-content" attr-for-selected="value" selected="{{match.team2}}">
 							<paper-item value="0"></paper-item>
-							<template is="dom-repeat" items="{{teams}}" as="team" sort="_sortTeams">
+							<template is="dom-repeat" items="{{teamsModel}}" as="team" sort="_sortTeams">
 								<paper-item value="{{team.id}}">{{team.name}}</paper-item>
 							</template>
 						</paper-menu>
@@ -248,7 +248,7 @@
 			},
 			formatTeamName: function(id,teamsModel){
 				var name = '';
-				teams.forEach(function(item){
+				teamsModel.forEach(function(item){
 					if(item.id == id){
 						name = item.name;
 					}
