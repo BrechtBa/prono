@@ -34,9 +34,6 @@
 				background: var(--button-background-primary-color);
 				color: var(--button-text-primary-color);
 			}
-			.id{
-				width: 30px;
-			}
 			.date{
 				text-align: right;
 			}
@@ -60,37 +57,31 @@
 			}
 		</style>
 		
-		<iron-ajax id="ajaxPost" method="POST" handle-as="json" on-response="handleAjaxPostResponse" last-response="{{ajaxPostResponse}}" debounce-duration="300"></iron-ajax>
-		<iron-ajax id="ajaxPut" method="PUT" handle-as="json" on-response="handleAjaxPutResponse" last-response="{{ajaxPutResponse}}" debounce-duration="300"></iron-ajax>
-		<iron-ajax id="ajaxDelete" method="DELETE" handle-as="json" on-response="handleAjaxDeleteResponse" last-response="{{ajaxDeleteResponse}}" debounce-duration="300"></iron-ajax>
 
-		<template is="dom-repeat" items="{{matchess}}" sort="_sortMatches">
+		<template is="dom-repeat" items="{{matchesModel}}" as="match" sort="_sortMatches">
 			<paper-card elevation="2" on-tap="editMatch" class="horizontal layout">
-				<div class="id">
-					{{item.id}}
-				</div>
 				<div class="flex vertical layout">
 					<div class="horizontal layout">
 						<div class="date flex">
-							{{formatDate(item.date)}}
+							{{formatDate(match.date)}}
 						</div>
 					</div>
 					<div class="horizontal layout center">
-						<div class="flex-1">Stage: {{item.stage}}</div>
-						<div class="flex-2">Group: {{item.grp}}</div>
+						<div class="flex-1">Stage: {{match.stage}}</div>
+						<div class="flex-2">Group: {{match.grp}}</div>
 					</div>
 					<div class="teams horizontal layout">
 						<div class="team flex-1">
-							<div>{{item.defaultteam1}}</div>
-							<div>{{formatTeamName(item.team1,teams)}}</div>
+							<div>{{match.defaultteam1}}</div>
+							<div>{{formatTeamName(match.team1,teamsModel)}}</div>
 						</div>
 						<div class="score horizontal layout center center-justified">
-							<div><span>{{formatScore(item.score1)}}</span> - <span>{{formatScore(item.score2)}}</span></div>
-							<div hidden="{{!penaltiesTaken(item)}}">(<span>{{item.penalty1}}</span> - <span>{{item.penalty2}}</span>)</div>												
+							<div><span>{{formatScore(match.score1)}}</span> - <span>{{formatScore(match.score2)}}</span></div>
+							<div hidden="{{!penaltiesTaken(item)}}">(<span>{{match.penalty1}}</span> - <span>{{match.penalty2}}</span>)</div>												
 						</div>
 						<div class="team flex-1">
-							<div>{{item.defaultteam2}}</div>
-							<div>{{formatTeamName(item.team2,teams)}}</div>
+							<div>{{match.defaultteam2}}</div>
+							<div>{{formatTeamName(match.team2,teamsModel)}}</div>
 						</div>
 					</div>
 				</div>
@@ -100,7 +91,6 @@
 	
 	
 		<default-dialog id="editMatch">
-			<paper-input label="id" value={{newid}}></paper-input>
 			<paper-input label="Date" value={{newdate}} auto-validate pattern="[0-9][0-9]-[0-9][0-9]-[0-9][0-9][0-9][0-9] [0-9][0-9]:[0-9][0-9]" error-message="dd-mm-yyyy HH:MM"></paper-input>
 			<div class="horizontal layout wrap">
 				<div class="flex-4">
@@ -129,8 +119,8 @@
 					<paper-dropdown-menu id="team1" label="Team 1">
 						<paper-menu class="dropdown-content" attr-for-selected="value" selected="{{match.team1}}">
 							<paper-item value="0"></paper-item>
-							<template is="dom-repeat" items="{{teams}}" sort="_sortTeams">
-								<paper-item value="{{item.id}}">{{item.name}}</paper-item>
+							<template is="dom-repeat" items="{{teams}}" as="team" sort="_sortTeams">
+								<paper-item value="{{team.id}}">{{team.name}}</paper-item>
 							</template>
 						</paper-menu>
 					</paper-dropdown-menu>
@@ -140,8 +130,8 @@
 					<paper-dropdown-menu id="team2" label="Team 2">
 						<paper-menu class="dropdown-content" attr-for-selected="value" selected="{{match.team2}}">
 							<paper-item value="0"></paper-item>
-							<template is="dom-repeat" items="{{teams}}" sort="_sortTeams">
-								<paper-item value="{{item.id}}">{{item.name}}</paper-item>
+							<template is="dom-repeat" items="{{teams}}" as="team" sort="_sortTeams">
+								<paper-item value="{{team.id}}">{{team.name}}</paper-item>
 							</template>
 						</paper-menu>
 					</paper-dropdown-menu>
@@ -176,23 +166,16 @@
 		Polymer({
 			is: 'prono-matches-list',
 			properties: {
-				token: {
-					type: 'String',
-					value: '',
-					notify: true
+				teamsModel: {
+					type: 'Array'
 				},
-				teams: {
-					type: 'Array',
-					notify: true
-				},
-				groups: {
-					type: 'Array',
-					notify: true
-				},
-				matchess: {
-					type: 'Array',
-					notify: true
+				matchesModel: {
+					type: 'Array'
 				}
+				groups: {
+					type: 'Array'
+				},
+				
 			},
 			ready: function(){
 			},
@@ -200,10 +183,9 @@
 				this.$.editMatch.close();
 			},
 			editMatch: function(e){
-				this.match = e.model.__data__.item
+				this.match = e.model.__data__.match
 
 				// some properties need to be formatted
-				this.newid = this.match.id;
 				this.newdate = this.formatDate(this.match.date);
 				this.newscore1 = this.formatScore(this.match.score1);
 				this.newscore2 = this.formatScore(this.match.score2);
@@ -213,8 +195,7 @@
 				this.$.editMatch.open();
 			},
 			saveMatch: function(){
-				this.$.ajaxPut.url = 'api/index.php/matches/'+this.match.id
-				this.$.ajaxPut.headers['Authentication'] = this.token;
+				this.$.editMatch.close();
 
 				// javascript only accepts mm-dd-yyyy format so reformatting is in order
 				var parts = this.newdate.split(' ');
@@ -239,43 +220,16 @@
 				if(penalty2 == ''){
 					penalty2 = -1;
 				}
-
-				this.$.ajaxPut.body = JSON.stringify({'id':this.newid,'date':date,'stage':this.match.stage,'grp':this.match.grp,'position':this.match.position,'defaultteam1':this.match.defaultteam1,'defaultteam2':this.match.defaultteam2,'team1':this.match.team1,'team2':this.match.team2,'score1':score1,'score2':score2,'penalty1':penalty1,'penalty2':penalty2});		
-				this.$.ajaxPut.generateRequest();
-				this.$.editMatch.close();
-			},
-			handleAjaxPutResponse: function(event,request){
-				var headers = request.xhr.getAllResponseHeaders();
-				app.$.model.fire('get-matches');
+				
+				app.$.model.$.matchesModel.put('id/'+this.match.id,{'date':date,'stage':this.match.stage,'grp':this.match.grp,'position':this.match.position,'defaultteam1':this.match.defaultteam1,'defaultteam2':this.match.defaultteam2,'team1':this.match.team1,'team2':this.match.team2,'score1':score1,'score2':score2,'penalty1':penalty1,'penalty2':penalty2})
 			},
 			addMatch: function(){
-				this.$.ajaxPost.url = 'api/index.php/matches/';
-				this.$.ajaxPost.headers['Authentication'] = this.token;
-				this.$.ajaxPost.generateRequest();
-			},
-			handleAjaxPostResponse: function(event,request){
-				var headers = request.xhr.getAllResponseHeaders();
-				app.$.model.fire('get-matches');
+				app.$.model.$.matchesModel.post({'score1':-1,'score2':-1,'penalty1':-1,'penalty2':-1})
 			},
 			deleteMatch: function(){
-				this.$.ajaxDelete.url = 'api/index.php/matches/'+this.match.id;
-				this.$.ajaxDelete.headers['Authentication'] = this.token;
-				this.$.ajaxDelete.generateRequest();
 				this.$.editMatch.close();
+				app.$.model.$.matchesModel.delete('id/'+this.match.id)
 			},
-			handleAjaxDeleteResponse: function(event,request){
-				var headers = request.xhr.getAllResponseHeaders();
-				app.$.model.fire('get-matches');
-			},
-			/*getIndex: function(id,list){
-				var ind = -1;
-				list.forEach(function(item,index){
-					if(item.id == id){
-						ind = index;
-					}
-				});
-				return ind;
-			},*/
 			formatDate: function(timestamp){
 				var date = new Date(timestamp * 1000);
 				var day = date.getDate();
@@ -293,7 +247,7 @@
 					return score;
 				}
 			},
-			formatTeamName: function(id,teams){
+			formatTeamName: function(id,teamsModel){
 				var name = '';
 				teams.forEach(function(item){
 					if(item.id == id){
@@ -321,10 +275,10 @@
 			},
 			_sortMatches: function(a, b) {  
   
-				if(parseInt(a.id) > parseInt(b.id)){
+				if(parseInt(a.date) > parseInt(b.date)){
 					return 1;
 				}
-				else if(parseInt(a.id) < parseInt(b.id)){
+				else if(parseInt(a.date) < parseInt(b.date)){
 					return -1;
 				}
 				else{
