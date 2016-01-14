@@ -56,16 +56,19 @@
 				catch(e){
 					// the token is not a JWT
 					//this.model['data'] = [];
-					this.header = {};
-					this.payload = {};
-					this.model = [];
-				
+
 					this.$.get.headers['Authentication'] = '';
 					this.$.post.headers['Authentication'] = '';
 					this.$.put.headers['Authentication'] = '';
 					this.$.delete.headers['Authentication'] = '';
 
-					this.fire('change');
+					this.header = {};
+					this.payload = {};
+
+					if(typeof this.model != 'undefined' && this.model.length >0){
+						this.model = [];
+						this.fire('change');
+					}
 				}
 			},
 			post: function(data){

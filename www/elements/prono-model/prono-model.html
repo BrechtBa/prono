@@ -19,8 +19,8 @@
 		<api-model id="teamsModel" token="[[token]]" url="../../api/index.php/teams" model="{{teamsModel}}" on-change="handleTeamsModelChange"></api-model>
 		<api-model id="matchesModel" token="[[token]]" url="../../api/index.php/matches" model="{{matchesModel}}" on-change="handleMatchesModelChange"></api-model>
 
-		<api-model id="pronoScoreModel" token="[[token]]" url="../../api/index.php/prono_score/user_id/{{user.id}}" model="{{pronoScoreModel}}" on-change="handlePronoScoreModelChange"></api-model>
-		<api-model id="pronoTeamModel" token="[[token]]" url="../../api/index.php/prono_team/user_id/{{user.id}}" model="{{pronoTeamModel}}" on-change="handlePronoTeamModelChange"></api-model>
+		<api-model id="pronoScoreModel" token="[[token]]" url="../../api/index.php/prono_score/user_id/{{tokenPayload.user_id}}" model="{{pronoScoreModel}}" on-change="handlePronoScoreModelChange"></api-model>
+		<api-model id="pronoTeamModel" token="[[token]]" url="../../api/index.php/prono_team/user_id/{{tokenPayload.user_id}}" model="{{pronoTeamModel}}" on-change="handlePronoTeamModelChange"></api-model>
 		<api-model id="pronoStageModel" token="[[token]]" url="../../api/index.php/prono_stage/user_id/{{tokenPayload.user_id}}" model="{{pronoStageModel}}" on-change="handlePronoStageModelChange"></api-model>
 		<api-model id="pronoNumberModel" token="[[token]]" url="../../api/index.php/prono_number/user_id/{{tokenPayload.user_id}}" model="{{pronoNumberModel}}" on-change="handlePronoNumberModelChange"></api-model>
 	
@@ -84,21 +84,13 @@
 			listeners: {
 			},
 			observers: [
-				'tokenPayloadChanged(tokenPayload)'
+				'tokenChanged(token)'
 			],
-			tokenPayloadChanged: function(){
-				console.log('loading models');
-				this.$.rulesModel.get();
+			tokenChanged: function(){
+				console.log('token changed');
 				this.$.usersModel.get();
-				this.$.teamsModel.get();
-				this.$.matchesModel.get();
-
-				if(this.tokenPayload.permission > 5){
-					console.log('loading confidential models');
-					this.$.allPronoScoreModel.get();
-				}
 			},
-			handleUsersModelChange: function(){
+			handleUsersModelChange: function(e){
 				console.log('check user profile');
 				var done = true;
 				try{
@@ -130,16 +122,16 @@
 				if(done){
 					this.$.rulesModel.get();
 				}
-				
 			},
 			handleRulesModelChange: function(){
+				console.log('get teams model');
 				this.$.teamsModel.get();
 			},
 			handleTeamsModelChange: function(){
+				console.log('get matches model');
 				this.$.matchesModel.get();
 			},
 			handleMatchesModelChange: function(){
-
 				console.log('get groups');
 				var groups = [];
 				this.matchesModel.forEach(function(match){
@@ -172,11 +164,11 @@
 						that.pronoScoreModel.forEach(function(prono){
 							if(prono.match_id == match.id){
 								found = true;
-								done = false;
 							}
 						});
 
 						if(!found ){
+							done = false;
 							// the match has no prono, it must be created
 							console.log('adding prono score '+match.id);
 							that.$.pronoScoreModel.post({'user_id':that.tokenPayload.user_id,'match_id':match.id,'score1':-1,'score2':-1,'penalty1':-1,'penalty2':-1});
@@ -186,7 +178,7 @@
 				}
 				catch(e){
 				}
-			
+				
 				// proceed to the next step
 				if(done){
 					this.$.pronoTeamModel.get();
@@ -217,11 +209,11 @@
 						that.pronoTeamModel.forEach(function(tempprono){
 							if(tempprono.prono == prono){
 								found = true;
-								done = false;
 							}
 						});
 
 						if(!found){
+							done = false;
 							// post the prono
 							console.log('adding prono team '+prono);
 							that.$.pronoTeamModel.post({'user_id':that.tokenPayload.user_id,'prono':prono,'team_id':-1});
@@ -259,10 +251,10 @@
 				this.$.allPronoTeamModel.get();
 			},
 			handleAllPronoTeamModelChange: function(){
-				this.$.allStageTeamModel.get();
+				this.$.allPronoStageModel.get();
 			},
 			handleAllPronoStageModelChange: function(){
-				this.$.allNumberTeamModel.get();
+				this.$.allPronoNumberModel.get();
 			},
 			handleAllPronoNumberModelChange: function(){
 				this.calculatePoints();
