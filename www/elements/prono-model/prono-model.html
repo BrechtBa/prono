@@ -13,19 +13,21 @@
 
 		<parse-token token="{{token}}" payload="{{tokenPayload}}"></parse-token>
 
-		<api-model id="teamsModel" token="[[token]]" url="../../api/index.php/teams" model="{{teamsModel}}"></api-model>
-		<api-model id="matchesModel" token="[[token]]" url="../../api/index.php/matches" model="{{matchesModel}}"></api-model>
+		<api-model id="usersModel" token="[[token]]" url="../../api/index.php/user_profiles" model="{{usersModel}}" on-change="handleUsersModelChange"></api-model>
+		<api-model id="rulesModel" token="[[token]]" url="../../api/index.php/rules" model="{{rulesModel}}" on-change="handleRulesModelChange"></api-model>
+		
+		<api-model id="teamsModel" token="[[token]]" url="../../api/index.php/teams" model="{{teamsModel}}" on-change="handleTeamsModelChange"></api-model>
+		<api-model id="matchesModel" token="[[token]]" url="../../api/index.php/matches" model="{{matchesModel}}" on-change="handleMatchesModelChange"></api-model>
 
-		<api-model id="rulesModel" token="[[token]]" url="../../api/index.php/rules" model="{{rulesModel}}"></api-model>
-		<api-model id="usersModel" token="[[token]]" url="../../api/index.php/user_profiles" model="{{usersModel}}" on-change="checkUserProfile"></api-model>
-
-		<api-model id="pronoScoreModel" token="[[token]]" url="../../api/index.php/prono_score/user_id/{{user.id}}" model="{{pronoScoreModel}}" on-change="checkPronoScore"></api-model>
-		<api-model id="pronoTeamModel" token="[[token]]" url="../../api/index.php/prono_team/user_id/{{user.id}}" model="{{pronoTeamModel}}" on-change="checkPronoTeam"></api-model>
-		<api-model id="pronoStageModel" token="[[token]]" url="../../api/index.php/prono_stage/user_id/{{tokenPayload.user_id}}" model="{{pronoStageModel}}"></api-model>
-		<api-model id="pronoNumberModel" token="[[token]]" url="../../api/index.php/prono_number/user_id/{{tokenPayload.user_id}}" model="{{pronoNumberModel}}"></api-model>
+		<api-model id="pronoScoreModel" token="[[token]]" url="../../api/index.php/prono_score/user_id/{{user.id}}" model="{{pronoScoreModel}}" on-change="handlePronoScoreModelChange"></api-model>
+		<api-model id="pronoTeamModel" token="[[token]]" url="../../api/index.php/prono_team/user_id/{{user.id}}" model="{{pronoTeamModel}}" on-change="handlePronoTeamModelChange"></api-model>
+		<api-model id="pronoStageModel" token="[[token]]" url="../../api/index.php/prono_stage/user_id/{{tokenPayload.user_id}}" model="{{pronoStageModel}}" on-change="handlePronoStageModelChange"></api-model>
+		<api-model id="pronoNumberModel" token="[[token]]" url="../../api/index.php/prono_number/user_id/{{tokenPayload.user_id}}" model="{{pronoNumberModel}}" on-change="handlePronoNumberModelChange"></api-model>
 	
-		<api-model id="allPronoScoreModel" token="[[token]]" url="../../api/index.php/prono_score/" model="{{allPronoScoreModel}}"></api-model>	
-		<api-model id="allPronoTeamModel" token="[[token]]" url="../../api/index.php/prono_team/" model="{{allPronoTeamModel}}"></api-model>	
+		<api-model id="allPronoScoreModel" token="[[token]]" url="../../api/index.php/prono_score/" model="{{allPronoScoreModel}}" on-change="handleAllPronoScoreModelChange"></api-model>
+		<api-model id="allPronoTeamModel" token="[[token]]" url="../../api/index.php/prono_team/" model="{{allPronoTeamModel}}" on-change="handleAllPronoTeamModelChange"></api-model>
+		<api-model id="allPronoStageModel" token="[[token]]" url="../../api/index.php/prono_stage/" model="{{allPronoStageModel}}" on-change="handleAllPronoStageModelChange"></api-model>
+		<api-model id="allPronoNumberModel" token="[[token]]" url="../../api/index.php/prono_number/" model="{{allPronoNumberModel}}" on-change="handleAllPronoNumberModelChange"></api-model>
 
 	</template>
 
@@ -36,7 +38,6 @@
 				token: {
 					type: 'String',
 					value: '',
-					observer: 'tokenChanged'
 				},
 				rulesModel: {
 					type: 'Array',
@@ -83,66 +84,23 @@
 			listeners: {
 			},
 			observers: [
-				'getGroups(matchesModel)',
-				'getStages(matchesModel)',
-				'getPronoScore(user,matchesModel)',
-				'getPronoTeam(user,groups,stages)',
-				'calculatePoints(usersModel,matchesModel,allPronoScoreModel)',
+				'tokenPayloadChanged(tokenPayload)'
 			],
-			tokenChanged: function(){
-				try{
-					console.log('loading models');
-					this.$.rulesModel.get();
-					this.$.usersModel.get();
-					this.$.teamsModel.get();
-					this.$.matchesModel.get();
+			tokenPayloadChanged: function(){
+				console.log('loading models');
+				this.$.rulesModel.get();
+				this.$.usersModel.get();
+				this.$.teamsModel.get();
+				this.$.matchesModel.get();
 
-					if(this.tokenPayload.permission > 5){
-						console.log('loading confidential models');
-						this.$.allPronoScoreModel.get();
-					}
-				}
-				catch(e){
-
+				if(this.tokenPayload.permission > 5){
+					console.log('loading confidential models');
+					this.$.allPronoScoreModel.get();
 				}
 			},
-			getGroups: function(matchesModel){
-				console.log('get groups');
-				var groups = [];
-				this.matchesModel.forEach(function(match){
-					if(match.stage == 0 && groups.indexOf(match.grp)==-1){
-						groups.push(match.grp);
-					}
-				});
-				this.groups = groups;
-			},
-			getStages: function(matchesModel){
-				var stages = [];
-				this.matchesModel.forEach(function(match){
-					if(match.stage > 0 && stages.indexOf(match.stage)==-1){
-						stages.push(match.stage);
-					}
-				});
-				this.stages = stages;
-			},
-			getPronoScore: function(user,matchesModel){
-				if( typeof user.id != 'undefined' && matchesModel.length > 0 ){
-					this.$.pronoScoreModel.get();
-				}
-			},
-			getPronoTeam: function(user,groups,stages){
-				if( typeof user.id != 'undefined' && groups.length > 0 && stages.length > 0){
-					this.$.pronoTeamModel.get();
-				}
-			},
-			getPronoStage: function(user,stages){
-				this.$.pronoStageModel.get();
-			},
-			getPronoNumber: function(user){
-				this.$.pronoNumberModel.get();
-			},
-			checkUserProfile: function(){
+			handleUsersModelChange: function(){
 				console.log('check user profile');
+				var done = true;
 				try{
 					var that = this;
 					
@@ -151,9 +109,10 @@
 							return item.user_id == that.tokenPayload.user_id;
 						});
 						if(user.length > 0){
-							this.user = user[0];
+							that.user = user[0];
 						}
 						else{
+							done = false;
 							console.log('create user profile');
 							// the user has no profile, it must be created
 							that.$.usersModel.post({'user_id': this.tokenPayload.user_id, 'name': this.tokenPayload.login, 'avatar': ''});
@@ -166,8 +125,43 @@
 				catch(e){
 					this.user = {};
 				}
+			
+				// proceed to the next step
+				if(done){
+					this.$.rulesModel.get();
+				}
+				
 			},
-			checkPronoScore: function(){
+			handleRulesModelChange: function(){
+				this.$.teamsModel.get();
+			},
+			handleTeamsModelChange: function(){
+				this.$.matchesModel.get();
+			},
+			handleMatchesModelChange: function(){
+
+				console.log('get groups');
+				var groups = [];
+				this.matchesModel.forEach(function(match){
+					if(match.stage == 0 && groups.indexOf(match.grp)==-1){
+						groups.push(match.grp);
+					}
+				});
+				this.groups = groups;
+				
+				console.log('get stages');
+				var stages = [];
+				this.matchesModel.forEach(function(match){
+					if(match.stage > 0 && stages.indexOf(match.stage)==-1){
+						stages.push(match.stage);
+					}
+				});
+				this.stages = stages;
+				
+				this.$.pronoScoreModel.get();
+			},
+			handlePronoScoreModelChange: function(){
+				var done = true;
 				console.log('check prono score');
 				try{
 					var that = this;
@@ -178,11 +172,11 @@
 						that.pronoScoreModel.forEach(function(prono){
 							if(prono.match_id == match.id){
 								found = true;
+								done = false;
 							}
 						});
 
 						if(!found ){
-							console.log(that.pronoScoreModel);
 							// the match has no prono, it must be created
 							console.log('adding prono score '+match.id);
 							that.$.pronoScoreModel.post({'user_id':that.tokenPayload.user_id,'match_id':match.id,'score1':-1,'score2':-1,'penalty1':-1,'penalty2':-1});
@@ -192,8 +186,14 @@
 				}
 				catch(e){
 				}
+			
+				// proceed to the next step
+				if(done){
+					this.$.pronoTeamModel.get();
+				}
 			},
-			checkPronoTeam: function(){
+			handlePronoTeamModelChange: function(){
+				var done = true;
 				console.log('check prono team');
 				try{
 					var that = this;
@@ -217,6 +217,7 @@
 						that.pronoTeamModel.forEach(function(tempprono){
 							if(tempprono.prono == prono){
 								found = true;
+								done = false;
 							}
 						});
 
@@ -230,41 +231,72 @@
 				}
 				catch(e){
 				}
-			},
-			calculatePoints: function(usersModel,matchesModel,allPronoScoreModel){
-				if(this.tokenPayload.permission>5 && usersModel.length>0 && matchesModel.length>0 && allPronoScoreModel.length>0){
-
-					var that = this;
-					console.log('calculate points')
-
-					that.usersModel.forEach(function(user){
-						var points = 0;
-
-						// get the users score prono
-						var prono = that.allPronoScoreModel.filter(function( prono ){
-							return ( prono.user_id==user.id );
-						});
-						
-						points += that.countCorrectResults(prono,0)*3;//*that.rules[0]['groupstage_result'];	
-						points += that.countCorrectResults(prono,16)*6;//*that.rules[0]['knockoutstage_result'];	
-						points += that.countCorrectResults(prono,8)*6;//*that.rules[0]['knockoutstage_result'];	
-						points += that.countCorrectResults(prono,4)*6;//*that.rules[0]['knockoutstage_result'];	
-						points += that.countCorrectResults(prono,2)*6;//*that.rules[0]['knockoutstage_result'];	
-
-						points += that.countCorrectScores(prono,0)*4;//*that.rules[0]['groupstage_score'];	
-						points += that.countCorrectScores(prono,16)*8;//*that.rules[0]['knockoutstage_score'];	
-						points += that.countCorrectScores(prono,8)*8;//*that.rules[0]['knockoutstage_score'];	
-						points += that.countCorrectScores(prono,4)*8;//*that.rules[0]['knockoutstage_score'];	
-						points += that.countCorrectScores(prono,2)*8;//*that.rules[0]['knockoutstage_score'];	
 			
+				// proceed to the next step
+				if(done){
+					this.$.pronoStageModel.get();
+				}
+			},
+			handlePronoStageModelChange: function(){
+				var done = true;
+				//console.log('check prono stage');
+				
+				// proceed to the next step
+				if(done){
+					this.$.pronoNumberModel.get();
+				}
+			},
+			handlePronoNumberModelChange: function(){
+				var done = true;
+				//console.log('check prono number');
+				
+				// proceed to the next step
+				if(done){
+					this.$.allPronoScoreModel.get();
+				}
+			},
+			handleAllPronoScoreModelChange: function(){
+				this.$.allPronoTeamModel.get();
+			},
+			handleAllPronoTeamModelChange: function(){
+				this.$.allStageTeamModel.get();
+			},
+			handleAllPronoStageModelChange: function(){
+				this.$.allNumberTeamModel.get();
+			},
+			handleAllPronoNumberModelChange: function(){
+				this.calculatePoints();
+			},
+			calculatePoints: function(){
+				var that = this;
+				console.log('calculate points')
 
-						if(user.points != points){
-							// write points to database
-							that.$.usersModel.put('user_id/'+user.id,{'points':points});
-						}
+				that.usersModel.forEach(function(user){
+					var points = 0;
+
+					// get the users score prono
+					var prono = that.allPronoScoreModel.filter(function( prono ){
+						return ( prono.user_id==user.id );
 					});
 					
-				}
+					points += that.countCorrectResults(prono,0)*3;//*that.rules[0]['groupstage_result'];	
+					points += that.countCorrectResults(prono,16)*6;//*that.rules[0]['knockoutstage_result'];	
+					points += that.countCorrectResults(prono,8)*6;//*that.rules[0]['knockoutstage_result'];	
+					points += that.countCorrectResults(prono,4)*6;//*that.rules[0]['knockoutstage_result'];	
+					points += that.countCorrectResults(prono,2)*6;//*that.rules[0]['knockoutstage_result'];	
+
+					points += that.countCorrectScores(prono,0)*4;//*that.rules[0]['groupstage_score'];	
+					points += that.countCorrectScores(prono,16)*8;//*that.rules[0]['knockoutstage_score'];	
+					points += that.countCorrectScores(prono,8)*8;//*that.rules[0]['knockoutstage_score'];	
+					points += that.countCorrectScores(prono,4)*8;//*that.rules[0]['knockoutstage_score'];	
+					points += that.countCorrectScores(prono,2)*8;//*that.rules[0]['knockoutstage_score'];	
+		
+
+					if(user.points != points){
+						// write points to database
+						that.$.usersModel.put('user_id/'+user.id,{'points':points});
+					}
+				});
 			},
 			countCorrectResults(prono,stage){
 				var that = this;
