@@ -52,12 +52,9 @@
 				display: none;
 			}
 		</style>
-		<parse-token token="{{token}}" payload="{{tokenPayload}}"></parse-token>
-		<iron-ajax id="ajaxPut" method="PUT" handle-as="json" on-response="handleAjaxPutResponse" debounce-duration="300"></iron-ajax>
-
 		<h4>Ranking</h4>
 		<div on-tap="editPoints">
-			<template is="dom-repeat" items="{{teams}}" as="team" filter="{{filterGroupTeams(group,matchess)}}" sort="_sortTeams">
+			<template is="dom-repeat" items="{{teamsModel}}" as="team" filter="{{filterGroupTeams(group,matchesModel)}}" sort="_sortTeams">
 				<div class="horizontal layout center">
 					<prono-team-icon class="teamicon" team="{{team}}"></prono-team-icon>
 					<prono-team-name class="flex-2 teamname" team="{{team}}" default=""></prono-team-name>
@@ -90,14 +87,14 @@
 		Polymer({
 			is: 'prono-groupranking',
 			properties: {
-				token: {
-					type: 'String',
-					value: ''
+				permission: {
+					type: 'Number',
+					value: 1
 				},
-				teams: {
+				teamsModel: {
 					type: 'Array',
 				},
-				matchess: {
+				matchesModel: {
 					type: 'Array',
 				},
 				group: {
@@ -111,14 +108,15 @@
 			},
 			editPoints: function(){
 				var that = this;
-				if(that.tokenPayload.permission > 5){ 
-					that.newTeams = [];
-					filter = that.filterGroupTeams(that.group,that.matchess);
-					that.teams.forEach(function(team){
+				if(that.permission > 5){ 
+					var newTeams = [];
+					filter = that.filterGroupTeams(that.group,that.matchesModel);
+					that.teamsModel.forEach(function(team){
 						if( filter(team) ){
-							that.push('newTeams', team);
+							newTeams.push(team);
 						}
 					});
+					that.newTeams = newTeams;
 					that.$.editPoints.open();
 
 					// bug in polymer, manually center dynamically populated dialogs issue # 68
@@ -127,10 +125,10 @@
 		          	});
 				}
 			},
-			filterGroupTeams: function(group,matchess){
+			filterGroupTeams: function(group,matchesModel){
 				// find the matches in the group
 				try{				
-					var matches = matchess.filter(function( match ){
+					var matches = matchesModel.filter(function( match ){
 						return ( match.grp == group );
 					});
 				}
@@ -156,19 +154,11 @@
 				this.$.form.submit();
 			},
 			save: function(){
-				console.log('save')
 				this.$.editPoints.close();
 
-				this.$.ajaxPut.headers['Authentication'] = this.token;
-				var that = this;
 				this.newTeams.forEach( function(team){
-					that.$.ajaxPut.url = 'api/index.php/teams/'+team.id;
-					that.$.ajaxPut.body = JSON.stringify({'groupstage_points': team.groupstage_points});
-					that.$.ajaxPut.generateRequest();
+					app.$.model.$.teamsModel.put('id/'+team.id,{'groupstage_points': team.groupstage_points})
 				});
-			},
-			handleAjaxPutResponse: function(e){
-				app.$.model.fire('get-teams');
 			},
 			_sortTeams: function(a, b) {  
   

@@ -66,7 +66,7 @@
 					}
 					if($valid){
 						// generate query
-						$query = sprintf( "INSERT INTO %s (%s) VALUES (%s)" ,$loc[0],implode(',',$keys),implode(',',$vals) );
+						$query = sprintf( "INSERT INTO `%s` (`%s`) VALUES ('%s')" ,$loc[0],implode(',',$keys),implode(',',$vals) );
 						$stmt = $db->prepare($query);
 						$stmt->execute();
 
@@ -99,17 +99,16 @@
 
 					switch(sizeof($loc)){
 						case 1:
-							$query = sprintf( "SELECT * FROM %s" ,$loc[0] );
+							$query = sprintf( "SELECT * FROM `%s`" ,$loc[0] );
 							break;
 						case 2:
-							$query = sprintf( "SELECT * FROM %s WHERE id LIKE %s" ,$loc[0], $loc[1]);
+							$query = sprintf( "SELECT * FROM `%s` WHERE `id`='%s'" ,$loc[0], $loc[1]);
 							break;
 						case 3:
-							$query = sprintf( "SELECT * FROM %s WHERE %s LIKE %s" ,$loc[0], $loc[1], $loc[2]);
+							$query = sprintf( "SELECT * FROM `%s` WHERE `%s`='%s'" ,$loc[0], $loc[1], $loc[2]);
 							break;
-
 						case 5:
-							$query = sprintf( "SELECT * FROM %s WHERE %s LIKE %s AND %s LIKE %s" ,$loc[0], $loc[1], $loc[2], $loc[3], $loc[4]);
+							$query = sprintf( "SELECT * FROM `%s` WHERE `%s`='%s' AND `%s`='%s'" ,$loc[0], $loc[1], $loc[2], $loc[3], $loc[4]);
 							break;
 					}
 
@@ -123,7 +122,7 @@
 
 						$response_data[] = $row;
 					}
-			
+
 					$response_http = response_http(201);
 				}
 				else{
@@ -151,16 +150,16 @@
 						// generate query
 						switch(sizeof($loc)){
 							case 2:
-								$query = sprintf( "UPDATE %s SET %s WHERE id=%s" ,$loc[0],implode(',',$keyvals),$loc[1] );
-								$id_query = sprintf( "SELECT id FROM %s WHERE id=%s" ,$loc[0],$loc[1] );
+								$query = sprintf( "UPDATE `%s` SET %s WHERE id='%s'" ,$loc[0],implode(',',$keyvals),$loc[1] );
+								$id_query = sprintf( "SELECT id FROM %s WHERE id='%s'" ,$loc[0],$loc[1] );
 								break;
 							case 3:
-								$query = sprintf( "UPDATE %s SET %s WHERE %s='%s'" ,$loc[0],implode(',',$keyvals),$loc[1],$loc[2] );
-								$id_query = sprintf( "SELECT id FROM %s WHERE %s='%s'" ,$loc[0],$loc[1],$loc[2] );
+								$query = sprintf( "UPDATE `%s` SET %s WHERE `%s`='%s'" ,$loc[0],implode(',',$keyvals),$loc[1],$loc[2] );
+								$id_query = sprintf( "SELECT id FROM %s WHERE `%s`='%s'" ,$loc[0],$loc[1],$loc[2] );
 								break;
 							case 5:
-								$query = sprintf( "UPDATE %s SET %s WHERE %s='%s' AND %s='%s'" ,$loc[0],implode(',',$keyvals),$loc[1],$loc[2],$loc[3],$loc[4] );
-								$id_query = sprintf( "SELECT id FROM %s WHERE %s='%s' AND %s='%s'" ,$loc[0],$loc[1],$loc[2],$loc[3],$loc[4] );
+								$query = sprintf( "UPDATE `%s` SET %s WHERE `%s`='%s' AND `%s`='%s'" ,$loc[0],implode(',',$keyvals),$loc[1],$loc[2],$loc[3],$loc[4] );
+								$id_query = sprintf( "SELECT id FROM %s WHERE `%s`='%s' AND `%s`='%s'" ,$loc[0],$loc[1],$loc[2],$loc[3],$loc[4] );
 								break;
 						}
 
@@ -202,10 +201,10 @@
 							$query = sprintf( "DELETE FROM %s WHERE id=%s" ,$loc[0],$loc[1] );
 							break;
 						case 3:
-							$query = sprintf( "DELETE FROM  %s WHERE %s='%s'" ,$loc[0],$loc[1],$loc[2] );
+							$query = sprintf( "DELETE FROM  %s WHERE `%s`='%s'" ,$loc[0],$loc[1],$loc[2] );
 							break;
 						case 5:
-							$query = sprintf( "DELETE FROM  %s WHERE %s='%s' AND %s='%s'" ,$loc[0],$loc[1],$loc[2],$loc[3],$loc[4] );
+							$query = sprintf( "DELETE FROM  %s WHERE `%s`='%s' AND `%s`='%s'" ,$loc[0],$loc[1],$loc[2],$loc[3],$loc[4] );
 							break;
 					}
 					$stmt = $db->prepare($query);

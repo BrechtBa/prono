@@ -132,18 +132,20 @@
 							</section>
 
 							<section class="page" data-route="pron">
-								<!--<h2 class="page-title">Prono</h2>
+								<h2 class="page-title">Prono</h2>
+
 								<h3 class="page-title">Group stage</h3>
-								<prono-groupstage token="{{token}}" teams-model="{{teamsModel}}" groups="[[groups]]" matchess="[[matchess]]" user="[[tokenPayload.user_id]]" current-stage="[[tokenPayload.stage]]" prono-score="[[pronoScore]]" prono-team="[[pronoTeam]]"></prono-groupstage>
+								<prono-groupstage teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" prono-score-model="{{pronoScoreModel}}" prono-team-model="{{pronoTeamModel}}" current-stage="{{tokenPayload.stage}}"></prono-groupstage>
+								
 								<h3 class="page-title">Knockout stage</h3>
-								<prono-knockoutstage token="{{token}}" teams-model="{{teamsModel}}" matchess="[[matchess]]" user="[[tokenPayload.user_id]]" current-stage="[[tokenPayload.stage]]" prono-score="[[pronoScore]]"></prono-knockoutstage>-->
+								<!--<prono-knockoutstage token="{{token}}" teams-model="{{teamsModel}}" matchess="[[matchess]]" user="[[tokenPayload.user_id]]" current-stage="[[tokenPayload.stage]]" prono-score="[[pronoScore]]"></prono-knockoutstage>-->
 							</section>
 
 							<section class="page" data-route="results">
-								<!--<h2 class="page-title">Results</h2>
+								<h2 class="page-title">Results</h2>
 								<h3 class="page-title">Group stage</h3>
-								<prono-groupstage token="{{token}}" teams-model="{{teamsModel}}" groups="[[groups]]" matchess="[[matchess]]" user="0"></prono-groupstage>
-								<h3 class="page-title">Knockout stage</h3>
+								<prono-groupstage teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" permission="{{tokenPayload.permission}}"></prono-groupstage>
+								<!--<h3 class="page-title">Knockout stage</h3>
 								<prono-knockoutstage token="{{token}}" teams-model="{{teamsModel}}" matchess="[[matchess]]" user="0"></prono-knockoutstage>-->
 							</section>
 

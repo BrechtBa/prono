@@ -69,10 +69,9 @@
 				margin-top: 20px;
 			}
 		</style>
-		<parse-token token="{{token}}" payload="{{tokenPayload}}"></parse-token>
-		<div class$="{{disabledClass(currentStage,user)}} horizontal layout wrap center-justified">
+		<div class$="{{disabledClass(currentStage,pronoScoreModel)}} horizontal layout wrap center-justified">
 
-			<template is="dom-repeat" items="{{groups}}" as="group">
+			<template is="dom-repeat" items="{{getGroups(matchesModel)}}" as="group">
 				<paper-material elevation="2" class="group vertical layout">
 					<h3>Group {{group}}</h3>
 					<div class="matches">
@@ -80,19 +79,19 @@
 							<div class="match horizontal layout center center-justified" on-tap="editScore">
 								<div class="teamname left flex"><prono-team-name team="{{getTeam(match.team1,teamsModel)}}" default="{{match.defaultteam1}}"></prono-team-name></div>
 								<div><prono-team-icon class="teamicon" team="{{getTeam(match.team1,teamsModel)}}"></prono-team-icon></div>
-								<div class="score">{{getScore1(match,user,pronoScore)}} - {{getScore2(match,user,pronoScore)}}</div>
+								<div class="score">{{getScore1(match,pronoScoreModel)}} - {{getScore2(match,pronoScoreModel)}}</div>
 								<div><prono-team-icon class="teamicon" team="{{getTeam(match.team2,teamsModel)}}"></prono-team-icon></div>
 								<div class="teamname right flex"><prono-team-name team="{{getTeam(match.team2,teamsModel)}}" default="{{match.defaultteam2}}"></prono-team-name></div>
 							</div>
 						</template>
 					</div>
 					
-					<template is="dom-if" if="{{showGroupWinners(user)}}">
-						<prono-groupwinners token="{{token}}" user="{{user}}" group="{{group}}" teams="{{teamsModel}}" matches-model="{{matchesModel}}" prono-team-model="{{pronoTeamModel}}"></prono-groupwinners>
+					<template is="dom-if" if="{{isProno(pronoScoreModel)}}">
+						<prono-groupwinners group="{{group}}" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" prono-team-model="{{pronoTeamModel}}"></prono-groupwinners>
 					</template>
 
-					<template is="dom-if" if="{{showGroupRanking(user)}}">
-						<prono-groupranking token="{{token}}" group="{{group}}" teamsModel="{{teamsModel}}" matchesModel="{{matchesModel}}"></prono-groupranking>
+					<template is="dom-if" if="{{!isProno(pronoScoreModel)}}">
+						<prono-groupranking group="{{group}}" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" permission="{{permission}}"></prono-groupranking>
 					</template>
 
 				</paper-material>
@@ -100,20 +99,16 @@
 
 		</div>
 
-		<prono-score-dialog id="editScore" teams="{{teams}}" token="{{token}}" match="{{editmatch}}" score="{{score}}" user="{{user}}"></prono-score-dialog>
+		<prono-score-dialog id="editScore" teams-model="{{teamsModel}}" match="{{editmatch}}" score="{{score}}" prono="{{isProno(pronoScoreModel)}}"></prono-score-dialog>
 	</template>
 
 	<script>
 		Polymer({
 			is: 'prono-groupstage',
 			properties: {
-				token: {
-					type: 'String',
-					value: ''
-				},
-				user: {
+				permission: {
 					type: 'Number',
-					value: 0
+					value: 1
 				},
 				teamsModel: {
 					type: 'Array'
@@ -130,7 +125,8 @@
 					value: []
 				},
 				groups: {
-					type: 'Array'
+					type: 'Array',
+					computed: 'getGroups(matchesModel)'
 				},
 				currentStage:{
 					type: 'Number',
@@ -141,9 +137,9 @@
 			},
 			editScore: function(e){
 				this.editmatch = e.model.__data__.match;
-				if(this.user==0){
+				if(this.pronoScoreModel.length==0){
 					// check permission
-					if(this.tokenPayload.permission > 5){ 
+					if(this.permission > 5){ 
 						this.score = {'score1':this.editmatch.score1,'score2':this.editmatch.score2};
 						this.$.editScore.open();
 					}
@@ -152,7 +148,7 @@
 					this.score = {'score1':-1,'score2':-1};
 					that = this;
 					// find the match in the prono list
-					this.pronoScore.forEach(function(item){
+					this.pronoScoreModel.forEach(function(item){
 						if(item.match_id==that.editmatch.id){
 							that.score = {'score1':item.score1,'score2':item.score2};
 						}
@@ -160,24 +156,30 @@
 					this.$.editScore.open();
 				}
 			},
+			getGroups: function(matchesModel){
+				var groups = [];
+				this.matchesModel.forEach(function(match){
+					if(match.stage == 0 && groups.indexOf(match.grp)==-1){
+						groups.push(match.grp);
+					}
+				});
+				return groups;
+			},
 			filterGroupMatches: function(group){
 				return function(item){
 					return (item.grp == group);
 			  	};
 			},
-			disabledClass: function(currentStage,user){
-				if(currentStage==0 || user==0){
+			disabledClass: function(currentStage,pronoScoreModel){
+				if(currentStage==0 || pronoScoreModel.length == 0){
 					return '';
 				}
 				else{
 					return 'disabled';
 				}
 			},
-			showGroupWinners: function(user){
-				return (user!=0);
-			},
-			showGroupRanking: function(user){
-				return (user==0);
+			isProno: function(pronoScoreModel){
+				return (this.pronoScoreModel.length!=0);
 			},
 			getTeam: function(id,teams){
 				var team = {};
@@ -198,39 +200,33 @@
 				}
 				return val;
 			},
-			getScore1: function(match,user,pronoScore){
-				var score = -1;
-				if(user==0){
-					score = match.score1;
+			getScore1: function(match,pronoScoreModel){
+				var score = match.score1;
+
+				try{
+					pronoScoreModel.forEach(function(item){
+						if(item.match_id == match.id){
+							score = item.score1
+						}
+					});
 				}
-				else{
-					try{
-						pronoScore.forEach(function(item){
-							if(item.match_id == match.id){
-								score = item.score1
-							}
-						});
-					}
-					catch(e){
-					}
+				catch(e){
+					score = -1;
 				}
 				return this.formatScore(score);
 			},
-			getScore2: function(match,user,pronoScore){
-				var score = -1;
-				if(user==0){
-					score = match.score2;	
+			getScore2: function(match,pronoScoreModel){
+				var score = match.score2;
+				
+				try{
+					pronoScoreModel.forEach(function(item){
+						if(item.match_id == match.id){
+							score = item.score2
+						}
+					});
 				}
-				else{
-					try{
-						pronoScore.forEach(function(item){
-							if(item.match_id == match.id){
-								score = item.score2
-							}
-						});
-					}
-					catch(e){
-					}
+				catch(e){
+					score = -1;
 				}
 				return this.formatScore(score);
 			},

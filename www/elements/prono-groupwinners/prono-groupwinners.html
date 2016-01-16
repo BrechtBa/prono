@@ -40,20 +40,17 @@
 				display: none;
 			}
 		</style>
-		<parse-token token="{{token}}" payload="{{tokenPayload}}"></parse-token>
-		<iron-ajax id="ajaxPut" method="PUT" handle-as="json" on-response="handleAjaxPutResponse" debounce-duration="300"></iron-ajax>
-
 
 		<div on-tap="editWinners">
 			<div class="horizontal layout center">
 				<div class="flex">Winner:</div>
-				<prono-team-icon class="teamicon" team="{{getWinner(group,teams,pronoTeam)}}"></prono-team-icon>
-				<prono-team-name class="flex-2 teamname" team="{{getWinner(group,teams,pronoTeam)}}" default=""></prono-team-name>
+				<prono-team-icon class="teamicon" team="{{getWinner(group,teamsModel,pronoTeamModel)}}"></prono-team-icon>
+				<prono-team-name class="flex-2 teamname" team="{{getWinner(group,teamsModel,pronoTeamModel)}}" default=""></prono-team-name>
 			</div>
 			<div class="horizontal layout center">
 				<div class="flex">Runner up:</div>
-				<prono-team-icon class="teamicon" team="{{getRunnerup(group,teams,pronoTeam)}}"></prono-team-icon>
-				<prono-team-name class="flex-2 teamname" team="{{getRunnerup(group,teams,pronoTeam)}}" default=""></prono-team-name>
+				<prono-team-icon class="teamicon" team="{{getRunnerup(group,teamsModel,pronoTeamModel)}}"></prono-team-icon>
+				<prono-team-name class="flex-2 teamname" team="{{getRunnerup(group,teamsModel,pronoTeamModel)}}" default=""></prono-team-name>
 			</div>
 		</div>
 
@@ -63,7 +60,7 @@
 					<paper-dropdown-menu label="Winner">
 						<paper-menu class="dropdown-content" attr-for-selected="value" selected="{{winner}}">
 							<paper-item value="0"></paper-item>
-							<template is="dom-repeat" items="{{teams}}" as="team" filter="{{filterGroupTeams(group,matchess)}}">
+							<template is="dom-repeat" items="{{teamsModel}}" as="team" filter="{{filterGroupTeams(group,matchesModel)}}">
 								<paper-item value="{{team.id}}">{{team.name}}</paper-item>
 							</template>
 						</paper-menu>
@@ -72,7 +69,7 @@
 					<paper-dropdown-menu label="Runner up">
 						<paper-menu class="dropdown-content" attr-for-selected="value" selected="{{runnerup}}">
 							<paper-item value="0"></paper-item>
-							<template is="dom-repeat" items="{{teams}}" as="team" filter="{{filterGroupTeams(group,matchess)}}">
+							<template is="dom-repeat" items="{{teamsModel}}" as="team" filter="{{filterGroupTeams(group,matchesModel)}}">
 								<paper-item value="{{team.id}}">{{team.name}}</paper-item>
 							</template>
 						</paper-menu>
@@ -95,45 +92,38 @@
 					type: 'String',
 					value: ''
 				},
-				user: {
-					type: 'Number',
-					notify: true,
-					value: 0
-				},
-				teams: {
+				teamsModel: {
 					type: 'Array',
 				},
-				matchess: {
+				matchesModel: {
 					type: 'Array',
+				},
+				pronoTeamModel: {
+					type: 'Array'
 				},
 				group: {
-					type: 'Object',
-				},
-				pronoTeam: {
-					type: 'Array'
+					type: 'String'
 				}
 			},
 			ready: function(){
 			},
 			editWinners: function(){
-				winner = this.getWinner(this.group,this.teams,this.pronoTeam);
-				console.log(winner)
+				winner = this.getWinner(this.group,this.teamsModel,this.pronoTeamModel);
 				if( winner != {} ){
 					this.winner = winner.id;
 				}
 
-				runnerup = this.getRunnerup(this.group,this.teams,this.pronoTeam);
-				console.log(runnerup)
+				runnerup = this.getRunnerup(this.group,this.teamsModel,this.pronoTeamModel);
 				if( runnerup != {} ){
 					this.runnerup = runnerup.id;
 				}
 
 				this.$.editWinners.open();
 			},
-			filterGroupTeams: function(group,matchess){
+			filterGroupTeams: function(group,matchesModel){
 				// find the matches in the group
 				try{			
-					var matches = matchess.filter(function( match ){
+					var matches = matchesModel.filter(function( match ){
 						return ( match.grp == group );
 					});
 				}
@@ -154,17 +144,17 @@
 					return ( team_ids.indexOf(item.id) > -1 );
 			  	};
 			},
-			getWinner: function(group,teams,pronoTeam){
+			getWinner: function(group,teamsModel,pronoTeamModel){
 				var team = {};
 				var id = -1;
 				try{
-					pronoTeam.forEach(function(item){
+					pronoTeamModel.forEach(function(item){
 						if(item.prono == group + '1'){					
 							id = item.team_id;
 						}
 					});
 
-					teams.forEach(function(item){
+					teamsModel.forEach(function(item){
 						if(item.id == id){					
 							team = item;
 						}
@@ -174,17 +164,17 @@
 				}
 				return team;
 			},
-			getRunnerup: function(group,teams,pronoTeam){
+			getRunnerup: function(group,teamsModel,pronoTeamModel){
 				var team = {};
 				var id = -1;
 				try{
-					pronoTeam.forEach(function(item){
+					pronoTeamModel.forEach(function(item){
 						if(item.prono == group + '2'){					
 							id = item.team_id;
 						}
 					});
 
-					teams.forEach(function(item){
+					teamsModel.forEach(function(item){
 						if(item.id == id){					
 							team = item;
 						}
@@ -192,15 +182,6 @@
 				}
 				catch(e){
 				}
-				return team;
-			},
-			getTeam: function(id,teams){
-				var team = {};
-				teams.forEach(function(item){
-					if(item.id == id){					
-						team = item;
-					}
-				});
 				return team;
 			},
 			formSubmit: function(){
@@ -209,19 +190,8 @@
 			save: function(){
 				this.$.editWinners.close();
 
-
-				this.$.ajaxPut.headers['Authentication'] = this.token;
-			
-				this.$.ajaxPut.url = 'api/index.php/prono_team/user_id/'+this.user+'/prono/'+this.group+'1';
-				this.$.ajaxPut.body = JSON.stringify({'team_id': this.winner});
-				this.$.ajaxPut.generateRequest();
-
-				this.$.ajaxPut.url = 'api/index.php/prono_team/user_id/'+this.user+'/prono/'+this.group+'2';
-				this.$.ajaxPut.body = JSON.stringify({'team_id': this.runnerup});
-				this.$.ajaxPut.generateRequest();
-			},
-			handleAjaxPutResponse: function(e){
-				app.$.model.fire('get-prono-team');
+				app.$.model.$.pronoTeamModel.put('prono/'+this.group+'1',{'team_id': this.winner});
+				app.$.model.$.pronoTeamModel.put('prono/'+this.group+'2',{'team_id': this.runnerup});
 			}
 		});
 	</script>
