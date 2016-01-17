@@ -51,8 +51,6 @@
 			
 		</style>
 
-		<iron-ajax id="putUserProfile" method="PUT" handle-as="json" on-response="handlePutUserProfileResponse" last-response="{{putUserProfileResponse}}" debounce-duration="300"></iron-ajax>
-		
 		<paper-card elevation="2">
 			<div class="horizontal layout center">
 				<avatar-image class="avatar" user="{{user}}"></avatar-image>
@@ -137,12 +135,7 @@
 			},
 			saveProfile: function(){
 				this.$.changeProfileDialog.close();
-
-				this.$.putUserProfile.headers['Authentication'] = this.token;
-				this.$.putUserProfile.url = 'api/index.php/user_profiles/user_id/'+this.user.user_id;
-				this.$.putUserProfile.body = JSON.stringify({'name': this.newuser.name, 'avatar': this.newuser.avatar});
-
-				this.$.putUserProfile.generateRequest();
+				app.$.model.$.usersModel.put('user_id/'+this.user.user_id,{'name': this.newuser.name, 'avatar': this.newuser.avatar});
 			},
 			handlePutUserProfileResponse: function(){
 				this.set('user.name', this.newuser.name);

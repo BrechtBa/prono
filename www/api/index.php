@@ -61,16 +61,16 @@
 					$post = json_decode(file_get_contents("php://input"),true);
 					foreach($post as $key => $val){
 						$valid = $valid && check_data($key,$val,$valid_data);
-						$keys[] = $key;
+						$keys[] = "`".$key."`";
 						$vals[] = "'".$val."'";
 					}
 					if($valid){
 						// generate query
-						$query = sprintf( "INSERT INTO `%s` (`%s`) VALUES ('%s')" ,$loc[0],implode(',',$keys),implode(',',$vals) );
+						$query = sprintf( "INSERT INTO `%s` (%s) VALUES (%s)" ,$loc[0],implode(',',$keys),implode(',',$vals) );
+						
 						$stmt = $db->prepare($query);
 						$stmt->execute();
-
-
+	
 						// get the last inserted id
 						$stmt = $db->query( "SELECT LAST_INSERT_ID()" );
 						$id = $stmt->fetch(PDO::FETCH_NUM);

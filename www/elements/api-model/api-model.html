@@ -73,7 +73,7 @@
 			},
 			post: function(data){
 				this.$.post.url = this.url;
-
+				
 				this.$.post.body = JSON.stringify(data);
 				this.$.post.generateRequest();
 			},
@@ -104,6 +104,7 @@
 				}
 
 				e.detail.response.forEach(function(item){
+					
 					// check if the item id is in model data
 					var index = that.indexOfId(tempmodel,item.id);
 
@@ -127,22 +128,38 @@
 			},
 			handlePutResponse: function(e,request){
 				var location = request.xhr.getResponseHeader('Location');
+
 				var parts = location.split('/');
-				
-				//check if there are parts of the selector that overlap with the base url
-				var that = this;
-				var urlparts = that.url.split('/');
+				var urlparts = this.url.split('/');
 				var newparts = [];
-				parts.forEach(function(part){
-					if(urlparts.indexOf(part) < 0 || !isNaN(parseFloat(part))){
-						newparts.push(part);
-					}
-				});
-				
+
+				switch(parts.length){
+					case 2:
+						newparts.push(parts[1]);
+						break;
+					case 3:
+						if(urlparts.indexOf(parts[1]) < 0){
+							newparts.push(parts[1]);
+							newparts.push(parts[2]);
+						}
+						break;
+					case 5:
+						if(urlparts.indexOf(parts[1]) < 0){
+							newparts.push(parts[1]);
+							newparts.push(parts[2]);
+						}
+						break;
+						if(urlparts.indexOf(parts[3]) < 0){
+							newparts.push(parts[3]);
+							newparts.push(parts[4]);
+						}
+						break;
+				}
+
 				// create the selector
-				var selector = newparts.slice(1).join('/');
+				var selector = newparts.join('/');
 				
-				this.get(selector);
+				this.get('');
 			},
 			delete: function(selector){
 				this.$.delete.url = this.url + '/' + selector;
