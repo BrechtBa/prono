@@ -176,7 +176,7 @@
 					}
 				});
 				stages.push("1");
-				
+
 				this.stages = stages;
 				this.$.prono.get();
 			},
@@ -221,10 +221,49 @@
 			},
 			handleAllPronoChange: function(){
 				// calculate the points for every user if permitted and fire an event which says these have changed
+				if(this.permission > 5){
+					var that = this;
+					var points = {};
+					console.log('go');
+					this.allProno.forEach(function(prono){
+						if( !(prono.user_id in points) ){
+							points[prono.user_id] = 0;
+						}
+						var p = 0;
+						var stage = prono.prono_id.split('_')[0];
+						// check is the team is still in the tournament in the stage
+						that.matchesModel.forEach(function(match){
+							var c1 = (stage == 'stage'+match.stage  && (prono.team_id == match.team1 || prono.team_id == match.team2));
+							var c21 = (prono.team_id == match.team1 && match.score1+0.01*match.penalty1 > match.score2+0.01*match.penalty2);
+							var c22 = (prono.team_id == match.team2 && match.score1+0.01*match.penalty1 < match.score2+0.01*match.penalty2);
+							var c2 = (stage == 'stage1' && ( c21 || c22 ));
+							if( c1 || c2 ){
+								// the team is there, award points
+								switch(stage){
+									case 'stage16':
+										p = 6;
+										break;
+									case 'stage8':
+										p = 18;
+										break;
+									case 'stage4':
+										p = 28;
+										break;
+									case 'stage2':
+										p = 42;
+										break;
+									case 'stage1':
+										p = 60;
+										break;
+								}
+							}
+						});
 
-
-				points = {}
-				this.fire('prono-knockoutstage-teams-points-changed',points)
+						points[prono.user_id] += p;
+					});
+					console.log(points);
+					this.fire('prono-knockoutstage-teams-points-changed',points);
+				}
 			},
 			getPronoTeamStage: function(teamsModel,prono,stage){
 				var teams = []
