@@ -12,8 +12,8 @@
 			}
 			.close-dialog{
 				position: absolute;
-				top: -20px;
-				right: 10px;
+				top: 5px;
+				right: -5px;
 				margin: 0px;
 				cursor: pointer;
 			}
@@ -24,10 +24,12 @@
 		</style>
 		
 		<paper-dialog id="dialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation">
+			<a class='close-dialog' on-tap="close">close</a>
+			<content select=".before-scrolling"></content>
 			<paper-dialog-scrollable>
 				<content></content>
-				<a class='close-dialog' on-tap="close">close</a>
 			 </paper-dialog-scrollable>
+			<content select=".after-scrolling"></content>
 		</paper-dialog>
 
 	</template>

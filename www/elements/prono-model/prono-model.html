@@ -150,6 +150,7 @@
 				});
 				this.stages = stages;
 				
+				this.fire('prono-model-changed')
 				this.$.pronoScoreModel.get();
 			},
 			handlePronoScoreModelChange: function(){
