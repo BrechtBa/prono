@@ -100,10 +100,13 @@
 			}
 		</style>
 
+		<api-model id="prono" token="{{token}}" url="../../api/index.php/prono_knockoutstage/user_id/{{user.id}}" model="{{prono}}" on-change="handlePronoChange"></api-model>
+		<api-model id="allProno" token="{{token}}" url="../../api/index.php/prono_knockoutstage/" model="{{allProno}}" on-change="handleAllPronoChange"></api-model>
+
 		<div class="horizontal layout center-justified">
 			<div class="flex horizontal layout center">
 				<template is="dom-repeat" items="{{getStages(matchesModel)}}" as="stage">
-					<div class$="stage {{stageClass(stage)}} {{collapsedClass(stage,expandedStage)}} {{disabledClass(stage,currentStage,pronoScoreModel)}} vertical-layout ">
+					<div class$="stage {{stageClass(stage)}} {{collapsedClass(stage,expandedStage)}} {{disabledClass(stage,currentStage,user)}} vertical-layout ">
 						<template is="dom-repeat" items="{{stage.matches}}" as="match">
 							
 							<template is="dom-if" if="{{addSpacerBefore(stage,match)}}">
@@ -119,9 +122,9 @@
 										<prono-team-icon class="teamicon" team="{{getTeam(match.team1,teamsModel)}}"></prono-team-icon>
 									</div>
 									<div class$="score flex {{scoreLayoutClass(stage,expandedStage)}} layout center center-justified">
-										<div>{{getScore1(match,pronoScoreModel)}}</div>
+										<div>{{getScore1(match,prono,user)}}</div>
 										<div class="dash">-</div>
-										<div>{{getScore2(match,pronoScoreModel)}}</div>
+										<div>{{getScore2(match,prono,user)}}</div>
 									</div>
 									<div class="flex">
 										<prono-team-icon class="teamicon" team="{{getTeam(match.team2,teamsModel)}}"></prono-team-icon>
@@ -141,15 +144,23 @@
 					</div>
 				</template>
 			</div>
+		</div>
 
-
-		<prono-score-dialog id="editScore" teams="{{teams}}" token="{{token}}" match="{{match}}" score="{{score}}" user="{{user}}"></prono-score-dialog>
+		<prono-score-dialog id="editScore" teams-model="{{teamsModel}}" match="{{editmatch}}" score="{{score}}"></prono-score-dialog>
 	</template>
 
 	<script>
 		Polymer({
 			is: 'prono-knockoutstage',
 			properties: {
+				token:{
+					type: 'String',
+					value: ''
+				},
+				permission: {
+					type: 'Number',
+					value: 1
+				},
 				teamsModel: {
 					type: 'Array',
 					value: []
@@ -166,13 +177,21 @@
 					type: 'Number',
 					value: -1
 				},
-				permission: {
-					type: 'Number',
-					value: 1
+				user: {
+					type: 'Object',
+					value: {}
 				}
 			},
+			listeners:{
+				'editScore.save': 'saveScore'
+			},
 			ready: function(){
-				this.expandedStage = 0;
+				console.log('ready');
+				// add global event listeners
+				var that = this;
+				document.addEventListener('prono-model-changed', function(e){
+					that.$.prono.get();
+				});
 			},
 			getStages: function(matchesModel){
 				var tempstages = []
@@ -243,8 +262,8 @@
 			stageClass: function(stage){
 				return 'stage-'+stage.id;
 			},
-			disabledClass: function(stage,currentStage,pronoScoreModel){
-				if(stage.id==currentStage || pronoScoreModel.length==0){
+			disabledClass: function(stage,currentStage,user){
+				if(stage.id==currentStage || typeof user.id == 'undefined'){
 					return '';
 				}
 				else{
@@ -303,32 +322,39 @@
 				this.expandedStage = stage;
 			},
 			editScore: function(e){
-				this.match = e.model.__data__.match;
-				if(this.match.stage == this.expandedStage || !this.isSmall()){
-					if( this.pronoScoreModel.length==0 ){
+				this.editmatch = e.model.__data__.match;
+				if(this.editmatch.stage == this.expandedStage || !this.isSmall()){
+					if( typeof this.user.id == 'undefined' ){
 						// check permission
 						if(this.permission > 5){ 
-							this.score = {'score1':this.match.score1,'score2':this.match.score2};
+							this.score = {'score1':this.editmatch.score1,'score2':this.editmatch.score2};
 							this.$.editScore.open();
 						}
 					}
-					else if( this.match.stage==this.currentStage ){
+					else if( this.editmatch.stage==this.currentStage ){
 						this.score = {'score1':-1,'score2':-1};
 						that = this;
 						// find the match in the prono list
-						this.pronoScoreModel.forEach(function(item){
-							if(item.match_id==that.match.id){
-								that.score = {'score1':item.score1,'score2':item.score2};
-							}
+						var prono = this.prono.filter(function(prono){
+							return (prono.match_id == that.editmatch.id);
 						});
+						prono = prono[0];
+						this.score = {'score1':prono.score1,'score2':prono.score2};
 						this.$.editScore.open();
 					}
 				}
 				else{
-					this.expandedStage = this.match.stage;
+					this.expandedStage = this.editmatch.stage;
 				}
 			},
-
+			saveScore: function(e){
+				if(typeof this.user.id != 'undefined'){
+					this.$.prono.put('match_id/'+e.detail.match_id,{'score1':e.detail.score1,'score2':e.detail.score2});	
+				}
+				else{
+					app.$.model.$.matchesModel.put('id/'+e.detail.match_id,{'score1':e.detail.score1,'score2':e.detail.score2});
+				}
+			},
 			formatTeamName: function(id,teamsModel){
 				var name = '';
 				teamsModel.forEach(function(item){
@@ -347,6 +373,28 @@
 				});
 				return team;
 			},
+			getScore1: function(match,prono,user){
+				var score = match.score1;
+				if(typeof user.id != 'undefined'){
+					prono.forEach(function(item){
+						if(item.match_id == match.id){
+							score = item.score1
+						}
+					});
+				}
+				return this.formatScore(score);
+			},
+			getScore2: function(match,prono,user){
+				var score = match.score2;
+				if(typeof user.id != 'undefined'){
+					prono.forEach(function(item){
+						if(item.match_id == match.id){
+							score = item.score2
+						}
+					});
+				}
+				return this.formatScore(score);
+			},
 			formatScore: function(score){
 				var val = '';
 				if(score<0){
@@ -357,35 +405,66 @@
 				}
 				return val;
 			},
-			getScore1: function(match,pronoScoreModel){
-				var score = match.score1;
+			handlePronoChange: function(){
+				var done = true;
+				console.log('check prono knockoutstage');
+				try{
+					var that = this;
+					this.matchesModel.every(function(match){
+						var found = true;
+						if(match.stage > 0){
+							// check if the match_id is in the database
+							found = false;
+							that.prono.forEach(function(prono){
+								if(prono.match_id == match.id){
+									found = true;
+								}
+							});
 
-				try{
-					pronoScoreModel.forEach(function(item){
-						if(item.match_id == match.id){
-							score = item.score1
+							if(!found ){
+								done = false;
+								// the match has no prono, it must be created
+								console.log('adding prono knockoutstage match'+match.id);
+								that.$.prono.post({'user_id':that.user.id,'match_id':match.id,'score1':-1,'score2':-1,'penalty1':-1,'penalty2':-1});
+							}
 						}
+						return found;
 					});
 				}
 				catch(e){
-					score = -1;
 				}
-				return this.formatScore(score);
-			},
-			getScore2: function(match,pronoScoreModel){
-				var score = match.score2;
 				
-				try{
-					pronoScoreModel.forEach(function(item){
-						if(item.match_id == match.id){
-							score = item.score2
+				// proceed to the next step
+				if(done){
+					this.$.allProno.get();
+				}
+			},
+			handleAllPronoChange: function(){
+				if(this.permission > 5){
+					var that = this;
+					var points = {};
+					this.allProno.forEach(function(prono){
+						if( !(prono.user_id in points) ){
+							points[prono.user_id] = 0;
+						}
+						var match = that.matchesModel.filter(function(match){
+							return match.id == prono.match_id;
+						});
+						match = match[0]
+						if(typeof match != 'undefined' && match.score1>-1 && match.score2 >-1 && prono.score1>-1 && prono.score2 >-1){
+							// check for a correct result prono
+							if( (prono.score1>prono.score2 && match.score1>match.score2) || (prono.score1<prono.score2 && match.score1<match.score2) || (prono.score1==prono.score2 && match.score1==match.score2) ){
+								points[prono.user_id] += 6;
+							}
+							// check for a correct score prono
+							if( prono.score1==match.score1 && prono.score2==match.score2){
+								points[prono.user_id] += 8;
+							}
 						}
 					});
+					console.log(points);
+					this.fire('prono-knockoutstage-points-changed',points);
 				}
-				catch(e){
-					score = -1;
-				}
-				return this.formatScore(score);
 			},
 			_sortMatches: function(a, b) {  
   

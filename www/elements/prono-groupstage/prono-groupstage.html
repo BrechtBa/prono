@@ -144,27 +144,24 @@
 			},
 			editScore: function(e){
 				this.editmatch = e.model.__data__.match;
-				if(typeof this.user.id != 'undefined'){
-					if(this.currentStage==0){
-						this.score = {'score1':-1,'score2':-1};
-						var that = this;
-						// find the match in the prono list
-						var prono = this.prono.filter(function(prono){
-							return (prono.match_id == that.editmatch.id);
-						});
-						prono = prono[0];
-						that.score = {'score1':prono.score1,'score2':prono.score2};
-			
-						this.$.editScore.open();
-					}
-				}
-				else{
+				if(typeof this.user.id == 'undefined'){
 					// check permission
 					if(this.permission > 5){ 
 						this.score = {'score1':this.editmatch.score1,'score2':this.editmatch.score2};
 						this.$.editScore.open();
 					}
-					
+				}
+				else if(this.currentStage==0){
+					this.score = {'score1':-1,'score2':-1};
+					var that = this;
+					// find the match in the prono list
+					var prono = this.prono.filter(function(prono){
+						return (prono.match_id == that.editmatch.id);
+					});
+					prono = prono[0];
+					that.score = {'score1':prono.score1,'score2':prono.score2};
+		
+					this.$.editScore.open();
 				}
 			},
 			saveScore: function(e){
@@ -244,9 +241,10 @@
 				try{
 					var that = this;
 					this.matchesModel.every(function(match){
+						var found = true;
 						if(match.stage == 0){
 							// check if the match_id is in pronoScore
-							var found = false;
+							found = false;
 							that.prono.forEach(function(prono){
 								if(prono.match_id == match.id){
 									found = true;
@@ -259,8 +257,8 @@
 								console.log('adding prono groupstage match'+match.id);
 								that.$.prono.post({'user_id':that.user.id,'match_id':match.id,'score1':-1,'score2':-1,'penalty1':-1,'penalty2':-1});
 							}
-							return found;
 						}
+						return found;
 					});
 				}
 				catch(e){

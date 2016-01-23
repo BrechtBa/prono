@@ -162,8 +162,9 @@
 				this.stages = stages;
 				
 				this.fire('prono-model-changed')
-				this.$.pronoScoreModel.get();
+				//this.$.pronoScoreModel.get();
 			},
+/*
 			handlePronoScoreModelChange: function(){
 				var done = true;
 				console.log('check prono score');
@@ -241,37 +242,9 @@
 					this.$.pronoStageModel.get();
 				}
 			},
-			handlePronoStageModelChange: function(){
-				var done = true;
-				//console.log('check prono stage');
-				
-				// proceed to the next step
-				if(done){
-					this.$.pronoNumberModel.get();
-				}
-			},
-			handlePronoNumberModelChange: function(){
-				var done = true;
-				//console.log('check prono number');
-				
-				// proceed to the next step
-				if(done){
-					this.$.allPronoScoreModel.get();
-				}
-			},
-			handleAllPronoScoreModelChange: function(){
-				this.$.allPronoTeamModel.get();
-			},
-			handleAllPronoTeamModelChange: function(){
-				this.$.allPronoStageModel.get();
-			},
-			handleAllPronoStageModelChange: function(){
-				this.$.allPronoNumberModel.get();
-			},
-			handleAllPronoNumberModelChange: function(){
-				this.calculatePoints();
-			},
-			calculatePoints: function(pronoKnockoutstageTeamsPoints){
+*/
+
+			calculatePoints: function(){
 /*				var that = this;
 				console.log('calculate points')
 
