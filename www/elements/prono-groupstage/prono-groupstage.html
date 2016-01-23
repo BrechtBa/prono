@@ -90,20 +90,14 @@
 						</template>
 					</div>
 					
-					<!--<template is="dom-if" if="{{isProno(user)}}">
-						<prono-groupwinners group="{{group}}" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" prono-team-model="{{pronoTeamModel}}"></prono-groupwinners>
-					</template>
-
-					<template is="dom-if" if="{{!isProno(user)}}">
-						<prono-groupranking group="{{group}}" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" permission="{{permission}}"></prono-groupranking>
-					</template>-->
+					<prono-groupwinners token="{{token}}" permission="{{permission}}" group="{{group}}" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" user="{{user}}"></prono-groupwinners>
 
 				</paper-material>
 			</template>
 
 		</div>
 
-		<prono-score-dialog id="editScore" teams-model="{{teamsModel}}" match="{{editmatch}}" score="{{score}}" prono="{{isProno(pronoScoreModel)}}"></prono-score-dialog>
+		<prono-score-dialog id="editScore" teams-model="{{teamsModel}}" match="{{editmatch}}" score="{{score}}"></prono-score-dialog>
 	</template>
 
 	<script>
@@ -202,9 +196,6 @@
 				else{
 					return 'disabled';
 				}
-			},
-			isProno: function(user){
-				return (typeof user.id != 'undefined');
 			},
 			getTeam: function(id,teams){
 				var team = {};
