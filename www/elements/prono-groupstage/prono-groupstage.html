@@ -69,6 +69,10 @@
 				margin-top: 20px;
 			}
 		</style>
+
+		<api-model id="prono" token="{{token}}" url="../../api/index.php/prono_groupstage/user_id/{{user.id}}" model="{{prono}}" on-change="handlePronoChange"></api-model>
+		<api-model id="allProno" token="{{token}}" url="../../api/index.php/prono_groupstage/" model="{{allProno}}" on-change="handleAllPronoChange"></api-model>
+
 		<div class$="{{disabledClass(currentStage,pronoScoreModel)}} horizontal layout wrap center-justified">
 
 			<template is="dom-repeat" items="{{getGroups(matchesModel)}}" as="group">
@@ -79,20 +83,20 @@
 							<div class="match horizontal layout center center-justified" on-tap="editScore">
 								<div class="teamname left flex"><prono-team-name team="{{getTeam(match.team1,teamsModel)}}" default="{{match.defaultteam1}}"></prono-team-name></div>
 								<div><prono-team-icon class="teamicon" team="{{getTeam(match.team1,teamsModel)}}"></prono-team-icon></div>
-								<div class="score">{{getScore1(match,pronoScoreModel)}} - {{getScore2(match,pronoScoreModel)}}</div>
+								<div class="score">{{getScore1(match,prono,user)}} - {{getScore2(match,prono,user)}}</div>
 								<div><prono-team-icon class="teamicon" team="{{getTeam(match.team2,teamsModel)}}"></prono-team-icon></div>
 								<div class="teamname right flex"><prono-team-name team="{{getTeam(match.team2,teamsModel)}}" default="{{match.defaultteam2}}"></prono-team-name></div>
 							</div>
 						</template>
 					</div>
 					
-					<template is="dom-if" if="{{isProno(pronoScoreModel)}}">
+					<!--<template is="dom-if" if="{{isProno(user)}}">
 						<prono-groupwinners group="{{group}}" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" prono-team-model="{{pronoTeamModel}}"></prono-groupwinners>
 					</template>
 
-					<template is="dom-if" if="{{!isProno(pronoScoreModel)}}">
+					<template is="dom-if" if="{{!isProno(user)}}">
 						<prono-groupranking group="{{group}}" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" permission="{{permission}}"></prono-groupranking>
-					</template>
+					</template>-->
 
 				</paper-material>
 			</template>
@@ -106,6 +110,10 @@
 		Polymer({
 			is: 'prono-groupstage',
 			properties: {
+				token:{
+					type: 'String',
+					value: ''
+				},
 				permission: {
 					type: 'Number',
 					value: 1
@@ -116,14 +124,6 @@
 				matchesModel: {
 					type: 'Array',
 				},
-				pronoScoreModel: {
-					type: 'Array',
-					value: []
-				},
-				pronoTeamModel: {
-					type: 'Array',
-					value: []
-				},
 				groups: {
 					type: 'Array',
 					computed: 'getGroups(matchesModel)'
@@ -131,29 +131,54 @@
 				currentStage:{
 					type: 'Number',
 					value: -1
+				},
+				user: {
+					type: 'Object',
+					value: {}
 				}
 			},
+			listeners:{
+				'editScore.save': 'saveScore'
+			},
 			ready: function(){
+				console.log('ready');
+				// add global event listeners
+				var that = this;
+				document.addEventListener('prono-model-changed', function(e){
+					that.$.prono.get();
+				});
 			},
 			editScore: function(e){
 				this.editmatch = e.model.__data__.match;
-				if(this.pronoScoreModel.length==0){
+				if(typeof this.user.id != 'undefined'){
+					if(this.currentStage==0){
+						this.score = {'score1':-1,'score2':-1};
+						var that = this;
+						// find the match in the prono list
+						var prono = this.prono.filter(function(prono){
+							return (prono.match_id == that.editmatch.id);
+						});
+						prono = prono[0];
+						that.score = {'score1':prono.score1,'score2':prono.score2};
+			
+						this.$.editScore.open();
+					}
+				}
+				else{
 					// check permission
 					if(this.permission > 5){ 
 						this.score = {'score1':this.editmatch.score1,'score2':this.editmatch.score2};
 						this.$.editScore.open();
 					}
+					
 				}
-				else if(this.currentStage==0){
-					this.score = {'score1':-1,'score2':-1};
-					that = this;
-					// find the match in the prono list
-					this.pronoScoreModel.forEach(function(item){
-						if(item.match_id==that.editmatch.id){
-							that.score = {'score1':item.score1,'score2':item.score2};
-						}
-					});
-					this.$.editScore.open();
+			},
+			saveScore: function(e){
+				if(typeof this.user.id != 'undefined'){
+					this.$.prono.put('match_id/'+e.detail.match_id,{'score1':e.detail.score1,'score2':e.detail.score2});	
+				}
+				else{
+					app.$.model.$.matchesModel.put('id/'+e.detail.match_id,{'score1':e.detail.score1,'score2':e.detail.score2});
 				}
 			},
 			getGroups: function(matchesModel){
@@ -178,8 +203,8 @@
 					return 'disabled';
 				}
 			},
-			isProno: function(pronoScoreModel){
-				return (this.pronoScoreModel.length!=0);
+			isProno: function(user){
+				return (typeof user.id != 'undefined');
 			},
 			getTeam: function(id,teams){
 				var team = {};
@@ -189,6 +214,28 @@
 					}
 				});
 				return team;
+			},
+			getScore1: function(match,prono,user){
+				var score = match.score1;
+				if(typeof user.id != 'undefined'){
+					prono.forEach(function(item){
+						if(item.match_id == match.id){
+							score = item.score1
+						}
+					});
+				}
+				return this.formatScore(score);
+			},
+			getScore2: function(match,prono,user){
+				var score = match.score2;
+				if(typeof user.id != 'undefined'){
+					prono.forEach(function(item){
+						if(item.match_id == match.id){
+							score = item.score2
+						}
+					});
+				}
+				return this.formatScore(score);
 			},
 			formatScore: function(score){
 				var val = '';
@@ -200,35 +247,65 @@
 				}
 				return val;
 			},
-			getScore1: function(match,pronoScoreModel){
-				var score = match.score1;
+			handlePronoChange: function(){
+				var done = true;
+				console.log('check prono groupstage');
+				try{
+					var that = this;
+					this.matchesModel.every(function(match){
+						if(match.stage == 0){
+							// check if the match_id is in pronoScore
+							var found = false;
+							that.prono.forEach(function(prono){
+								if(prono.match_id == match.id){
+									found = true;
+								}
+							});
 
-				try{
-					pronoScoreModel.forEach(function(item){
-						if(item.match_id == match.id){
-							score = item.score1
+							if(!found ){
+								done = false;
+								// the match has no prono, it must be created
+								console.log('adding prono groupstage match'+match.id);
+								that.$.prono.post({'user_id':that.user.id,'match_id':match.id,'score1':-1,'score2':-1,'penalty1':-1,'penalty2':-1});
+							}
+							return found;
 						}
 					});
 				}
 				catch(e){
-					score = -1;
 				}
-				return this.formatScore(score);
-			},
-			getScore2: function(match,pronoScoreModel){
-				var score = match.score2;
 				
-				try{
-					pronoScoreModel.forEach(function(item){
-						if(item.match_id == match.id){
-							score = item.score2
+				// proceed to the next step
+				if(done){
+					this.$.allProno.get();
+				}
+			},
+			handleAllPronoChange: function(){
+				if(this.permission > 5){
+					var that = this;
+					var points = {};
+					this.allProno.forEach(function(prono){
+						if( !(prono.user_id in points) ){
+							points[prono.user_id] = 0;
+						}
+						var match = that.matchesModel.filter(function(match){
+							return match.id == prono.match_id;
+						});
+						match = match[0]
+						if(typeof match != 'undefined' && match.score1>-1 && match.score2 >-1 && prono.score1>-1 && prono.score2 >-1){
+							// check for a correct result prono
+							if( (prono.score1>prono.score2 && match.score1>match.score2) || (prono.score1<prono.score2 && match.score1<match.score2) || (prono.score1==prono.score2 && match.score1==match.score2) ){
+								points[prono.user_id] += 3;
+							}
+							// check for a correct score prono
+							if( prono.score1==match.score1 && prono.score2==match.score2){
+								points[prono.user_id] += 4;
+							}
 						}
 					});
+					console.log(points);
+					this.fire('prono-groupstage-points-changed',points);
 				}
-				catch(e){
-					score = -1;
-				}
-				return this.formatScore(score);
 			},
 			_sortMatches: function(a, b) {  
   

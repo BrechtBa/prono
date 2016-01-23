@@ -84,8 +84,19 @@
 			listeners: {
 			},
 			observers: [
-				'tokenChanged(token)'
+				'tokenChanged(token)',
 			],
+			ready: function(){
+				var that = this;
+				document.addEventListener('prono-knockoutstage-teams-points-changed', function (e,d) {
+					console.log(e.detail);
+					that.pronoKnockoutstageTeamsPoints = e.detail;
+				});
+				document.addEventListener('prono-groupstage-points-changed', function (e,d) {
+					console.log(e.detail);
+					that.pronoGroupstagePoints = e.detail;
+				});
+			},
 			tokenChanged: function(){
 				console.log('token changed');
 				this.$.usersModel.get();
@@ -260,8 +271,8 @@
 			handleAllPronoNumberModelChange: function(){
 				this.calculatePoints();
 			},
-			calculatePoints: function(){
-				var that = this;
+			calculatePoints: function(pronoKnockoutstageTeamsPoints){
+/*				var that = this;
 				console.log('calculate points')
 
 				that.usersModel.forEach(function(user){
@@ -289,57 +300,7 @@
 						// write points to database
 						that.$.usersModel.put('user_id/'+user.id,{'points':points});
 					}
-				});
-			},
-			countCorrectResults(prono,stage){
-				var that = this;
-				
-				// get the matches of the stage
-				var matches = that.matchesModel.filter(function( match ){
-					return ( match.stage==stage );
-				});
-
-				var count = 0;
-				matches.forEach(function(match){
-					// find the users bet					
-					var bet = prono.filter(function( bet ){
-						return ( bet.match_id==match.id );
-					});
-					bet = bet[0];
-
-					if(typeof bet != 'undefined' && match.score1>-1 && match.score2 >-1 && bet.score1>-1 && bet.score2 >-1){
-						if( (bet.score1>bet.score2 && match.score1>match.score2) || (bet.score1<bet.score2 && match.score1<match.score2) || (bet.score1==bet.score2 && match.score1==match.score2) ){
-							count += 1;
-						}
-					}
-
-				});
-				return count;
-			},
-			countCorrectScores(prono,stage){
-				var that = this;
-				
-				// get the matches of the stage
-				var matches = that.matchesModel.filter(function( match ){
-					return ( match.stage==stage );
-				});
-
-				var count = 0;
-				matches.forEach(function(match){
-					// find the users bet					
-					var bet = prono.filter(function( bet ){
-						return ( bet.match_id==match.id );
-					});
-					bet = bet[0];
-					
-					if(typeof bet != 'undefined' && match.score1>-1 && match.score2 >-1 && bet.score1>-1 && bet.score2 >-1){
-						if( (bet.score1==match.score1 && bet.score2==match.score2) ){
-							count += 1;
-						}
-					}
-
-				});
-				return count;
+				});*/
 			},
 	
 		});

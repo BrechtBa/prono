@@ -115,12 +115,13 @@
 					score2 = -1;
 				}
 
-				if(this.prono){
+				/*if(this.prono){
 					app.$.model.$.pronoScoreModel.put('match_id/'+this.match.id,{'score1':score1,'score2':score2});
 				}
 				else{
 					app.$.model.$.matchesModel.put('id/'+this.match.id,{'score1':score1,'score2':score2});
-				}
+				}*/
+				this.fire('save',{'match_id':this.match.id, 'score1':score1, 'score2':score2});
 			},
 			formatTeamName: function(id,teams){
 				var name = '';
