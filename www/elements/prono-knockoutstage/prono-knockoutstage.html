@@ -112,11 +112,11 @@
 
 							<paper-material elevation="2" class="match vertical layout" on-tap="editScore">
 								<div class="teamname left" hidden="{{hideTeamName(stage,expandedStage)}}">
-									<prono-team-name team="{{getTeam(match.team1,teams)}}" default="{{match.defaultteam1}}" abr="{{abreviateTeamName(stage,expandedStage)}}"></prono-team-name>
+									<prono-team-name team="{{getTeam(match.team1,teamsModel)}}" default="{{match.defaultteam1}}" abr="{{abreviateTeamName(stage,expandedStage)}}"></prono-team-name>
 								</div>
 								<div class$="flex {{iconLayoutClass(stage,expandedStage)}} layout center center-justified">
 									<div class="flex">
-										<prono-team-icon class="teamicon" team="{{getTeam(match.team1,teams)}}"></prono-team-icon>
+										<prono-team-icon class="teamicon" team="{{getTeam(match.team1,teamsModel)}}"></prono-team-icon>
 									</div>
 									<div class$="score flex {{scoreLayoutClass(stage,expandedStage)}} layout center center-justified">
 										<div>{{getScore1(match,pronoScoreModel)}}</div>
@@ -124,11 +124,11 @@
 										<div>{{getScore2(match,pronoScoreModel)}}</div>
 									</div>
 									<div class="flex">
-										<prono-team-icon class="teamicon" team="{{getTeam(match.team2,teams)}}"></prono-team-icon>
+										<prono-team-icon class="teamicon" team="{{getTeam(match.team2,teamsModel)}}"></prono-team-icon>
 									</div>
 								</div>
 								<div class="teamname right" hidden="{{hideTeamName(stage,expandedStage)}}">
-									<prono-team-name team="{{getTeam(match.team2,teams)}}" default="{{match.defaultteam2}}" abr="{{abreviateTeamName(stage,expandedStage)}}"></prono-team-name>
+									<prono-team-name team="{{getTeam(match.team2,teamsModel)}}" default="{{match.defaultteam2}}" abr="{{abreviateTeamName(stage,expandedStage)}}"></prono-team-name>
 								</div>
 							</paper-material>
 							
