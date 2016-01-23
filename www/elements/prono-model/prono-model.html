@@ -162,118 +162,11 @@
 				this.stages = stages;
 				
 				this.fire('prono-model-changed')
-				//this.$.pronoScoreModel.get();
 			},
-/*
-			handlePronoScoreModelChange: function(){
-				var done = true;
-				console.log('check prono score');
-				try{
-					var that = this;
-					this.matchesModel.every(function(match){
-				
-						// check if the match_id is in pronoScore
-						var found = false;
-						that.pronoScoreModel.forEach(function(prono){
-							if(prono.match_id == match.id){
-								found = true;
-							}
-						});
 
-						if(!found ){
-							done = false;
-							// the match has no prono, it must be created
-							console.log('adding prono score '+match.id);
-							that.$.pronoScoreModel.post({'user_id':that.tokenPayload.user_id,'match_id':match.id,'score1':-1,'score2':-1,'penalty1':-1,'penalty2':-1});
-						}
-						return found;
-					});
-				}
-				catch(e){
-				}
-				
-				// proceed to the next step
-				if(done){
-					this.$.pronoTeamModel.get();
-				}
-			},
-			handlePronoTeamModelChange: function(){
-				var done = true;
-				console.log('check prono team');
-				try{
-					var that = this;
-					// check which prono's should be present
-					var pronos = [];
-					// group winner and runner up
-					this.groups.forEach(function(group){
-						pronos.push(group + '1');
-						pronos.push(group + '2');
-					});
-					// knockoutstage teams
-					this.stages.forEach(function(stage){
-						for(var i=1; i<=stage; i++){
-							pronos.push('stage' + stage + '_'+ i);
-						}
-					});
-					
-					pronos.every(function(prono){
-						// check if the prono is in pronoTeam
-						var found = false;
-						that.pronoTeamModel.forEach(function(tempprono){
-							if(tempprono.prono == prono){
-								found = true;
-							}
-						});
-
-						if(!found){
-							done = false;
-							// post the prono
-							console.log('adding prono team '+prono);
-							that.$.pronoTeamModel.post({'user_id':that.tokenPayload.user_id,'prono':prono,'team_id':-1});
-						}
-						return found;
-					});
-				}
-				catch(e){
-				}
-			
-				// proceed to the next step
-				if(done){
-					this.$.pronoStageModel.get();
-				}
-			},
-*/
 
 			calculatePoints: function(){
-/*				var that = this;
-				console.log('calculate points')
 
-				that.usersModel.forEach(function(user){
-					var points = 0;
-
-					// get the users score prono
-					var prono = that.allPronoScoreModel.filter(function( prono ){
-						return ( prono.user_id==user.id );
-					});
-					
-					points += that.countCorrectResults(prono,0)*3;//*that.rules[0]['groupstage_result'];	
-					points += that.countCorrectResults(prono,16)*6;//*that.rules[0]['knockoutstage_result'];	
-					points += that.countCorrectResults(prono,8)*6;//*that.rules[0]['knockoutstage_result'];	
-					points += that.countCorrectResults(prono,4)*6;//*that.rules[0]['knockoutstage_result'];	
-					points += that.countCorrectResults(prono,2)*6;//*that.rules[0]['knockoutstage_result'];	
-
-					points += that.countCorrectScores(prono,0)*4;//*that.rules[0]['groupstage_score'];	
-					points += that.countCorrectScores(prono,16)*8;//*that.rules[0]['knockoutstage_score'];	
-					points += that.countCorrectScores(prono,8)*8;//*that.rules[0]['knockoutstage_score'];	
-					points += that.countCorrectScores(prono,4)*8;//*that.rules[0]['knockoutstage_score'];	
-					points += that.countCorrectScores(prono,2)*8;//*that.rules[0]['knockoutstage_score'];	
-		
-
-					if(user.points != points){
-						// write points to database
-						that.$.usersModel.put('user_id/'+user.id,{'points':points});
-					}
-				});*/
 			},
 	
 		});
