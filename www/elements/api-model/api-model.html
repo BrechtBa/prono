@@ -77,7 +77,7 @@
 				this.$.post.body = JSON.stringify(data);
 				this.$.post.generateRequest();
 			},
-			handlePostResponse(e,request){
+			handlePostResponse: function(e,request){
 				var location = request.xhr.getResponseHeader('Location');
 				var parts = location.split('/');
 				var id = parts[1];
@@ -95,7 +95,7 @@
 				console.log('get ' + this.$.get.url);
 				this.$.get.generateRequest();
 			},
-			handleGetResponse: function(e,request){		
+			handleGetResponse: function(e,request){
 				var that = this;
 				// create a temporary model with the same values
 				var tempmodel = []

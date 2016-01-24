@@ -19,16 +19,6 @@
 		<api-model id="teamsModel" token="[[token]]" url="../../api/index.php/teams" model="{{teamsModel}}" on-change="handleTeamsModelChange"></api-model>
 		<api-model id="matchesModel" token="[[token]]" url="../../api/index.php/matches" model="{{matchesModel}}" on-change="handleMatchesModelChange"></api-model>
 
-		<api-model id="pronoScoreModel" token="[[token]]" url="../../api/index.php/prono_score/user_id/{{tokenPayload.user_id}}" model="{{pronoScoreModel}}" on-change="handlePronoScoreModelChange"></api-model>
-		<api-model id="pronoTeamModel" token="[[token]]" url="../../api/index.php/prono_team/user_id/{{tokenPayload.user_id}}" model="{{pronoTeamModel}}" on-change="handlePronoTeamModelChange"></api-model>
-		<api-model id="pronoStageModel" token="[[token]]" url="../../api/index.php/prono_stage/user_id/{{tokenPayload.user_id}}" model="{{pronoStageModel}}" on-change="handlePronoStageModelChange"></api-model>
-		<api-model id="pronoNumberModel" token="[[token]]" url="../../api/index.php/prono_number/user_id/{{tokenPayload.user_id}}" model="{{pronoNumberModel}}" on-change="handlePronoNumberModelChange"></api-model>
-	
-		<api-model id="allPronoScoreModel" token="[[token]]" url="../../api/index.php/prono_score/" model="{{allPronoScoreModel}}" on-change="handleAllPronoScoreModelChange"></api-model>
-		<api-model id="allPronoTeamModel" token="[[token]]" url="../../api/index.php/prono_team/" model="{{allPronoTeamModel}}" on-change="handleAllPronoTeamModelChange"></api-model>
-		<api-model id="allPronoStageModel" token="[[token]]" url="../../api/index.php/prono_stage/" model="{{allPronoStageModel}}" on-change="handleAllPronoStageModelChange"></api-model>
-		<api-model id="allPronoNumberModel" token="[[token]]" url="../../api/index.php/prono_number/" model="{{allPronoNumberModel}}" on-change="handleAllPronoNumberModelChange"></api-model>
-
 	</template>
 
 	<script>
@@ -79,7 +69,7 @@
 					type: 'Object',
 					notify: true,
 					value: {}
-				},
+				}
 			},
 			listeners: {
 			},
@@ -106,7 +96,7 @@
 				});
 			},
 			tokenChanged: function(){
-				console.log('token changed');
+				console.log('token changed');				
 				this.$.usersModel.get();
 			},
 			handleUsersModelChange: function(e){
@@ -168,7 +158,6 @@
 					}
 				});
 				this.stages = stages;
-				
 				this.fire('prono-model-changed')
 			},
 			calculatePoints: function(){
@@ -199,7 +188,7 @@
 						}
 					}
 				});
-			},
+			}
 	
 		});
 	</script>
