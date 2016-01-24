@@ -54,7 +54,7 @@
 			.stage{
 				position: relative;
 			}
-			.stage.disabled::after{
+			.disabled .stage::after{
 				content: "";
 				position: absolute;
 				top: 0;
@@ -93,8 +93,8 @@
 			<div class="flex vertical layout">
 				<template is="dom-repeat" items="{{stages}}" as="stage">
 
-					<div class$="stage {{stageClass(stage)}} {{disabledClass(currentStage)}} vertical-layout">
-						<paper-material elevation="2" class="match vertical layout" on-tap="editTeams">
+					<div class$="{{disabledClass(currentStage)}} vertical-layout">
+						<paper-material elevation="2" class$="stage {{stageClass(stage)}} vertical layout" on-tap="editTeams">
 							<h3>{{formatStageText(stage)}}</h3>
 							<div class="horizontal layout center-justified wrap">
 								<template is="dom-repeat" items="{{getPronoTeamStage(teamsModel,prono,stage)}}" as="team" sort="_sortTeams">
@@ -184,32 +184,37 @@
 				var done = true;
 				console.log('check prono knockoutstage teams');
 				try{
-					var that = this;
-					// check which prono's should be present
-					var pronos = [];
-					this.stages.forEach(function(stage){
-						for(var i=1; i<=stage; i++){
-							pronos.push('stage' + stage + '_'+ i);
-						}
-					});
-
-					pronos.every(function(prono_id){
-						// check if the prono is in pronoTeam
-						var found = false;
-						that.prono.forEach(function(tempprono){
-							if(tempprono.prono_id == prono_id){
-								found = true;
+					if(typeof this.user.id != 'undefined'){
+						var that = this;
+						// check which prono's should be present
+						var pronos = [];
+						this.stages.forEach(function(stage){
+							for(var i=1; i<=stage; i++){
+								pronos.push('stage' + stage + '_'+ i);
 							}
 						});
 
-						if(!found){
-							done = false;
-							// post the prono
-							console.log('adding prono team '+prono_id);
-							that.$.prono.post({'user_id':that.user.id,'prono_id':prono_id,'team_id':-1});
-						}
-						return found;				
-					});
+						pronos.every(function(prono_id){
+							// check if the prono is in pronoTeam
+							var found = false;
+							that.prono.forEach(function(tempprono){
+								if(tempprono.prono_id == prono_id){
+									found = true;
+								}
+							});
+
+							if(!found){
+								done = false;
+								// post the prono
+								console.log('adding prono team '+prono_id);
+								that.$.prono.post({'user_id':that.user.id,'prono_id':prono_id,'team_id':-1});
+							}
+							return found;				
+						});
+					}
+					else{
+						this.prono = [];
+					}
 				}
 				catch(e){
 				}
@@ -337,22 +342,24 @@
 			},
 			editTeams: function(e){
 				var editStage = e.model.__data__.stage;
-				this.editStage = editStage;
+				if(this.currentStage==0){
+					this.editStage = editStage;
 
-				var selectedTeams = []
-				var stageProno = this.prono.filter(function(prono){
-					return ( prono.prono_id.indexOf('stage' + editStage + '_')>-1 );
-				});
+					var selectedTeams = []
+					var stageProno = this.prono.filter(function(prono){
+						return ( prono.prono_id.indexOf('stage' + editStage + '_')>-1 );
+					});
 
-				stageProno.forEach(function(prono){
-					if(prono.team_id>0){
-						selectedTeams.push(prono.team_id);
-					}
-				});
-				this.selectedTeams = selectedTeams;
-				this.selectionsRemaining = parseInt(editStage) - this.selectedTeams.length
+					stageProno.forEach(function(prono){
+						if(prono.team_id>0){
+							selectedTeams.push(prono.team_id);
+						}
+					});
+					this.selectedTeams = selectedTeams;
+					this.selectionsRemaining = parseInt(editStage) - this.selectedTeams.length
 
-				this.$.editTeams.open();
+					this.$.editTeams.open();
+				}
 			},
 			selectTeam: function(e){
 				var team_id = e.model.__data__.team.id;

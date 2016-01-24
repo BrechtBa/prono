@@ -95,16 +95,21 @@
 
 	$put1[] = 'user_profiles/user_id/%s';
 	if($stage==0){
-		$put1[] = 'prono_team/user_id/%s';
-		$put1[] = 'prono_stage/user_id/%s';
+		$put1[] = 'prono_groupstage_winners/user_id/%s';
+		$put1[] = 'prono_knockoutstage_teams/user_id/%s';
 		$put1[] = 'prono_number/user_id/%s';
 	}	
 	foreach( $matches as $match){
-		$put1[] = 'prono_score/user_id/%s/match_id/'.$match['id'];
+		if($match['stage']==0){
+			$put1[] = 'prono_groupstage/user_id/%s/match_id/'.$match['id'];
+		}
+		else{
+			$put1[] = 'prono_knockoutstage/user_id/%s/match_id/'.$match['id'];
+		}
 	}
 
-	$valid_uri = [1 => ['POST' => ['prono_score','prono_team','prono_stage','prono_number','user_profiles'], 
-                        'GET' => ['user_profiles','rules','teams','matches','groups','prono_score/user_id/%s','prono_team/user_id/%s','prono_stage/user_id/%s','prono_number/user_id/%s'],
+	$valid_uri = [1 => ['POST' => ['user_profiles','prono_groupstage','prono_groupstage_winners','prono_knockoutstage_teams','prono_knockoutstage'], 
+                        'GET' => ['user_profiles','rules','teams','matches','groups','prono_groupstage/user_id/%s','prono_groupstage_winners/user_id/%s','prono_knockoutstage_teams/user_id/%s','prono_knockoutstage/user_id/%s'],
                         'PUT' => $put1,
                         'DELETE' => ['']],
 				  9 => ['POST' => ['*'],

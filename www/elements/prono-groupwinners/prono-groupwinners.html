@@ -192,7 +192,7 @@
 				var id = -1;
 				try{
 					prono.forEach(function(item){
-						if(item.prono == group + '1'){					
+						if(item.prono_id == group + '1'){					
 							id = item.team_id;
 						}
 					});
@@ -212,7 +212,7 @@
 				var id = -1;
 				try{
 					prono.forEach(function(item){
-						if(item.prono == group + '2'){					
+						if(item.prono_id == group + '2'){					
 							id = item.team_id;
 						}
 					});
@@ -270,8 +270,8 @@
 			saveProno: function(){
 				this.$.editWinners.close();
 
-				this.$.prono.put('prono/'+this.group+'1',{'team_id': this.winner});
-				this.$.prono.put('prono/'+this.group+'2',{'team_id': this.runnerup});
+				this.$.prono.put('prono_id/'+this.group+'1',{'team_id': this.winner});
+				this.$.prono.put('prono_id/'+this.group+'2',{'team_id': this.runnerup});
 			},
 			roundPoints: function(points){
 				return Math.floor(parseFloat(points));
@@ -311,25 +311,30 @@
 				var done = true;
 				console.log('check prono groupstage winners');
 				try{
-					var that = this;
-					pronos = [this.group+'1',this.group+'2'];
-					pronos.every(function(prono){
-						// check if the prono is in the database
-						var found = false;
-						that.prono.forEach(function(tempprono){
-							if(tempprono.prono == prono){
-								found = true;
-							}
-						});
+					if(typeof this.user.id != 'undefined'){
+						var that = this;
+						pronos = [this.group+'1',this.group+'2'];
+						pronos.every(function(prono){
+							// check if the prono is in the database
+							var found = false;
+							that.prono.forEach(function(tempprono){
+								if(tempprono.prono_id == prono){
+									found = true;
+								}
+							});
 
-						if(!found){
-							done = false;
-							// post the prono
-							console.log('adding prono groupstage winners ' + prono);
-							that.$.prono.post({'user_id':that.user.id,'prono':prono,'team_id':-1});
-						}
-						return found;
-					});
+							if(!found){
+								done = false;
+								// post the prono
+								console.log('adding prono groupstage winners ' + prono);
+								that.$.prono.post({'user_id':that.user.id,'prono':prono,'team_id':-1});
+							}
+							return found;
+						});
+					}
+					else{
+						this.prono = [];
+					}
 				}
 				catch(e){
 				}
@@ -348,7 +353,7 @@
 							points[prono.user_id] = 0;
 						}
 
-						var group = prono.prono.substr(0,prono.prono.length-1);
+						var group = prono.prono_id.substr(0,prono.prono_id.length-1);
 
 						filter = that.filterGroupTeams(group,that.matchesModel)
 						var teams = that.teamsModel.filter(function(team){
@@ -359,11 +364,11 @@
 						teams.sort(that._sortTeams);
 
 						// check if the winner is correct
-						if(prono.prono.substr(prono.prono.length-1)=='1' && prono.team_id==teams[0].id){
+						if(prono.prono_id.substr(prono.prono_id.length-1)=='1' && prono.team_id==teams[0].id){
 							points[prono.user_id] += 3;
 						}
 						// check if the runnerup is correct
-						if(prono.prono.substr(prono.prono.length-1)=='2' && prono.team_id==teams[1].id){
+						if(prono.prono_id.substr(prono.prono_id.length-1)=='2' && prono.team_id==teams[1].id){
 							points[prono.user_id] += 3;
 						}
 					});
