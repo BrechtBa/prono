@@ -88,13 +88,21 @@
 			],
 			ready: function(){
 				var that = this;
-				document.addEventListener('prono-knockoutstage-teams-points-changed', function (e,d) {
-					console.log(e.detail);
-					that.pronoKnockoutstageTeamsPoints = e.detail;
-				});
 				document.addEventListener('prono-groupstage-points-changed', function (e,d) {
-					console.log(e.detail);
 					that.pronoGroupstagePoints = e.detail;
+					that.calculatePoints();
+				});
+				document.addEventListener('prono-groupstage-winners-points-changed', function (e,d) {
+					that.pronoGroupstageWinnersPoints = e.detail;
+					that.calculatePoints();
+				});
+				document.addEventListener('prono-knockoutstage-points-changed', function (e,d) {
+					that.pronoKnockoutstagePoints = e.detail;
+					that.calculatePoints();
+				});
+				document.addEventListener('prono-knockoutstage-teams-points-changed', function (e,d) {
+					that.pronoKnockoutstageTeamsPoints = e.detail;
+					that.calculatePoints();
 				});
 			},
 			tokenChanged: function(){
@@ -163,10 +171,34 @@
 				
 				this.fire('prono-model-changed')
 			},
-
-
 			calculatePoints: function(){
+				var that = this;
+				console.log('calculate points')
+				that.usersModel.forEach(function(user){
+					// check if all points are defined
+					if( typeof that.pronoGroupstagePoints != 'undefined'
+					 &&	typeof that.pronoGroupstageWinnersPoints != 'undefined'
+					 &&	typeof that.pronoKnockoutstageTeamsPoints != 'undefined'
+					 &&	typeof that.pronoKnockoutstagePoints != 'undefined'
 
+					 && typeof that.pronoGroupstagePoints[user.id] != 'undefined'
+					 &&	typeof that.pronoGroupstageWinnersPoints[user.id] != 'undefined'
+					 &&	typeof that.pronoKnockoutstageTeamsPoints[user.id] != 'undefined'
+					 &&	typeof that.pronoKnockoutstagePoints[user.id] != 'undefined' ){
+
+						//add all points
+						var points = that.pronoGroupstagePoints[user.id]
+							       + that.pronoGroupstageWinnersPoints[user.id]
+								   + that.pronoKnockoutstageTeamsPoints[user.id]
+								   + that.pronoKnockoutstagePoints[user.id];
+
+
+						if(user.points != points){
+							// write points to database
+							that.$.usersModel.put('user_id/'+user.id,{'points':points});
+						}
+					}
+				});
 			},
 	
 		});

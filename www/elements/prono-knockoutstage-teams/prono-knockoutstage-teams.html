@@ -262,7 +262,6 @@
 						});
 						points[prono.user_id] += p;
 					});
-					console.log(points);
 					this.fire('prono-knockoutstage-teams-points-changed',points);
 				}
 			},
@@ -391,7 +390,6 @@
 					return (that.selectedTeams.indexOf(team.id)>-1);
 				});			
 				teams.sort(this._sortTeams);
-				console.log(teams);
 
 				for(var i=1; i<=this.editStage; i++){
 					if(typeof teams[i-1] != 'undefined'){
