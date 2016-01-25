@@ -1,0 +1,347 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animations.html">
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
+
+<link rel="import" href="../../elements/parse-token/parse-token.html">
+<link rel="import" href="../../elements/prono-score-dialog/prono-score-dialog.html">
+<link rel="import" href="../../elements/prono-team-name/prono-team-name.html">
+<link rel="import" href="../../elements/prono-team-icon/prono-team-icon.html">
+<link rel="import" href="../../elements/prono-groupwinners/prono-groupwinners.html">
+<link rel="import" href="../../elements/prono-groupranking/prono-groupranking.html">
+
+<dom-module id="prono-groupstage">
+	<template>
+
+		<style>
+			:host{
+				display: block;
+				width: 100%;
+			}
+			paper-material{
+      			margin: 5px;
+				cursor: pointer;
+				padding: 10px;
+				background: var(--background-secondary-color);
+				color: var(--text-secondary-color);
+				border-radius: 2px;
+    		}
+			paper-material.group{
+				width: 100%;
+				max-width: 360px;
+			}
+			.disabled .group::after{
+				content: "";
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background-color: rgba(1,1,1,0.3);
+				border-radius: 2px;
+			}
+			paper-material h3{
+				margin-top: 0px;
+			}
+			.score{
+				width: 60px;
+				text-align: center;
+			}
+			.teamicon{
+				width: 30px;
+				height: 30px;
+			}
+			.teamname.left{
+				text-align: left;
+			}
+			.teamname.right{
+				text-align: right;
+			}
+			prono-groupwinners{
+				margin-top: 20px;
+			}
+			prono-groupranking{
+				margin-top: 20px;
+			}
+		</style>
+
+		<api-model id="prono" token="{{token}}" url="../../api/index.php/prono_groupstage/user_id/{{user.id}}" model="{{prono}}" on-change="handlePronoChange"></api-model>
+		<api-model id="allProno" token="{{token}}" url="../../api/index.php/prono_groupstage/" model="{{allProno}}" on-change="handleAllPronoChange"></api-model>
+
+		<div class$="{{disabledClass(currentStage,user)}} horizontal layout wrap center-justified">
+
+			<template is="dom-repeat" items="{{getGroups(matchesModel)}}" as="group">
+				<paper-material elevation="2" class="group vertical layout">
+					<h3>Group {{group}}</h3>
+					<div class="matches">
+						<template is="dom-repeat" items="{{matchesModel}}" as="match" filter="{{filterGroupMatches(group)}}">
+							<div class="match horizontal layout center center-justified" on-tap="editScore">
+								<div class="teamname left flex"><prono-team-name team="{{getTeam(match.team1,teamsModel)}}" default="{{match.defaultteam1}}"></prono-team-name></div>
+								<div><prono-team-icon class="teamicon" team="{{getTeam(match.team1,teamsModel)}}"></prono-team-icon></div>
+								<div class="score">{{getScore1(match,prono,user)}} - {{getScore2(match,prono,user)}}</div>
+								<div><prono-team-icon class="teamicon" team="{{getTeam(match.team2,teamsModel)}}"></prono-team-icon></div>
+								<div class="teamname right flex"><prono-team-name team="{{getTeam(match.team2,teamsModel)}}" default="{{match.defaultteam2}}"></prono-team-name></div>
+							</div>
+						</template>
+					</div>
+					
+					<prono-groupwinners token="{{token}}" permission="{{permission}}" group="{{group}}" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" user="{{user}}"></prono-groupwinners>
+
+				</paper-material>
+			</template>
+
+		</div>
+
+		<prono-score-dialog id="editScore" teams-model="{{teamsModel}}" match="{{editmatch}}" score="{{score}}"></prono-score-dialog>
+	</template>
+
+	<script>
+		Polymer({
+			is: 'prono-groupstage',
+			properties: {
+				token:{
+					type: 'String',
+					value: ''
+				},
+				permission: {
+					type: 'Number',
+					value: 1
+				},
+				teamsModel: {
+					type: 'Array'
+				},
+				matchesModel: {
+					type: 'Array',
+				},
+				groups: {
+					type: 'Array',
+					computed: 'getGroups(matchesModel)'
+				},
+				currentStage:{
+					type: 'Number',
+					value: -1
+				},
+				user: {
+					type: 'Object',
+					value: {}
+				}
+			},
+			listeners:{
+				'editScore.save': 'saveScore'
+			},
+			ready: function(){
+				console.log('ready');
+				// add global event listeners
+				var that = this;
+				document.addEventListener('prono-model-changed', function(e){
+					that.$.prono.get();
+				});
+				document.addEventListener('calculate-user-points', function(e){
+					var user_id = e.detail;
+					that.calculateUserPoints(user_id);
+				});
+			},
+			editScore: function(e){
+				this.editmatch = e.model.__data__.match;
+				if(typeof this.user.id == 'undefined'){
+					// check permission
+					if(this.permission > 5){ 
+						this.score = {'score1':this.editmatch.score1,'score2':this.editmatch.score2};
+						this.$.editScore.open();
+					}
+				}
+				else if(this.currentStage==0){
+					this.score = {'score1':-1,'score2':-1};
+					var that = this;
+					// find the match in the prono list
+					var prono = this.prono.filter(function(prono){
+						return (prono.match_id == that.editmatch.id);
+					});
+					prono = prono[0];
+					that.score = {'score1':prono.score1,'score2':prono.score2};
+		
+					this.$.editScore.open();
+				}
+			},
+			saveScore: function(e){
+				if(typeof this.user.id != 'undefined'){
+					this.$.prono.put('match_id/'+e.detail.match_id,{'score1':e.detail.score1,'score2':e.detail.score2});	
+				}
+				else{
+					app.$.model.$.matchesModel.put('id/'+e.detail.match_id,{'score1':e.detail.score1,'score2':e.detail.score2});
+				}
+			},
+			getGroups: function(matchesModel){
+				var groups = [];
+				this.matchesModel.forEach(function(match){
+					if(match.stage == 0 && groups.indexOf(match.grp)==-1){
+						groups.push(match.grp);
+					}
+				});
+				return groups;
+			},
+			filterGroupMatches: function(group){
+				return function(item){
+					return (item.grp == group);
+			  	};
+			},
+			disabledClass: function(currentStage,user){
+				if(currentStage==0 || typeof user.id == 'undefined'){
+					return '';
+				}
+				else{
+					return 'disabled';
+				}
+			},
+			getTeam: function(id,teams){
+				var team = {};
+				teams.forEach(function(item){
+					if(item.id == id){					
+						team = item;
+					}
+				});
+				return team;
+			},
+			getScore1: function(match,prono,user){
+				var score = match.score1;
+				if(typeof user.id != 'undefined'){
+					prono.forEach(function(item){
+						if(item.match_id == match.id){
+							score = item.score1
+						}
+					});
+				}
+				return this.formatScore(score);
+			},
+			getScore2: function(match,prono,user){
+				var score = match.score2;
+				if(typeof user.id != 'undefined'){
+					prono.forEach(function(item){
+						if(item.match_id == match.id){
+							score = item.score2
+						}
+					});
+				}
+				return this.formatScore(score);
+			},
+			formatScore: function(score){
+				var val = '';
+				if(score<0){
+					val = '';
+				}
+				else{
+					val = score;
+				}
+				return val;
+			},
+			handlePronoChange: function(){
+				var done = true;
+				console.log('check prono groupstage');
+				try{
+					if(typeof this.user.id != 'undefined'){
+						var that = this;
+						this.matchesModel.every(function(match){
+							var found = true;
+							if(match.stage == 0){
+								// check if the match_id is in pronoScore
+								found = false;
+								that.prono.forEach(function(prono){
+									if(prono.match_id == match.id){
+										found = true;
+									}
+								});
+
+								if(!found ){
+									done = false;
+									// the match has no prono, it must be created
+									console.log('adding prono groupstage match'+match.id);
+									that.$.prono.post({'user_id':that.user.id,'match_id':match.id,'score1':-1,'score2':-1,'penalty1':-1,'penalty2':-1});
+								}
+							}
+							return found;
+						});
+					}
+					else{
+						this.prono = [];
+					}
+				}
+				catch(e){
+				}
+				
+				// proceed to the next step
+				if(done){
+					this.$.allProno.get();
+				}
+			},
+			handleAllPronoChange: function(){
+				if(this.permission > 5){
+					var that = this;
+					var points = {};
+					this.allProno.forEach(function(prono){
+						if( !(prono.user_id in points) ){
+							points[prono.user_id] = 0;
+						}
+						points[prono.user_id] += that.calculatePronoPoints(prono);
+		
+					});
+					this.fire('prono-groupstage-points-changed',points);
+				}
+			},
+			calculateUserPoints: function(user_id){
+				if(typeof this.user.id != 'undefined'){
+					var that = this;
+					var points = 0;
+					if(user_id == this.user.id){
+						var prono = this.prono;
+					}
+					else if(this.permission > 8){
+						var prono = this.allProno.filter(function(prono){
+							return (prono.user_id == user_id);
+						});
+					}
+					prono.forEach(function(prono){
+						points += that.calculatePronoPoints(prono);
+					});
+					this.fire('user-points',{'prono':'prono-groupstage', 'points':points});
+				}
+			},
+			calculatePronoPoints: function(prono){
+				var that = this;
+				var points = 0;
+				var match = that.matchesModel.filter(function(match){
+					return match.id == prono.match_id;
+				});
+				match = match[0]
+				if(typeof match != 'undefined' && match.score1>-1 && match.score2 >-1 && prono.score1>-1 && prono.score2 >-1){
+					// check for a correct result prono
+					if( (prono.score1>prono.score2 && match.score1>match.score2) || (prono.score1<prono.score2 && match.score1<match.score2) || (prono.score1==prono.score2 && match.score1==match.score2) ){
+						points += 3;
+					}
+					// check for a correct score prono
+					if( prono.score1==match.score1 && prono.score2==match.score2){
+						points += 4;
+					}
+				}
+				return points;
+			},
+			_sortMatches: function(a, b) {  
+  
+				if(parseInt(a.date) > parseInt(b.date)){
+					return 1;
+				}
+				else if(parseInt(a.date) < parseInt(b.date)){
+					return -1;
+				}
+				else{
+					return 0;
+				}
+			},
+		});
+	</script>
+
+</dom-module>

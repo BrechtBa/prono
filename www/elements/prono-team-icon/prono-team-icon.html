@@ -1,0 +1,43 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module is="prono-team-icon">
+	<template>
+		<style>
+			:host{
+				display: inline-block;
+			}
+			img{
+				width: 100%;
+				height: 100%;
+			}
+		</style>
+
+		<img src={{getSrc(team)}}>		
+
+	
+	</template>
+	<script>
+		Polymer({
+			is: 'prono-team-icon',
+			properties: {
+				team: {
+					type: 'Object',
+					value: {}
+				},
+			},
+			getSrc: function(team){
+				var src = 'images/flags/_blank.png';
+				if(typeof team != 'undefined' && team != {}){
+					if(typeof team.iso_icon != 'undefined' && team.iso_icon != ''){
+						return 'images/flags/'+team.iso_icon+'.png';
+					}
+					else if(typeof team.icon != 'undefined' && team.icon != ''){
+						return team.icon;
+					}
+				}
+				return src;
+			}
+		});
+	</script>
+</dom-module>

@@ -1,0 +1,516 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animations.html">
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
+
+<link rel="import" href="../../elements/parse-token/parse-token.html">
+<link rel="import" href="../../elements/prono-score-dialog/prono-score-dialog.html">
+<link rel="import" href="../../elements/prono-team-name/prono-team-name.html">
+<link rel="import" href="../../elements/prono-team-icon/prono-team-icon.html">
+
+<dom-module id="prono-knockoutstage">
+	<template>
+
+		<style>
+			:host{
+				display: block;
+				width: 100%;
+			}
+			.stage{
+				transition: width 0.5s;
+				-webkit-transition: width 0.5s;
+			}
+			.stage.expanded{
+				@apply(--layout-flex-5);
+			}
+			.stage.collapsed{
+				@apply(--layout-flex-2);
+			}
+			paper-material{
+      			margin: 5px;
+				padding: 0px;
+				background: var(--background-secondary-color);
+				color: var(--text-secondary-color);
+				border-radius: 2px;
+    		}
+			paper-material h3{
+				margin-top: 0px;
+			}
+
+			.match{
+				height: 80px;
+				cursor: pointer;
+				overflow: hidden;
+				text-align: center;
+			}
+			.disabled .match::after{
+				content: "";
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background-color: rgba(1,1,1,0.3);
+				border-radius: 2px;
+			}
+			.spacer{
+				height: 80px;
+			}
+			.stage-4 .spacer{
+				height: 50px;
+			}
+			@media (min-height: 521px){
+				.match{
+					height: 120px;
+				}
+				.spacer{
+					height: 120px;
+				}
+				.stage-4 .spacer{
+					height: 80px;
+				}
+			}
+			.score{
+				text-align: center;
+			}
+			.dash{
+				width: 15px;
+			}
+			.teamicon{
+				width: 90%;
+				max-width: 30px;
+				height: auto;
+				margin-top: 5px;
+				margin-bottom: 5px;
+			}
+
+			.teamname{
+				text-align: center;
+				margin-top: 5px;
+				margin-bottom: 5px;
+			}
+			.teamname.left{
+			}
+			.teamname.right{
+			}
+		</style>
+
+		<api-model id="prono" token="{{token}}" url="../../api/index.php/prono_knockoutstage/user_id/{{user.id}}" model="{{prono}}" on-change="handlePronoChange"></api-model>
+		<api-model id="allProno" token="{{token}}" url="../../api/index.php/prono_knockoutstage/" model="{{allProno}}" on-change="handleAllPronoChange"></api-model>
+
+		<div class="horizontal layout center-justified">
+			<div class="flex horizontal layout center">
+				<template is="dom-repeat" items="{{getStages(matchesModel)}}" as="stage">
+					<div class$="stage {{stageClass(stage)}} {{collapsedClass(stage,expandedStage)}} {{disabledClass(stage,currentStage,user)}} vertical-layout ">
+						<template is="dom-repeat" items="{{stage.matches}}" as="match">
+							
+							<template is="dom-if" if="{{addSpacerBefore(stage,match)}}">
+								<div class="spacer"></div>
+							</template>
+
+							<paper-material elevation="2" class="match vertical layout" on-tap="editScore">
+								<div class="teamname left" hidden="{{hideTeamName(stage,expandedStage)}}">
+									<prono-team-name team="{{getTeam(match.team1,teamsModel)}}" default="{{match.defaultteam1}}" abr="{{abreviateTeamName(stage,expandedStage)}}"></prono-team-name>
+								</div>
+								<div class$="flex {{iconLayoutClass(stage,expandedStage)}} layout center center-justified">
+									<div class="flex">
+										<prono-team-icon class="teamicon" team="{{getTeam(match.team1,teamsModel)}}"></prono-team-icon>
+									</div>
+									<div class$="score flex {{scoreLayoutClass(stage,expandedStage)}} layout center center-justified">
+										<div>{{getScore1(match,prono,user)}}</div>
+										<div class="dash">-</div>
+										<div>{{getScore2(match,prono,user)}}</div>
+									</div>
+									<div class="flex">
+										<prono-team-icon class="teamicon" team="{{getTeam(match.team2,teamsModel)}}"></prono-team-icon>
+									</div>
+								</div>
+								<div class="teamname right" hidden="{{hideTeamName(stage,expandedStage)}}">
+									<prono-team-name team="{{getTeam(match.team2,teamsModel)}}" default="{{match.defaultteam2}}" abr="{{abreviateTeamName(stage,expandedStage)}}"></prono-team-name>
+								</div>
+							</paper-material>
+							
+							<template is="dom-if" if="{{addSpacerAfter(stage,match)}}">
+								<div class="spacer"></div>
+							</template>
+
+
+						</template>
+					</div>
+				</template>
+			</div>
+		</div>
+
+		<prono-score-dialog id="editScore" teams-model="{{teamsModel}}" match="{{editmatch}}" score="{{score}}"></prono-score-dialog>
+	</template>
+
+	<script>
+		Polymer({
+			is: 'prono-knockoutstage',
+			properties: {
+				token:{
+					type: 'String',
+					value: ''
+				},
+				permission: {
+					type: 'Number',
+					value: 1
+				},
+				teamsModel: {
+					type: 'Array',
+					value: []
+				},
+				matchesModel: {
+					type: 'Array',
+					value: []
+				},
+				pronoScoreModel: {
+					type: 'Array',
+					value: []
+				},
+				currentStage: {
+					type: 'Number',
+					value: -1
+				},
+				user: {
+					type: 'Object',
+					value: {}
+				}
+			},
+			listeners:{
+				'editScore.save': 'saveScore'
+			},
+			ready: function(){
+				console.log('ready');
+				// add global event listeners
+				var that = this;
+				document.addEventListener('prono-model-changed', function(e){
+					that.$.prono.get();
+				});
+				document.addEventListener('calculate-user-points', function(e){
+					var user_id = e.detail;
+					that.calculateUserPoints(user_id);
+				});
+			},
+			getStages: function(matchesModel){
+				var tempstages = []
+				var stages = []
+
+				//try{
+					matchesModel.forEach(function(item){
+						if(item.stage>0 && tempstages.indexOf(item.stage)<0 && item.stage>2){
+							tempstages.push(item.stage);
+						}
+					});
+
+					// sort tempstages
+					tempstages.sort(function(a, b){return a-b}).reverse();
+					if(tempstages.indexOf(this.currentStage)<0){
+						this.expandedStage = tempstages[0];
+					}
+					else{
+						this.expandedStage = this.currentStage;
+					}
+
+
+
+					//left side
+					tempstages.forEach(function(stage){
+						var tempmatches = [];
+						matchesModel.forEach(function(match){
+							if(match.stage == stage && match.position < stage/4+1){
+								tempmatches.push(match);
+							}
+						});
+						stages.push({'id':stage-0,'matches':tempmatches,'side':'left'});
+					});
+
+					//final
+					var stage = 2;
+					var teams = [];
+					var tempmatches = [];
+					matchesModel.forEach(function(match){
+						if(match.stage == stage){
+							tempmatches.push(match);
+						}
+					});
+					stages.push({'id':stage-0,'matches':tempmatches,'side':'final'});
+
+					//right side
+					tempstages.reverse().forEach(function(stage){		
+						var tempmatches = [];
+						matchesModel.forEach(function(match){
+							if(match.stage == stage && match.position > stage/4){
+								tempmatches.push(match);
+							}
+						});
+						stages.push({'id':stage-0,'matches':tempmatches,'side':'right'});
+					});
+				/*}
+				catch(e){
+				}*/
+
+				return stages;
+			},
+			addSpacerAfter: function(stage,match){
+				return ( (stage.id==8 && (match.position==1 || match.position==3)) || (stage.id==4 && match.position==1) );
+			},
+			addSpacerBefore: function(stage,match){
+				return ( (stage.id==4 && match.position==2) );
+			},
+			stageClass: function(stage){
+				return 'stage-'+stage.id;
+			},
+			disabledClass: function(stage,currentStage,user){
+				if(stage.id==currentStage || typeof user.id == 'undefined'){
+					return '';
+				}
+				else{
+					return 'disabled';
+				}
+			},
+			isCollapsed: function(stage,expandedStage){
+				return (stage.id != expandedStage);
+			},
+			collapsedClass: function(stage,expandedStage){
+				if(this.isCollapsed(stage,expandedStage) && this.isSmall()){
+					return 'collapsed';
+				}
+				else{
+					return 'expanded';
+				}
+			},
+			isTiny: function(){
+				var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+				return (w<500);
+			},
+			isSmall: function(){
+				var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+				return (w<1200);
+			},
+			isLow: function(){
+				var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+				return (h<400);
+			},
+			hideTeamName: function(stage,expandedStage){
+				return ( (this.isTiny() || this.isLow()) && this.isCollapsed(stage,expandedStage));
+			},
+			abreviateTeamName: function(stage,expandedStage){
+				return (this.isSmall() && this.isCollapsed(stage,expandedStage));
+			},
+			iconLayoutClass: function(stage,expandedStage){
+				if(this.isTiny()){
+					return 'vertical';
+				}
+				else if(this.isSmall() && this.isCollapsed(stage,expandedStage)){
+					return 'vertical';
+				}
+				else{
+					return 'horizontal';
+				}
+			},
+			scoreLayoutClass: function(stage,expandedStage){
+				if(this.isTiny() && this.isCollapsed(stage,expandedStage)){
+					return 'vertical';
+				}
+				else{
+					return 'horizontal';
+				}
+			},
+			expandStage: function(stage){
+				this.expandedStage = stage;
+			},
+			editScore: function(e){
+				this.editmatch = e.model.__data__.match;
+				if(this.editmatch.stage == this.expandedStage || !this.isSmall()){
+					if( typeof this.user.id == 'undefined' ){
+						// check permission
+						if(this.permission > 5){ 
+							this.score = {'score1':this.editmatch.score1,'score2':this.editmatch.score2};
+							this.$.editScore.open();
+						}
+					}
+					else if( this.editmatch.stage==this.currentStage ){
+						this.score = {'score1':-1,'score2':-1};
+						that = this;
+						// find the match in the prono list
+						var prono = this.prono.filter(function(prono){
+							return (prono.match_id == that.editmatch.id);
+						});
+						prono = prono[0];
+						this.score = {'score1':prono.score1,'score2':prono.score2};
+						this.$.editScore.open();
+					}
+				}
+				else{
+					this.expandedStage = this.editmatch.stage;
+				}
+			},
+			saveScore: function(e){
+				if(typeof this.user.id != 'undefined'){
+					this.$.prono.put('match_id/'+e.detail.match_id,{'score1':e.detail.score1,'score2':e.detail.score2});	
+				}
+				else{
+					app.$.model.$.matchesModel.put('id/'+e.detail.match_id,{'score1':e.detail.score1,'score2':e.detail.score2});
+				}
+			},
+			formatTeamName: function(id,teamsModel){
+				var name = '';
+				teamsModel.forEach(function(item){
+					if(item.id == id){
+						name = item.name;
+					}
+				});
+				return name;
+			},
+			getTeam: function(id,teamsModel){
+				var team = {};
+				teamsModel.forEach(function(item){
+					if(item.id == id){					
+						team = item;
+					}
+				});
+				return team;
+			},
+			getScore1: function(match,prono,user){
+				var score = match.score1;
+				if(typeof user.id != 'undefined'){
+					prono.forEach(function(item){
+						if(item.match_id == match.id){
+							score = item.score1
+						}
+					});
+				}
+				return this.formatScore(score);
+			},
+			getScore2: function(match,prono,user){
+				var score = match.score2;
+				if(typeof user.id != 'undefined'){
+					prono.forEach(function(item){
+						if(item.match_id == match.id){
+							score = item.score2
+						}
+					});
+				}
+				return this.formatScore(score);
+			},
+			formatScore: function(score){
+				var val = '';
+				if(score<0){
+					val = '';
+				}
+				else{
+					val = score;
+				}
+				return val;
+			},
+			handlePronoChange: function(){
+				var done = true;
+				console.log('check prono knockoutstage');
+				try{
+					if(typeof this.user.id != 'undefined'){
+						var that = this;
+						this.matchesModel.every(function(match){
+							var found = true;
+							if(match.stage > 0){
+								// check if the match_id is in the database
+								found = false;
+								that.prono.forEach(function(prono){
+									if(prono.match_id == match.id){
+										found = true;
+									}
+								});
+
+								if(!found ){
+									done = false;
+									// the match has no prono, it must be created
+									console.log('adding prono knockoutstage match'+match.id);
+									that.$.prono.post({'user_id':that.user.id,'match_id':match.id,'score1':-1,'score2':-1,'penalty1':-1,'penalty2':-1});
+								}
+							}
+							return found;
+						});
+					}
+					else{
+						this.prono = [];
+					}
+				}
+				catch(e){
+				}
+				
+				// proceed to the next step
+				if(done){
+					this.$.allProno.get();
+				}
+			},
+			handleAllPronoChange: function(){
+				if(this.permission > 5){
+					var that = this;
+					var points = {};
+					this.allProno.forEach(function(prono){
+						if( !(prono.user_id in points) ){
+							points[prono.user_id] = 0;
+						}
+						points[prono.user_id] += that.calculatePronoPoints(prono);
+					});
+					this.fire('prono-knockoutstage-points-changed',points);
+				}
+			},
+			calculateUserPoints: function(user_id){
+				if(typeof this.user.id != 'undefined'){
+					var that = this;
+					var points = 0;
+					if(user_id == this.user.id){
+						var prono = this.prono;
+					}
+					else if(this.permission > 8){
+						var prono = this.allProno.filter(function(prono){
+							return (prono.user_id == user_id);
+						});
+					}
+					prono.forEach(function(prono){
+						points += that.calculatePronoPoints(prono);
+					});
+					this.fire('user-points',{'prono':'prono-knockoutstage', 'points':points});
+				}
+			},
+			calculatePronoPoints: function(prono){
+				var that = this;
+				var points = 0;
+				var match = that.matchesModel.filter(function(match){
+					return match.id == prono.match_id;
+				});
+				match = match[0]
+				if(typeof match != 'undefined' && match.score1>-1 && match.score2 >-1 && prono.score1>-1 && prono.score2 >-1){
+					// check for a correct result prono
+					if( (prono.score1>prono.score2 && match.score1>match.score2) || (prono.score1<prono.score2 && match.score1<match.score2) || (prono.score1==prono.score2 && match.score1==match.score2) ){
+						points += 6;
+					}
+					// check for a correct score prono
+					if( prono.score1==match.score1 && prono.score2==match.score2){
+						points += 8;
+					}
+				}
+				return points;
+			},
+			_sortMatches: function(a, b) {  
+  
+				if(parseInt(a.date) > parseInt(b.date)){
+					return 1;
+				}
+				else if(parseInt(a.date) < parseInt(b.date)){
+					return -1;
+				}
+				else{
+					return 0;
+				}
+			},
+		});
+	</script>
+
+</dom-module>

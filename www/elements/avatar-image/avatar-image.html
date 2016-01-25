@@ -1,0 +1,43 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module is="avatar-image">
+	<template>
+		<style>
+			:host{
+				display: inline-block;
+			}
+			.circular {
+				width: var(--size,40px);
+				height: var(--size,40px);
+				border-radius: var(--radius,20px);
+				-webkit-border-radius: var(--radius,20px);
+				-moz-border-radius: var(--radius,20px);
+				background-position: center center; 
+				background-size: cover !important;
+			}
+		</style>
+
+		<div class="circular" style$="background: url( {{getSrc(user.avatar)}} ) no-repeat;"></div>
+
+	</template>
+	<script>
+		Polymer({
+			is: 'avatar-image',
+			properties: {
+				user: {
+					type: 'Object',
+					value: {}
+				},
+			},
+			getSrc: function(src){
+				var temp = 'images/avatars/_blank.png';
+				
+				if(src != 'undefined' && src != ''){
+					temp = src;
+				}
+				return temp;
+			}
+		});
+	</script>
+</dom-module>

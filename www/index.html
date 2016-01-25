@@ -1,0 +1,197 @@
+<!doctype html>
+
+<html lang="">
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="description" content="">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="generator" content="Prono"/>
+		<title>Prono</title>
+		<!-- Place favicon.ico in the `app/` directory -->
+
+		<!-- Chrome for Android theme color -->
+		<meta name="theme-color" content="#2E3AA1">
+
+		<!-- Web Application Manifest -->
+		<link rel="manifest" href="manifest.json">
+
+		<!-- Tile color for Win8 -->
+		<meta name="msapplication-TileColor" content="#3372DF">
+
+		<!-- Add to homescreen for Chrome on Android -->
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="application-name" content="Polymer App">
+		<link rel="icon" sizes="144x144" href="images/icon/144.png">
+
+		<!-- Add to homescreen for Safari on iOS -->
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="apple-mobile-web-app-title" content="Polymer App">
+		<link rel="apple-touch-icon" href="images/icon/64.png">
+
+		<!-- Tile icon for Win8 (144x144) -->
+		<meta name="msapplication-TileImage" content="images/icon/144.png">
+
+		<!-- build:js bower_components/webcomponentsjs/webcomponents-lite.min.js -->
+		<script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+		<!-- endbuild -->
+
+		<!-- will be replaced with elements/elements.vulcanized.html -->
+		<link rel="import" href="elements/elements.html">
+		<!-- endreplace-->
+
+		<!-- For shared styles, shared-styles.html import in elements.html -->
+		<style is="custom-style" include="shared-styles"></style>
+
+	</head>
+
+	<body unresolved class="fullbleed layout vertical">
+		<span id="browser-sync-binding"></span>
+		<template is="dom-bind" id="app">
+			
+			<section id="login" hidden="{{checkToken(token)}}" class="horizontal layout center-justified center">
+				<div>
+					<h2 class="page-title">Prono</h2>
+					<login-form token={{token}}></login-form>
+				</div>
+			</section>
+
+			<paper-drawer-panel id="paperDrawerPanel" responsive-width="1000px">
+				<!-- Drawer Scroll Header Panel -->
+				<paper-scroll-header-panel drawer fixed>
+
+					<!-- Drawer Toolbar -->
+					<paper-toolbar id="drawerToolbar">
+						<span class="paper-font-title">Menu</span>
+					</paper-toolbar>
+
+					<!-- Drawer Content -->
+					<paper-menu class="list" attr-for-selected="data-route" selected="[[route]]">
+
+						<a data-route="ranking" href="{{baseUrl}}" hidden="{{!checkRoute('ranking',token)}}">
+							<iron-icon icon="info"></iron-icon>
+							<span>Ranking</span>
+						</a>
+						<a data-route="pron" href="pron" hidden="{{!checkRoute('pron',token)}}">
+							<iron-icon icon="info"></iron-icon>
+							<span>Prono</span>
+						</a>
+						<a data-route="results" href="results" hidden="{{!checkRoute('results',token)}}">
+							<iron-icon icon="info"></iron-icon>
+							<span>Results</span>
+						</a>
+						<a data-route="profile" href="profile" hidden="{{!checkRoute('profile',token)}}">
+							<iron-icon icon="info"></iron-icon>
+							<span>Profile</span>
+						</a>
+						<a data-route="config" href="config" hidden="{{!checkRoute('config',token)}}">
+							<iron-icon icon="info"></iron-icon>
+							<span>Config</span>
+						</a>
+						<a data-route="users" href="users" hidden="{{!checkRoute('users',token)}}">
+							<iron-icon icon="info"></iron-icon>
+							<span>Users</span>
+						</a>
+						<a data-route="logout" href="logout" hidden="{{!checkRoute('logout',token)}}">
+							<iron-icon icon="arrow-back"></iron-icon>
+							<span>Logout</span>
+						</a>
+
+					</paper-menu>
+
+				</paper-scroll-header-panel>
+
+				<!-- Main Area -->
+				<paper-scroll-header-panel main id="headerPanelMain" condenses="true">
+
+					<!-- Main Toolbar -->
+					<paper-toolbar id="mainToolbar" class="tall">
+						<paper-icon-button id="paperToggle" icon="menu" paper-drawer-toggle></paper-icon-button>
+						<span class="flex"></span>
+
+						<!-- Application name -->
+						<div class="middle middle-container center horizontal layout">
+							<div class="app-name">Prono</div>
+						</div>
+
+						<!-- Application sub title -->
+						<div class="bottom bottom-container center horizontal layout">
+							<div class="bottom-title paper-font-subhead">Soccer betting for fun</div>
+						</div>
+
+					</paper-toolbar>
+
+					<!-- Main Content -->
+					<div class="content">
+						<iron-pages attr-for-selected="data-route" selected="{{route}}">
+
+							<section class="page" data-route="ranking">
+								<h2 class="page-title">Ranking</h2>
+								<prono-ranking permission="{{tokenPayload.permission}}" users-model="{{usersModel}}" user="{{user}}"></prono-ranking>
+							</section>
+
+							<section class="page" data-route="pron">
+								<h2 class="page-title">Prono</h2>
+
+								<h3>Group stage</h3>
+								<prono-groupstage token="{{token}}" permission="{{tokenPayload.permission}}" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" current-stage="{{tokenPayload.stage}}" user="{{user}}"></prono-groupstage>
+								
+								<h3>Knockout stage</h3>
+								<prono-knockoutstage-teams token="{{token}}" permission="{{tokenPayload.permission}}" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" current-stage="{{tokenPayload.stage}}" user="{{user}}"></prono-knockoutstage-teams>
+								
+								<h3>Finals</h3>		
+								<prono-knockoutstage token="{{token}}" permission="{{tokenPayload.permission}}" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" current-stage="{{tokenPayload.stage}}" user="{{user}}"></prono-knockoutstage>
+							
+							</section>
+
+							<section class="page" data-route="results">
+								<h2 class="page-title">Results</h2>
+
+								<h3>Group stage</h3>
+								<prono-groupstage permission="{{tokenPayload.permission}}" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}"></prono-groupstage>
+
+								<h3>Knockout stage</h3>
+								<prono-knockoutstage permission="{{tokenPayload.permission}}" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}"></prono-knockoutstage>
+							</section>
+
+							<section class="page" data-route="profile">
+								<h2 class="page-title">Profile</h2>
+								<user-profile token="{{token}}" user="{{user}}"></user-profile>
+							</section>
+
+							<section class="page" data-route="config">
+								<h2 class="page-title">Matches</h2>
+								<prono-matches-list teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" groups="{{groups}}" stages="{{stages}}"></prono-matches-list>
+
+								<h2 class="page-title">Teams</h2>
+								<prono-teams-list teams-model="{{teamsModel}}"></prono-teams-list>
+								
+							</section>
+
+							<section class="page" data-route="users">
+								<h2 class="page-title">Users</h2>
+								<users-list token="{{token}}"></users-list>
+							</section>
+
+						</iron-pages>
+					</div>
+				</paper-scroll-header-panel>
+			</paper-drawer-panel>
+
+			<paper-toast id="toast">
+				<span class="toast-hide-button" role="button" tabindex="0" onclick="app.$.toast.hide()">close</span>
+			</paper-toast>
+
+			<renew-token token="{{token}}"></renew-token>
+			<parse-token token="{{token}}" payload="{{tokenPayload}}"></parse-token>
+			<prono-model id="model" token="{{token}}" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" rules-model="{{rulesModel}}" users-model="{{usersModel}}" groups="{{groups}}" stages="{{stages}}" user="{{user}}"></prono-model>
+	
+		</template>
+
+		<!-- build:js scripts/app.js -->
+		<script src="scripts/app.js"></script>
+		<!-- endbuild-->
+	</body>
+
+</html>

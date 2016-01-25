@@ -1,0 +1,186 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+
+
+<dom-module id="api-model">
+	<template>
+
+		<style>
+		</style>
+
+		<iron-ajax id="post" method="POST" handle-as="json" last-response="{{postResponse}}" on-response="handlePostResponse" on-error="handleError" debounce-duration="500"></iron-ajax>
+		<iron-ajax id="get" method="GET" handle-as="json" last-response="{{getResponse}}" on-response="handleGetResponse" on-error="handleError" debounce-duration="500"></iron-ajax>
+		<iron-ajax id="put" method="PUT" handle-as="json" last-response="{{putResponse}}" on-response="handlePutResponse" on-error="handleError" debounce-duration="500"></iron-ajax>
+		<iron-ajax id="delete" method="DELETE" handle-as="json" last-response="{{deleteResponse}}" on-response="handleDeleteResponse" on-error="handleError" debounce-duration="500"></iron-ajax>
+
+
+	</template>
+
+	<script>
+		Polymer({
+			is: 'api-model',
+			properties: {
+				token: {
+					type: 'String',
+					value: '',
+					observer: 'tokenChanged'
+				},
+				model: {
+					type: 'Array',
+					value: [],
+					notify: true
+				},
+				url: {
+					type: 'String'
+				}
+			},
+			listeners: {
+			},
+			observers: [
+			],
+			ready: function(){
+			},
+			tokenChanged: function(token){
+				try{
+					var parts = token.split('.');
+					this.header = JSON.parse(atob(parts[0]));
+					this.payload = JSON.parse(atob(parts[1]));
+
+					// set headers
+					this.$.get.headers['Authentication'] = this.token;
+					this.$.post.headers['Authentication'] = this.token;
+					this.$.put.headers['Authentication'] = this.token;
+					this.$.delete.headers['Authentication'] = this.token;
+				}
+				catch(e){
+					// the token is not a JWT
+					//this.model['data'] = [];
+
+					this.$.get.headers['Authentication'] = '';
+					this.$.post.headers['Authentication'] = '';
+					this.$.put.headers['Authentication'] = '';
+					this.$.delete.headers['Authentication'] = '';
+
+					this.header = {};
+					this.payload = {};
+
+					if(typeof this.model != 'undefined' && this.model.length >0){
+						this.model = [];
+						this.fire('change');
+					}
+				}
+			},
+			post: function(data){
+				this.$.post.url = this.url;
+				
+				this.$.post.body = JSON.stringify(data);
+				this.$.post.generateRequest();
+			},
+			handlePostResponse: function(e,request){
+				var location = request.xhr.getResponseHeader('Location');
+				var parts = location.split('/');
+				var id = parts[1];
+
+				// this might not work due to permissions in the api
+				this.get('id/'+id);
+			},
+			get: function(selector){
+				if(typeof selector == 'undefined'){
+					this.$.get.url = this.url;
+				}
+				else{
+					this.$.get.url = this.url + '/' + selector;
+				};
+				console.log('get ' + this.$.get.url);
+				this.$.get.generateRequest();
+			},
+			handleGetResponse: function(e,request){
+				var that = this;
+				// create a temporary model with the same values
+				var tempmodel = []
+				if( typeof this.model != 'undefined' ){
+					tempmodel = JSON.parse(JSON.stringify(this.model))
+				}
+
+				e.detail.response.forEach(function(item){
+					
+					// check if the item id is in model data
+					var index = that.indexOfId(tempmodel,item.id);
+
+					if(index == -1){
+						tempmodel.push(item);
+					}
+					else{
+						for(var k in item) tempmodel[index][k] = item[k];
+					}
+				});
+				console.log('loaded ' + this.$.get.url);
+				this.model = tempmodel;
+				this.fire('change');
+			},
+			put: function(selector,data){
+				this.$.put.url = this.url + '/' + selector;
+
+				this.$.put.body = JSON.stringify(data);
+				console.log('put ' + JSON.stringify(data) + ' in ' + this.$.put.url);
+				this.$.put.generateRequest();
+			},
+			handlePutResponse: function(e,request){
+				var location = request.xhr.getResponseHeader('Location');
+
+				var parts = location.split('/');
+				var urlparts = this.url.split('/');
+				var newparts = [];
+
+				switch(parts.length){
+					case 2:
+						newparts.push(parts[1]);
+						break;
+					case 3:
+						if(urlparts.indexOf(parts[1]) < 0){
+							newparts.push(parts[1]);
+							newparts.push(parts[2]);
+						}
+						break;
+					case 5:
+						if(urlparts.indexOf(parts[1]) < 0){
+							newparts.push(parts[1]);
+							newparts.push(parts[2]);
+						}
+						break;
+						if(urlparts.indexOf(parts[3]) < 0){
+							newparts.push(parts[3]);
+							newparts.push(parts[4]);
+						}
+						break;
+				}
+
+				// create the selector
+				var selector = newparts.join('/');
+				
+				this.get('');
+			},
+			delete: function(selector){
+				this.$.delete.url = this.url + '/' + selector;
+				this.$.delete.generateRequest();
+			},
+			handleDeleteResponse: function(e,request){
+				this.get();
+			},
+			handleError: function(e,request){
+			},
+			indexOfId: function(array,id){
+				var index = -1;
+				array.forEach(function(item,ind){
+					if(item.id == id){
+						index = ind;
+					}
+				});
+				return index;
+
+			}
+		});
+	</script>
+
+</dom-module>

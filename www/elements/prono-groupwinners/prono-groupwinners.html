@@ -1,0 +1,420 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animations.html">
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
+
+<link rel="import" href="../../elements/parse-token/parse-token.html">
+<link rel="import" href="../../elements/prono-score-dialog/prono-score-dialog.html">
+<link rel="import" href="../../elements/prono-team-name/prono-team-name.html">
+<link rel="import" href="../../elements/prono-team-icon/prono-team-icon.html">
+
+<dom-module id="prono-groupwinners">
+	<template>
+
+		<style>
+			:host{
+				display: block;
+				width: 100%;
+			}
+			paper-button{
+				background: var(--button-background-color);
+				color: var(--button-text-color);
+			}
+			paper-button.primary{
+				background: var(--button-background-primary-color);
+				color: var(--button-text-primary-color);
+			}
+			.teamicon{
+				width: 30px;
+				height: 30px;
+			}
+			.teamname{
+				padding-left: 20px;
+			}
+			h4{
+				margin: 0;
+			}
+			.points{
+				width: 50px;
+			}
+			#editPoints .points{
+				margin-left: 10px;
+			}
+			#editPoints .points paper-number-input{
+				margin-top: -16px;
+			}
+			.hidden{
+				display: none;
+			}
+			.hidden{
+				display: none;
+			}
+		</style>
+
+		<api-model id="prono" token="{{token}}" url="../../api/index.php/prono_groupstage_winners/user_id/{{user.id}}" model="{{prono}}" on-change="handlePronoChange"></api-model>
+		<api-model id="allProno" token="{{token}}" url="../../api/index.php/prono_groupstage_winners/" model="{{allProno}}" on-change="handleAllPronoChange"></api-model>
+
+		<template is="dom-if" if="{{isProno(user)}}">
+			<div on-tap="editWinners">
+				<div class="horizontal layout center">
+					<div class="flex">Winner:</div>
+					<prono-team-icon class="teamicon" team="{{getWinner(group,teamsModel,prono)}}"></prono-team-icon>
+					<prono-team-name class="flex-2 teamname" team="{{getWinner(group,teamsModel,prono)}}" default=""></prono-team-name>
+				</div>
+				<div class="horizontal layout center">
+					<div class="flex">Runner up:</div>
+					<prono-team-icon class="teamicon" team="{{getRunnerup(group,teamsModel,prono)}}"></prono-team-icon>
+					<prono-team-name class="flex-2 teamname" team="{{getRunnerup(group,teamsModel,prono)}}" default=""></prono-team-name>
+				</div>
+			</div>
+		</template>
+
+
+		<template is="dom-if" if="{{!isProno(user)}}">
+			<h4>Ranking</h4>
+			<div on-tap="editPoints">
+				<template is="dom-repeat" items="{{teamsModel}}" as="team" filter="{{filterGroupTeams(group,matchesModel)}}" sort="_sortTeams">
+					<div class="horizontal layout center">
+						<prono-team-icon class="teamicon" team="{{team}}"></prono-team-icon>
+						<prono-team-name class="flex-2 teamname" team="{{team}}" default=""></prono-team-name>
+						<div class="points">{{roundPoints(team.groupstage_points)}}</div>
+					</div>
+				</template>
+			</div>
+		</template>
+
+
+
+
+		<default-dialog id="editWinners">
+			<form is="iron-form" id="formProno" method="post" on-iron-form-submit="saveProno" action="/">
+				<div>
+					<paper-dropdown-menu label="Winner">
+						<paper-menu class="dropdown-content" attr-for-selected="value" selected="{{winner}}">
+							<paper-item value="0"></paper-item>
+							<template is="dom-repeat" items="{{teamsModel}}" as="team" filter="{{filterGroupTeams(group,matchesModel)}}">
+								<paper-item value="{{team.id}}">{{team.name}}</paper-item>
+							</template>
+						</paper-menu>
+					</paper-dropdown-menu>
+
+					<paper-dropdown-menu label="Runner up">
+						<paper-menu class="dropdown-content" attr-for-selected="value" selected="{{runnerup}}">
+							<paper-item value="0"></paper-item>
+							<template is="dom-repeat" items="{{teamsModel}}" as="team" filter="{{filterGroupTeams(group,matchesModel)}}">
+								<paper-item value="{{team.id}}">{{team.name}}</paper-item>
+							</template>
+						</paper-menu>
+					</paper-dropdown-menu>
+				</div>
+				<div class="buttons">
+					<paper-button raised class="primary" on-tap="formSubmitProno">Save</paper-button>
+					<button type="submit" class="hidden">Save</button>
+				</div>
+			</form>
+		</default-dialog>
+
+
+
+
+		<default-dialog id="editPoints">
+			<form is="iron-form" id="formRanking" method="post" on-iron-form-submit="saveRanking" action="/">
+				<div>
+					<template is="dom-repeat" items="{{newTeams}}" as="team" sort="_sortTeams">
+						<div class="horizontal layout center">
+							<prono-team-icon class="teamicon" team="{{team}}"></prono-team-icon>
+							<prono-team-name class="flex-2 teamname" team="{{team}}" default=""></prono-team-name>
+							<div class="points"><paper-number-input label="" auto-validate pattern="[0-9.]*" error-message="x" value={{team.groupstage_points}}></paper-input></div>
+						</div>
+					</template>
+				</div>
+				<div class="buttons">
+					<paper-button raised class="primary" on-tap="formSubmitRanking">Save</paper-button>
+					<button type="submit" class="hidden">Save</button>
+				</div>
+			</form>
+		</default-dialog>
+
+
+
+	</template>
+
+	<script>
+		Polymer({
+			is: 'prono-groupwinners',
+			properties: {
+				token: {
+					type: 'String',
+					value: ''
+				},
+				permission: {
+					type: 'Number',
+					value: 1
+				},
+				teamsModel: {
+					type: 'Array',
+				},
+				matchesModel: {
+					type: 'Array',
+				},
+				group: {
+					type: 'String'
+				},
+				currentStage:{
+					type: 'Number',
+					value: -1
+				},
+				user: {
+					type: 'Object',
+					value: {}
+				}
+			},
+			ready: function(){
+				console.log('ready');
+				// add global event listeners
+				var that = this;
+				document.addEventListener('prono-model-changed', function(e){
+					that.$.prono.get();
+				});
+				document.addEventListener('calculate-user-points', function(e){
+					var user_id = e.detail;
+					that.calculateUserPoints(user_id);
+				});
+				//get the prono when the component is ready is it is only initialize after the groups are known
+				that.$.prono.get();
+			},
+			isProno: function(user){
+				return (typeof user.id != 'undefined');
+			},
+			getWinner: function(group,teamsModel,prono){
+				var team = {};
+				var id = -1;
+				try{
+					prono.forEach(function(item){
+						if(item.prono_id == group + '1'){					
+							id = item.team_id;
+						}
+					});
+
+					teamsModel.forEach(function(item){
+						if(item.id == id){					
+							team = item;
+						}
+					});
+				}
+				catch(e){
+				}
+				return team;
+			},
+			getRunnerup: function(group,teamsModel,prono){
+				var team = {};
+				var id = -1;
+				try{
+					prono.forEach(function(item){
+						if(item.prono_id == group + '2'){					
+							id = item.team_id;
+						}
+					});
+
+					teamsModel.forEach(function(item){
+						if(item.id == id){					
+							team = item;
+						}
+					});
+				}
+				catch(e){
+				}
+				return team;
+			},
+			editWinners: function(){
+				winner = this.getWinner(this.group,this.teamsModel,this.prono);
+				if( winner != {} ){
+					this.winner = winner.id;
+				}
+
+				runnerup = this.getRunnerup(this.group,this.teamsModel,this.prono);
+				if( runnerup != {} ){
+					this.runnerup = runnerup.id;
+				}
+
+				this.$.editWinners.open();
+			},
+			filterGroupTeams: function(group,matchesModel){
+				// find the matches in the group
+				try{			
+					var matches = matchesModel.filter(function( match ){
+						return ( match.grp == group );
+					});
+				}
+				catch(e){
+					var matches = [];
+				}
+				var team_ids = [];
+				matches.forEach(function(match){
+					if(team_ids.indexOf(match.team1) == -1){
+						team_ids.push( match.team1 );
+					}
+					if(team_ids.indexOf(match.team2) == -1){
+						team_ids.push( match.team2 );
+					}
+				});
+
+				return function(item){
+					return ( team_ids.indexOf(item.id) > -1 );
+			  	};
+			},
+			formSubmitProno: function(){
+				this.$.formProno.submit();
+			},
+			saveProno: function(){
+				this.$.editWinners.close();
+
+				this.$.prono.put('prono_id/'+this.group+'1',{'team_id': this.winner});
+				this.$.prono.put('prono_id/'+this.group+'2',{'team_id': this.runnerup});
+			},
+			roundPoints: function(points){
+				return Math.floor(parseFloat(points));
+			},
+			editPoints: function(){
+				var that = this;
+				if(that.permission > 5){ 
+					var newTeams = [];
+					filter = that.filterGroupTeams(that.group,that.matchesModel);
+					that.teamsModel.forEach(function(team){
+						if( filter(team) ){
+							newTeams.push(team);
+						}
+					});
+					that.newTeams = newTeams;
+					that.$.editPoints.open();
+
+					// bug in polymer, manually center dynamically populated dialogs issue # 68
+					that.async(function() {
+		            	that.$.editPoints.center();
+		          	});
+				}
+			},
+			formSubmitRanking: function(){
+				console.log('submit')
+				this.$.formRanking.submit();
+			},
+			saveRanking: function(){
+				this.$.editPoints.close();
+
+				this.newTeams.forEach( function(team){
+					app.$.model.$.teamsModel.put('id/'+team.id,{'groupstage_points': team.groupstage_points})
+				});
+			},
+			handlePronoChange: function(){
+				var done = true;
+				console.log('check prono groupstage winners');
+				try{
+					if(typeof this.user.id != 'undefined'){
+						var that = this;
+						pronos = [this.group+'1',this.group+'2'];
+						pronos.every(function(prono){
+							// check if the prono is in the database
+							var found = false;
+							that.prono.forEach(function(tempprono){
+								if(tempprono.prono_id == prono){
+									found = true;
+								}
+							});
+
+							if(!found){
+								done = false;
+								// post the prono
+								console.log('adding prono groupstage winners ' + prono);
+								that.$.prono.post({'user_id':that.user.id,'prono':prono,'team_id':-1});
+							}
+							return found;
+						});
+					}
+					else{
+						this.prono = [];
+					}
+				}
+				catch(e){
+				}
+				
+				// proceed to the next step
+				if(done){
+					this.$.allProno.get();
+				}
+			},
+			handleAllPronoChange: function(){
+				if(this.permission > 5){
+					var that = this;
+					var points = {};
+					this.allProno.forEach(function(prono){
+						if( !(prono.user_id in points) ){
+							points[prono.user_id] = 0;
+						}
+						points[prono.user_id] += that.calculatePronoPoints(prono);
+						
+					});
+					this.fire('prono-groupstage-winners-points-changed',points);
+				}
+			},
+			calculateUserPoints: function(user_id){
+				if(typeof this.user.id != 'undefined'){
+					var that = this;
+					var points = 0;
+					if(user_id == this.user.id){
+						var prono = this.prono;
+					}
+					else if(this.permission > 8){
+						var prono = this.allProno.filter(function(prono){
+							return (prono.user_id == user_id);
+						});
+					}
+					prono.forEach(function(prono){
+						points += that.calculatePronoPoints(prono);
+					});
+					this.fire('user-points',{'prono':'prono-groupstage-winners', 'points':points});
+				}
+			},
+			calculatePronoPoints: function(prono){
+				var that = this;
+				var points = 0;
+				var group = prono.prono_id.substr(0,prono.prono_id.length-1);
+
+				filter = that.filterGroupTeams(group,that.matchesModel)
+				var teams = that.teamsModel.filter(function(team){
+					return filter(team);
+				});
+
+				// sort the teams
+				teams.sort(that._sortTeams);
+
+				// check if the winner is correct
+				if(prono.prono_id.substr(prono.prono_id.length-1)=='1' && prono.team_id==teams[0].id){
+					points += 3;
+				}
+				// check if the runnerup is correct
+				if(prono.prono_id.substr(prono.prono_id.length-1)=='2' && prono.team_id==teams[1].id){
+					points += 3;
+				}
+				return points;
+			},
+			_sortTeams: function(a, b) {  
+  
+				if(parseFloat(a.groupstage_points) > parseFloat(b.groupstage_points)){
+					return -1;
+				}
+				else if(parseFloat(a.groupstage_points) < parseFloat(b.groupstage_points)){
+					return 1;
+				}
+				else{
+					return 0;
+				}
+			},
+		});
+	</script>
+
+</dom-module>

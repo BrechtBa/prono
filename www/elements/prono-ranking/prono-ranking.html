@@ -1,0 +1,177 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animations.html">
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
+
+<link rel="import" href="../../elements/default-dialog/default-dialog.html">
+<link rel="import" href="../../elements/avatar-image/avatar-image.html">
+
+<dom-module id="prono-ranking">
+	<template>
+
+		<style>
+			:host{
+				display: block;
+				width: 100%;
+			}
+			paper-card{
+      			margin-bottom: 5px;
+				cursor: pointer;
+				padding: 10px;
+				background: var(--background-secondary-color);
+				color: var(--text-secondary-color);
+    		}
+			paper-card.me{
+				margin-left: 5px;
+				margin-right: -5px;
+			}
+			.ranking{
+				width: 30px;
+			}
+			.name{
+				padding: 10px;
+			}
+			.points{
+				width: 40px;
+				margin-left: 20px;
+			}
+			
+		</style>
+
+		<template is="dom-repeat" items="{{usersModel}}" as="item" sort="_sortUsers">
+			<paper-card elevation="2" class$="horizontal layout center {{userClass(item,user)}}" on-tap="pointDetails">
+				<div class="ranking">{{ranking(index)}}</div>
+				<avatar-image class="avatar" user="{{item}}"></avatar-image>
+				<div class="flex name">{{item.name}}</div>
+				<div class="points">{{item.points}}</div>
+			</paper-card>
+		</template>
+
+		<default-dialog id="pointDetails">
+			<div class="vertical layout">
+				<div class="horizontal layout">
+					<div class="flex">Groupstage:</div>
+					<div class="points">{{pronoGroupstage}}</div>
+				</div>
+				<div class="horizontal layout">
+					<div class="flex">Groupstage winners:</div>
+					<div class="points">{{pronoGroupstageWinners}}</div>
+				</div>
+				<div class="horizontal layout">
+					<div class="flex">Knockoutstage teams:</div>
+					<div class="points">{{pronoKnockoutstageTeams}}</div>
+				</div>
+				<div class="horizontal layout">
+					<div class="flex">Knockoutstage:</div>
+					<div class="points">{{pronoKnockoutstage}}</div>
+				</div>
+			</div>
+			<hr>
+			<div class="horizontal layout">
+				<div class="flex total">Total:</div>
+				<div class="points">{{totalPoints}}</div>
+			</div>
+		</default-dialog>
+	
+
+	</template>
+
+	<script>
+		Polymer({
+			is: 'prono-ranking',
+			properties: {
+				permission: {
+					type: 'Number',
+					value: 1
+				},
+				usersModel: {
+					type: 'Array',
+					value: []
+				},
+				user: {
+					type: 'Object'
+				}
+			},
+			ready: function(){
+				console.log('ready');
+				// add global event listeners
+				var that = this;
+				document.addEventListener('user-points', function(e){
+					that.handleUserPoints(e.detail);
+				});
+			},
+			userClass: function(user1,user2){
+				var cl = '';
+				try{
+					if(user1.user_id == user2.user_id){
+						cl = 'me';
+					}
+				}
+				catch(e){
+				}
+				return cl;
+			},
+			ranking: function(index){
+				return index+1;
+			},
+			pointDetails: function(e){
+				var user = e.model.__data__.item;
+				this.$.pointDetails.close();
+
+				// set all detail points to zero
+				this.pronoGroupstage = 0;
+				this.pronoGroupstageWinners = 0;
+				this.pronoKnockoutstageTeams = 0;
+				this.pronoKnockoutstage = 0;
+
+				// get the points
+				if(user.id == this.user.id || this.permission >8){
+					this.fire('calculate-user-points',user.id);
+					this.$.pointDetails.open();
+				}
+			},
+			handleUserPoints: function(detail){
+				var that = this;
+				switch(detail.prono){
+					case 'prono-groupstage':
+						that.pronoGroupstage = detail.points; 
+						break;
+					case 'prono-groupstage-winners':
+						that.pronoGroupstageWinners = detail.points;
+						break;
+					case 'prono-knockoutstage-teams':
+						that.pronoKnockoutstageTeams = detail.points;
+						break;
+					case 'prono-knockoutstage':
+						that.pronoKnockoutstage = detail.points;
+						break;
+				}
+				this.totalPoints = this.pronoGroupstage + this.pronoGroupstageWinners + this.pronoKnockoutstageTeams + this.pronoKnockoutstage;
+			},
+			_getAvatar: function(src){
+				if(src==''){
+					return ''
+				}
+				else{
+					return src;
+				}
+			},	
+			_sortUsers: function(a,b){  
+				if(parseFloat(a.points) > parseFloat(b.points)){
+					return -1;
+				}
+				else if(parseFloat(a.points) < parseFloat(b.points)){
+					return 1;
+				}
+				else{
+					return 0;
+				}
+			}
+		});
+	</script>
+
+</dom-module>
