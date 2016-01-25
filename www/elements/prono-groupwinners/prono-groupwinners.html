@@ -181,6 +181,10 @@
 				document.addEventListener('prono-model-changed', function(e){
 					that.$.prono.get();
 				});
+				document.addEventListener('calculate-user-points', function(e){
+					var user_id = e.detail;
+					that.calculateUserPoints(user_id);
+				});
 				//get the prono when the component is ready is it is only initialize after the groups are known
 				that.$.prono.get();
 			},
@@ -278,7 +282,6 @@
 			},
 			editPoints: function(){
 				var that = this;
-				console.log(that.permission)
 				if(that.permission > 5){ 
 					var newTeams = [];
 					filter = that.filterGroupTeams(that.group,that.matchesModel);
@@ -352,28 +355,52 @@
 						if( !(prono.user_id in points) ){
 							points[prono.user_id] = 0;
 						}
-
-						var group = prono.prono_id.substr(0,prono.prono_id.length-1);
-
-						filter = that.filterGroupTeams(group,that.matchesModel)
-						var teams = that.teamsModel.filter(function(team){
-							return filter(team);
-						});
-
-						// sort the teams
-						teams.sort(that._sortTeams);
-
-						// check if the winner is correct
-						if(prono.prono_id.substr(prono.prono_id.length-1)=='1' && prono.team_id==teams[0].id){
-							points[prono.user_id] += 3;
-						}
-						// check if the runnerup is correct
-						if(prono.prono_id.substr(prono.prono_id.length-1)=='2' && prono.team_id==teams[1].id){
-							points[prono.user_id] += 3;
-						}
+						points[prono.user_id] += that.calculatePronoPoints(prono);
+						
 					});
 					this.fire('prono-groupstage-winners-points-changed',points);
 				}
+			},
+			calculateUserPoints: function(user_id){
+				if(typeof this.user.id != 'undefined'){
+					var that = this;
+					var points = 0;
+					if(user_id == this.user.id){
+						var prono = this.prono;
+					}
+					else if(this.permission > 8){
+						var prono = this.allProno.filter(function(prono){
+							return (prono.user_id == user_id);
+						});
+					}
+					prono.forEach(function(prono){
+						points += that.calculatePronoPoints(prono);
+					});
+					this.fire('user-points',{'prono':'prono-groupstage-winners', 'points':points});
+				}
+			},
+			calculatePronoPoints: function(prono){
+				var that = this;
+				var points = 0;
+				var group = prono.prono_id.substr(0,prono.prono_id.length-1);
+
+				filter = that.filterGroupTeams(group,that.matchesModel)
+				var teams = that.teamsModel.filter(function(team){
+					return filter(team);
+				});
+
+				// sort the teams
+				teams.sort(that._sortTeams);
+
+				// check if the winner is correct
+				if(prono.prono_id.substr(prono.prono_id.length-1)=='1' && prono.team_id==teams[0].id){
+					points += 3;
+				}
+				// check if the runnerup is correct
+				if(prono.prono_id.substr(prono.prono_id.length-1)=='2' && prono.team_id==teams[1].id){
+					points += 3;
+				}
+				return points;
 			},
 			_sortTeams: function(a, b) {  
   

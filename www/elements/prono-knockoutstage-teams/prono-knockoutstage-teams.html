@@ -167,6 +167,10 @@
 				document.addEventListener('prono-model-changed', function (e) {
 					that.getStages();
 				});
+				document.addEventListener('calculate-user-points', function(e){
+					var user_id = e.detail;
+					that.calculateUserPoints(user_id);
+				});
 			},
 			getStages: function(){
 				var stages = [];
@@ -233,42 +237,64 @@
 						if( !(prono.user_id in points) ){
 							points[prono.user_id] = 0;
 						}
-						var p = 0;
-						var stage = prono.prono_id.split('_')[0];
-						// check is the team is still in the tournament in the stage
-						that.matchesModel.forEach(function(match){
-							var c1 = (stage == 'stage'+match.stage  && (prono.team_id == match.team1 || prono.team_id == match.team2));
-							
-							// check for winner							
-							var c21 = (match.stage == 2 && prono.team_id == match.team1 && match.score1+0.01*match.penalty1 > match.score2+0.01*match.penalty2 && match.score1 >-1 && match.score2 >-1);
-							var c22 = (match.stage == 2 && prono.team_id == match.team2 && match.score1+0.01*match.penalty1 < match.score2+0.01*match.penalty2 && match.score1 >-1 && match.score2 >-1);
-							var c2 = (stage == 'stage1' && ( c21 || c22 ));
-						
-							if( c1 || c2 ){
-								// the team is there, award points
-								switch(stage){
-									case 'stage16':
-										p = 6;
-										break;
-									case 'stage8':
-										p = 18;
-										break;
-									case 'stage4':
-										p = 28;
-										break;
-									case 'stage2':
-										p = 42;
-										break;
-									case 'stage1':
-										p = 60;
-										break;
-								}
-							}
-						});
-						points[prono.user_id] += p;
+						points[prono.user_id] += that.calculatePronoPoints(prono);
 					});
 					this.fire('prono-knockoutstage-teams-points-changed',points);
 				}
+			},
+			calculateUserPoints: function(user_id){
+				if(typeof this.user.id != 'undefined'){
+					var that = this;
+					var points = 0;
+					if(user_id == this.user.id){
+						var prono = this.prono;
+					}
+					else if(this.permission > 8){
+						var prono = this.allProno.filter(function(prono){
+							return (prono.user_id == user_id);
+						});
+					}
+					prono.forEach(function(prono){
+						points += that.calculatePronoPoints(prono);
+					});
+					this.fire('user-points',{'prono':'prono-knockoutstage-teams', 'points':points});
+				}
+			},
+			calculatePronoPoints: function(prono){
+				var that = this;
+				var points = 0;
+				var stage = prono.prono_id.split('_')[0];
+				// check is the team is still in the tournament in the stage
+				that.matchesModel.forEach(function(match){
+					var c1 = (stage == 'stage'+match.stage  && (prono.team_id == match.team1 || prono.team_id == match.team2));
+					
+					// check for winner							
+					var c21 = (match.stage == 2 && prono.team_id == match.team1 && match.score1+0.01*match.penalty1 > match.score2+0.01*match.penalty2 && match.score1 >-1 && match.score2 >-1);
+					var c22 = (match.stage == 2 && prono.team_id == match.team2 && match.score1+0.01*match.penalty1 < match.score2+0.01*match.penalty2 && match.score1 >-1 && match.score2 >-1);
+					var c2 = (stage == 'stage1' && ( c21 || c22 ));
+				
+					if( c1 || c2 ){
+						// the team is there, award points
+						switch(stage){
+							case 'stage16':
+								points = 6;
+								break;
+							case 'stage8':
+								points = 18;
+								break;
+							case 'stage4':
+								points = 28;
+								break;
+							case 'stage2':
+								points = 42;
+								break;
+							case 'stage1':
+								points = 60;
+								break;
+						}
+					}
+				});
+				return points;
 			},
 			getPronoTeamStage: function(teamsModel,prono,stage){
 				var teams = []

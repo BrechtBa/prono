@@ -78,19 +78,19 @@
 			],
 			ready: function(){
 				var that = this;
-				document.addEventListener('prono-groupstage-points-changed', function (e,d) {
+				document.addEventListener('prono-groupstage-points-changed', function(e){
 					that.pronoGroupstagePoints = e.detail;
 					that.calculatePoints();
 				});
-				document.addEventListener('prono-groupstage-winners-points-changed', function (e,d) {
+				document.addEventListener('prono-groupstage-winners-points-changed', function(e){
 					that.pronoGroupstageWinnersPoints = e.detail;
 					that.calculatePoints();
 				});
-				document.addEventListener('prono-knockoutstage-points-changed', function (e,d) {
+				document.addEventListener('prono-knockoutstage-points-changed', function(e){
 					that.pronoKnockoutstagePoints = e.detail;
 					that.calculatePoints();
 				});
-				document.addEventListener('prono-knockoutstage-teams-points-changed', function (e,d) {
+				document.addEventListener('prono-knockoutstage-teams-points-changed', function(e){
 					that.pronoKnockoutstageTeamsPoints = e.detail;
 					that.calculatePoints();
 				});

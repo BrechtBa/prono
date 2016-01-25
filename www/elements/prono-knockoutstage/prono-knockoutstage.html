@@ -192,6 +192,10 @@
 				document.addEventListener('prono-model-changed', function(e){
 					that.$.prono.get();
 				});
+				document.addEventListener('calculate-user-points', function(e){
+					var user_id = e.detail;
+					that.calculateUserPoints(user_id);
+				});
 			},
 			getStages: function(matchesModel){
 				var tempstages = []
@@ -452,23 +456,47 @@
 						if( !(prono.user_id in points) ){
 							points[prono.user_id] = 0;
 						}
-						var match = that.matchesModel.filter(function(match){
-							return match.id == prono.match_id;
-						});
-						match = match[0]
-						if(typeof match != 'undefined' && match.score1>-1 && match.score2 >-1 && prono.score1>-1 && prono.score2 >-1){
-							// check for a correct result prono
-							if( (prono.score1>prono.score2 && match.score1>match.score2) || (prono.score1<prono.score2 && match.score1<match.score2) || (prono.score1==prono.score2 && match.score1==match.score2) ){
-								points[prono.user_id] += 6;
-							}
-							// check for a correct score prono
-							if( prono.score1==match.score1 && prono.score2==match.score2){
-								points[prono.user_id] += 8;
-							}
-						}
+						points[prono.user_id] += that.calculatePronoPoints(prono);
 					});
 					this.fire('prono-knockoutstage-points-changed',points);
 				}
+			},
+			calculateUserPoints: function(user_id){
+				if(typeof this.user.id != 'undefined'){
+					var that = this;
+					var points = 0;
+					if(user_id == this.user.id){
+						var prono = this.prono;
+					}
+					else if(this.permission > 8){
+						var prono = this.allProno.filter(function(prono){
+							return (prono.user_id == user_id);
+						});
+					}
+					prono.forEach(function(prono){
+						points += that.calculatePronoPoints(prono);
+					});
+					this.fire('user-points',{'prono':'prono-knockoutstage', 'points':points});
+				}
+			},
+			calculatePronoPoints: function(prono){
+				var that = this;
+				var points = 0;
+				var match = that.matchesModel.filter(function(match){
+					return match.id == prono.match_id;
+				});
+				match = match[0]
+				if(typeof match != 'undefined' && match.score1>-1 && match.score2 >-1 && prono.score1>-1 && prono.score2 >-1){
+					// check for a correct result prono
+					if( (prono.score1>prono.score2 && match.score1>match.score2) || (prono.score1<prono.score2 && match.score1<match.score2) || (prono.score1==prono.score2 && match.score1==match.score2) ){
+						points += 6;
+					}
+					// check for a correct score prono
+					if( prono.score1==match.score1 && prono.score2==match.score2){
+						points += 8;
+					}
+				}
+				return points;
 			},
 			_sortMatches: function(a, b) {  
   
