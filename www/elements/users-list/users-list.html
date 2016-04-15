@@ -96,7 +96,7 @@
 				this.$.editUser.close();
 			},
 			tokenChanged: function(){
-				if( this.token != ''){
+				if( this.token != '' && this.token != null){
 					this.$.getUserProfiles.headers['Authentication'] = this.token;
 					this.$.getUserProfiles.generateRequest();
 

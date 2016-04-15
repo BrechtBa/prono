@@ -109,7 +109,7 @@
 	}
 
 	$valid_uri = [1 => ['POST' => ['user_profiles','prono_groupstage','prono_groupstage_winners','prono_knockoutstage_teams','prono_knockoutstage'], 
-                        'GET' => ['user_profiles','rules','teams','matches','groups','prono_groupstage/user_id/%s','prono_groupstage_winners/user_id/%s','prono_knockoutstage_teams/user_id/%s','prono_knockoutstage/user_id/%s'],
+                        'GET' => ['last_update','user_profiles','rules','teams','matches','groups','prono_groupstage/user_id/%s','prono_groupstage_winners/user_id/%s','prono_knockoutstage_teams/user_id/%s','prono_knockoutstage/user_id/%s'],
                         'PUT' => $put1,
                         'DELETE' => ['']],
 				  9 => ['POST' => ['*'],
