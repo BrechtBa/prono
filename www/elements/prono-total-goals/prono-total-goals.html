@@ -1,0 +1,241 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animations.html">
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
+
+<link rel="import" href="../../elements/parse-token/parse-token.html">
+<link rel="import" href="../../elements/default-dialog/default-dialog.html">
+
+<dom-module id="prono-total-goals">
+	<template>
+
+		<style>
+			:host{
+				display: block;
+				width: 100%;
+			}
+			paper-material{
+      			margin: 5px;
+				cursor: pointer;
+				padding: 10px;
+				background: var(--background-secondary-color);
+				color: var(--text-secondary-color);
+				border-radius: 2px;
+    		}
+			paper-button{
+				background: var(--button-background-color);
+				color: var(--button-text-color);
+			}
+			paper-button.primary{
+				background: var(--button-background-primary-color);
+				color: var(--button-text-primary-color);
+			}
+			.disabled::after{
+				content: "";
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background-color: rgba(1,1,1,0.3);
+				border-radius: 2px;
+			}
+			.hidden{
+				display: none;
+			}
+		</style>
+
+		<api-model id="prono" token="{{token}}" url="../../api/index.php/prono_total_goals/user_id/{{user.id}}" model="{{prono}}" on-change="handlePronoChange"></api-model>
+		<api-model id="allProno" token="{{token}}" url="../../api/index.php/prono_total_goals/" model="{{allProno}}" on-change="handleAllPronoChange"></api-model>
+
+		<paper-material class$="{{disabledClass(currentStage,user)}} horizontal layout" elevation="2" on-tap="editGoals">
+			<div class="flex-1"><h3>Total Goals:</h3></div>
+			<div class="flex-1"><h3>{{getGoals(prono)}}</h3></div>
+		</paper-material>
+		
+
+		<default-dialog id="editGoals">
+			<form is="iron-form" id="formProno" method="post" on-iron-form-submit="saveProno" action="/">
+				<div>
+					<paper-number-input label="Total goals" auto-validate pattern="[0-9]*" error-message="x" value={{goals}}></paper-input>
+				</div>
+				<div class="buttons">
+					<paper-button raised class="primary" on-tap="formSubmitProno">Save</paper-button>
+					<button type="submit" class="hidden">Save</button>
+				</div>
+			</form>
+		</default-dialog>
+
+	</template>
+
+	<script>
+		Polymer({
+			is: 'prono-total-goals',
+			properties: {
+				token: {
+					type: 'String',
+					value: ''
+				},
+				permission: {
+					type: 'Number',
+					value: 1
+				},
+				currentStage:{
+					type: 'Number',
+					value: -1
+				},
+				matchesModel: {
+					type: 'Array',
+				},
+				user: {
+					type: 'Object',
+					value: {}
+				}
+			},
+			ready: function(){
+				console.log('ready');
+				// add global event listeners
+				var that = this;
+				document.addEventListener('prono-model-changed', function(e){
+					that.$.prono.get();
+				});
+				document.addEventListener('calculate-user-points', function(e){
+					var user_id = e.detail;
+					that.calculateUserPoints(user_id);
+				});
+			},
+			disabledClass: function(currentStage,user){
+				if( 0==currentStage || typeof user.id == 'undefined'){
+					return '';
+				}
+				else{
+					return 'disabled';
+				}
+			},
+			getGoals: function(prono){
+				if(prono.length >0){
+					if(prono[0].goals>-1){
+						return prono[0].goals;
+					}
+					else{
+						return "";
+					}
+				}
+				else{
+					return "";
+				}
+			},
+			editGoals: function(){
+				var goals = this.getGoals(this.prono);
+				this.goals = goals;
+
+				this.$.editGoals.open();
+			},
+			formSubmitProno: function(){
+				this.$.formProno.submit();
+			},
+			saveProno: function(){
+				this.$.editGoals.close();
+				console.log('test')
+				console.log(this.goals)
+
+				this.$.prono.put('',{'goals': this.goals});
+			},
+			handlePronoChange: function(){
+				var done = true;
+				console.log('check prono total goals');
+
+				try{
+					if(typeof this.user.id != 'undefined'){
+						var that = this;
+						pronos = ['goals'];
+						pronos.every(function(prono){
+							// check if the prono is in the database
+							var found = false;
+							if( that.prono.length > 0){
+								found = true;
+							}
+
+							if(!found){
+								done = false;
+								// post the prono
+								console.log('adding prono total goals');
+								that.$.prono.post({'user_id':that.user.id,'goals':-1});
+							}
+							return found;
+						});
+					}
+					else{
+						this.prono = [];
+					}
+				}
+				catch(e){
+				}
+				
+				// proceed to the next step
+				if(done){
+					this.$.allProno.get();
+				}
+
+			},
+			handleAllPronoChange: function(){
+				if(this.permission > 5){
+					var that = this;
+					var points = {};
+					this.allProno.forEach(function(prono){
+						if( !(prono.user_id in points) ){
+							points[prono.user_id] = 0;
+						}
+						points[prono.user_id] += that.calculatePronoPoints(prono);
+						
+					});
+					this.fire('prono-total-goals-points-changed',points);
+				}
+			},
+			calculateUserPoints: function(user_id){
+				if(typeof this.user.id != 'undefined'){
+					var that = this;
+					var points = 0;
+					if(user_id == this.user.id){
+						var prono = this.prono;
+					}
+					else if(this.permission > 8){
+						var prono = this.allProno.filter(function(prono){
+							return (prono.user_id == user_id);
+						});
+					}
+					prono.forEach(function(prono){
+						points += that.calculatePronoPoints(prono);
+					});
+					this.fire('user-points',{'prono':'prono-total-goals', 'points':points});
+				}
+			},
+			calculatePronoPoints: function(prono){
+				var that = this;
+
+				// get the total number of scored goals
+				var goals = 0;
+				this.matchesModel.forEach(function(match){
+					goals = goals + Math.max(0,parseInt(match.score1)) + Math.max(0,parseInt(match.score2));
+				});
+
+				// calculate the points
+				var points = 0;
+				if(prono.goals>-1){
+					points = Math.max(0,100 - Math.abs( parseInt(prono.goals)-goals )*6)
+				}
+				else{
+					points = 0;
+				}
+
+				return points;
+			}
+		});
+	</script>
+
+</dom-module>

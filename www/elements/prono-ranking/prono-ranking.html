@@ -31,6 +31,7 @@
 			}
 			.ranking{
 				width: 30px;
+				font-weight: 600;
 			}
 			.name{
 				padding: 10px;
@@ -68,6 +69,10 @@
 				<div class="horizontal layout">
 					<div class="flex">Knockoutstage:</div>
 					<div class="points">{{pronoKnockoutstage}}</div>
+				</div>
+				<div class="horizontal layout">
+					<div class="flex">Total goals:</div>
+					<div class="points">{{pronoTotalGoals}}</div>
 				</div>
 			</div>
 			<hr>
@@ -127,6 +132,7 @@
 				this.pronoGroupstageWinners = 0;
 				this.pronoKnockoutstageTeams = 0;
 				this.pronoKnockoutstage = 0;
+				this.pronoTotalGoals = 0;
 
 				// get the points
 				if(user.id == this.user.id || this.permission >8){
@@ -149,8 +155,11 @@
 					case 'prono-knockoutstage':
 						that.pronoKnockoutstage = detail.points;
 						break;
+					case 'prono-total-goals':
+						that.pronoTotalGoals = detail.points;
+						break;
 				}
-				this.totalPoints = this.pronoGroupstage + this.pronoGroupstageWinners + this.pronoKnockoutstageTeams + this.pronoKnockoutstage;
+				this.totalPoints = this.pronoGroupstage + this.pronoGroupstageWinners + this.pronoKnockoutstageTeams + this.pronoKnockoutstage + this.pronoTotalGoals;
 			},
 			_getAvatar: function(src){
 				if(src==''){

@@ -108,8 +108,8 @@
 		}
 	}
 
-	$valid_uri = [1 => ['POST' => ['user_profiles','prono_groupstage','prono_groupstage_winners','prono_knockoutstage_teams','prono_knockoutstage'], 
-                        'GET' => ['last_update','user_profiles','rules','teams','matches','groups','prono_groupstage/user_id/%s','prono_groupstage_winners/user_id/%s','prono_knockoutstage_teams/user_id/%s','prono_knockoutstage/user_id/%s'],
+	$valid_uri = [1 => ['POST' => ['user_profiles','prono_groupstage','prono_groupstage_winners','prono_knockoutstage_teams','prono_knockoutstage','prono_total_goals','prono_team_result'], 
+                        'GET' => ['last_update','user_profiles','rules','teams','matches','groups','prono_groupstage/user_id/%s','prono_groupstage_winners/user_id/%s','prono_knockoutstage_teams/user_id/%s','prono_knockoutstage/user_id/%s','prono_total_goals/user_id/%s','prono_team_result/user_id/%s'],
                         'PUT' => $put1,
                         'DELETE' => ['']],
 				  9 => ['POST' => ['*'],
