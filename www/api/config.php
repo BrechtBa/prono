@@ -97,7 +97,8 @@
 	if($stage==0){
 		$put1[] = 'prono_groupstage_winners/user_id/%s';
 		$put1[] = 'prono_knockoutstage_teams/user_id/%s';
-		$put1[] = 'prono_number/user_id/%s';
+		$put1[] = 'prono_total_goals/user_id/%s';
+		$put1[] = 'prono_team_result/user_id/%s';
 	}	
 	foreach( $matches as $match){
 		if($match['stage']==0){
