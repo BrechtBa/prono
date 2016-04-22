@@ -74,6 +74,10 @@
 					<div class="flex">Total goals:</div>
 					<div class="points">{{pronoTotalGoals}}</div>
 				</div>
+				<div class="horizontal layout">
+					<div class="flex">Team result:</div>
+					<div class="points">{{pronoTeamResult}}</div>
+				</div>
 			</div>
 			<hr>
 			<div class="horizontal layout">
@@ -133,6 +137,7 @@
 				this.pronoKnockoutstageTeams = 0;
 				this.pronoKnockoutstage = 0;
 				this.pronoTotalGoals = 0;
+				this.pronoTeamResult = 0;
 
 				// get the points
 				if(user.id == this.user.id || this.permission >8){
@@ -158,8 +163,11 @@
 					case 'prono-total-goals':
 						that.pronoTotalGoals = detail.points;
 						break;
+					case 'prono-team-result':
+						that.pronoTeamResult = detail.points;
+						break;
 				}
-				this.totalPoints = this.pronoGroupstage + this.pronoGroupstageWinners + this.pronoKnockoutstageTeams + this.pronoKnockoutstage + this.pronoTotalGoals;
+				this.totalPoints = this.pronoGroupstage + this.pronoGroupstageWinners + this.pronoKnockoutstageTeams + this.pronoKnockoutstage + this.pronoTotalGoals + this.pronoTeamResult;
 			},
 			_getAvatar: function(src){
 				if(src==''){

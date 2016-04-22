@@ -104,6 +104,10 @@
 					that.pronoTotalGoalsPoints = e.detail;
 					that.calculatePoints();
 				});
+				document.addEventListener('prono-team-result-points-changed', function(e){
+					that.pronoTeamResultPoints = e.detail;
+					that.calculatePoints();
+				});
 			},
 			tokenChanged: function(){
 				console.log('token changed');	
@@ -193,19 +197,22 @@
 					 &&	typeof that.pronoKnockoutstageTeamsPoints != 'undefined'
 					 &&	typeof that.pronoKnockoutstagePoints != 'undefined'
 					 &&	typeof that.pronoTotalGoalsPoints != 'undefined'
+					 &&	typeof that.pronoTeamResultPoints != 'undefined'
 
 					 && typeof that.pronoGroupstagePoints[user.id] != 'undefined'
 					 &&	typeof that.pronoGroupstageWinnersPoints[user.id] != 'undefined'
 					 &&	typeof that.pronoKnockoutstageTeamsPoints[user.id] != 'undefined'
 					 &&	typeof that.pronoKnockoutstagePoints[user.id] != 'undefined'
-					 &&	typeof that.pronoTotalGoalsPoints[user.id] != 'undefined' ){
+					 &&	typeof that.pronoTotalGoalsPoints[user.id] != 'undefined'
+					 &&	typeof that.pronoTeamResultPoints[user.id] != 'undefined' ){
 
 						//add all points
 						var points = that.pronoGroupstagePoints[user.id]
 							       + that.pronoGroupstageWinnersPoints[user.id]
 								   + that.pronoKnockoutstageTeamsPoints[user.id]
 								   + that.pronoKnockoutstagePoints[user.id]
-								   + that.pronoTotalGoalsPoints[user.id];
+								   + that.pronoTotalGoalsPoints[user.id]
+								   + that.pronoTeamResultPoints[user.id];
 
 						if(user.points != points){
 							// write points to database
