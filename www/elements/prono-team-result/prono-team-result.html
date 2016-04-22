@@ -378,7 +378,6 @@
 				}
 			},
 			handleAllPronoChange: function(){
-/*
 				if(this.permission > 5){
 					var that = this;
 					var points = {};
@@ -389,9 +388,8 @@
 						points[prono.user_id] += that.calculatePronoPoints(prono);
 						
 					});
-					this.fire('prono-total-goals-points-changed',points);
+					this.fire('prono-team-result-points-changed',points);
 				}
-*/
 			},
 			calculateUserPoints: function(user_id){
 				if(typeof this.user.id != 'undefined'){
@@ -408,27 +406,102 @@
 					prono.forEach(function(prono){
 						points += that.calculatePronoPoints(prono);
 					});
-					this.fire('user-points',{'prono':'prono-total-goals', 'points':points});
+					this.fire('user-points',{'prono':'prono-team-result', 'points':points});
 				}
 			},
 			calculatePronoPoints: function(prono){
 				var that = this;
 
-				// get the total number of scored goals
-				var goals = 0;
-				this.matchesModel.forEach(function(match){
-					goals = goals + Math.max(0,parseInt(match.score1)) + Math.max(0,parseInt(match.score2));
+				// find the actual result of the team
+				var stages = this.getStages(this.matchesModel)
+				stages.pop(); // remove final element
+
+				var teaminstage = [];
+
+				var that = this;
+				stages.forEach(function(stage){
+					var matches = that.matchesModel.filter(function(tempmatch){
+						return tempmatch.stage==stage
+					});
+					
+					var tempteaminstage = 0;
+					matches.forEach(function(tempmatch){
+						if(tempmatch.team1 == prono.team_id || tempmatch.team2 == prono.team_id){
+							tempteaminstage = 1;
+						}
+						if(tempmatch.team1 <= 0 || tempmatch.team2 <= 0){
+							tempteaminstage = -1;  // teams not known yet
+						}
+					});
+					teaminstage.push(tempteaminstage);
 				});
+
+				var result = -1;
+				for(var i=0;i<teaminstage.length;i++){
+					if(teaminstage[i] == 1 && teaminstage[i+1] == 0){
+						result = stages[i];
+						break;
+					}
+				}
+
+				// final or winner, check the score
+				if(result == -1 && teaminstage[teaminstage.length-1] == 1){
+					var matches = this.matchesModel.filter(function(tempmatch){
+						return tempmatch.stage==2
+					});
+					var finalmatch = matches[0];
+
+					
+					if(prono.team_id==finalmatch.team1){
+						if(finalmatch.score1>-1 && finalmatch.score2>-1){
+							if(finalmatch.score1 + 0.1*finalmatch.penalty1 > finalmatch.score2 + 0.1*finalmatch.penalty2){
+								result = 1;
+							}
+							else{
+								result = 2;
+							}
+						}
+					}
+					else if(prono.team_id==finalmatch.team2){
+						if(finalmatch.score1>-1 && finalmatch.score2>-1){
+							if(finalmatch.score1 + 0.1*finalmatch.penalty1 > finalmatch.score2 + 0.1*finalmatch.penalty2){
+								result = 2;
+							}
+							else{
+								result = 1;
+							}
+						}
+					}
+				}
+
+				console.log(result)
 
 				// calculate the points
 				var points = 0;
-				if(prono.goals>-1){
-					points = Math.max(0,100 - Math.abs( parseInt(prono.goals)-goals )*6)
+				if(prono.result>-1 && prono.result == result){
+					if(result == 0){
+						points = 10;
+					}
+					else if(result == 16){
+						points = 15;
+					}
+					else if(result == 8){
+						points = 20;
+					}
+					else if(result == 4){
+						points = 40;
+					}
+					else if(result == 2){
+						points = 70;
+					}
+					else if(result == 1){
+						points = 100;
+					}
 				}
 				else{
 					points = 0;
 				}
-
+				console.log(points);
 				return points;
 			},
 			_sortTeams: function(a, b) {  
