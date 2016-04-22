@@ -142,6 +142,9 @@
 								
 								<h3>Varia</h3>
 								<prono-total-goals token="{{token}}" permission="{{tokenPayload.permission}}" matches-model="{{matchesModel}}" current-stage="{{tokenPayload.stage}}" user="{{user}}"></prono-total-goals>
+								
+								<prono-team-result token="{{token}}" permission="{{tokenPayload.permission}}" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" current-stage="{{tokenPayload.stage}}" user="{{user}}"></prono-team-result>
+								
 
 								<h3>Finals</h3>		
 								<prono-knockoutstage token="{{token}}" permission="{{tokenPayload.permission}}" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" current-stage="{{tokenPayload.stage}}" user="{{user}}"></prono-knockoutstage>
@@ -171,6 +174,8 @@
 								<h2 class="page-title">Teams</h2>
 								<prono-teams-list teams-model="{{teamsModel}}"></prono-teams-list>
 								
+								<prono-team-result token="{{token}}" permission="{{tokenPayload.permission}}" matches-model="{{matchesModel}}" teams-model="{{teamsModel}}" current-stage="{{tokenPayload.stage}}"></prono-team-result>
+
 							</section>
 
 							<section class="page" data-route="users">
