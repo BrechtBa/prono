@@ -5,7 +5,10 @@
 <link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
 <link rel="import" href="../../bower_components/neon-animation/neon-animations.html">
 <link rel="import" href="../../bower_components/paper-material/paper-material.html">
-<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
 <link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
 
@@ -73,11 +76,11 @@
 			}
 		</style>
 
-		<api-model id="teamIds" token="{{token}}" url="../../api/index.php/prono_team_result_teams/" model="{{teamIds}}" on-change="handleTeamIdsChange"></api-model>
+		<!--<api-model id="teamIds" token="{{token}}" url="../../api/index.php/prono_team_result_teams/" model="{{teamIds}}" on-change="handleTeamIdsChange"></api-model>-->
 
 		<api-model id="prono" token="{{token}}" url="../../api/index.php/prono_team_result/user_id/{{user.id}}" model="{{prono}}" on-change="handlePronoChange"></api-model>
 		<api-model id="allProno" token="{{token}}" url="../../api/index.php/prono_team_result/" model="{{allProno}}" on-change="handleAllPronoChange"></api-model>
-		
+
 		<template is="dom-if" if="{{isProno(user)}}">
 			<paper-material class$="{{disabledClass(currentStage,user)}}" elevation="2">
 				<h3>{{trans('Team result')}}:</h3>
@@ -232,7 +235,7 @@
 				});
 				return team;
 			},
-			getTeams(ids,teamsModel){
+			getTeams: function(ids,teamsModel){
 				var teams = [];
 				var that = this;
 				ids.forEach(function(id){
