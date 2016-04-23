@@ -151,6 +151,7 @@
 				}
 				catch(e){
 					this.user = {};
+					clearInterval(window.updateCheckInterval);
 				}
 			
 				// proceed to the next step
@@ -223,10 +224,12 @@
 			},
 			handleCheckUpdateChange: function(){
 				console.log('check if update is required')
-				if( parseInt(this.updateModel[0]['time']) > this.last_update){
-					console.log('update');
-					this.last_update = this.updateModel[0]['time'];
-					this.$.usersModel.get();
+				if( this.updateModel.length > 0 ){
+					if( parseInt(this.updateModel[0]['time']) > this.last_update){
+						console.log('update');
+						this.last_update = this.updateModel[0]['time'];
+						this.$.usersModel.get();
+					}
 				}
 			}
 		});
