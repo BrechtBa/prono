@@ -1,0 +1,50 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
+
+<dom-module id="prono-terms">
+	<template>
+
+		<style>
+			:host{
+				display: block;
+				width: 100%;
+			}
+		</style>
+
+		<p>
+			Er zullen gegevens op je toestel worden opgeslagen
+		</p>
+		<p>
+			Er zullen gegevens die jij deelt worden opgeslagen in een database.
+			Deze gegevens worden als vertrouwelijk behandeld en worden enkel gebruikt voor de werking van Prono.
+			Gegevens die jij deelt zullen nooit aan anderen worden verkocht of doorgegeven.
+		</p>
+		<p>
+			Indien de Prono server gehackt wordt zijn wij niet verantwoordelijk voor de verspreiding van de gegevens.
+			We zullen echter ons best doen om dit te voorkomen.  
+		</p>
+
+	</template>
+
+	<script>
+		Polymer({
+			is: 'prono-terms',
+			properties: {
+			},
+			created: function(){
+				// create the local dictionary
+				this.dictionary = {};
+				this.dictionary['Rules'] = {'nl':'Spelregels'};
+				this.dictionary['general'] = {'en':'xxx','nl':'xxx'}
+			},
+			ready: function(){
+			},
+			trans: function(key){
+				return app.trans(key,this.dictionary);
+			}
+			
+		});
+	</script>
+
+</dom-module>

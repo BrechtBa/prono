@@ -10,7 +10,12 @@
 <link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
 <link rel="import" href="../../bower_components/neon-animation/neon-animations.html">
 <link rel="import" href="../../bower_components/paper-input/paper-input-error.html">
+
 <link rel="import" href="../../elements/custom-validator/custom-validator.html">
+<link rel="import" href="../../elements/default-dialog/default-dialog.html">
+<link rel="import" href="../../elements/prono-rules/prono-rules.html">
+<link rel="import" href="../../elements/prono-terms/prono-terms.html">
+
 
 <dom-module id="login-form">
 	<template>
@@ -38,6 +43,14 @@
 				--paper-input-container-focus-color: var(--login-paper-input-container-focus-color);
 				--paper-input-container-input-color: var(--login-paper-input-container-input-color);
 			}
+			a.termsandconditions{
+				display: block;
+				margin-top: 10px;
+				text-align: center;
+				cursor: pointer;
+				text-decoration: underline;
+				
+			}
 		</style>
 
 		<iron-localstorage name="token" value="{{token}}"></iron-localstorage>
@@ -54,8 +67,11 @@
 
 		<iron-ajax id="registerAjax" url="../../api/register.php" method="POST" handle-as="json" on-response="parseRegisterResponse" last-response="{{registerResponse}}" on-error="parseRegisterError" debounce-duration="300"></iron-ajax>
 
-		<paper-dialog id="register" entry-animation="scale-up-animation" exit-animation="fade-out-animation">
+		<default-dialog id="register" entry-animation="scale-up-animation" exit-animation="fade-out-animation">
 			<h2>{{trans('Register')}}</h2>
+
+			<a class="termsandconditions" on-tap="termsandconditionsDialog">{{trans('By registering you agree to the terms and conditions')}}</a>
+
 			<form is="iron-form" id="registerform" method="POST" on-iron-form-submit="registerFormAjaxSubmit">
 				<div class="container"><paper-input-error id="logintaken">{{trans('Login is taken')}}</paper-input-error></div>
 				<paper-input id="newlogin" label="{{trans('Login')}}:" required auto-validate error-message="required"></paper-input>
@@ -67,7 +83,14 @@
 					<button type="submit" class="hidden">{{trans('Register')}}</button>
 				</div>
 			</form>
-		</paper-dialog>
+		</default-dialog>
+
+		<default-dialog id="termsandconditions">
+			<h2>{{trans('Terms')}}</h2>
+			<prono-terms></prono-terms>
+			<h2>{{trans('Rules')}}</h2>
+			<prono-rules></prono-rules>
+		</default-dialog>
 
 	</template>
 
@@ -91,6 +114,8 @@
 				this.dictionary['Register'] 						= {'nl':'Registreer'};
 				this.dictionary['Login is taken'] 					= {'nl':'Login bestaat al'};
 				this.dictionary['Repeat password'] 					= {'nl':'Herhaal wachtwoord'};
+				this.dictionary['By registering you agree to the terms and conditions'] = {'nl':'Door te registreren ga je akkoord met de gebruiksvoorwaarden'};
+
 			},
 			ready: function(){
 				this.$.passwordValidator.validate = this.passwordValidator.bind(this);
@@ -101,6 +126,9 @@
 			loginFormAjaxSubmit: function(event){
 				this.$.loginAjax.body = JSON.stringify({'login':this.$.login.value,'password':this.$.password.value});
     			this.$.loginAjax.generateRequest();
+			},
+			termsandconditionsDialog: function(){
+				this.$.termsandconditions.open();
 			},
 			registerDialog: function(){
 				this.$.register.open()
@@ -115,6 +143,8 @@
 				}
 			},
 			passwordValidator: function(){
+				console.log(this.$.newpassword.value)
+				console.log(this.$.newpasswordrepeat.value)
 				if(this.$.newpassword.value == this.$.newpasswordrepeat.value){
             		return true;
 				}

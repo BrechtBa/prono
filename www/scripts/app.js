@@ -52,7 +52,7 @@
 					allowed =  true;
 				}
 				else if(payload['permission']>=1){
-					if( ['login','ranking','pron','results','profile','logout'].indexOf(route)>-1 ){
+					if( ['login','ranking','pron','results','rules','profile','logout'].indexOf(route)>-1 ){
 						allowed = true
 					}
 				}
@@ -116,7 +116,5 @@
 	app.closeDrawer = function() {
 		app.$.paperDrawerPanel.closeDrawer();
 	};
-
-
 
 })(document);

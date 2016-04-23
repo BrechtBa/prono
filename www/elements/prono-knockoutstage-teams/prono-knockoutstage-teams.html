@@ -191,6 +191,9 @@
 				});
 				stages.push("1");
 
+				// remove the 1st stage after the group stage
+				stages = stages.slice(1);
+
 				this.stages = stages;
 				this.$.prono.get();
 			},

@@ -12,10 +12,12 @@
 
 	// define the global dictionary
 	app.dictionary = {};
+	app.dictionary['Terms'] 				= {'nl':'Gebruiksvoorwaarden'};
 	app.dictionary['Menu'] 					= {'nl':'Menu'};
 	app.dictionary['Ranking'] 				= {'nl':'Rangschikking'};
 	app.dictionary['Prono'] 				= {'nl':'Prono'};
 	app.dictionary['Results'] 				= {'nl':'Resultaten'};
+	app.dictionary['Rules'] 				= {'nl':'Spelregels'};
 	app.dictionary['Profile'] 				= {'nl':'Profiel'};
 	app.dictionary['Config'] 				= {'nl':'Config'};
 	app.dictionary['Users'] 				= {'nl':'Users'};

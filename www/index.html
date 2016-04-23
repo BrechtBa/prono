@@ -57,6 +57,7 @@
 				</div>
 			</section>
 
+
 			<paper-drawer-panel id="paperDrawerPanel" responsive-width="1000px">
 				<!-- Drawer Scroll Header Panel -->
 				<paper-scroll-header-panel drawer fixed>
@@ -80,6 +81,10 @@
 						<a data-route="results" href="results" hidden="{{!checkRoute('results',token)}}">
 							<iron-icon icon="info"></iron-icon>
 							<span>{{trans('Results')}}</span>
+						</a>
+						<a data-route="rules" href="rules" hidden="{{!checkRoute('rules',token)}}">
+							<iron-icon icon="info"></iron-icon>
+							<span>{{trans('Rules')}}</span>
 						</a>
 						<a data-route="profile" href="profile" hidden="{{!checkRoute('profile',token)}}">
 							<iron-icon icon="info"></iron-icon>
@@ -159,6 +164,13 @@
 
 								<h3>{{trans('Knockout stage')}}</h3>
 								<prono-knockoutstage permission="{{tokenPayload.permission}}" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}"></prono-knockoutstage>
+
+							</section>
+
+							<section class="page" data-route="rules">
+								<h2 class="page-title">{{trans('Rules')}}</h2>
+
+								<prono-rules></prono-rules>
 
 							</section>
 
