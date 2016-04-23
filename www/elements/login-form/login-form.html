@@ -140,16 +140,17 @@
 				this.$.register.open()
 			},
 			registerFormSubmit: function(){
-				this.$.registerform.submit();
+				if(this.passwordValidator() && this.$.newlogin.value!='' && this.$.newpassword.value!=''){
+					this.$.registerform.submit();
+				}
 			},
 			registerFormAjaxSubmit: function(event){
-				if(this.passwordValidator() && this.$.newlogin.value!=''){
+				if(this.passwordValidator() && this.$.newlogin.value!='' && this.$.newpassword.value!=''){
 					this.$.registerAjax.body = JSON.stringify({'login':this.$.newlogin.value,'password':this.$.newpassword.value});
     				this.$.registerAjax.generateRequest();
 				}
 			},
 			passwordValidator: function(){
-				console.log(this.$.newpassword.value);
 				if(this.$.newpassword.value == this.$.newpasswordrepeat.value){
             		return true;
 				}
@@ -169,7 +170,7 @@
 				app.$.toast.show();
 			},
 			parseRegisterResponse: function(){
-				if(this.registerResponse >0 ){
+				if(this.registerResponse > 0 ){
 					this.$.logintaken._setInvalid(false);
 					this.$.loginAjax.body = JSON.stringify({'login':this.$.newlogin.value,'password':this.$.newpassword.value});
     				this.$.loginAjax.generateRequest();
