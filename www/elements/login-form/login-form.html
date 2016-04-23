@@ -82,6 +82,16 @@
 					observer: 'tokenChanged'
 				}
 			},
+			created: function(){
+				// create the local dictionary
+				this.dictionary = {};
+				this.dictionary['Login or password are incorrect'] 	= {'nl':'Login of wachtwoord verkeerd'};
+				this.dictionary['Login'] 							= {'nl':'Login'};
+				this.dictionary['Password'] 						= {'nl':'Wachtwoord'};
+				this.dictionary['Register'] 						= {'nl':'Registreer'};
+				this.dictionary['Login is taken'] 					= {'nl':'Login bestaat al'};
+				this.dictionary['Repeat password'] 					= {'nl':'Herhaal wachtwoord'};
+			},
 			ready: function(){
 				this.$.passwordValidator.validate = this.passwordValidator.bind(this);
 			},
@@ -140,7 +150,7 @@
 			tokenChanged: function(){
 			},
 			trans: function(key){
-				return app.trans(key);
+				return app.trans(key,this.dictionary);
 			}
 		});
 	</script>

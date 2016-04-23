@@ -134,8 +134,14 @@
 			listeners:{
 				'editScore.save': 'saveScore'
 			},
+			created: function(){
+				// create the local dictionary
+				this.dictionary = {};
+				this.dictionary['Group'] = {'nl':'Groep'};
+			},
 			ready: function(){
 				console.log('ready');
+				
 				// add global event listeners
 				var that = this;
 				document.addEventListener('prono-model-changed', function(e){
@@ -343,7 +349,7 @@
 				}
 			},
 			trans: function(key){
-				return app.trans(key);
+				return app.trans(key,this.dictionary);
 			}
 		});
 	</script>

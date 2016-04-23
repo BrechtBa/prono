@@ -170,7 +170,14 @@
 					value: {}
 				}
 			},
+			created: function(){
+				// create the local dictionary
+				this.dictionary = {};
+				this.dictionary['Winner'] = {'nl':'Winnaar'};
+				this.dictionary['Runner up'] = {'nl':'Tweede'};
+			},
 			ready: function(){
+				
 				var that = this;
 
 				// define functions
@@ -343,7 +350,7 @@
 				}
 			},
 			trans: function(key){
-				return app.trans(key);
+				return app.trans(key,this.dictionary);
 			}
 		});
 	</script>

@@ -111,6 +111,13 @@
 					notify: true
 				}
 			},
+			created: function(){
+				// create the local dictionary
+				this.dictionary = {};
+				this.dictionary['Edit profile'] 	= {'nl':'Profiel aanpassen'};
+				this.dictionary['Change password'] 	= {'nl':'Verander wachtwoord'};
+				this.dictionary['Change avatar'] 	= {'nl':'Verander avatar'};
+			},
 			ready: function(){
 				this.$.passwordValidator.validate = this.passwordValidator.bind(this);
 			},
@@ -167,7 +174,7 @@
 				}
 			},
 			trans: function(key){
-				return app.trans(key);
+				return app.trans(key,this.dictionary);
 			}
 		});
 	</script>

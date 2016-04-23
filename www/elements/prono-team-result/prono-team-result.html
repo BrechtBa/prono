@@ -181,8 +181,22 @@
 					value: {}
 				}
 			},
+			created: function(){
+				// create the local dictionary
+				this.dictionary = {};
+				this.dictionary['Team result'] 						= {'nl':'Ploeg resultaat'};
+				this.dictionary['Result'] 							= {'nl':'Resultaat'};
+				this.dictionary['eliminated in the groupstage'] 	= {'nl':'geëlimineerd in de groepsfase'};
+				this.dictionary['eliminated in the round of '] 		= {'nl':'geëlimineerd in de round of '};
+				this.dictionary['eliminated in the round of 16'] 	= {'nl':'geëlimineerd in de 8e finale'};
+				this.dictionary['eliminated in the quarter-finals'] = {'nl':'geëlimineerd in de kwartfinale'};
+				this.dictionary['eliminated in the semi-finals'] 	= {'nl':'geëlimineerd in de halve finale'};
+				this.dictionary['eliminated in the final'] 			= {'nl':'geëlimineerd in de finale'};
+				this.dictionary['winner'] 							= {'nl':'winnaar'};
+			},
 			ready: function(){
 				console.log('ready');
+				
 				// add global event listeners
 				var that = this;
 				/*that.$.teamIds.get();*/
@@ -517,7 +531,7 @@
 				}
 			},
 			trans: function(key){
-				return app.trans(key);
+				return app.trans(key,this.dictionary);
 			}
 		});
 	</script>

@@ -160,6 +160,16 @@
 					value: {}
 				}
 			},
+			created: function(){
+				// create the local dictionary
+				this.dictionary = {};
+				this.dictionary['Teams in round of 16:'] 	= {'nl':'Ploegen in de 8e finale:'};
+				this.dictionary['Teams in quarterfinal:']	= {'nl':'Ploegen in de kwartfinale:'};
+				this.dictionary['Teams in semifinal:'] 		= {'nl':'Ploegen in de halve finale:'};
+				this.dictionary['Teams in final:'] 			= {'nl':'Ploegen in de finale:'};
+				this.dictionary['Winner:'] 					= {'nl':'Winnaar:'};
+				this.dictionary['selections remaining'] 	= {'nl':'Selecties over:'};
+			},
 			ready: function(){
 				console.log('ready');
 				// add global event listeners
@@ -446,7 +456,7 @@
 				}
 			},
 			trans: function(key){
-				return app.trans(key);
+				return app.trans(key,this.dictionary);
 			}
 		});
 	</script>

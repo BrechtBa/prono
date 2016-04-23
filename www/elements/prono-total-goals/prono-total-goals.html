@@ -97,6 +97,11 @@
 					value: {}
 				}
 			},
+			created: function(){
+				// create the local dictionary
+				this.dictionary = {};
+				app.dictionary['Total goals'] 	= {'nl':'Aantal goals'};
+			},
 			ready: function(){
 				console.log('ready');
 				// add global event listeners
@@ -236,7 +241,7 @@
 				return points;
 			},
 			trans: function(key){
-				return app.trans(key);
+				return app.trans(key,this.dictionary);
 			}
 		});
 	</script>

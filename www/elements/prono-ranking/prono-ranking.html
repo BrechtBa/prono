@@ -105,6 +105,16 @@
 					type: 'Object'
 				}
 			},
+			created: function(){
+				// create the local dictionary
+				this.dictionary = {};
+				this.dictionary['Group stage'] 			= {'nl':'Groepsfase'};
+				this.dictionary['Group stage winners'] 	= {'nl':'Winnaars groepsfase'};
+				this.dictionary['Knockout stage teams']	= {'nl':'Knockout fase ploegen'};
+				this.dictionary['Total goals'] 			= {'nl':'Aantal goals'};
+				this.dictionary['Team result'] 			= {'nl':'Ploeg resultaat'};
+				this.dictionary['Total'] 				= {'nl':'Totaal'};
+			},
 			ready: function(){
 				console.log('ready');
 				// add global event listeners
@@ -189,7 +199,7 @@
 				}
 			},
 			trans: function(key){
-				return app.trans(key);
+				return app.trans(key,this.dictionary);
 			}
 		});
 	</script>

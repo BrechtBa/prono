@@ -185,6 +185,10 @@
 			listeners:{
 				'editScore.save': 'saveScore'
 			},
+			created: function(){
+				// create the local dictionary
+				this.dictionary = {};
+			},
 			ready: function(){
 				console.log('ready');
 				// add global event listeners
@@ -512,7 +516,7 @@
 				}
 			},
 			trans: function(key){
-				return app.trans(key);
+				return app.trans(key,this.dictionary);
 			}
 		});
 	</script>
