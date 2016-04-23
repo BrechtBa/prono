@@ -45,26 +45,26 @@
 		<iron-ajax id="loginAjax" url="../../api/authenticate.php" method="POST" handle-as="json" on-response="parseLoginResponse" last-response="{{loginResponse}}" on-error="parseLoginError" debounce-duration="300"></iron-ajax>
 		
 		<form is="iron-form" id="loginform" method="POST" on-iron-form-submit="loginFormAjaxSubmit">
-			<paper-input id="login" label="Login:" required></paper-input>
-			<paper-input id="password" label="Password:" type="password" required></paper-input>
-			<paper-button raised class="main" on-tap="loginFormSubmit">Login</paper-button>
-			<paper-button raised on-tap="registerDialog">Register</paper-button>
-			<button type="submit" class="hidden">Native Submit</button>
+			<paper-input id="login" label="{{trans('Login')}}:" required></paper-input>
+			<paper-input id="password" label="{{trans('Password')}}:" type="password" required></paper-input>
+			<paper-button raised class="main" on-tap="loginFormSubmit">{{trans('Login')}}</paper-button>
+			<paper-button raised on-tap="registerDialog">{{trans('Register')}}</paper-button>
+			<button type="submit" class="hidden">{{trans('Login')}}</button>
 		</form>
 
 		<iron-ajax id="registerAjax" url="../../api/register.php" method="POST" handle-as="json" on-response="parseRegisterResponse" last-response="{{registerResponse}}" on-error="parseRegisterError" debounce-duration="300"></iron-ajax>
 
 		<paper-dialog id="register" entry-animation="scale-up-animation" exit-animation="fade-out-animation">
-			<h2>Register</h2>
+			<h2>{{trans('Register')}}</h2>
 			<form is="iron-form" id="registerform" method="POST" on-iron-form-submit="registerFormAjaxSubmit">
-				<div class="container"><paper-input-error id="logintaken">Login is taken</paper-input-error></div>
-				<paper-input id="newlogin" label="Login:" required auto-validate error-message="required"></paper-input>
-				<paper-input id="newpassword" label="Password:" type="password" required auto-validate error-message="required"></paper-input>
-				<paper-input id="newpasswordrepeat" label="Repeat Password:" type="password" required auto-validate error-message="does not match" validator="passwordValidator"></paper-input>
+				<div class="container"><paper-input-error id="logintaken">{{trans('Login is taken')}}</paper-input-error></div>
+				<paper-input id="newlogin" label="{{trans('Login')}}:" required auto-validate error-message="required"></paper-input>
+				<paper-input id="newpassword" label="{{trans('Password')}}:" type="password" required auto-validate error-message="required"></paper-input>
+				<paper-input id="newpasswordrepeat" label="{{trans('Repeat password')}}:" type="password" required auto-validate error-message="does not match" validator="passwordValidator"></paper-input>
 				<custom-validator id="passwordValidator" validator-name="passwordValidator"></custom-validator>
 				<div class="buttons">
-					<paper-button raised class="main" on-tap="registerFormSubmit">Register</paper-button>
-					<button type="submit" class="hidden">Native Submit</button>
+					<paper-button raised class="main" on-tap="registerFormSubmit">{{trans('Register')}}</paper-button>
+					<button type="submit" class="hidden">{{trans('Register')}}</button>
 				</div>
 			</form>
 		</paper-dialog>
@@ -99,8 +99,10 @@
 				this.$.registerform.submit();
 			},
 			registerFormAjaxSubmit: function(event){
-				this.$.registerAjax.body = JSON.stringify({'login':this.$.newlogin.value,'password':this.$.newpassword.value});
-    			this.$.registerAjax.generateRequest();
+				if(this.$.newpassword.value == this.$.newpasswordrepeat.value){
+					this.$.registerAjax.body = JSON.stringify({'login':this.$.newlogin.value,'password':this.$.newpassword.value});
+    				this.$.registerAjax.generateRequest();
+				}
 			},
 			passwordValidator: function(){
 				if(this.$.newpassword.value == this.$.newpasswordrepeat.value){
@@ -118,7 +120,7 @@
 			},
 			parseLoginError: function(){
 				this.fire('login-form-error');
-				app.$.toast.text = 'Login or password are incorrect';
+				app.$.toast.text = this.trans('Login or password are incorrect');
 				app.$.toast.show();
 			},
 			parseRegisterResponse: function(){
@@ -136,6 +138,9 @@
 				this.token = '';
 			},
 			tokenChanged: function(){
+			},
+			trans: function(key){
+				return app.trans(key);
 			}
 		});
 	</script>

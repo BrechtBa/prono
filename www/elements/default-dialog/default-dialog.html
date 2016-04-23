@@ -24,7 +24,7 @@
 		</style>
 		
 		<paper-dialog id="dialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation">
-			<a class='close-dialog' on-tap="close">close</a>
+			<a class='close-dialog' on-tap="close">{{trans('close')}}</a>
 			<content select=".before-scrolling"></content>
 			<paper-dialog-scrollable>
 				<content></content>
@@ -51,6 +51,9 @@
 			},
 			center: function(){
 				this.$.dialog.center();
+			},
+			trans: function(key){
+				return app.trans(key);
 			}
 		});
 	</script>

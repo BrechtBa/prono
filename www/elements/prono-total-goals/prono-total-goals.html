@@ -54,7 +54,7 @@
 		<api-model id="allProno" token="{{token}}" url="../../api/index.php/prono_total_goals/" model="{{allProno}}" on-change="handleAllPronoChange"></api-model>
 
 		<paper-material class$="{{disabledClass(currentStage,user)}} horizontal layout" elevation="2" on-tap="editGoals">
-			<div class="flex-1"><h3>Total Goals:</h3></div>
+			<div class="flex-1"><h3>{{trans('Total goals')}}:</h3></div>
 			<div class="flex-1"><h3>{{getGoals(prono)}}</h3></div>
 		</paper-material>
 		
@@ -62,11 +62,11 @@
 		<default-dialog id="editGoals">
 			<form is="iron-form" id="formProno" method="post" on-iron-form-submit="saveProno" action="/">
 				<div>
-					<paper-number-input label="Total goals" auto-validate pattern="[0-9]*" error-message="x" value={{goals}}></paper-input>
+					<paper-number-input label="{{trans('Total goals')}}" auto-validate pattern="[0-9]*" error-message="x" value={{goals}}></paper-input>
 				</div>
 				<div class="buttons">
-					<paper-button raised class="primary" on-tap="formSubmitProno">Save</paper-button>
-					<button type="submit" class="hidden">Save</button>
+					<paper-button raised class="primary" on-tap="formSubmitProno">{{trans('Save')}}</paper-button>
+					<button type="submit" class="hidden">{{trans('Save')}}</button>
 				</div>
 			</form>
 		</default-dialog>
@@ -234,6 +234,9 @@
 				}
 
 				return points;
+			},
+			trans: function(key){
+				return app.trans(key);
 			}
 		});
 	</script>

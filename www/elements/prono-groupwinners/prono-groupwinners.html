@@ -62,12 +62,12 @@
 		<template is="dom-if" if="{{isProno(user)}}">
 			<div on-tap="editWinners">
 				<div class="horizontal layout center">
-					<div class="flex">Winner:</div>
+					<div class="flex">{{trans('Winner')}}:</div>
 					<prono-team-icon class="teamicon" team="{{getWinner(group,teamsModel,prono)}}"></prono-team-icon>
 					<prono-team-name class="flex-2 teamname" team="{{getWinner(group,teamsModel,prono)}}" default=""></prono-team-name>
 				</div>
 				<div class="horizontal layout center">
-					<div class="flex">Runner up:</div>
+					<div class="flex">{{trans('Runner up')}}:</div>
 					<prono-team-icon class="teamicon" team="{{getRunnerup(group,teamsModel,prono)}}"></prono-team-icon>
 					<prono-team-name class="flex-2 teamname" team="{{getRunnerup(group,teamsModel,prono)}}" default=""></prono-team-name>
 				</div>
@@ -76,7 +76,7 @@
 
 
 		<template is="dom-if" if="{{!isProno(user)}}">
-			<h4>Ranking</h4>
+			<h4>{{trans('Ranking')}}</h4>
 			<div on-tap="editPoints">
 				<template is="dom-repeat" items="{{teamsModel}}" as="team" filter="{{filterGroupTeams(group,matchesModel)}}" sort="_sortTeams">
 					<div class="horizontal layout center">
@@ -94,7 +94,7 @@
 		<default-dialog id="editWinners">
 			<form is="iron-form" id="formProno" method="post" on-iron-form-submit="saveProno" action="/">
 				<div>
-					<paper-dropdown-menu label="Winner">
+					<paper-dropdown-menu label="{{trans('Winner')}}">
 						<paper-menu class="dropdown-content" attr-for-selected="value" selected="{{winner}}">
 							<paper-item value="0"></paper-item>
 							<template is="dom-repeat" items="{{teamsModel}}" as="team" filter="{{filterGroupTeams(group,matchesModel)}}">
@@ -103,7 +103,7 @@
 						</paper-menu>
 					</paper-dropdown-menu>
 
-					<paper-dropdown-menu label="Runner up">
+					<paper-dropdown-menu label="{{trans('Runner up')}}">
 						<paper-menu class="dropdown-content" attr-for-selected="value" selected="{{runnerup}}">
 							<paper-item value="0"></paper-item>
 							<template is="dom-repeat" items="{{teamsModel}}" as="team" filter="{{filterGroupTeams(group,matchesModel)}}">
@@ -113,8 +113,8 @@
 					</paper-dropdown-menu>
 				</div>
 				<div class="buttons">
-					<paper-button raised class="primary" on-tap="formSubmitProno">Save</paper-button>
-					<button type="submit" class="hidden">Save</button>
+					<paper-button raised class="primary" on-tap="formSubmitProno">{{trans('Save')}}</paper-button>
+					<button type="submit" class="hidden">{{trans('Save')}}</button>
 				</div>
 			</form>
 		</default-dialog>
@@ -415,6 +415,9 @@
 					return 0;
 				}
 			},
+			trans: function(key){
+				return app.trans(key);
+			}
 		});
 	</script>
 

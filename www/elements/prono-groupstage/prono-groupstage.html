@@ -77,7 +77,7 @@
 
 			<template is="dom-repeat" items="{{getGroups(matchesModel)}}" as="group">
 				<paper-material elevation="2" class="group vertical layout">
-					<h3>Group {{group}}</h3>
+					<h3>{{trans('Group')}} {{group}}</h3>
 					<div class="matches">
 						<template is="dom-repeat" items="{{matchesModel}}" as="match" filter="{{filterGroupMatches(group)}}">
 							<div class="match horizontal layout center center-justified" on-tap="editScore">
@@ -342,6 +342,9 @@
 					return 0;
 				}
 			},
+			trans: function(key){
+				return app.trans(key);
+			}
 		});
 	</script>
 

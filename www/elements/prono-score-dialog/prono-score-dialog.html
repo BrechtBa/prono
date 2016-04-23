@@ -59,8 +59,8 @@
 					<div class="teamname flex">{{formatTeamName(match.team2,teamsModel)}}</div>
 				</div>
 				<div class="buttons">
-					<paper-button raised class="primary" on-tap="formSubmit">Save</paper-button>
-					<button type="submit" class="hidden">Save</button>
+					<paper-button raised class="primary" on-tap="formSubmit">{{trans('Save')}}</paper-button>
+					<button type="submit" class="hidden">{{trans('Save')}}</button>
 				</div>
 			</form>
 		</default-dialog>
@@ -139,6 +139,9 @@
 					return score;
 				}
 			},
+			trans: function(key){
+				return app.trans(key);
+			}
 		});
 	</script>
 </dom-module>

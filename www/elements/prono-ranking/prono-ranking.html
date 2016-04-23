@@ -55,33 +55,33 @@
 		<default-dialog id="pointDetails">
 			<div class="vertical layout">
 				<div class="horizontal layout">
-					<div class="flex">Groupstage:</div>
+					<div class="flex">{{trans('Group stage')}}:</div>
 					<div class="points">{{pronoGroupstage}}</div>
 				</div>
 				<div class="horizontal layout">
-					<div class="flex">Groupstage winners:</div>
+					<div class="flex">{{trans('Group stage winners')}}:</div>
 					<div class="points">{{pronoGroupstageWinners}}</div>
 				</div>
 				<div class="horizontal layout">
-					<div class="flex">Knockoutstage teams:</div>
+					<div class="flex">{{trans('Knockout stage teams')}}:</div>
 					<div class="points">{{pronoKnockoutstageTeams}}</div>
 				</div>
 				<div class="horizontal layout">
-					<div class="flex">Knockoutstage:</div>
+					<div class="flex">{{trans('Knockout stage')}}:</div>
 					<div class="points">{{pronoKnockoutstage}}</div>
 				</div>
 				<div class="horizontal layout">
-					<div class="flex">Total goals:</div>
+					<div class="flex">{{trans('Total goals')}}:</div>
 					<div class="points">{{pronoTotalGoals}}</div>
 				</div>
 				<div class="horizontal layout">
-					<div class="flex">Team result:</div>
+					<div class="flex">{{trans('Team result')}}:</div>
 					<div class="points">{{pronoTeamResult}}</div>
 				</div>
 			</div>
 			<hr>
 			<div class="horizontal layout">
-				<div class="flex total">Total:</div>
+				<div class="flex total">{{trans('Total')}}:</div>
 				<div class="points">{{totalPoints}}</div>
 			</div>
 		</default-dialog>
@@ -187,6 +187,9 @@
 				else{
 					return 0;
 				}
+			},
+			trans: function(key){
+				return app.trans(key);
 			}
 		});
 	</script>

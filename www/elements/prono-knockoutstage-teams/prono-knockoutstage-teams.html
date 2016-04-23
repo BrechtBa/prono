@@ -112,7 +112,7 @@
 		</div>
 
 		<default-dialog id="editTeams">
-			<div class="before-scrolling">{{selectionsRemaining}} selections remaining</div>
+			<div class="before-scrolling">{{selectionsRemaining}} {{trans('selections remaining')}}</div>
 			<form is="iron-form" id="form" method="post" on-iron-form-submit="save" action="/">
 
 				<template is="dom-repeat" items="{{teamsModel}}" as="team">
@@ -123,8 +123,8 @@
 				</template>
 
 				<div class="buttons">
-					<paper-button raised class="primary" on-tap="formSubmit">Save</paper-button>
-					<button type="submit" style="display:none;">Save</button>
+					<paper-button raised class="primary" on-tap="formSubmit">{{trans('Save')}}</paper-button>
+					<button type="submit" style="display:none;">{{trans('Save')}}</button>
 				</div>
 			</form>
 		</default-dialog>
@@ -318,19 +318,19 @@
 				var text = ''
 				switch(stage){
 					case '16':
-						text = 'Teams in round of 16:';
+						text = this.trans('Teams in round of 16:');
 						break;
 					case '8':
-						text = 'Teams in quarterfinal:';
+						text = this.trans('Teams in quarterfinal:');
 						break;
 					case '4':
-						text = 'Teams in semifinal:';
+						text = this.trans('Teams in semifinal:');
 						break;
 					case '2':
-						text = 'Teams in final:';
+						text = this.trans('Teams in final:');
 						break;
 					case '1':
-						text = 'Winner';
+						text = this.trans('Winner:');
 						break;
 					default:
 						text = '';
@@ -445,6 +445,9 @@
 					return 0;
 				}
 			},
+			trans: function(key){
+				return app.trans(key);
+			}
 		});
 	</script>
 

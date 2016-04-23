@@ -58,8 +58,8 @@
 			</div>
 
 			<div class="buttons">
-				<paper-button raised class="primary" on-tap="changeProfileDialog">Edit profile</paper-button>
-				<paper-button raised class="secondary" on-tap="changePasswordDialog">Change password</paper-button>
+				<paper-button raised class="primary" on-tap="changeProfileDialog">{{trans('Edit profile')}}</paper-button>
+				<!--<paper-button raised class="secondary" on-tap="changePasswordDialog">{{trans('Change password')}}</paper-button>-->
 			</div>
 		</paper-card>
 
@@ -69,12 +69,12 @@
 			<form is="iron-form" id="changeProfileForm" method="post" on-iron-form-submit="saveProfile" action="/">
 				<div class="horizontal layout">
 					<avatar-image id="newavatar" class="avatar" user="{{newuser}}"></avatar-image>
-					<file-input target="images/avatars/" prepend="{{user.id}}" on-success="setNewAvatar">Change avatar</file-input>
+					<file-input target="images/avatars/" prepend="{{user.id}}" on-success="setNewAvatar">{{trans('Change avatar')}}</file-input>
 				</div>
 			
 				<div class="buttons">
-					<paper-button raised class="primary" on-tap="changeProfileFormSubmit">Save</paper-button>
-					<button type="submit" class="hidden">Save</button>
+					<paper-button raised class="primary" on-tap="changeProfileFormSubmit">{{trans('Save')}}</paper-button>
+					<button type="submit" class="hidden">{{trans('Save')}}</button>
 				</div>
 			</form>
 		</default-dialog>
@@ -89,8 +89,8 @@
 				<custom-validator id="passwordValidator" validator-name="passwordValidator"></custom-validator>
 			</form>
 			<div class="buttons">
-				<paper-button raised class="primary" on-tap="changePasswordFormSubmit">Save</paper-button>
-				<button type="submit" class="hidden">Save</button>
+				<paper-button raised class="primary" on-tap="changePasswordFormSubmit">{{trans('Save')}}</paper-button>
+				<button type="submit" class="hidden">{{trans('Save')}}</button>
 			</div>
 		</default-dialog>
 
@@ -165,6 +165,9 @@
 				else{
             		return false;
 				}
+			},
+			trans: function(key){
+				return app.trans(key);
 			}
 		});
 	</script>

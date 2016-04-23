@@ -80,7 +80,7 @@
 		
 		<template is="dom-if" if="{{isProno(user)}}">
 			<paper-material class$="{{disabledClass(currentStage,user)}}" elevation="2">
-				<h3>Team result:</h3>
+				<h3>{{trans('Team result')}}:</h3>
 				<template is="dom-repeat" items="{{getTeams(teamIds,teamsModel)}}" as="team" sort="_sortTeams">
 					<div class="horizontal layout center wrap" on-tap="editResult">
 						<div class="team horizontal layout center">
@@ -117,7 +117,7 @@
 					<prono-team-icon class="teamicon" team="{{editTeam}}"></prono-team-icon>
 					<prono-team-name class="teamname" team="{{editTeam}}"></prono-team-name>
 				</div>
-				<paper-dropdown-menu label="Result">
+				<paper-dropdown-menu label="{{trans('Result')}}">
 					<paper-menu class="dropdown-content" attr-for-selected="value" selected="{{result}}">
 						<paper-item value="-1"></paper-item>
 						<template is="dom-repeat" items="{{getStages(matchesModel)}}" as="stage">
@@ -128,8 +128,8 @@
 
 
 				<div class="buttons">
-					<paper-button raised class="primary" on-tap="formSubmitProno">Save</paper-button>
-					<button type="submit" class="hidden">Save</button>
+					<paper-button raised class="primary" on-tap="formSubmitProno">{{trans('Save')}}</paper-button>
+					<button type="submit" class="hidden">{{trans('Save')}}</button>
 				</div>
 			</form>
 		</default-dialog>
@@ -266,7 +266,6 @@
 				return stages;
 			},
 			getResult: function(prono,teamId){
-				console.log(prono)
 				var tempresult = -1;
 				prono.every(function(tempprono){
 					if(tempprono.team_id==teamId){
@@ -283,22 +282,25 @@
 			parseResult: function(result){
 				var description = '';
 				if(result === "0"){
-					description = 'eliminated in the groupstage';
+					description = this.trans('eliminated in the groupstage');
 				}
-				else if(result-0 > 8){
-					description = 'eliminated in the round of '+result;
+				else if(result-0 > 16){
+					description = this.trans('eliminated in the round of ')+result;
+				}
+				else if(result === "16"){
+					description = this.trans('eliminated in the round of 16');
 				}
 				else if(result === "8"){
-					description = 'eliminated in the quarter-finals';
+					description = this.trans('eliminated in the quarter-finals');
 				}
 				else if(result === "4"){
-					description = 'eliminated in the semi-finals';
+					description = this.trans('eliminated in the semi-finals');
 				}
 				else if(result === "2"){
-					description = 'eliminated in the final';
+					description = this.trans('eliminated in the final');
 				}
 				else if(result === "1"){
-					description = 'winner';
+					description = this.trans('winner');
 				}
 				return description;
 			},
@@ -514,6 +516,9 @@
 					return 0;
 				}
 			},
+			trans: function(key){
+				return app.trans(key);
+			}
 		});
 	</script>
 
