@@ -69,7 +69,7 @@
 			<form is="iron-form" id="changeProfileForm" method="post" on-iron-form-submit="saveProfile" action="/">
 				<div class="horizontal layout">
 					<avatar-image id="newavatar" class="avatar" user="{{newuser}}"></avatar-image>
-					<file-input target="images/avatars/" prepend="{{user.id}}" on-success="setNewAvatar">{{trans('Change avatar')}}</file-input>
+					<file-input target="images/avatars/" prepend="{{user.user_id}}" on-success="setNewAvatar">{{trans('Change avatar')}}</file-input>
 				</div>
 			
 				<div class="buttons">

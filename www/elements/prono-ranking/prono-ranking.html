@@ -150,8 +150,8 @@
 				this.pronoTeamResult = 0;
 
 				// get the points
-				if(user.id == this.user.id || this.permission >8){
-					this.fire('calculate-user-points',user.id);
+				if(user.user_id == this.user.user_id || this.permission >8){
+					this.fire('calculate-user-points',user.user_id);
 					this.$.pointDetails.open();
 				}
 			},

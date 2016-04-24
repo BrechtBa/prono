@@ -78,7 +78,7 @@
 
 		<!--<api-model id="teamIds" token="{{token}}" url="../../api/index.php/prono_team_result_teams/" model="{{teamIds}}" on-change="handleTeamIdsChange"></api-model>-->
 
-		<api-model id="prono" token="{{token}}" url="../../api/index.php/prono_team_result/user_id/{{user.id}}" model="{{prono}}" on-change="handlePronoChange"></api-model>
+		<api-model id="prono" token="{{token}}" url="../../api/index.php/prono_team_result/user_id/{{user.user_id}}" model="{{prono}}" on-change="handlePronoChange"></api-model>
 		<api-model id="allProno" token="{{token}}" url="../../api/index.php/prono_team_result/" model="{{allProno}}" on-change="handleAllPronoChange"></api-model>
 
 		<template is="dom-if" if="{{isProno(user)}}">
@@ -216,10 +216,10 @@
 				});
 			},
 			isProno: function(user){
-				return (typeof user.id != 'undefined');
+				return (typeof user.user_id != 'undefined');
 			},
 			disabledClass: function(currentStage,user){
-				if( 0 == currentStage || typeof user.id == 'undefined'){
+				if( 0 == currentStage || typeof user.user_id == 'undefined'){
 					return '';
 				}
 				else{
@@ -363,7 +363,7 @@
 				var done = true;
 				console.log('check prono team result');
 				try{
-					if(typeof this.user.id != 'undefined'){
+					if(typeof this.user.user_id != 'undefined'){
 						var that = this;
 						pronos = that.teamIds;
 						pronos.every(function(prono){
@@ -379,7 +379,7 @@
 								done = false;
 								// post the prono
 								console.log('adding prono team result ' + prono);
-								that.$.prono.post({'user_id':that.user.id,'team_id':prono,'result':-1});
+								that.$.prono.post({'user_id':that.user.user_id,'team_id':prono,'result':-1});
 							}
 							return found;
 						});
@@ -411,10 +411,10 @@
 				}
 			},
 			calculateUserPoints: function(user_id){
-				if(typeof this.user.id != 'undefined'){
+				if(typeof this.user.user_id != 'undefined'){
 					var that = this;
 					var points = 0;
-					if(user_id == this.user.id){
+					if(user_id == this.user.user_id){
 						var prono = this.prono;
 					}
 					else if(this.permission > 8){

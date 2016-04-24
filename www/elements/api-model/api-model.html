@@ -75,13 +75,13 @@
 				this.$.post.url = this.url;
 				
 				this.$.post.body = JSON.stringify(data);
+				console.log('post ' + this.$.post.body + ' to ' + this.$.post.url);
 				this.$.post.generateRequest();
 			},
 			handlePostResponse: function(e,request){
 				var location = request.xhr.getResponseHeader('Location');
 				var parts = location.split('/');
 				var id = parts[1];
-
 				// this might not work due to permissions in the api
 				this.get('id/'+id);
 			},

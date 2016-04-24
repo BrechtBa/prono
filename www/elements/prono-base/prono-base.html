@@ -10,7 +10,7 @@
 			
 		</style>
 
-		<api-model id="prono" token="{{token}}" url="{{url}}/user_id/{{user.id}}" model="{{prono}}" on-change="handlePronoChange"></api-model>
+		<api-model id="prono" token="{{token}}" url="{{url}}/user_id/{{user.user_id}}" model="{{prono}}" on-change="handlePronoChange"></api-model>
 		<api-model id="allProno" token="{{token}}" url="{{url}}" model="{{allProno}}" on-change="handleAllPronoChange"></api-model>
 
 	</template>
@@ -70,7 +70,7 @@
 				var done = true;
 				console.log('check prono '+ this.name);
 				try{
-					if(typeof this.user.id != 'undefined'){
+					if(typeof this.user.user_id != 'undefined'){
 						var that = this;
 
 
@@ -124,10 +124,10 @@
 				}
 			},
 			calculateUserPoints: function(user_id){
-				if(typeof this.user.id != 'undefined'){
+				if(typeof this.user.user_id != 'undefined'){
 					var that = this;
 					var points = 0;
-					if(user_id == this.user.id){
+					if(user_id == this.user.user_id){
 						var prono = this.prono;
 					}
 					else if(this.permission > 8){

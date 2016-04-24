@@ -86,7 +86,7 @@
 			}
 		</style>
 
-		<api-model id="prono" token="{{token}}" url="../../api/index.php/prono_knockoutstage_teams/user_id/{{user.id}}" model="{{prono}}" on-change="handlePronoChange"></api-model>
+		<api-model id="prono" token="{{token}}" url="../../api/index.php/prono_knockoutstage_teams/user_id/{{user.user_id}}" model="{{prono}}" on-change="handlePronoChange"></api-model>
 		<api-model id="allProno" token="{{token}}" url="../../api/index.php/prono_knockoutstage_teams/" model="{{allProno}}" on-change="handleAllPronoChange"></api-model>
 
 		<div class="horizontal layout center-justified">
@@ -201,7 +201,7 @@
 				var done = true;
 				console.log('check prono knockoutstage teams');
 				try{
-					if(typeof this.user.id != 'undefined'){
+					if(typeof this.user.user_id != 'undefined'){
 						var that = this;
 						// check which prono's should be present
 						var pronos = [];
@@ -224,7 +224,7 @@
 								done = false;
 								// post the prono
 								console.log('adding prono team '+prono_id);
-								that.$.prono.post({'user_id':that.user.id,'prono_id':prono_id,'team_id':-1});
+								that.$.prono.post({'user_id':that.user.user_id,'prono_id':prono_id,'team_id':-1});
 							}
 							return found;				
 						});
@@ -256,10 +256,10 @@
 				}
 			},
 			calculateUserPoints: function(user_id){
-				if(typeof this.user.id != 'undefined'){
+				if(typeof this.user.user_id != 'undefined'){
 					var that = this;
 					var points = 0;
-					if(user_id == this.user.id){
+					if(user_id == this.user.user_id){
 						var prono = this.prono;
 					}
 					else if(this.permission > 8){

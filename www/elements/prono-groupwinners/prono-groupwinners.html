@@ -56,7 +56,7 @@
 			}
 		</style>
 
-		<api-model id="prono" token="{{token}}" url="../../api/index.php/prono_groupstage_winners/user_id/{{user.id}}" model="{{prono}}" on-change="handlePronoChange"></api-model>
+		<api-model id="prono" token="{{token}}" url="../../api/index.php/prono_groupstage_winners/user_id/{{user.user_id}}" model="{{prono}}" on-change="handlePronoChange"></api-model>
 		<api-model id="allProno" token="{{token}}" url="../../api/index.php/prono_groupstage_winners/" model="{{allProno}}" on-change="handleAllPronoChange"></api-model>
 
 		<template is="dom-if" if="{{isProno(user)}}">
@@ -195,7 +195,7 @@
 				that.$.prono.get();
 			},
 			isProno: function(user){
-				return (typeof user.id != 'undefined');
+				return (typeof user.user_id != 'undefined');
 			},
 			getWinner: function(group,teamsModel,prono){
 				var team = {};
@@ -321,7 +321,7 @@
 				var done = true;
 				console.log('check prono groupstage winners');
 				try{
-					if(typeof this.user.id != 'undefined'){
+					if(typeof this.user.user_id != 'undefined'){
 						var that = this;
 						pronos = [this.group+'1',this.group+'2'];
 						pronos.every(function(prono){
@@ -337,7 +337,7 @@
 								done = false;
 								// post the prono
 								console.log('adding prono groupstage winners ' + prono);
-								that.$.prono.post({'user_id':that.user.id,'prono':prono,'team_id':-1});
+								that.$.prono.post({'user_id':that.user.user_id,'prono_id':prono,'team_id':-1});
 							}
 							return found;
 						});
@@ -369,10 +369,10 @@
 				}
 			},
 			calculateUserPoints: function(user_id){
-				if(typeof this.user.id != 'undefined'){
+				if(typeof this.user.user_id != 'undefined'){
 					var that = this;
 					var points = 0;
-					if(user_id == this.user.id){
+					if(user_id == this.user.user_id){
 						var prono = this.prono;
 					}
 					else if(this.permission > 8){

@@ -100,7 +100,7 @@
 			}
 		</style>
 
-		<api-model id="prono" token="{{token}}" url="../../api/index.php/prono_knockoutstage/user_id/{{user.id}}" model="{{prono}}" on-change="handlePronoChange"></api-model>
+		<api-model id="prono" token="{{token}}" url="../../api/index.php/prono_knockoutstage/user_id/{{user.user_id}}" model="{{prono}}" on-change="handlePronoChange"></api-model>
 		<api-model id="allProno" token="{{token}}" url="../../api/index.php/prono_knockoutstage/" model="{{allProno}}" on-change="handleAllPronoChange"></api-model>
 
 		<div class="horizontal layout center-justified">
@@ -271,7 +271,7 @@
 				return 'stage-'+stage.id;
 			},
 			disabledClass: function(stage,currentStage,user){
-				if(stage.id==currentStage || typeof user.id == 'undefined'){
+				if(stage.id==currentStage || typeof user.user_id == 'undefined'){
 					return '';
 				}
 				else{
@@ -332,7 +332,7 @@
 			editScore: function(e){
 				this.editmatch = e.model.__data__.match;
 				if(this.editmatch.stage == this.expandedStage || !this.isSmall()){
-					if( typeof this.user.id == 'undefined' ){
+					if( typeof this.user.user_id == 'undefined' ){
 						// check permission
 						if(this.permission > 5){ 
 							this.score = {'score1':this.editmatch.score1,'score2':this.editmatch.score2};
@@ -356,7 +356,7 @@
 				}
 			},
 			saveScore: function(e){
-				if(typeof this.user.id != 'undefined'){
+				if(typeof this.user.user_id != 'undefined'){
 					this.$.prono.put('match_id/'+e.detail.match_id,{'score1':e.detail.score1,'score2':e.detail.score2});	
 				}
 				else{
@@ -384,7 +384,7 @@
 			},
 			getScore1: function(match,prono,user){
 				var score = match.score1;
-				if(typeof user.id != 'undefined'){
+				if(typeof user.user_id != 'undefined'){
 					prono.forEach(function(item){
 						if(item.match_id == match.id){
 							score = item.score1
@@ -395,7 +395,7 @@
 			},
 			getScore2: function(match,prono,user){
 				var score = match.score2;
-				if(typeof user.id != 'undefined'){
+				if(typeof user.user_id != 'undefined'){
 					prono.forEach(function(item){
 						if(item.match_id == match.id){
 							score = item.score2
@@ -418,7 +418,7 @@
 				var done = true;
 				console.log('check prono knockoutstage');
 				try{
-					if(typeof this.user.id != 'undefined'){
+					if(typeof this.user.user_id != 'undefined'){
 						var that = this;
 						this.matchesModel.every(function(match){
 							var found = true;
@@ -435,7 +435,7 @@
 									done = false;
 									// the match has no prono, it must be created
 									console.log('adding prono knockoutstage match'+match.id);
-									that.$.prono.post({'user_id':that.user.id,'match_id':match.id,'score1':-1,'score2':-1,'penalty1':-1,'penalty2':-1});
+									that.$.prono.post({'user_id':that.user.user_id,'match_id':match.id,'score1':-1,'score2':-1,'penalty1':-1,'penalty2':-1});
 								}
 							}
 							return found;
@@ -467,10 +467,10 @@
 				}
 			},
 			calculateUserPoints: function(user_id){
-				if(typeof this.user.id != 'undefined'){
+				if(typeof this.user.user_id != 'undefined'){
 					var that = this;
 					var points = 0;
-					if(user_id == this.user.id){
+					if(user_id == this.user.user_id){
 						var prono = this.prono;
 					}
 					else if(this.permission > 8){
