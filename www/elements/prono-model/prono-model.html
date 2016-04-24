@@ -200,24 +200,24 @@
 					 &&	typeof that.pronoTotalGoalsPoints != 'undefined'
 					 &&	typeof that.pronoTeamResultPoints != 'undefined'
 
-					 && typeof that.pronoGroupstagePoints[user.id] != 'undefined'
-					 &&	typeof that.pronoGroupstageWinnersPoints[user.id] != 'undefined'
-					 &&	typeof that.pronoKnockoutstageTeamsPoints[user.id] != 'undefined'
-					 &&	typeof that.pronoKnockoutstagePoints[user.id] != 'undefined'
-					 &&	typeof that.pronoTotalGoalsPoints[user.id] != 'undefined'
-					 &&	typeof that.pronoTeamResultPoints[user.id] != 'undefined' ){
+					 && typeof that.pronoGroupstagePoints[user.user_id] != 'undefined'
+					 &&	typeof that.pronoGroupstageWinnersPoints[user.user_id] != 'undefined'
+					 &&	typeof that.pronoKnockoutstageTeamsPoints[user.user_id] != 'undefined'
+					 &&	typeof that.pronoKnockoutstagePoints[user.user_id] != 'undefined'
+					 &&	typeof that.pronoTotalGoalsPoints[user.user_id] != 'undefined'
+					 &&	typeof that.pronoTeamResultPoints[user.user_id] != 'undefined' ){
 
 						//add all points
-						var points = that.pronoGroupstagePoints[user.id]
-							       + that.pronoGroupstageWinnersPoints[user.id]
-								   + that.pronoKnockoutstageTeamsPoints[user.id]
-								   + that.pronoKnockoutstagePoints[user.id]
-								   + that.pronoTotalGoalsPoints[user.id]
-								   + that.pronoTeamResultPoints[user.id];
+						var points = that.pronoGroupstagePoints[user.user_id]
+							       + that.pronoGroupstageWinnersPoints[user.user_id]
+								   + that.pronoKnockoutstageTeamsPoints[user.user_id]
+								   + that.pronoKnockoutstagePoints[user.user_id]
+								   + that.pronoTotalGoalsPoints[user.user_id]
+								   + that.pronoTeamResultPoints[user.user_id];
 
 						if(user.points != points){
 							// write points to database
-							that.$.usersModel.put('user_id/'+user.id,{'points':points});
+							that.$.usersModel.put('user_id/'+user.user_id,{'points':points});
 						}
 					}
 				});
