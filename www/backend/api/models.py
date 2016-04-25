@@ -2,7 +2,9 @@ from django.db import models
 from django.contrib.auth.models import User as AuthUser
 from django.contrib.auth.models import Group as AuthGroup
 from django.db.models.signals import post_save
+from rest_framework_jwt.utils import jwt_payload_handler as base_jwt_payload_handler
 
+import datetime
 
 # model definition
 ################################################################################
@@ -17,6 +19,7 @@ class Points(models.Model):
 	user = models.ForeignKey(AuthUser, on_delete=models.CASCADE, related_name='points', blank=True, null=True)
 	prono = models.CharField(max_length=100, blank=True, default='')
 	points = models.IntegerField(blank=True, default=0)
+	
 	
 ################################################################################
 # Competition
@@ -152,4 +155,17 @@ def check_user(user):
 def calculate_points():
 	pass
 
+	
+	
+################################################################################
+# JWT
+################################################################################
+def jwt_payload_handler(user):
+	payload = base_jwt_payload_handler(user)
+	
+	# add aditional data to the payload
+	payload['acces_exp'] = 0
+	
+	return payload
+	
 	

@@ -1,9 +1,15 @@
 from django.conf.urls import url
 from rest_framework.urlpatterns import format_suffix_patterns
+from rest_framework_jwt.views import obtain_jwt_token
+from rest_framework_jwt.views import refresh_jwt_token
+
 from api import views
 from api.models import check
 
+
 urlpatterns = [
+	url(r'^token-auth/', obtain_jwt_token),
+	url(r'^token-refresh/', refresh_jwt_token),
 	url(r'^users/$', views.UserList.as_view()),
 	url(r'^users/(?P<pk>[0-9]+)/$', views.UserDetail.as_view()),
 	url(r'^userprofiles/$', views.UserProfileList.as_view()),
