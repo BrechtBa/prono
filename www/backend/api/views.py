@@ -46,6 +46,7 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
 	permission_classes = (IsOwnerOrAdmin,)
 	def get_queryset(self):
 		queryset = AuthUser.objects.all()
+		print(queryset)
 		for obj in queryset:
 			self.check_object_permissions(self.request, obj)
 		return queryset
