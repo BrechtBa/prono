@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from rest_framework.urlpatterns import format_suffix_patterns
 from api import views
-
+from api.models import check
 
 urlpatterns = [
 	url(r'^users/$', views.UserList.as_view()),
@@ -9,6 +9,7 @@ urlpatterns = [
 	url(r'^userprofiles/$', views.UserProfileList.as_view()),
 	url(r'^userprofiles/(?P<pk>[0-9]+)/$', views.UserProfileDetail.as_view()),
 	url(r'^points/$', views.PointsList.as_view()),
+	url(r'^points/(?P<key0>.+)/(?P<val0>.+)/$', views.PointsList.as_view()),
 	url(r'^points/(?P<pk>[0-9]+)/$', views.PointsDetail.as_view()),
 	url(r'^teams/$', views.TeamList.as_view()),
 	url(r'^teams/(?P<pk>[0-9]+)/$', views.TeamDetail.as_view()),
@@ -21,3 +22,8 @@ urlpatterns = [
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
+
+
+# for now perform update actions when the userList view is created
+# this seems to work well but is not very clear
+check()

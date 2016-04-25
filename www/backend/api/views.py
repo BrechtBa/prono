@@ -1,10 +1,28 @@
 from django.contrib.auth.models import User as AuthUser
 from django.contrib.auth.models import Group as AuthGroup
 from rest_framework import generics
+from rest_framework import filters
 
-from api.models import UserProfile,Points,Team,Group,Match,MatchResult
+from api.models import UserProfile,Points,Team,Group,Match,MatchResult,check
 from api.serializers import UserSerializer,UserProfileSerializer,PointsSerializer,TeamSerializer,GroupSerializer,MatchSerializer,MatchResultSerializer
 
+################################################################################
+# Helper functions
+################################################################################
+def simplefilter(kwargs,model):
+	filterargs = {}
+	if 'key0' in kwargs:
+		filterargs[kwargs['key0']] =  kwargs['val0']
+	
+	if filterargs == {}:
+		return model.objects.all()
+	else:
+		return model.objects.filter(**filterargs)
+
+		
+################################################################################
+# Views
+################################################################################
 # users
 class UserList(generics.ListCreateAPIView):
 	queryset = AuthUser.objects.all()
@@ -23,10 +41,12 @@ class UserProfileDetail(generics.RetrieveUpdateDestroyAPIView):
 	queryset = UserProfile.objects.all()
 	serializer_class = UserProfileSerializer
 	
-# user points	
+# points	
 class PointsList(generics.ListCreateAPIView):
-	queryset = Points.objects.all()
 	serializer_class = PointsSerializer
+	def get_queryset(self):
+		return simplefilter(self.kwargs,Points)
+		
 
 class PointsDetail(generics.RetrieveUpdateDestroyAPIView):
 	queryset = Points.objects.all()
