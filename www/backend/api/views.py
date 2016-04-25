@@ -2,8 +2,8 @@ from django.contrib.auth.models import User as AuthUser
 from django.contrib.auth.models import Group as AuthGroup
 from rest_framework import generics
 
-from api.models import UserProfile,Team,Match,MatchResult
-from api.serializers import UserSerializer,UserProfileSerializer,TeamSerializer,MatchSerializer,MatchResultSerializer
+from api.models import UserProfile,Points,Team,Group,Match,MatchResult
+from api.serializers import UserSerializer,UserProfileSerializer,PointsSerializer,TeamSerializer,GroupSerializer,MatchSerializer,MatchResultSerializer
 
 # users
 class UserList(generics.ListCreateAPIView):
@@ -23,6 +23,16 @@ class UserProfileDetail(generics.RetrieveUpdateDestroyAPIView):
 	queryset = UserProfile.objects.all()
 	serializer_class = UserProfileSerializer
 	
+# user points	
+class PointsList(generics.ListCreateAPIView):
+	queryset = Points.objects.all()
+	serializer_class = PointsSerializer
+
+class PointsDetail(generics.RetrieveUpdateDestroyAPIView):
+	queryset = Points.objects.all()
+	serializer_class = PointsSerializer	
+	
+	
 # teams
 class TeamList(generics.ListCreateAPIView):
 	queryset = Team.objects.all()
@@ -32,6 +42,15 @@ class TeamDetail(generics.RetrieveUpdateDestroyAPIView):
 	queryset = Team.objects.all()
 	serializer_class = TeamSerializer
 
+# groups
+class GroupList(generics.ListCreateAPIView):
+	queryset = Group.objects.all()
+	serializer_class = GroupSerializer
+
+class GroupDetail(generics.RetrieveUpdateDestroyAPIView):
+	queryset = Group.objects.all()
+	serializer_class = GroupSerializer	
+	
 # matches
 class MatchList(generics.ListCreateAPIView):
 	queryset = Match.objects.all()
