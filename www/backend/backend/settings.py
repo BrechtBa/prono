@@ -127,7 +127,7 @@ STATIC_URL = '/static/'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication',
@@ -137,6 +137,7 @@ REST_FRAMEWORK = {
 }
 
 JWT_AUTH = {
+	'JWT_ALLOW_REFRESH': True,
 	'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7),
 	'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=60),
 	'JWT_PAYLOAD_HANDLER': 'api.models.jwt_payload_handler',
