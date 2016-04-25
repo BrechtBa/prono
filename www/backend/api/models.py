@@ -117,7 +117,7 @@ post_save.connect(prepare_user, sender=AuthUser)
 
 
 def check():
-	print('check')
+	#print('check')
 	# check if all matches have a result
 	for match in Match.objects.all():
 		try:
@@ -125,7 +125,7 @@ def check():
 		except:
 			result = MatchResult(match=match)
 			result.save()
-			print('Added result for match {}'.format(match))
+			#print('Added result for match {}'.format(match))
 	
 	for user in AuthUser.objects.all():
 		check_user(user)
@@ -143,14 +143,14 @@ def check_user(user):
 		if not prono in [p.prono for p in user.points.all()]:
 			user_points = Points(user=user, prono=prono)
 			user_points.save()
-			print('Added points for user {} on prono {}'.format(user,prono))
+			#print('Added points for user {} on prono {}'.format(user,prono))
 			
 	# check if the user has entries for all pronos
 	for match in Match.objects.all():
 		if user.prono_result.filter(match=match) ==[]:
 			prono = PronoResult(user=user,match=match)
 			prono.save()
-			print('Added prono_result for user {} on match {}'.format(user,match))
+			#print('Added prono_result for user {} on match {}'.format(user,match))
 
 def calculate_points():
 	pass
@@ -165,7 +165,11 @@ def jwt_payload_handler(user):
 	
 	# add aditional data to the payload
 	payload['acces_exp'] = 0
-	
+	if user.is_staff:
+		payload['permission'] = 9
+	else:
+		payload['permission'] = 1
+
 	return payload
 	
 	
