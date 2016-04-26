@@ -11,6 +11,15 @@ def access_exp(request):
 	except:
 		return False
 
+def stage(request):
+	try:
+		payload = jwt_decode_handler(request.auth.decode('utf-8'))
+		
+		return payload['stage']
+	except:
+		return -1
+
+
 class IsOwnerOrAdmin(permissions.BasePermission):
 	"""
 	Custom permission to only allow owners of an object and the admin to view and edit it.
@@ -23,7 +32,28 @@ class IsOwnerOrAdmin(permissions.BasePermission):
 		else:
 			return (obj == request.user and access_exp(request)) or request.user.is_staff
 
+class IsOwnerOrAdminGroupstage(permissions.BasePermission):
+	"""
+	Custom permission to only allow owners of an object and the admin to view and edit it only when the stage in the token is a certain value 
+	"""
+	def has_object_permission(self, request, view, obj):
 		
+		if hasattr(obj,'user'):
+			return (obj.user == request.user and access_exp(request) and stage(request)==0) or request.user.is_staff
+		else:
+			return (obj == request.user and access_exp(request) and stage(request)==0) or request.user.is_staff
+
+class IsOwnerOrAdminObjectStage(permissions.BasePermission):
+	"""
+	Custom permission to only allow owners of an object and the admin to view and edit it only when the stage in the token is a certain value 
+	"""
+	def has_object_permission(self, request, view, obj):
+		
+		if hasattr(obj,'user'):
+			return (obj.user == request.user and access_exp(request) and stage(request)==obj.stage) or request.user.is_staff
+		else:
+			return (obj == request.user and access_exp(request) and stage(request)==obj.stage) or request.user.is_staff
+
 class IsAdminOrReadOnly(permissions.BasePermission):
 	"""
 	Custom permission to only allow owners of an object to edit it.

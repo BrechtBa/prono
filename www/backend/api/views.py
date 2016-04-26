@@ -7,7 +7,7 @@ from rest_framework import permissions
 from api.models import UserProfile,Points,Team,Group,Match,MatchResult,PronoResult,PronoGroupstageWinners,PronoKnockoutstageTeams
 from api.serializers import *
 #UserSerializer,UserProfileSerializer,PointsSerializer,TeamSerializer,GroupSerializer,MatchSerializer,MatchResultSerializer,PronoResultSerializer,PronoGroupstageWinnersSerializer,PronoKnockoutstageTeamsSerializer
-from api.permissions import IsOwnerOrAdmin,IsAdminOrReadOnly,IsOwnerOrReadOnly,PointsPermissions
+from api.permissions import IsOwnerOrAdmin,IsAdminOrReadOnly,IsOwnerOrReadOnly,PointsPermissions,IsOwnerOrAdminGroupstage,IsOwnerOrAdminObjectStage
 
 
 ################################################################################
@@ -160,7 +160,7 @@ class MatchResultDetail(generics.RetrieveUpdateDestroyAPIView):
 # prono result
 class PronoResultList(generics.ListCreateAPIView):
 	serializer_class = PronoResultSerializer
-	permission_classes = (IsOwnerOrAdmin,)
+	permission_classes = (IsOwnerOrAdminObjectStage,)
 	def get_queryset(self):
 		queryset = simplefilter(filterargs(self.kwargs),PronoResult)
 		for obj in queryset:
@@ -169,14 +169,14 @@ class PronoResultList(generics.ListCreateAPIView):
 
 class PronoResultDetail(generics.RetrieveUpdateDestroyAPIView):
 	serializer_class = PronoResultSerializer
-	permission_classes = (IsOwnerOrAdmin,)
+	permission_classes = (IsOwnerOrAdminObjectStage,)
 	queryset = PronoResult.objects.all()
 	
 
 # prono groupstage winners
 class PronoGroupstageWinnersList(generics.ListCreateAPIView):
 	serializer_class = PronoGroupstageWinnersSerializer
-	permission_classes = (IsOwnerOrAdmin,)
+	permission_classes = (IsOwnerOrAdminGroupstage,)
 	def get_queryset(self):
 		queryset = simplefilter(filterargs(self.kwargs),PronoGroupstageWinners)
 		for obj in queryset:
@@ -185,7 +185,7 @@ class PronoGroupstageWinnersList(generics.ListCreateAPIView):
 
 class PronoGroupstageWinnersDetail(generics.RetrieveUpdateDestroyAPIView):
 	serializer_class = PronoGroupstageWinnersSerializer
-	permission_classes = (IsOwnerOrAdmin,)
+	permission_classes = (IsOwnerOrAdminGroupstage,)
 	queryset = PronoGroupstageWinners.objects.all()
 
 
@@ -193,7 +193,7 @@ class PronoGroupstageWinnersDetail(generics.RetrieveUpdateDestroyAPIView):
 # prono knockoutstage teams
 class PronoKnockoutstageTeamsList(generics.ListCreateAPIView):
 	serializer_class = PronoKnockoutstageTeamsSerializer
-	permission_classes = (IsOwnerOrAdmin,)
+	permission_classes = (IsOwnerOrAdminGroupstage,)
 	def get_queryset(self):
 		queryset = simplefilter(filterargs(self.kwargs),PronoKnockoutstageTeams)
 		for obj in queryset:
@@ -202,7 +202,7 @@ class PronoKnockoutstageTeamsList(generics.ListCreateAPIView):
 
 class PronoKnockoutstageTeamsDetail(generics.RetrieveUpdateDestroyAPIView):
 	serializer_class = PronoKnockoutstageTeamsSerializer
-	permission_classes = (IsOwnerOrAdmin,)
+	permission_classes = (IsOwnerOrAdminGroupstage,)
 	queryset = PronoKnockoutstageTeams.objects.all()
 
 
