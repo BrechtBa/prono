@@ -30,6 +30,13 @@ class Points(models.Model):
 class Group(models.Model):
 	name = models.CharField(max_length=100, blank=True, default='')
 	
+	def save(self, *args, **kwargs):
+		super(Group, self).save(*args, **kwargs)
+		
+		# create prono results for all users
+		for user in AuthUser.objects.all(): 
+			check_user(user)
+
 	def __str__(self):
 		return '{}'.format(self.name)	
 		
@@ -65,9 +72,7 @@ class Match(models.Model):
 
 		# create prono results for all users
 		for user in AuthUser.objects.all(): 
-			if len(user.prono_result.filter(match=self)) == 0:
-				prono_result = PronoResult(match=self,user=user)
-				prono_result.save()
+			check_user(user)
 		
 	def __str__(self):
 		return '{}'.format(self.id)
@@ -102,6 +107,12 @@ class PronoResult(models.Model):
 	
 	def __str__(self):
 		return '{} - {}'.format(self.score1, self.score2)
+
+class PronoGroupstageWinners(models.Model):
+	user = models.ForeignKey(AuthUser, on_delete=models.CASCADE, related_name='prono_groupstage_winners', blank=True, null=True)
+	group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='prono_groupstage_winners', blank=True, null=True)
+	ranking = models.IntegerField(blank=True, default=-1)
+	team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='prono_groupstage_winners', blank=True, null=True)
 	
 class PronoKnockoutstageTeams(models.Model):
 	user = models.ForeignKey(AuthUser, on_delete=models.CASCADE, related_name='prono_knockoutstage_teams', blank=True, null=True)
@@ -109,6 +120,10 @@ class PronoKnockoutstageTeams(models.Model):
 	team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='prono_knockoutstage_teams', blank=True, null=True)
 	
 	
+
+
+
+
 	
 # helper elements	
 ################################################################################
@@ -122,12 +137,18 @@ def prepare_user(sender, **kwargs):
 	user = kwargs["instance"]
 	if kwargs["created"]:
 		check_user(user)
-		
+	
+	if user.is_staff:
+		check_matches()
+
 post_save.connect(prepare_user, sender=AuthUser)
 
 
-def check():
-	#print('check')
+
+def check_matches():
+	"""
+	checks if all database entries are present for all matches
+	"""
 	# check if all matches have a result
 	for match in Match.objects.all():
 		try:
@@ -136,12 +157,14 @@ def check():
 			result = MatchResult(match=match)
 			result.save()
 			#print('Added result for match {}'.format(match))
-	
-	for user in AuthUser.objects.all():
-		check_user(user)
+		
 	
 def check_user(user):
+	"""
+	checks if all database entries are present for the user
+	"""
 	#print('check {}'.format(user.username))
+	############################################################################
 	# check if the user has a profile
 	try:
 		user.profile
@@ -149,19 +172,55 @@ def check_user(user):
 		user_profile = UserProfile(user=user)
 		user_profile.save()
 		
+
+	############################################################################
 	# check if the user has points entries for all pronos	
-	for prono in ['total','groupstage_result','groupstage_score','knockoutstage_result','knockoutstage_score','knockoutstage_teams','total_goals','team_result']:
+	for prono in ['total','groupstage_result','groupstage_score','knockoutstage_result','knockoutstage_score','groupstage_winners','knockoutstage_teams','total_goals','team_result']:
 		if not prono in [p.prono for p in user.points.all()]:
 			user_points = Points(user=user, prono=prono)
 			user_points.save()
 			#print('Added points for user {} on prono {}'.format(user,prono))
-			
+		
+
+
+	############################################################################
 	# check if the user has entries for all pronos
+	############################################################################
+	# groupstage and knockoutstage result
 	for match in Match.objects.all():
 		if len(user.prono_result.filter(match=match)) == 0:
 			prono = PronoResult(user=user,match=match)
 			prono.save()
 			#print('Added prono_result for user {} on match {}'.format(user,match))
+
+	############################################################################
+	# groupstage_winners
+	for ranking in [1,2]:
+		for group in Group.objects.all():
+			if len(user.prono_groupstage_winners.filter(group=group,ranking=ranking)) == 0:
+				prono = PronoGroupstageWinners(user=user,group=group,ranking=ranking)
+				prono.save()
+				#print('Added prono_groupstage_winners {} for user {} on group {}'.format(ranking,user,group))
+
+	############################################################################
+	# knockoutstage_teams
+	stages = get_stages()
+
+	# remove the largest stage
+	if len(stages) > 0:
+		if stages[0] == 0:
+			del stages[0]
+
+		# add 1 for the winner
+		stages.append(1)
+
+		for stage in stages:
+			pronos = PronoKnockoutstageTeams.objects.filter(user=user,stage=stage)
+			for i in range(stage-len(pronos)):
+				prono = PronoKnockoutstageTeams(user=user,stage=stage)
+				prono.save()
+				#print('Added prono_knockoutstage_teams {} for user {} on stage {}'.format(i+1,user,stage))
+
 
 			
 def calculate_points():
@@ -201,16 +260,35 @@ def calculate_user_points(user):
 	userpoints['groupstage_result'] = groupstage_result
 	userpoints['groupstage_score'] = groupstage_score
 	
+	# knockoutstage
+	knockoutstage_result = 0
+	knockoutstage_score = 0
+	for match in Match.objects.filter(stage__gt=0):
+		match_result = match.result
+		
+		for prono_result in match.prono_result.filter(user=user):
+			match_played = match_result.score1 >-1 and match_result.score2 > -1
+			team1winscorrect = (prono_result.score1 > prono_result.score2) and (match_result.score1 > match_result.score2)
+			team2winscorrect = (prono_result.score1 < prono_result.score2) and (match_result.score1 < match_result.score2)
+			tiecorrect = (prono_result.score1 == prono_result.score2) and (match_result.score1 == match_result.score2)
+			
+			# result correct
+			if match_played and (team1winscorrect or team2winscorrect or tiecorrect):
+				knockoutstage_result = knockoutstage_result + 6
+			
+			# score correct
+			if match_played and (prono_result.score1 == match_result.score1) and ( prono_result.score2 == match_result.score2):
+				knockoutstage_score = knockoutstage_score + 8
+				
+	userpoints['knockoutstage_result'] = knockoutstage_result
+	userpoints['knockoutstage_score'] = knockoutstage_score
+
 	return userpoints
 	
-	
-################################################################################
-# JWT
-################################################################################
-def jwt_payload_handler(user):
-	payload = base_jwt_payload_handler(user)
-	
-	# get all stages
+
+
+
+def get_stages():
 	stages = []
 	for match in Match.objects.all():
 		if not match.stage in stages:
@@ -220,6 +298,16 @@ def jwt_payload_handler(user):
 	# move the groupstage to the front
 	if 0 in stages:
 		stages.insert(0, stages.pop(stages.index(0)))
+
+	return stages
+
+################################################################################
+# JWT
+################################################################################
+def jwt_payload_handler(user):
+	payload = base_jwt_payload_handler(user)
+	
+	stages = get_stages()
 	
 	# get the current stage and the 1st match of the current stage
 	currentstage = -1

@@ -5,7 +5,7 @@ from rest_framework_jwt.views import refresh_jwt_token
 
 
 from api import views
-from api.models import check
+
 
 
 urlpatterns = [
@@ -36,8 +36,3 @@ urlpatterns = [
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
-
-
-# for now perform update actions when the userList view is created
-# this seems to work well but is not very clear
-#check()

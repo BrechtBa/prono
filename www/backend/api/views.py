@@ -4,7 +4,7 @@ from rest_framework import generics
 from rest_framework import filters
 from rest_framework import permissions
 
-from api.models import UserProfile,Points,Team,Group,Match,MatchResult,PronoResult,check
+from api.models import UserProfile,Points,Team,Group,Match,MatchResult,PronoResult
 from api.serializers import UserSerializer,UserProfileSerializer,PointsSerializer,TeamSerializer,GroupSerializer,MatchSerializer,MatchResultSerializer,PronoResultSerializer
 from api.permissions import IsOwnerOrAdmin,IsAdminOrReadOnly,IsOwnerOrReadOnly,PointsPermissions
 
