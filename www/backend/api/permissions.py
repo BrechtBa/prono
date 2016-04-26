@@ -1,14 +1,13 @@
 from rest_framework import permissions
 from rest_framework_jwt.utils import jwt_decode_handler
 
-import datetime
+from .utils import unixtimestamp
 
 def access_exp(request):
 	try:
-		unixtime = (datetime.datetime.utcnow()-datetime.datetime(1970,1,1)).total_seconds()
 		payload = jwt_decode_handler(request.auth.decode('utf-8'))
 		
-		return payload['access_exp'] > unixtime
+		return payload['access_exp'] > unixtimestamp()
 	except:
 		return False
 

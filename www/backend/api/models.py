@@ -4,7 +4,7 @@ from django.contrib.auth.models import Group as AuthGroup
 from django.db.models.signals import post_save
 from rest_framework_jwt.utils import jwt_payload_handler as base_jwt_payload_handler
 
-import datetime
+from .utils import unixtimestamp
 
 # model definition
 ################################################################################
@@ -222,12 +222,11 @@ def jwt_payload_handler(user):
 		stages.insert(0, stages.pop(stages.index(0)))
 	
 	# get the current stage and the 1st match of the current stage
-	unixtime = (datetime.datetime.utcnow()-datetime.datetime(1970,1,1)).total_seconds()
 	currentstage = -1
-	firstmatchdate = unixtime + 24*3600
+	firstmatchdate = unixtimestamp() + 24*3600
 	for stage in stages:
 		# all matches of the stage are in the future
-		if len( Match.objects.filter(stage=stage) ) == len(  Match.objects.filter(stage=stage,date__gt=unixtime+3600) ):
+		if len( Match.objects.filter(stage=stage) ) == len(  Match.objects.filter(stage=stage,date__gt=unixtimestamp()+3600) ):
 			currentstage = stage
 			matches = Match.objects.filter(stage=stage).order_by('date').reverse()
 			firstmatchdate = matches[0].date

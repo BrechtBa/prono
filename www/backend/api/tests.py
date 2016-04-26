@@ -7,12 +7,18 @@ from rest_framework_jwt.utils import jwt_decode_handler
 
 import json
 import datetime
+import mock
 
 from .models import UserProfile,Points,Group,Team,Match,MatchResult,PronoResult
+from .utils import unixtimestamp
 
 
-
-
+################################################################################
+# Mock functions
+################################################################################
+class MockDatetime(datetime.datetime):
+	pass 
+	
 
 
 
@@ -49,13 +55,13 @@ class PronoTest(TestCase):
 		
 		# add matches
 		self.matches = []
-		self.matches.append( Match.objects.create(team1=self.teams[0],team2=self.teams[1],defaultteam1='A1',defaultteam2='A2',date=(datetime.datetime(2016,6,11,21-2)-datetime.datetime(1970,1,1)).total_seconds()) )
-		self.matches.append( Match.objects.create(team1=self.teams[2],team2=self.teams[3],defaultteam1='A3',defaultteam2='A4',date=(datetime.datetime(2016,6,11,15-2)-datetime.datetime(1970,1,1)).total_seconds()) )
+		self.matches.append( Match.objects.create(team1=self.teams[0],team2=self.teams[1],defaultteam1='A1',defaultteam2='A2',date=unixtimestamp(datetime.datetime(2016,6,11,21-2)) ) )
+		self.matches.append( Match.objects.create(team1=self.teams[2],team2=self.teams[3],defaultteam1='A3',defaultteam2='A4',date=unixtimestamp(datetime.datetime(2016,6,11,15-2)) ) )
 		
-		self.matches.append( Match.objects.create(defaultteam1='RA',defaultteam2='RC',stage=16,position=1,date=(datetime.datetime(2016,6,25,15-2)-datetime.datetime(1970,1,1)).total_seconds()) )
-		self.matches.append( Match.objects.create(defaultteam1='W37',defaultteam2='W39',stage=8,position=1,date=(datetime.datetime(2016,6,30,21-2)-datetime.datetime(1970,1,1)).total_seconds()) )
-		self.matches.append( Match.objects.create(defaultteam1='W45',defaultteam2='W46',stage=4,position=1,date=(datetime.datetime(2016,7,6,21-2)-datetime.datetime(1970,1,1)).total_seconds()) )
-		self.matches.append( Match.objects.create(defaultteam1='W49',defaultteam2='W50',stage=2,position=1,date=(datetime.datetime(2016,7,10,21-2)-datetime.datetime(1970,1,1)).total_seconds()) )
+		self.matches.append( Match.objects.create(defaultteam1='RA',defaultteam2='RC',stage=16,position=1,date=unixtimestamp(datetime.datetime(2016,6,25,15-2)) ) )
+		self.matches.append( Match.objects.create(defaultteam1='W37',defaultteam2='W39',stage=8,position=1,date=unixtimestamp(datetime.datetime(2016,6,30,21-2)) ) )
+		self.matches.append( Match.objects.create(defaultteam1='W45',defaultteam2='W46',stage=4,position=1,date=unixtimestamp(datetime.datetime(2016,7,6,21-2)) ) )
+		self.matches.append( Match.objects.create(defaultteam1='W49',defaultteam2='W50',stage=2,position=1,date=unixtimestamp(datetime.datetime(2016,7,10,21-2)) ) )
 		
 		
 	def generate_token(self,credentials):	
@@ -301,7 +307,16 @@ class AccessTests(PronoTest):
 		token = self.generate_token(self.usercredentials[1])
 		payload = jwt_decode_handler(token)
 		self.assertEqual(payload['stage'], 0)
-		
+	
+	#@mock.patch('api.utils.unixtimestamp', side_effect=mocked_unixtimestamp_during_groupstage)
+	@mock.patch('api.utils.datetime.datetime', MockDatetime)
+	def test_user_token_stage_during_groupstage(self):
+		MockDatetime.utcnow = classmethod(lambda cls: datetime.datetime(2016,6,11,21))
+	
+		token = self.generate_token(self.usercredentials[1])
+		payload = jwt_decode_handler(token)
+		self.assertEqual(payload['stage'], 16)
+
 	def test_user_token_access_exp(self):
 		token = self.generate_token(self.usercredentials[1])
 		payload = jwt_decode_handler(token)
