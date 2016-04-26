@@ -4,8 +4,8 @@ from rest_framework import generics
 from rest_framework import filters
 from rest_framework import permissions
 
-from api.models import UserProfile,Points,Team,Group,Match,MatchResult,check
-from api.serializers import UserSerializer,UserProfileSerializer,PointsSerializer,TeamSerializer,GroupSerializer,MatchSerializer,MatchResultSerializer
+from api.models import UserProfile,Points,Team,Group,Match,MatchResult,PronoResult,check
+from api.serializers import UserSerializer,UserProfileSerializer,PointsSerializer,TeamSerializer,GroupSerializer,MatchSerializer,MatchResultSerializer,PronoResultSerializer
 from api.permissions import IsOwnerOrAdmin,IsAdminOrReadOnly,IsOwnerOrReadOnly,PointsPermissions
 
 
@@ -44,12 +44,7 @@ class UserList(generics.ListCreateAPIView):
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
 	serializer_class = UserSerializer
 	permission_classes = (IsOwnerOrAdmin,)
-	def get_queryset(self):
-		queryset = AuthUser.objects.all()
-		print(queryset)
-		for obj in queryset:
-			self.check_object_permissions(self.request, obj)
-		return queryset
+	queryset = AuthUser.objects.all()
 	
 	
 # user profiles	
@@ -65,11 +60,7 @@ class UserProfileList(generics.ListCreateAPIView):
 class UserProfileDetail(generics.RetrieveUpdateDestroyAPIView):
 	serializer_class = UserProfileSerializer
 	permission_classes = (IsOwnerOrAdmin,)
-	def get_queryset(self):
-		queryset = UserProfile.objects.all()
-		for obj in queryset:
-			self.check_object_permissions(self.request, obj)
-		return queryset
+	queryset = UserProfile.objects.all()
 	
 	
 # points	
@@ -82,15 +73,11 @@ class PointsList(generics.ListCreateAPIView):
 			self.check_object_permissions(self.request, obj)
 		return queryset
 	
-	
 class PointsDetail(generics.RetrieveUpdateDestroyAPIView):
 	serializer_class = PointsSerializer
 	permission_classes = (PointsPermissions,)
-	def get_queryset(self):
-		queryset = Points.objects.all()
-		for obj in queryset:
-			self.check_object_permissions(self.request, obj)
-		return queryset
+	queryset = Points.objects.all()
+
 		
 # teams
 class TeamList(generics.ListCreateAPIView):
@@ -105,11 +92,7 @@ class TeamList(generics.ListCreateAPIView):
 class TeamDetail(generics.RetrieveUpdateDestroyAPIView):
 	serializer_class = TeamSerializer
 	permission_classes = (IsAdminOrReadOnly,)
-	def get_queryset(self):
-		queryset = Team.objects.all()
-		for obj in queryset:
-			self.check_object_permissions(self.request, obj)
-		return queryset
+	queryset = Team.objects.all()
 
 	
 # groups
@@ -125,11 +108,7 @@ class GroupList(generics.ListCreateAPIView):
 class GroupDetail(generics.RetrieveUpdateDestroyAPIView):
 	serializer_class = GroupSerializer
 	permission_classes = (IsAdminOrReadOnly,)
-	def get_queryset(self):
-		queryset = Group.objects.all()
-		for obj in queryset:
-			self.check_object_permissions(self.request, obj)
-		return queryset
+	queryset = Group.objects.all()
 	
 	
 # matches
@@ -158,11 +137,7 @@ class MatchList(generics.ListCreateAPIView):
 class MatchDetail(generics.RetrieveUpdateDestroyAPIView):
 	serializer_class = MatchSerializer
 	permission_classes = (IsAdminOrReadOnly,)
-	def get_queryset(self):
-		queryset = Match.objects.all()
-		for obj in queryset:
-			self.check_object_permissions(self.request, obj)
-		return queryset
+	queryset = Match.objects.all()
 	
 	
 # match results
@@ -178,8 +153,21 @@ class MatchResultList(generics.ListCreateAPIView):
 class MatchResultDetail(generics.RetrieveUpdateDestroyAPIView):
 	serializer_class = MatchResultSerializer
 	permission_classes = (IsAdminOrReadOnly,)
+	queryset = MatchResult.objects.all()
+
+	
+# prono result
+class PronoResultList(generics.ListCreateAPIView):
+	serializer_class = PronoResultSerializer
+	permission_classes = (IsOwnerOrAdmin,)
 	def get_queryset(self):
-		queryset = MatchResult.objects.all()
+		queryset = PronoResult.objects.all()
 		for obj in queryset:
 			self.check_object_permissions(self.request, obj)
 		return queryset
+
+class PronoResultDetail(generics.RetrieveUpdateDestroyAPIView):
+	serializer_class = PronoResultSerializer
+	permission_classes = (IsOwnerOrAdmin,)
+	queryset = PronoResult.objects.all()
+	

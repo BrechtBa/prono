@@ -3,7 +3,7 @@ from django.contrib.auth.models import Group as AuthGroup
 
 from rest_framework import serializers
 
-from api.models import UserProfile,Points,Team,Group,Match,MatchResult
+from api.models import UserProfile,Points,Team,Group,Match,MatchResult,PronoResult
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -46,4 +46,10 @@ class MatchResultSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = MatchResult
 		fields = ('id','match','score1','score2','penalty1','penalty2')
+
+		
+class PronoResultSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = PronoResult
+		#fields = ('id','match','score1','score2','penalty1','penalty2')
 

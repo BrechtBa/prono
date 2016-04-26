@@ -61,7 +61,12 @@ class Match(models.Model):
 		match_result = MatchResult(match=self)
 		match_result.save()
 
-
+		# create prono results for all users
+		for user in AuthUser.objects.all(): 
+			if len(user.prono_result.filter(match=self)) == 0:
+				prono_result = PronoResult(match=self,user=user)
+				prono_result.save()
+		
 	def __str__(self):
 		return '{}'.format(self.id)
 		
@@ -92,6 +97,9 @@ class PronoResult(models.Model):
 	user = models.ForeignKey(AuthUser, on_delete=models.CASCADE, related_name='prono_result', blank=True, null=True)
 	score1 = models.IntegerField(blank=True, default=-1)
 	score2 = models.IntegerField(blank=True, default=-1)
+	
+	def __str__(self):
+		return '{} - {}'.format(self.score1, self.score2)
 	
 class PronoKnockoutstageTeams(models.Model):
 	user = models.ForeignKey(AuthUser, on_delete=models.CASCADE, related_name='prono_knockoutstage_teams', blank=True, null=True)
@@ -131,6 +139,7 @@ def check():
 		check_user(user)
 	
 def check_user(user):
+	#print('check {}'.format(user.username))
 	# check if the user has a profile
 	try:
 		user.profile
@@ -147,7 +156,7 @@ def check_user(user):
 			
 	# check if the user has entries for all pronos
 	for match in Match.objects.all():
-		if user.prono_result.filter(match=match) ==[]:
+		if len(user.prono_result.filter(match=match)) == 0:
 			prono = PronoResult(user=user,match=match)
 			prono.save()
 			#print('Added prono_result for user {} on match {}'.format(user,match))
