@@ -210,8 +210,34 @@ def calculate_user_points(user):
 def jwt_payload_handler(user):
 	payload = base_jwt_payload_handler(user)
 	
-	# add aditional data to the payload
-	payload['acces_exp'] = 0
+	# get all stages
+	stages = []
+	for match in Match.objects.all():
+		if not match.stage in stages:
+			stages.append(match.stage)
+	stages.sort(reverse=True)
+	
+	# move the groupstage to the front
+	if 0 in stages:
+		stages.insert(0, stages.pop(stages.index(0)))
+	
+	# get the current stage and the 1st match of the current stage
+	unixtime = (datetime.datetime.utcnow()-datetime.datetime(1970,1,1)).total_seconds()
+	currentstage = -1
+	firstmatchdate = unixtime + 24*3600
+	for stage in stages:
+		# all matches of the stage are in the future
+		if len( Match.objects.filter(stage=stage) ) == len(  Match.objects.filter(stage=stage,date__gt=unixtime+3600) ):
+			currentstage = stage
+			matches = Match.objects.filter(stage=stage).order_by('date').reverse()
+			firstmatchdate = matches[0].date
+			break
+	
+	
+	# add aditional data to the payload	
+	payload['stage'] = currentstage
+	payload['access_exp'] = firstmatchdate-3600
+	
 	if user.is_staff:
 		payload['permission'] = 9
 	else:

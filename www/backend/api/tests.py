@@ -6,6 +6,7 @@ from rest_framework import status
 from rest_framework_jwt.utils import jwt_decode_handler
 
 import json
+import datetime
 
 from .models import UserProfile,Points,Group,Team,Match,MatchResult,PronoResult
 
@@ -48,8 +49,14 @@ class PronoTest(TestCase):
 		
 		# add matches
 		self.matches = []
-		self.matches.append( Match.objects.create(team1=self.teams[0],team2=self.teams[1],defaultteam1='A1',defaultteam2='A2') )
-		self.matches.append( Match.objects.create(team1=self.teams[2],team2=self.teams[3],defaultteam1='A3',defaultteam2='A4') )
+		self.matches.append( Match.objects.create(team1=self.teams[0],team2=self.teams[1],defaultteam1='A1',defaultteam2='A2',date=(datetime.datetime(2016,6,11,21-2)-datetime.datetime(1970,1,1)).total_seconds()) )
+		self.matches.append( Match.objects.create(team1=self.teams[2],team2=self.teams[3],defaultteam1='A3',defaultteam2='A4',date=(datetime.datetime(2016,6,11,15-2)-datetime.datetime(1970,1,1)).total_seconds()) )
+		
+		self.matches.append( Match.objects.create(defaultteam1='RA',defaultteam2='RC',stage=16,position=1,date=(datetime.datetime(2016,6,25,15-2)-datetime.datetime(1970,1,1)).total_seconds()) )
+		self.matches.append( Match.objects.create(defaultteam1='W37',defaultteam2='W39',stage=8,position=1,date=(datetime.datetime(2016,6,30,21-2)-datetime.datetime(1970,1,1)).total_seconds()) )
+		self.matches.append( Match.objects.create(defaultteam1='W45',defaultteam2='W46',stage=4,position=1,date=(datetime.datetime(2016,7,6,21-2)-datetime.datetime(1970,1,1)).total_seconds()) )
+		self.matches.append( Match.objects.create(defaultteam1='W49',defaultteam2='W50',stage=2,position=1,date=(datetime.datetime(2016,7,10,21-2)-datetime.datetime(1970,1,1)).total_seconds()) )
+		
 		
 	def generate_token(self,credentials):	
 		response = self.client.post('/token-auth/', {'username':credentials['username'], 'password':credentials['password']})
@@ -172,7 +179,7 @@ class PronoPointsTests(PronoTest):
 		# fill in prono for a match for a user
 		user = AuthUser.objects.all()[1]
 		
-		matches =  Match.objects.all()
+		matches =  Match.objects.filter(stage=0)
 
 		for match in matches:
 			prono_result = PronoResult.objects.filter(match=match,user=user)[0]
@@ -212,9 +219,10 @@ class PronoPointsTests(PronoTest):
 		for match_result in responsedata:
 			response = self.client.put('/matchresults/{}/'.format(match_result['id']), data=json.dumps({'score1':3, 'score2':2}), content_type='application/json', HTTP_AUTHORIZATION='JWT {}'.format(token))
 
+		matches = Match.objects.filter(stage=0)
 		# check the user points
 		points = Points.objects.filter(user=self.users[1],prono='groupstage_result')[0]
-		self.assertEqual(points.points,3*len(responsedata))	
+		self.assertEqual(points.points,3*len(matches))	
 	
 		
 	def test_prono_groupstage_result_points_calculation_incorrect(self):
@@ -288,7 +296,17 @@ class AccessTests(PronoTest):
 		token = self.generate_token(self.usercredentials[0])
 		payload = jwt_decode_handler(token)
 		self.assertEqual(payload['permission'], 9)
-
+	
+	def test_user_token_stage(self):
+		token = self.generate_token(self.usercredentials[1])
+		payload = jwt_decode_handler(token)
+		self.assertEqual(payload['stage'], 0)
+		
+	def test_user_token_access_exp(self):
+		token = self.generate_token(self.usercredentials[1])
+		payload = jwt_decode_handler(token)
+		self.assertEqual(payload['access_exp'], self.matches[0].date-3600)
+		
 	def test_user_detail_access_without_token(self):
 		response = self.client.get('/users/2/')
 		self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -357,7 +375,6 @@ class AccessTests(PronoTest):
 		token = self.generate_token(self.usercredentials[1])
 		response = self.client.get('/pronoresults/user/2/', HTTP_AUTHORIZATION='JWT {}'.format(token))
 		self.assertEqual(response.status_code, status.HTTP_200_OK)
-		
 		
 	def test_wrong_user_prono_results_access_with_token(self):
 		token = self.generate_token(self.usercredentials[1])
