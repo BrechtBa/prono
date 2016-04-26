@@ -4,8 +4,9 @@ from rest_framework import generics
 from rest_framework import filters
 from rest_framework import permissions
 
-from api.models import UserProfile,Points,Team,Group,Match,MatchResult,PronoResult
-from api.serializers import UserSerializer,UserProfileSerializer,PointsSerializer,TeamSerializer,GroupSerializer,MatchSerializer,MatchResultSerializer,PronoResultSerializer
+from api.models import UserProfile,Points,Team,Group,Match,MatchResult,PronoResult,PronoGroupstageWinners,PronoKnockoutstageTeams
+from api.serializers import *
+#UserSerializer,UserProfileSerializer,PointsSerializer,TeamSerializer,GroupSerializer,MatchSerializer,MatchResultSerializer,PronoResultSerializer,PronoGroupstageWinnersSerializer,PronoKnockoutstageTeamsSerializer
 from api.permissions import IsOwnerOrAdmin,IsAdminOrReadOnly,IsOwnerOrReadOnly,PointsPermissions
 
 
@@ -171,3 +172,42 @@ class PronoResultDetail(generics.RetrieveUpdateDestroyAPIView):
 	permission_classes = (IsOwnerOrAdmin,)
 	queryset = PronoResult.objects.all()
 	
+
+# prono groupstage winners
+class PronoGroupstageWinnersList(generics.ListCreateAPIView):
+	serializer_class = PronoGroupstageWinnersSerializer
+	permission_classes = (IsOwnerOrAdmin,)
+	def get_queryset(self):
+		queryset = simplefilter(filterargs(self.kwargs),PronoGroupstageWinners)
+		for obj in queryset:
+			self.check_object_permissions(self.request, obj)
+		return queryset
+
+class PronoGroupstageWinnersDetail(generics.RetrieveUpdateDestroyAPIView):
+	serializer_class = PronoGroupstageWinnersSerializer
+	permission_classes = (IsOwnerOrAdmin,)
+	queryset = PronoGroupstageWinners.objects.all()
+
+
+
+# prono knockoutstage teams
+class PronoKnockoutstageTeamsList(generics.ListCreateAPIView):
+	serializer_class = PronoKnockoutstageTeamsSerializer
+	permission_classes = (IsOwnerOrAdmin,)
+	def get_queryset(self):
+		queryset = simplefilter(filterargs(self.kwargs),PronoKnockoutstageTeams)
+		for obj in queryset:
+			self.check_object_permissions(self.request, obj)
+		return queryset
+
+class PronoKnockoutstageTeamsDetail(generics.RetrieveUpdateDestroyAPIView):
+	serializer_class = PronoKnockoutstageTeamsSerializer
+	permission_classes = (IsOwnerOrAdmin,)
+	queryset = PronoKnockoutstageTeams.objects.all()
+
+
+
+
+
+
+

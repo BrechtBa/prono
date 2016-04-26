@@ -32,7 +32,12 @@ urlpatterns = [
 	url(r'^pronoresults/$', views.PronoResultList.as_view()),
 	url(r'^pronoresults/(?P<key0>.+)/(?P<val0>.+)/$', views.PronoResultList.as_view()),
 	url(r'^pronoresults/(?P<pk>[0-9]+)/$', views.PronoResultDetail.as_view()),
-	
+	url(r'^pronogroupstagewinners/$', views.PronoGroupstageWinnersList.as_view()),
+	url(r'^pronogroupstagewinners/(?P<key0>.+)/(?P<val0>.+)/$', views.PronoGroupstageWinnersList.as_view()),
+	url(r'^pronogroupstagewinners/(?P<pk>[0-9]+)/$', views.PronoGroupstageWinnersDetail.as_view()),
+	url(r'^pronoknockoutstageteams/$', views.PronoKnockoutstageTeamsList.as_view()),
+	url(r'^pronoknockoutstageteams/(?P<key0>.+)/(?P<val0>.+)/$', views.PronoKnockoutstageTeamsList.as_view()),
+	url(r'^pronoknockoutstageteams/(?P<pk>[0-9]+)/$', views.PronoKnockoutstageTeamsDetail.as_view()),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
