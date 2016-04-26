@@ -27,9 +27,12 @@ urlpatterns = [
 	url(r'^matches/(?P<key0>.+)/(?P<val0>.+)/$', views.MatchList.as_view()),
 	url(r'^matches/(?P<pk>[0-9]+)/$', views.MatchDetail.as_view()),
 	url(r'^matchresults/$', views.MatchResultList.as_view()),
+	url(r'^matchresults/(?P<key0>.+)/(?P<val0>.+)/$', views.MatchResultList.as_view()),
 	url(r'^matchresults/(?P<pk>[0-9]+)/$', views.MatchResultDetail.as_view()),
 	url(r'^pronoresults/$', views.PronoResultList.as_view()),
+	url(r'^pronoresults/(?P<key0>.+)/(?P<val0>.+)/$', views.PronoResultList.as_view()),
 	url(r'^pronoresults/(?P<pk>[0-9]+)/$', views.PronoResultDetail.as_view()),
+	
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)

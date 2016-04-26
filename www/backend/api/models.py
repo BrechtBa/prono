@@ -20,6 +20,8 @@ class Points(models.Model):
 	prono = models.CharField(max_length=100, blank=True, default='')
 	points = models.IntegerField(blank=True, default=0)
 	
+	def __str__(self):
+		return '{}'.format(self.points)	
 	
 ################################################################################
 # Competition
@@ -161,9 +163,45 @@ def check_user(user):
 			prono.save()
 			#print('Added prono_result for user {} on match {}'.format(user,match))
 
+			
 def calculate_points():
-	pass
-
+	for user in AuthUser.objects.all():
+		userpoints = calculate_user_points(user)
+		
+		for points in user.points.all():
+			if points.prono in userpoints:
+				points.points = userpoints[points.prono]
+				points.save()
+		
+		
+			
+def calculate_user_points(user):
+	userpoints = {}
+	
+	# groupstage
+	groupstage_result = 0
+	groupstage_score = 0
+	for match in Match.objects.filter(stage=0):
+		match_result = match.result
+		
+		for prono_result in match.prono_result.filter(user=user):
+			match_played = match_result.score1 >-1 and match_result.score2 > -1
+			team1winscorrect = (prono_result.score1 > prono_result.score2) and (match_result.score1 > match_result.score2)
+			team2winscorrect = (prono_result.score1 < prono_result.score2) and (match_result.score1 < match_result.score2)
+			tiecorrect = (prono_result.score1 == prono_result.score2) and (match_result.score1 == match_result.score2)
+			
+			# result correct
+			if match_played and (team1winscorrect or team2winscorrect or tiecorrect):
+				groupstage_result = groupstage_result + 3
+			
+			# score correct
+			if match_played and (prono_result.score1 == match_result.score1) and ( prono_result.score2 == match_result.score2):
+				groupstage_score = groupstage_score + 4
+				
+	userpoints['groupstage_result'] = groupstage_result
+	userpoints['groupstage_score'] = groupstage_score
+	
+	return userpoints
 	
 	
 ################################################################################

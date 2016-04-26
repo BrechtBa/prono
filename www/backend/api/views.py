@@ -145,7 +145,7 @@ class MatchResultList(generics.ListCreateAPIView):
 	serializer_class = MatchResultSerializer
 	permission_classes = (IsAdminOrReadOnly,)
 	def get_queryset(self):
-		queryset = MatchResult.objects.all()
+		queryset = simplefilter(filterargs(self.kwargs),MatchResult)
 		for obj in queryset:
 			self.check_object_permissions(self.request, obj)
 		return queryset
@@ -161,7 +161,7 @@ class PronoResultList(generics.ListCreateAPIView):
 	serializer_class = PronoResultSerializer
 	permission_classes = (IsOwnerOrAdmin,)
 	def get_queryset(self):
-		queryset = PronoResult.objects.all()
+		queryset = simplefilter(filterargs(self.kwargs),PronoResult)
 		for obj in queryset:
 			self.check_object_permissions(self.request, obj)
 		return queryset
