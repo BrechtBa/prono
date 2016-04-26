@@ -108,20 +108,31 @@ class PronoResult(models.Model):
 	def __str__(self):
 		return '{} - {}'.format(self.score1, self.score2)
 
+
 class PronoGroupstageWinners(models.Model):
 	user = models.ForeignKey(AuthUser, on_delete=models.CASCADE, related_name='prono_groupstage_winners', blank=True, null=True)
 	group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='prono_groupstage_winners', blank=True, null=True)
 	ranking = models.IntegerField(blank=True, default=-1)
 	team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='prono_groupstage_winners', blank=True, null=True)
 	
+
 class PronoKnockoutstageTeams(models.Model):
 	user = models.ForeignKey(AuthUser, on_delete=models.CASCADE, related_name='prono_knockoutstage_teams', blank=True, null=True)
 	stage = models.IntegerField(blank=True, default=-1)
 	team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='prono_knockoutstage_teams', blank=True, null=True)
 	
 	
-
-
+class PronoTotalGoals(models.Model):
+	user = models.ForeignKey(AuthUser, on_delete=models.CASCADE, related_name='prono_total_goals', blank=True, null=True)
+	goals = models.IntegerField(blank=True, default=-1)
+	
+	
+class PronoTeamResult(models.Model):
+	user = models.ForeignKey(AuthUser, on_delete=models.CASCADE, related_name='prono_team_result', blank=True, null=True)
+	team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='prono_team_result', blank=True, null=True)
+	result = models.IntegerField(blank=True, default=-1)
+	
+	
 
 
 	
@@ -215,14 +226,29 @@ def check_user(user):
 		stages.append(1)
 
 		for stage in stages:
-			pronos = PronoKnockoutstageTeams.objects.filter(user=user,stage=stage)
+			pronos = user.prono_knockoutstage_teams.filter(stage=stage)
 			for i in range(stage-len(pronos)):
 				prono = PronoKnockoutstageTeams(user=user,stage=stage)
 				prono.save()
 				#print('Added prono_knockoutstage_teams {} for user {} on stage {}'.format(i+1,user,stage))
 
+	############################################################################
+	# total_goals
+	pronos = user.prono_total_goals.all()
+	if len(pronos) == 0:
+		prono = PronoTotalGoals(user=user)
+		prono.save()
 
-			
+
+	############################################################################
+	# team_result
+	for team in Team.objects.all():
+		pronos = user.prono_team_result.filter(team=team)
+		if len(pronos) == 0:
+			prono = PronoTeamResult(user=user,team=team)
+			prono.save()
+
+
 def calculate_points():
 	for user in AuthUser.objects.all():
 		userpoints = calculate_user_points(user)

@@ -4,7 +4,7 @@ from rest_framework import generics
 from rest_framework import filters
 from rest_framework import permissions
 
-from api.models import UserProfile,Points,Team,Group,Match,MatchResult,PronoResult,PronoGroupstageWinners,PronoKnockoutstageTeams
+from api.models import UserProfile,Points,Team,Group,Match,MatchResult,PronoResult,PronoGroupstageWinners,PronoKnockoutstageTeams,PronoTotalGoals,PronoTeamResult
 from api.serializers import *
 #UserSerializer,UserProfileSerializer,PointsSerializer,TeamSerializer,GroupSerializer,MatchSerializer,MatchResultSerializer,PronoResultSerializer,PronoGroupstageWinnersSerializer,PronoKnockoutstageTeamsSerializer
 from api.permissions import IsOwnerOrAdmin,IsAdminOrReadOnly,IsOwnerOrReadOnly,PointsPermissions,IsOwnerOrAdminGroupstage,IsOwnerOrAdminObjectStage
@@ -189,7 +189,6 @@ class PronoGroupstageWinnersDetail(generics.RetrieveUpdateDestroyAPIView):
 	queryset = PronoGroupstageWinners.objects.all()
 
 
-
 # prono knockoutstage teams
 class PronoKnockoutstageTeamsList(generics.ListCreateAPIView):
 	serializer_class = PronoKnockoutstageTeamsSerializer
@@ -206,6 +205,36 @@ class PronoKnockoutstageTeamsDetail(generics.RetrieveUpdateDestroyAPIView):
 	queryset = PronoKnockoutstageTeams.objects.all()
 
 
+# prono total goals
+class PronoTotalGoalsList(generics.ListCreateAPIView):
+	serializer_class = PronoTotalGoalsSerializer
+	permission_classes = (IsOwnerOrAdminGroupstage,)
+	def get_queryset(self):
+		queryset = simplefilter(filterargs(self.kwargs),PronoTotalGoals)
+		for obj in queryset:
+			self.check_object_permissions(self.request, obj)
+		return queryset
+
+class PronoTotalGoalsDetail(generics.RetrieveUpdateDestroyAPIView):
+	serializer_class = PronoTotalGoalsSerializer
+	permission_classes = (IsOwnerOrAdminGroupstage,)
+	queryset = PronoTotalGoals.objects.all()
+
+
+# prono total goals
+class PronoTeamResultList(generics.ListCreateAPIView):
+	serializer_class = PronoTeamResultSerializer
+	permission_classes = (IsOwnerOrAdminGroupstage,)
+	def get_queryset(self):
+		queryset = simplefilter(filterargs(self.kwargs),PronoTeamResult)
+		for obj in queryset:
+			self.check_object_permissions(self.request, obj)
+		return queryset
+
+class PronoTeamResultDetail(generics.RetrieveUpdateDestroyAPIView):
+	serializer_class = PronoTeamResultSerializer
+	permission_classes = (IsOwnerOrAdminGroupstage,)
+	queryset = PronoTeamResult.objects.all()
 
 
 
