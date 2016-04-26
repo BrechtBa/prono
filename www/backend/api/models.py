@@ -217,10 +217,11 @@ def check_user(user):
 	# knockoutstage_teams
 	stages = get_stages()
 
-	# remove the largest stage
+	# remove the largest stage and the groupstage
 	if len(stages) > 0:
 		if stages[0] == 0:
 			del stages[0]
+		del stages[0]
 
 		# add 1 for the winner
 		stages.append(1)
@@ -261,8 +262,12 @@ def calculate_points():
 		
 			
 def calculate_user_points(user):
+	"""
+	calculates the points of a user
+	"""
 	userpoints = {}
 	
+	############################################################################
 	# groupstage
 	groupstage_result = 0
 	groupstage_score = 0
@@ -286,6 +291,7 @@ def calculate_user_points(user):
 	userpoints['groupstage_result'] = groupstage_result
 	userpoints['groupstage_score'] = groupstage_score
 	
+	############################################################################
 	# knockoutstage
 	knockoutstage_result = 0
 	knockoutstage_score = 0
@@ -309,6 +315,126 @@ def calculate_user_points(user):
 	userpoints['knockoutstage_result'] = knockoutstage_result
 	userpoints['knockoutstage_score'] = knockoutstage_score
 
+	############################################################################
+	# groupstage winners
+	groupstage_winners = 0
+	for group in Group.objects.all():
+		teams = group.teams.order_by('groupstage_points').reverse()
+		prono_groupwinner = user.prono_groupstage_winners.filter(group=group,ranking=1)[0].team
+		prono_grouprunnerup = user.prono_groupstage_winners.filter(group=group,ranking=2)[0].team
+		if team[0] in [prono_groupwinner,prono_grouprunnerup]:
+			groupstage_winners = groupstage_winners + 2
+
+		if team[1] in [prono_groupwinner,prono_grouprunnerup]:
+			groupstage_winners = groupstage_winners + 2
+
+		if team[0] == prono_groupwinner:
+			groupstage_winners = groupstage_winners + 4
+
+	userpoints['groupstage_winners'] = groupstage_winners
+
+	############################################################################
+	# knockoutstage teams
+	knockoutstage_teams = 0
+	stages = get_stages()
+	stage_points = {16:10,8:18,4:28,2:42,1:60}
+
+	# remove the largest stage and the groupstage
+	if len(stages) > 0:
+		if stages[0] == 0:
+			del stages[0]
+		del stages[0]
+
+	for stage in stages:
+		for team in user.prono_knockoutstage_teams.filter(stage=stage):
+			# check if the team is still in the competition at this stage
+			if len(team.matches_team1.filter(stage=stage)) > 0 or len(team.matches_team2.filter(stage=stage)) > 0:
+				knockoutstage_teams = knockoutstage_teams + stage_points[stage]
+			
+
+	# check if the winner is correct
+	team = user.prono_knockoutstage_teams.filter(stage=1)[0]
+	match = Match.objects.filter(stage=2)[0]
+	match_result = match.result
+	if team in [match.team1,match.team2]:
+		if (match_result.score1>-1 and match_result.score2>-1):
+			team1correct = (match_result.score1+0.1*match_result.penalty1 > match_result.score2+0.1*match_result.penalty2) and team == match.team1
+			team2correct = (match_result.score1+0.1*match_result.penalty1 < match_result.score2+0.1*match_result.penalty2) and team == match.team2
+			if team1correct or team2correct:
+				knockoutstage_teams = knockoutstage_teams + stage_points[1]
+
+	userpoints['knockoutstage_teams'] = knockoutstage_teams
+
+
+	############################################################################
+	# total_goals
+	goals = 0
+	for result in MatchResult.objects.all():
+		if result.score1>-1 and result.score2>-1:
+			goals = goals + result.score1 + result.score1
+
+	prono_goals = user.prono_total_goals.all()[0].goals
+
+	userpoints['total_goals'] = max(0,100-abs(prono_goals-goals))
+
+
+	############################################################################
+	# team_result
+	team_result_points = 0
+	stages = stages()
+	
+	stage_points = {0:5,16:10,8:30,4:50,2:100,1:150}
+	for result in user.team_result.all():
+		if result.result > -1:
+			team = result.team
+			# determine in which stage the team is eliminated
+			teaminstage = []
+			for stage in stages:
+				temp_teaminstage = 0
+				for match in Match.objects.filter(stage=stage):
+					
+					if match.team1 == team or match.team2 == team:
+						tempteaminstage = 1;
+					
+					if match.team1 <= 0 or match.team2 <= 0:
+						tempteaminstage = -1;  # teams not known yet
+
+				teaminstage.append(tempteaminstage);
+
+			stage = -1;
+			for i in range(len(teaminstage)-1):
+				if teaminstage[i] == 1 and teaminstage[i+1] == 0:
+					stage = stages[i]
+					break
+
+			# final or winner, check the score
+			if stage == -1 and teaminstage[-1] == 1:
+				finalmatch = Match.objects.filter(stage=2)[0]
+					
+				if team == finalmatch.team1:
+					if finalmatch.result.score1>-1 and finalmatch.result.score2>-1:
+						if finalmatch.result.score1 + 0.1*finalmatch.result.penalty1 > finalmatch.result.score2 + 0.1*finalmatch.result.penalty2:
+							stage = 1;
+						else:
+							stage = 2;
+				elif team == finalmatch.team2:
+					if finalmatch.result.score1>-1 and finalmatch.result.score2>-1:
+						if finalmatch.result.score1 + 0.1*finalmatch.result.penalty1 > finalmatch.result.score2 + 0.1*finalmatch.result.penalty2:
+							stage = 2;
+						else:
+							stage = 1;
+
+		# determine the points
+		team_result_points = team_result_points + stage_points[stage]
+
+
+	userpoints['team_result'] = team_result_points
+
+	############################################################################
+	# total
+	keys = ['groupstage_result','groupstage_score','knockoutstage_result','knockoutstage_score','groupstage_winners','knockoutstage_teams','total_goals','team_result']
+
+	userpoints['total'] = sum([userpoints[key] for key in keys])
 	return userpoints
 	
 
