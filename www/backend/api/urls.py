@@ -35,4 +35,4 @@ urlpatterns = format_suffix_patterns(urlpatterns)
 
 # for now perform update actions when the userList view is created
 # this seems to work well but is not very clear
-check()
+#check()
