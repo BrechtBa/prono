@@ -173,7 +173,7 @@ class MatchResultDetail(generics.RetrieveUpdateDestroyAPIView):
 # prono result
 class PronoResultList(generics.ListCreateAPIView):
 	serializer_class = PronoResultSerializer
-	permission_classes = (IsOwnerOrAdminObjectStage,)
+	permission_classes = (PronoResultPermission,)
 	def get_queryset(self):
 		queryset = simplefilter(filterargs(self.kwargs),PronoResult)
 		for obj in queryset:
@@ -182,7 +182,7 @@ class PronoResultList(generics.ListCreateAPIView):
 
 class PronoResultDetail(generics.RetrieveUpdateDestroyAPIView):
 	serializer_class = PronoResultSerializer
-	permission_classes = (IsOwnerOrAdminObjectStage,)
+	permission_classes = (PronoResultPermission,)
 	queryset = PronoResult.objects.all()
 	
 

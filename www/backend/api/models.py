@@ -36,7 +36,7 @@ class Group(models.Model):
 		# create prono results for all users
 		for user in AuthUser.objects.all(): 
 			check_user(user)
-
+		
 	def __str__(self):
 		return '{}'.format(self.name)	
 		
@@ -55,6 +55,9 @@ class Team(models.Model):
 		# create prono results for all users
 		for user in AuthUser.objects.all(): 
 			check_user(user)
+	
+		# recalculate the points for all users
+		calculate_points()
 	
 	def __str__(self):
 		return '{}'.format(self.name)
@@ -329,16 +332,23 @@ def calculate_user_points(user):
 	groupstage_winners = 0
 	for group in Group.objects.all():
 		teams = group.teams.order_by('groupstage_points').reverse()
-		prono_groupwinner = user.prono_groupstage_winners.filter(group=group,ranking=1)[0].team
-		prono_grouprunnerup = user.prono_groupstage_winners.filter(group=group,ranking=2)[0].team
-		if teams[0] in [prono_groupwinner,prono_grouprunnerup]:
-			groupstage_winners = groupstage_winners + 2
-
-		if teams[1] in [prono_groupwinner,prono_grouprunnerup]:
-			groupstage_winners = groupstage_winners + 2
-
-		if teams[0] == prono_groupwinner:
-			groupstage_winners = groupstage_winners + 4
+		
+		# dont give points when all teams have no points
+		if sum([team.groupstage_points for team in teams]) > 0:
+			prono_groupwinner = user.prono_groupstage_winners.filter(group=group,ranking=1)[0].team
+			prono_grouprunnerup = user.prono_groupstage_winners.filter(group=group,ranking=2)[0].team
+		
+			if len(teams)>0:
+				if teams[0] in [prono_groupwinner,prono_grouprunnerup]:
+					groupstage_winners = groupstage_winners + 2
+				
+			if len(teams)> 1:
+				if teams[1] in [prono_groupwinner,prono_grouprunnerup]:
+					groupstage_winners = groupstage_winners + 2
+					
+			if len(teams)>0:
+				if teams[0] == prono_groupwinner:
+					groupstage_winners = groupstage_winners + 4
 
 	userpoints['groupstage_winners'] = groupstage_winners
 

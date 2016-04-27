@@ -5,7 +5,7 @@ import json
 import datetime
 import mock
 
-from ..models import UserProfile,Points,Group,Team,Match,MatchResult,PronoResult
+from ..models import UserProfile,Points,Team,Group,Match,MatchResult,PronoResult,PronoGroupstageWinners,PronoKnockoutstageTeams,PronoTotalGoals,PronoTeamResult
 from ..utils import unixtimestamp
 
 from .utils import PronoTest,MockDatetime
