@@ -32,24 +32,25 @@ source ~/env/bin/activate
 pip install django
 pip install djangorestframework
 pip install djangorestframework-jwt
+pip install mock
 ```
 
 Copy the django project from the temporary folder to the www folder
 ```
-cp ~/tmp/prono/www/backend ~/www/backend
+cp -r ~/tmp/prono/www/backend ~/www/
 ```
 
 change some values in `settings.py` for instance the SECRET_KEY and set debug to False
 We'll create a strong secret key randomly and store it in a file so if you update the project you can restore the secret key so user passwords are maintained
 ```
 if [ ! -f ~/.secret_key ]; then
-    echo "Create new salt"
+    echo "Create new secret_key"
 	echo date +%s | sha256sum | base64 | head -c 32 > ~/.secret_key	
 	chmod 700 ~/.secret_key
 fi
-secret_key=`cat ~.secret_key`
+secret_key=`cat ~./secret_key`
 
-sed -i 's/^\(SECRET_KEY = \).*/\1$secret_key/' ~/www/backend/backend/settings.py
+sed -i 's/^\(SECRET_KEY = \).*/\1'\'$secret_key\''/' ~/www/backend/backend/settings.py
 ```
 
 Now set debug to False
@@ -62,7 +63,7 @@ Create or update the database and collect static files
 cd ~/www/backend
 python manage.py makemigrations
 python manage.py migrate
-manage.py collectstatic
+python manage.py collectstatic
 ```
 
 Create a super user, you will be asked a username, email and password
@@ -70,11 +71,16 @@ Create a super user, you will be asked a username, email and password
 python manage.py createsuperuser
 ```
 
+Now we can deactivate the virtual environment
+```
+deactivate
+```
+
 Create a new apache virtual hosts configuration file pointing to the backend
 from your project api url
 ```
-$username="prono"
-$apiurl="pronoapi.duckdns.org"
+username="prono"
+apiurl="pronoapi.duckdns.org"
 echo "<VirtualHost *:80>
         ServerName $apiurl
         ServerAlias $apiurl
@@ -82,9 +88,14 @@ echo "<VirtualHost *:80>
         DocumentRoot /home/$username/www/backend
         ErrorLog ${APACHE_LOG_DIR}/error.log
         CustomLog ${APACHE_LOG_DIR}/access.log combined
+        
+		Alias /static /home/$username/www/backend/static
+        <Directory "/home/$username/www/backend/static">
+                Require all granted
+        </Directory>
 
 
-        <Directory /home/$username/backend/backend>
+        <Directory /home/$username/www/backend/backend>
                 <Files wsgi.py>
                         Require all granted
                 </Files>
@@ -101,10 +112,10 @@ echo "<VirtualHost *:80>
 Next we'll need sudo privelidgest to alter file group owners and move the apache configuration file to the apache folder and enable the site
 ```
 sudo chown :www-data ~/www/backend/db.sqlite3
-sudo chmod 774 ~/www/backend/db.sqlite3
+sudo chmod 775 ~/www/backend/db.sqlite3
 
 sudo chown :www-data ~/www/backend
-sudo chmod 774 ~/www/backend
+sudo chmod 775 ~/www/backend
 
 sudo cp ~/$apiurl".conf" /etc/apache2/sites-available/$apiurl".conf"
 sudo a2ensite $apiurl".conf"
@@ -115,15 +126,16 @@ sudo /etc/init.d/apache2 restart
 ## Front-end
 Serving the front-end is much simpler. Just copy the files from the repository to the www folder
 ```
-cp ~/tmp/prono/www/frontend ~/www/frontend
+cp -r ~/tmp/prono/www/frontend ~/www/
 ```
 
 Create a virtual hosts file
 ```
-$username="prono"
-$projecturl="prono.duckdns.org"
+username="prono"
+projecturl="prono.duckdns.org"
 echo "<VirtualHost *:80>
         ServerName $projecturl
+
         DocumentRoot /home/$username/www/frontend
         ErrorLog ${APACHE_LOG_DIR}/error.log
         CustomLog ${APACHE_LOG_DIR}/access.log combined
@@ -131,11 +143,17 @@ echo "<VirtualHost *:80>
         <Directory "/home/$username/www/frontend">
                 Order allow,deny
                 Allow from all
-                # New directive needed in Apache 2.4.3:
                 Require all granted
         </Directory>
 </VirtualHost>" > ~/$projecturl".conf"
 ```
+
+And with sudo privelidges chand the group ownership of some folders
+```
+sudo chown -R :www-data ~/www/frontend/images/avatars
+sudo chmod -R 775 ~/www/frontend/images/avatars
+```
+
 
 Again with sudo privelidges copy the file to the apache folder and enable
 ```
@@ -144,9 +162,6 @@ sudo a2ensite $projecturl".conf"
 sudo /etc/init.d/apache2 restart
 ```
 
-And with sudo privelidges chand the group ownership of some folders
-```
-sudo chown -r :www-data ~/www/frontend/images/avatars
-```
+
 
 
