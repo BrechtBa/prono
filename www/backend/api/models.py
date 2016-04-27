@@ -49,6 +49,13 @@ class Team(models.Model):
 	group = models.ForeignKey(Group,on_delete=models.SET_NULL,related_name='teams', blank=True, null=True)
 	groupstage_points = models.FloatField(blank=True, default=0)
 	
+	def save(self, *args, **kwargs):
+		super(Team, self).save(*args, **kwargs)
+		
+		# create prono results for all users
+		for user in AuthUser.objects.all(): 
+			check_user(user)
+	
 	def __str__(self):
 		return '{}'.format(self.name)
 

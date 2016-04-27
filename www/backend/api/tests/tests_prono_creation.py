@@ -92,13 +92,38 @@ class PronoCreationTests(PronoTest):
 	def test_prono_knockoutstage_teams_created_when_match_created(self):
 		match = Match(stage=32)
 		match.save()
+		# by creating this match the round of 16 will no longer be the stage
+		# after the groupstage and will get a knockoutstage_teams prono
 
 		for user in AuthUser.objects.all():
-			results = user.prono_knockoutstage_teams.filter(stage=32)
+			results = user.prono_knockoutstage_teams.filter(stage=16)
 
-			self.assertEqual(len(results),32)
+			self.assertEqual(len(results),16)
 
 
+	def test_prono_total_goals_created_when_user_created(self):
+		user = AuthUser.objects.create_user(username='abc',password='password123')
+
+		results = user.prono_total_goals.all()
+		self.assertEqual(len(results),1)
+
+		
+	def test_prono_team_result_created_when_user_created(self):
+		user = AuthUser.objects.create_user(username='abc',password='password123')
+
+		teams = Team.objects.all()
+		
+		results = user.prono_team_result.all()
+		self.assertEqual(len(results),len(teams))
+		
+	def test_prono_team_result_created_when_team_created(self):
+		team = Team()
+		team.save()
+
+		for user in AuthUser.objects.all():
+			results = user.prono_team_result.filter(team=team)
+
+			self.assertEqual(len(results),1)
 
 
 
