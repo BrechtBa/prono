@@ -400,12 +400,19 @@ def calculate_user_points(user):
 	goals = 0
 	for result in MatchResult.objects.all():
 		if result.score1>-1 and result.score2>-1:
-			goals = goals + result.score1 + result.score1
+			goals = goals + result.score1 + result.score2
 
-	prono_goals = user.prono_total_goals.all()[0].goals
-
-	userpoints['total_goals'] = max(0,100-abs(prono_goals-goals))
-
+		
+	prono_goals = user.prono_total_goals.all()
+	if len(prono_goals)>0:
+		prono_goals = prono_goals[0].goals
+	else:
+		prono_goals = -1
+		
+	if goals>0 and prono_goals > -1:
+		userpoints['total_goals'] = max(0,100-6*abs(prono_goals-goals))
+	else:
+		userpoints['total_goals'] = 0
 
 	############################################################################
 	# team_result
@@ -423,19 +430,21 @@ def calculate_user_points(user):
 				for match in Match.objects.filter(stage=stage):
 					
 					if match.team1 == team or match.team2 == team:
-						tempteaminstage = 1;
+						temp_teaminstage = 1;
 					
-					if match.team1 <= 0 or match.team2 <= 0:
-						tempteaminstage = -1;  # teams not known yet
+					if match.team1 == None or match.team2 == None:
+						temp_teaminstage = -1;  # teams not known yet
 
-				teaminstage.append(tempteaminstage);
+				teaminstage.append(temp_teaminstage);
 
+				
 			stage = -1;
 			for i in range(len(teaminstage)-1):
 				if teaminstage[i] == 1 and teaminstage[i+1] == 0:
 					stage = stages[i]
 					break
-
+					
+			
 			# final or winner, check the score
 			if stage == -1 and teaminstage[-1] == 1:
 				finalmatch = Match.objects.filter(stage=2)
@@ -453,9 +462,10 @@ def calculate_user_points(user):
 								stage = 2;
 							else:
 								stage = 1;
-
-			# determine the points
-			team_result_points = team_result_points + stage_points[stage]
+								
+			if result.result == stage:
+				# determine the points
+				team_result_points = team_result_points + stage_points[stage]
 
 
 	userpoints['team_result'] = team_result_points

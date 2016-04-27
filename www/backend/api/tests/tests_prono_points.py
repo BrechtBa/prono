@@ -3,16 +3,17 @@ from django.contrib.auth.models import Group as AuthGroup
 
 import json
 import mock
+import random
 
 from ..models import UserProfile,Points,Team,Group,Match,MatchResult,PronoResult,PronoGroupstageWinners,PronoKnockoutstageTeams,PronoTotalGoals,PronoTeamResult
 
-from .utils import PronoTest,MockDatetime
+from .utils import PronoTest,EC2016Test,MockDatetime
 		
 class PronoPointsTests(PronoTest):
 	
 	def test_prono_groupstage_result_points_calculation_correct(self):
 	
-		# fill in prono for a match for a user
+		# fill in prono
 		user = AuthUser.objects.all()[1]
 		
 		match = Match.objects.all()[0]
@@ -34,7 +35,7 @@ class PronoPointsTests(PronoTest):
 		
 	def test_prono_groupstage_result_points_calculation_correct_tie(self):
 	
-		# fill in prono for a match for a user
+		# fill in prono
 		user = AuthUser.objects.all()[1]
 		
 		match = Match.objects.all()[0]
@@ -57,7 +58,7 @@ class PronoPointsTests(PronoTest):
 			
 	def test_prono_groupstage_result_points_calculation_all_matches_correct(self):
 	
-		# fill in prono for a match for a user
+		# fill in prono
 		user = AuthUser.objects.all()[1]
 		
 		matches =  Match.objects.filter(stage=0)
@@ -109,7 +110,7 @@ class PronoPointsTests(PronoTest):
 		
 	def test_prono_groupstage_result_points_calculation_incorrect(self):
 	
-		# fill in prono for a match for a user
+		# fill in prono
 		user = AuthUser.objects.all()[1]
 		
 		match = Match.objects.all()[0]
@@ -131,7 +132,7 @@ class PronoPointsTests(PronoTest):
 		
 	def test_prono_groupstage_score_points_calculation_correct(self):
 	
-		# fill in prono for a match for a user
+		# fill in prono
 		user = AuthUser.objects.all()[1]
 		
 		match = Match.objects.all()[0]
@@ -153,7 +154,7 @@ class PronoPointsTests(PronoTest):
 
 	def test_prono_knockoutstage_result_points_calculation_all_matches_correct(self):
 	
-		# fill in prono for a match for a user
+		# fill in prono
 		user = AuthUser.objects.all()[1]
 		
 		matches =  Match.objects.filter(stage__gt=0)
@@ -202,7 +203,7 @@ class PronoPointsTests(PronoTest):
 
 	def test_prono_groupstage_winners_points_calculation_correct(self):
 	
-		# fill in pronor
+		# fill in prono
 		user = self.users[1]
 		groups = [self.groups[0]]
 		
@@ -243,7 +244,7 @@ class PronoPointsTests(PronoTest):
 		
 	def test_prono_groupstage_winners_points_calculation_partial(self):
 	
-		# fill in pronor
+		# fill in prono
 		user = self.users[1]
 		groups = [self.groups[0]]
 		
@@ -283,7 +284,7 @@ class PronoPointsTests(PronoTest):
 		
 	def test_prono_groupstage_winners_points_calculation_winner_only(self):
 	
-		# fill in pronor
+		# fill in prono
 		user = self.users[1]
 		groups = [self.groups[0]]
 		
@@ -324,7 +325,7 @@ class PronoPointsTests(PronoTest):
 		
 	def test_prono_knockoutstage_teams_points_calculation_semifinals_correct(self):
 	
-		# fill in pronor
+		# fill in prono
 		user = self.users[1]
 		stages = [4]
 		
@@ -358,7 +359,7 @@ class PronoPointsTests(PronoTest):
 		
 	def test_prono_knockoutstage_teams_points_calculation_winner_correct(self):
 	
-		# fill in pronor
+		# fill in prono
 		user = self.users[1]
 		
 		teams = Team.objects.all()
@@ -388,7 +389,7 @@ class PronoPointsTests(PronoTest):
 		
 	def test_prono_knockoutstage_teams_points_calculation_winner_incorrect(self):
 	
-		# fill in pronor
+		# fill in prono
 		user = self.users[1]
 		
 		teams = Team.objects.all()
@@ -415,3 +416,312 @@ class PronoPointsTests(PronoTest):
 		# check the user points
 		points = Points.objects.filter(user=user,prono='knockoutstage_teams')[0]
 		self.assertEqual(points.points,0)
+		
+		
+	def test_prono_total_goals_points_calculation_correct(self):
+		# fill in prono
+		user = self.users[1]
+		
+		total_goals = len( Match.objects.all() )*4
+		
+		prono = PronoTotalGoals.objects.filter(user=user)[0]
+		prono.goals = total_goals
+		prono.save()
+		
+		# set results
+		for match in Match.objects.all():
+			match_result = match.result
+			
+			match_result.score1 = random.randint(0,4)
+			match_result.score2 = 4-match_result.score1
+			match_result.save()
+
+		# check the user points
+		points = Points.objects.filter(user=user,prono='total_goals')[0]
+		self.assertEqual(points.points,100)
+
+	def test_prono_total_goals_points_calculation_incorrect(self):
+		# fill in prono
+		user = self.users[1]
+		
+		total_goals = len( Match.objects.all() )*4
+		
+		prono = PronoTotalGoals.objects.filter(user=user)[0]
+		prono.goals = total_goals+8
+		prono.save()
+		
+		# set results
+		for match in Match.objects.all():
+			match_result = match.result
+			
+			match_result.score1 = random.randint(0,4)
+			match_result.score2 = 4-match_result.score1
+			match_result.save()
+
+		# check the user points
+		points = Points.objects.filter(user=user,prono='total_goals')[0]
+		self.assertEqual(points.points,100-8*6)
+		
+	def test_prono_total_goals_points_calculation_less_than_zero(self):
+		# fill in prono
+		user = self.users[1]
+		
+		total_goals = len( Match.objects.all() )*4
+		
+		prono = PronoTotalGoals.objects.filter(user=user)[0]
+		prono.goals = total_goals-18
+		prono.save()
+		
+		# set results
+		for match in Match.objects.all():
+			match_result = match.result
+			
+			match_result.score1 = random.randint(0,4)
+			match_result.score2 = 4-match_result.score1
+			match_result.save()
+
+		# check the user points
+		points = Points.objects.filter(user=user,prono='total_goals')[0]
+		self.assertEqual(points.points,0)
+	
+	def test_team_result_points_calculation_groupstage_correct(self):
+		# fill in prono
+		user = self.users[1]
+		team = self.teams[1]
+		
+		prono = PronoTeamResult.objects.filter(user=user,team=team)[0]
+		prono.result = 0
+		prono.save()
+		
+		# set results
+		for match in Match.objects.filter(stage=16):
+			match.team1 = self.teams[2]
+			match.team2 = self.teams[3]
+			match.save()
+			
+		for match in Match.objects.filter(stage=8):
+			match.team1 = self.teams[2]
+			match.team2 = self.teams[3]
+			match.save()
+			
+		for match in Match.objects.filter(stage=4):
+			match.team1 = self.teams[2]
+			match.team2 = self.teams[3]
+			match.save()
+			
+		for match in Match.objects.filter(stage=2):
+			match.team1 = self.teams[2]
+			match.team2 = self.teams[3]
+			match.save()
+			
+			match_result = match.result
+			match_result.score1 = 4
+			match_result.score2 = 0
+			match_result.save()
+			
+			
+		# check the user points
+		points = Points.objects.filter(user=user,prono='team_result')[0]
+		self.assertEqual(points.points,5)
+		
+	def test_team_result_points_calculation_roundof16_correct(self):
+		# fill in prono
+		user = self.users[1]
+		team = self.teams[1]
+		
+		prono = PronoTeamResult.objects.filter(user=user,team=team)[0]
+		prono.result = 16
+		prono.save()
+		
+		# set results
+		for match in Match.objects.filter(stage=16):
+			match.team1 = self.teams[1]
+			match.team2 = self.teams[3]
+			match.save()
+			
+		for match in Match.objects.filter(stage=8):
+			match.team1 = self.teams[2]
+			match.team2 = self.teams[3]
+			match.save()
+			
+		for match in Match.objects.filter(stage=4):
+			match.team1 = self.teams[2]
+			match.team2 = self.teams[3]
+			match.save()
+			
+		for match in Match.objects.filter(stage=2):
+			match.team1 = self.teams[2]
+			match.team2 = self.teams[3]
+			match.save()
+			
+			match_result = match.result
+			match_result.score1 = 4
+			match_result.score2 = 0
+			match_result.save()
+			
+			
+		# check the user points
+		points = Points.objects.filter(user=user,prono='team_result')[0]
+		self.assertEqual(points.points,10)
+		
+	def test_team_result_points_calculation_quarterfinal_incorrect(self):
+		# fill in prono
+		user = self.users[1]
+		team = self.teams[1]
+		
+		prono = PronoTeamResult.objects.filter(user=user,team=team)[0]
+		prono.result = 8
+		prono.save()
+		
+		# set results
+		for match in Match.objects.filter(stage=16):
+			match.team1 = self.teams[1]
+			match.team2 = self.teams[3]
+			match.save()
+			
+		for match in Match.objects.filter(stage=8):
+			match.team1 = self.teams[2]
+			match.team2 = self.teams[1]
+			match.save()
+			
+		for match in Match.objects.filter(stage=4):
+			match.team1 = self.teams[1]
+			match.team2 = self.teams[3]
+			match.save()
+			
+		for match in Match.objects.filter(stage=2):
+			match.team1 = self.teams[1]
+			match.team2 = self.teams[3]
+			match.save()
+			
+			match_result = match.result
+			match_result.score1 = 4
+			match_result.score2 = 0
+			match_result.save()
+			
+			
+		# check the user points
+		points = Points.objects.filter(user=user,prono='team_result')[0]
+		self.assertEqual(points.points,0)	
+		
+	def test_team_result_points_calculation_semifinal_correct(self):
+		# fill in prono
+		user = self.users[1]
+		team = self.teams[1]
+		
+		prono = PronoTeamResult.objects.filter(user=user,team=team)[0]
+		prono.result = 4
+		prono.save()
+		
+		# set results
+		for match in Match.objects.filter(stage=16):
+			match.team1 = self.teams[1]
+			match.team2 = self.teams[3]
+			match.save()
+			
+		for match in Match.objects.filter(stage=8):
+			match.team1 = self.teams[2]
+			match.team2 = self.teams[1]
+			match.save()
+			
+		for match in Match.objects.filter(stage=4):
+			match.team1 = self.teams[1]
+			match.team2 = self.teams[3]
+			match.save()
+			
+		for match in Match.objects.filter(stage=2):
+			match.team1 = self.teams[2]
+			match.team2 = self.teams[3]
+			match.save()
+			
+			match_result = match.result
+			match_result.score1 = 4
+			match_result.score2 = 0
+			match_result.save()
+			
+			
+		# check the user points
+		points = Points.objects.filter(user=user,prono='team_result')[0]
+		self.assertEqual(points.points,50)
+		
+		
+	def test_team_result_points_calculation_final_incorrect(self):
+		# fill in prono
+		user = self.users[1]
+		team = self.teams[1]
+		
+		prono = PronoTeamResult.objects.filter(user=user,team=team)[0]
+		prono.result = 2
+		prono.save()
+		
+		# set results
+		for match in Match.objects.filter(stage=16):
+			match.team1 = self.teams[1]
+			match.team2 = self.teams[3]
+			match.save()
+			
+		for match in Match.objects.filter(stage=8):
+			match.team1 = self.teams[2]
+			match.team2 = self.teams[1]
+			match.save()
+			
+		for match in Match.objects.filter(stage=4):
+			match.team1 = self.teams[1]
+			match.team2 = self.teams[3]
+			match.save()
+			
+		for match in Match.objects.filter(stage=2):
+			match.team1 = self.teams[2]
+			match.team2 = self.teams[3]
+			match.save()
+			
+			match_result = match.result
+			match_result.score1 = 4
+			match_result.score2 = 0
+			match_result.save()
+			
+			
+		# check the user points
+		points = Points.objects.filter(user=user,prono='team_result')[0]
+		self.assertEqual(points.points,0)
+		
+		
+	def test_team_result_points_calculation_winner_correct(self):
+		# fill in prono
+		user = self.users[1]
+		team = self.teams[1]
+		
+		prono = PronoTeamResult.objects.filter(user=user,team=team)[0]
+		prono.result = 1
+		prono.save()
+		
+		# set results
+		for match in Match.objects.filter(stage=16):
+			match.team1 = self.teams[1]
+			match.team2 = self.teams[3]
+			match.save()
+			
+		for match in Match.objects.filter(stage=8):
+			match.team1 = self.teams[2]
+			match.team2 = self.teams[1]
+			match.save()
+			
+		for match in Match.objects.filter(stage=4):
+			match.team1 = self.teams[1]
+			match.team2 = self.teams[3]
+			match.save()
+			
+		for match in Match.objects.filter(stage=2):
+			match.team1 = self.teams[1]
+			match.team2 = self.teams[3]
+			match.save()
+			
+			match_result = match.result
+			match_result.score1 = 4
+			match_result.score2 = 0
+			match_result.save()
+			
+			
+		# check the user points
+		points = Points.objects.filter(user=user,prono='team_result')[0]
+		self.assertEqual(points.points,150)	
