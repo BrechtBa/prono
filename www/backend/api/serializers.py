@@ -6,6 +6,11 @@ from rest_framework import serializers
 from api.models import UserProfile,Points,Team,Group,Match,MatchResult,PronoResult,PronoGroupstageWinners,PronoKnockoutstageTeams,PronoTotalGoals,PronoTeamResult
 
 
+class RegisterSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = AuthUser
+		fields = ('username','email','password')
+
 class UserSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = AuthUser

@@ -12,13 +12,20 @@ from .utils import PronoTest,MockDatetime
 	
 class APIAccessTests(PronoTest):
 
-	def test_create_user(self):
-		response = self.client.post('/users/', {'username':'test123', 'password':'somepassword'})
-		self.assertEqual(response.status_code, status.HTTP_200_OK)
+	def test_register_user(self):
+		response = self.client.post('/register/', {'username':'test123', 'password':'somepassword'})
+		self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 	
 	def test_request_token(self):
 		credentials = self.usercredentials[1]
 		response = self.client.post('/token-auth/', {'username':credentials['username'], 'password':credentials['password']})
+		self.assertEqual(response.status_code, status.HTTP_200_OK)
+	
+	def test_register_user_request_token(self):
+		response = self.client.post('/register/', {'username':'test123', 'password':'somepassword'})
+		self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+		
+		response = self.client.post('/token-auth/', {'username':'test123', 'password':'somepassword'})
 		self.assertEqual(response.status_code, status.HTTP_200_OK)
 	
 	def test_request_token_wrong_password(self):

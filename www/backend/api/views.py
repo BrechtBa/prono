@@ -3,11 +3,13 @@ from django.contrib.auth.models import Group as AuthGroup
 from rest_framework import generics
 from rest_framework import filters
 from rest_framework import permissions
+from rest_framework import status
+from rest_framework.decorators import api_view,permission_classes
+from rest_framework.response import Response
 
 from api.models import UserProfile,Points,Team,Group,Match,MatchResult,PronoResult,PronoGroupstageWinners,PronoKnockoutstageTeams,PronoTotalGoals,PronoTeamResult
 from api.serializers import *
-#UserSerializer,UserProfileSerializer,PointsSerializer,TeamSerializer,GroupSerializer,MatchSerializer,MatchResultSerializer,PronoResultSerializer,PronoGroupstageWinnersSerializer,PronoKnockoutstageTeamsSerializer
-from api.permissions import IsOwnerOrAdmin,IsAdminOrReadOnly,IsOwnerOrReadOnly,PointsPermissions,IsOwnerOrAdminGroupstage,IsOwnerOrAdminObjectStage
+from api.permissions import *
 
 
 ################################################################################
@@ -32,6 +34,17 @@ def simplefilter(filterargs,model):
 ################################################################################
 # Views
 ################################################################################
+# register
+@api_view(['POST'])
+@permission_classes((permissions.AllowAny, ))
+def register(request):
+	serializer = RegisterSerializer(data=request.data)
+	if serializer.is_valid():
+		AuthUser.objects.create_user(username=serializer.data['username'], password=serializer.data['password'])
+		return Response(serializer.data, status=status.HTTP_201_CREATED)
+	else:
+		return Response(serializer._errors, status=status.HTTP_400_BAD_REQUEST)
+
 # users
 class UserList(generics.ListCreateAPIView):
 	serializer_class = UserSerializer

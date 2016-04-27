@@ -3,7 +3,7 @@ from rest_framework_jwt.utils import jwt_decode_handler
 
 from .utils import unixtimestamp
 
-def access_exp(request):
+def get_payload_access_exp(request):
 	try:
 		payload = jwt_decode_handler(request.auth.decode('utf-8'))
 		
@@ -11,7 +11,7 @@ def access_exp(request):
 	except:
 		return False
 
-def stage(request):
+def get_payload_stage(request):
 	try:
 		payload = jwt_decode_handler(request.auth.decode('utf-8'))
 		
@@ -19,7 +19,7 @@ def stage(request):
 	except:
 		return -1
 
-
+			
 class IsOwnerOrAdmin(permissions.BasePermission):
 	"""
 	Custom permission to only allow owners of an object and the admin to view and edit it.
@@ -28,9 +28,9 @@ class IsOwnerOrAdmin(permissions.BasePermission):
 	def has_object_permission(self, request, view, obj):
 		
 		if hasattr(obj,'user'):
-			return (obj.user == request.user and access_exp(request)) or request.user.is_staff
+			return (obj.user == request.user and get_payload_access_exp(request)) or request.user.is_staff
 		else:
-			return (obj == request.user and access_exp(request)) or request.user.is_staff
+			return (obj == request.user and get_payload_access_exp(request)) or request.user.is_staff
 
 class IsOwnerOrAdminGroupstage(permissions.BasePermission):
 	"""
@@ -39,9 +39,9 @@ class IsOwnerOrAdminGroupstage(permissions.BasePermission):
 	def has_object_permission(self, request, view, obj):
 		
 		if hasattr(obj,'user'):
-			return (obj.user == request.user and access_exp(request) and stage(request)==0) or request.user.is_staff
+			return (obj.user == request.user and get_payload_access_exp(request) and get_payload_stage(request)==0) or request.user.is_staff
 		else:
-			return (obj == request.user and access_exp(request) and stage(request)==0) or request.user.is_staff
+			return (obj == request.user and get_payload_access_exp(request) and get_payload_stage(request)==0) or request.user.is_staff
 
 class IsOwnerOrAdminObjectStage(permissions.BasePermission):
 	"""
@@ -50,9 +50,9 @@ class IsOwnerOrAdminObjectStage(permissions.BasePermission):
 	def has_object_permission(self, request, view, obj):
 		
 		if hasattr(obj,'user'):
-			return (obj.user == request.user and access_exp(request) and stage(request)==obj.stage) or request.user.is_staff
+			return (obj.user == request.user and get_payload_access_exp(request) and get_payload_stage(request)==obj.stage) or request.user.is_staff
 		else:
-			return (obj == request.user and access_exp(request) and stage(request)==obj.stage) or request.user.is_staff
+			return (obj == request.user and get_payload_access_exp(request) and get_payload_stage(request)==obj.stage) or request.user.is_staff
 
 class IsAdminOrReadOnly(permissions.BasePermission):
 	"""
@@ -81,7 +81,7 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
 			return True
 
 		# Write permissions are only allowed to the owner
-		return (obj.user == request.user and access_exp(request))
+		return (obj.user == request.user and get_payload_access_exp(request))
 		
 		
 class PointsPermissions(permissions.BasePermission):
