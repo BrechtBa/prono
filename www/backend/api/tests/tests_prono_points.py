@@ -320,3 +320,98 @@ class PronoPointsTests(PronoTest):
 		# check the user points
 		points = Points.objects.filter(user=user,prono='groupstage_winners')[0]
 		self.assertEqual(points.points,6)
+		
+		
+	def test_prono_knockoutstage_teams_points_calculation_semifinals_correct(self):
+	
+		# fill in pronor
+		user = self.users[1]
+		stages = [4]
+		
+		teams = Team.objects.all()
+		
+		for stage in stages:
+			pronos = PronoKnockoutstageTeams.objects.filter(stage=stage,user=user)
+			for i,prono in enumerate(pronos):
+				prono.team = teams[i]
+				prono.save()
+
+		# set results
+		for stage in stages:
+			matches = Match.objects.filter(stage=stage)
+			
+			# add matches if required
+			for i in range(int(stage/2)-len(matches)):
+				match = Match(stage=stage)
+				match.save()
+				
+			matches = Match.objects.filter(stage=stage)	
+			for i,match in enumerate(matches):
+				match.team1 = teams[2*i]
+				match.team2 = teams[2*i+1]
+				match.save()
+				
+		# check the user points
+		points = Points.objects.filter(user=user,prono='knockoutstage_teams')[0]
+		self.assertEqual(points.points,4*28)
+		
+		
+	def test_prono_knockoutstage_teams_points_calculation_winner_correct(self):
+	
+		# fill in pronor
+		user = self.users[1]
+		
+		teams = Team.objects.all()
+		
+		pronos = PronoKnockoutstageTeams.objects.filter(stage=1,user=user)
+		for i,prono in enumerate(pronos):
+			prono.team = teams[1]
+			prono.save()
+
+		# set results
+		match = Match.objects.filter(stage=2)[0]
+
+		match.team1 = teams[1]
+		match.team2 = teams[2]
+		match.save()
+				
+		match_result = match.result
+		match_result.score1 = 1
+		match_result.score2 = 1
+		match_result.penalty1 = 6
+		match_result.penalty2 = 5
+		match_result.save()
+		
+		# check the user points
+		points = Points.objects.filter(user=user,prono='knockoutstage_teams')[0]
+		self.assertEqual(points.points,60)
+		
+	def test_prono_knockoutstage_teams_points_calculation_winner_incorrect(self):
+	
+		# fill in pronor
+		user = self.users[1]
+		
+		teams = Team.objects.all()
+		
+		pronos = PronoKnockoutstageTeams.objects.filter(stage=1,user=user)
+		for i,prono in enumerate(pronos):
+			prono.team = teams[2]
+			prono.save()
+
+		# set results
+		match = Match.objects.filter(stage=2)[0]
+
+		match.team1 = teams[1]
+		match.team2 = teams[2]
+		match.save()
+				
+		match_result = match.result
+		match_result.score1 = 1
+		match_result.score2 = 1
+		match_result.penalty1 = 6
+		match_result.penalty2 = 5
+		match_result.save()
+		
+		# check the user points
+		points = Points.objects.filter(user=user,prono='knockoutstage_teams')[0]
+		self.assertEqual(points.points,0)

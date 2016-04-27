@@ -77,12 +77,16 @@ class Match(models.Model):
 		super(Match, self).save(*args, **kwargs)
 		
 		# create a match result
-		match_result = MatchResult(match=self)
-		match_result.save()
+		if len(MatchResult.objects.filter(match=self)) == 0:
+			match_result = MatchResult(match=self)
+			match_result.save()
 
 		# create prono results for all users
 		for user in AuthUser.objects.all(): 
 			check_user(user)
+		
+		# recalculate the points for all users
+		calculate_points()
 		
 	def __str__(self):
 		return '{}'.format(self.id)
@@ -374,17 +378,17 @@ def calculate_user_points(user):
 			
 
 	# check if the winner is correct
-	winnerteams = user.prono_knockoutstage_teams.filter(stage=1)
-	if len(winnerteams)>0:
-		team = winnerteams[0]
+	pronowinner = user.prono_knockoutstage_teams.filter(stage=1)
+	if len(pronowinner)>0:
+		team = pronowinner[0].team
 		match = Match.objects.filter(stage=2)
 		if len(match)>0:
 			match = match[0]
 			match_result = match.result
 			if team in [match.team1,match.team2]:
 				if (match_result.score1>-1 and match_result.score2>-1):
-					team1correct = (match_result.score1+0.1*match_result.penalty1 > match_result.score2+0.1*match_result.penalty2) and team == match.team1
-					team2correct = (match_result.score1+0.1*match_result.penalty1 < match_result.score2+0.1*match_result.penalty2) and team == match.team2
+					team1correct = (match_result.score1+match_result.penalty1 > match_result.score2+match_result.penalty2) and team == match.team1
+					team2correct = (match_result.score1+match_result.penalty1 < match_result.score2+match_result.penalty2) and team == match.team2
 					if team1correct or team2correct:
 						knockoutstage_teams = knockoutstage_teams + stage_points[1]
 
