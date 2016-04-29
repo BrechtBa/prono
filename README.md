@@ -106,6 +106,7 @@ echo "<VirtualHost *:80>
         WSGIDaemonProcess $username python-path=/home/$username/www/backend:/home/$username/env/lib/python3.4/site-packages
         WSGIProcessGroup $username
         WSGIScriptAlias / /home/$username/www/backend/backend/wsgi.py
+		WSGIPassAuthorization On
 
 </VirtualHost>" > ~/$apiurl".conf"
 ```

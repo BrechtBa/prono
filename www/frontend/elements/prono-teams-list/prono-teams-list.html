@@ -89,13 +89,13 @@
 			},
 			saveTeam: function(){
 				this.$.editTeam.close();
-				app.$.model.$.teamsModel.put('id/'+this.team.id,{'name':this.team.name,'abr':this.team.abr,'iso_icon':this.team.iso_icon,'icon':this.team.icon});
+				app.$.model.$.teamsModel.put(this.team.id,{'name':this.team.name,'abr':this.team.abr,'iso_icon':this.team.iso_icon,'icon':this.team.icon});
 			},
 			addTeam: function(){
 				app.$.model.$.teamsModel.post();
 			},
 			deleteTeam: function(){
-				app.$.model.$.teamsModel.delete('id/'+this.team.id);
+				app.$.model.$.teamsModel.delete(this.team.id);
 			},
 			parseIcon: function(iso_icon,icon){
 				if(iso_icon != ''){

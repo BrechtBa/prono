@@ -13,13 +13,14 @@
 
 		<parse-token token="{{token}}" payload="{{tokenPayload}}"></parse-token>
 
-		<api-model id="usersModel" token="[[token]]" url="../../api/index.php/user_profiles" model="{{usersModel}}" on-change="handleUsersModelChange"></api-model>
-		<api-model id="rulesModel" token="[[token]]" url="../../api/index.php/rules" model="{{rulesModel}}" on-change="handleRulesModelChange"></api-model>
+		<api-model id="usersModel"        token="[[token]]" url="http://pronoapi.duckdns.org/userprofiles/" model="{{usersModel}}"        on-change="handleUsersModelChange"></api-model>
+		<!--<api-model id="rulesModel" token="[[token]]" url="../../api/index.php/rules" model="{{rulesModel}}" on-change="handleRulesModelChange"></api-model>-->	
+		<api-model id="groupsModel"       token="[[token]]" url="http://pronoapi.duckdns.org/groups/"       model="{{groupsModel}}"       on-change="handleGroupsModelChange"></api-model>
+		<api-model id="teamsModel"        token="[[token]]" url="http://pronoapi.duckdns.org/teams/"        model="{{teamsModel}}"        on-change="handleTeamsModelChange"></api-model>
+		<api-model id="matchesModel"      token="[[token]]" url="http://pronoapi.duckdns.org/matches/"      model="{{matchesModel}}"      on-change="handleMatchesModelChange"></api-model>
+		<api-model id="matchresultsModel" token="[[token]]" url="http://pronoapi.duckdns.org/matchresults/" model="{{matchresultsModel}}" on-change="handleMatchresultsModelChange"></api-model>
 		
-		<api-model id="teamsModel" token="[[token]]" url="../../api/index.php/teams" model="{{teamsModel}}" on-change="handleTeamsModelChange"></api-model>
-		<api-model id="matchesModel" token="[[token]]" url="../../api/index.php/matches" model="{{matchesModel}}" on-change="handleMatchesModelChange"></api-model>
-		
-		<api-model id="checkUpdateModel" token="[[token]]" url="../../api/index.php/last_update" model="{{updateModel}}" on-change="handleCheckUpdateChange"></api-model>
+		<!--<api-model id="checkUpdateModel" token="[[token]]" url="../../api/index.php/last_update" model="{{updateModel}}" on-change="handleCheckUpdateChange"></api-model>-->
 
 	</template>
 
@@ -59,11 +60,11 @@
 					type: 'Array',
 					notify: false
 				},
-				groups: {
+				groupsModel: {
 					type: 'Array',
 					notify: true
 				},
-				stages: {
+				stagesModel: {
 					type: 'Array',
 					notify: true
 				},
@@ -83,100 +84,24 @@
 				'tokenChanged(token)',
 			],
 			ready: function(){
-				var that = this;
-				document.addEventListener('prono-groupstage-points-changed', function(e){
-					that.pronoGroupstagePoints = e.detail;
-					that.calculatePoints();
-				});
-				document.addEventListener('prono-groupstage-winners-points-changed', function(e){
-					that.pronoGroupstageWinnersPoints = e.detail;
-					that.calculatePoints();
-				});
-				document.addEventListener('prono-knockoutstage-points-changed', function(e){
-					that.pronoKnockoutstagePoints = e.detail;
-					that.calculatePoints();
-				});
-				document.addEventListener('prono-knockoutstage-teams-points-changed', function(e){
-					that.pronoKnockoutstageTeamsPoints = e.detail;
-					that.calculatePoints();
-				});
-				document.addEventListener('prono-total-goals-points-changed', function(e){
-					that.pronoTotalGoalsPoints = e.detail;
-					that.calculatePoints();
-				});
-				document.addEventListener('prono-team-result-points-changed', function(e){
-					that.pronoTeamResultPoints = e.detail;
-					that.calculatePoints();
-				});
 			},
 			tokenChanged: function(){
 				console.log('token changed');	
 				this.$.usersModel.get();
+				this.$.groupsModel.get();
+				this.$.teamsModel.get();
+				this.$.matchesModel.get();
+				this.$.matchresultsModel.get();	
 			},
 			handleUsersModelChange: function(e){
-				console.log('check user profile');
-				var done = true;
-				try{
-					var that = this;
-					
-					if( typeof that.tokenPayload.user_id != 'undefined' ){
-						var user = that.usersModel.filter(function( item ) {
-							return item.user_id == that.tokenPayload.user_id;
-						});
-						if(user.length > 0){
-							that.user = user[0];
-						}
-						else{
-							done = false;
-							console.log('create user profile');
-							// the user has no profile, it must be created
-							that.$.usersModel.post({'user_id': this.tokenPayload.user_id, 'name': this.tokenPayload.login, 'avatar': ''});
-						}
-
-						// check if the database has changed every minute
-						var i = 0;
-						var that = this;
-						clearInterval(window.updateCheckInterval);
-						window.updateCheckInterval = window.setInterval(function(){
-							i = i+1;
-							//alert('check for update '+i);
-							that.$.checkUpdateModel.get();
-						}, 60000);
-
-					}
-					else{
-						this.user = {};
-						clearInterval(window.updateCheckInterval);
-					}
-				}
-				catch(e){
-					this.user = {};
-					clearInterval(window.updateCheckInterval);
-				}
-			
-				// proceed to the next step
-				if(done){
-					this.$.rulesModel.get();
-				}
 			},
 			handleRulesModelChange: function(){
-				console.log('get teams model');
-				this.$.teamsModel.get();
+			},
+			handleGroupsModelChange: function(){
 			},
 			handleTeamsModelChange: function(){
-				console.log('get matches model');
-				this.$.matchesModel.get();
 			},
 			handleMatchesModelChange: function(){
-				console.log('get groups');
-				var groups = [];
-				this.matchesModel.forEach(function(match){
-					if(match.stage == 0 && groups.indexOf(match.grp)==-1){
-						groups.push(match.grp);
-					}
-				});
-				this.groups = groups;
-				
 				console.log('get stages');
 				var stages = [];
 				this.matchesModel.forEach(function(match){
@@ -184,43 +109,11 @@
 						stages.push(match.stage);
 					}
 				});
-				this.stages = stages;
-				that.last_update = Math.floor( new Date().getTime()/1000 );
-				this.fire('prono-model-changed')
+				this.stagesModel = stages;
 			},
-			calculatePoints: function(){
-				var that = this;
-				console.log('calculate points')
-				that.usersModel.forEach(function(user){
-					// check if all points are defined
-					if( typeof that.pronoGroupstagePoints != 'undefined'
-					 &&	typeof that.pronoGroupstageWinnersPoints != 'undefined'
-					 &&	typeof that.pronoKnockoutstageTeamsPoints != 'undefined'
-					 &&	typeof that.pronoKnockoutstagePoints != 'undefined'
-					 &&	typeof that.pronoTotalGoalsPoints != 'undefined'
-					 &&	typeof that.pronoTeamResultPoints != 'undefined'
-
-					 && typeof that.pronoGroupstagePoints[user.id] != 'undefined'
-					 &&	typeof that.pronoGroupstageWinnersPoints[user.id] != 'undefined'
-					 &&	typeof that.pronoKnockoutstageTeamsPoints[user.id] != 'undefined'
-					 &&	typeof that.pronoKnockoutstagePoints[user.id] != 'undefined'
-					 &&	typeof that.pronoTotalGoalsPoints[user.id] != 'undefined'
-					 &&	typeof that.pronoTeamResultPoints[user.id] != 'undefined' ){
-
-						//add all points
-						var points = that.pronoGroupstagePoints[user.id]
-							       + that.pronoGroupstageWinnersPoints[user.id]
-								   + that.pronoKnockoutstageTeamsPoints[user.id]
-								   + that.pronoKnockoutstagePoints[user.id]
-								   + that.pronoTotalGoalsPoints[user.id]
-								   + that.pronoTeamResultPoints[user.id];
-
-						if(user.points != points){
-							// write points to database
-							that.$.usersModel.put('user_id/'+user.id,{'points':points});
-						}
-					}
-				});
+			handleMatchresultsModelChange: function(){
+				this.last_update = Math.floor( new Date().getTime()/1000 );
+				this.fire('prono-model-changed');
 			},
 			handleCheckUpdateChange: function(){
 				console.log('check if update is required')

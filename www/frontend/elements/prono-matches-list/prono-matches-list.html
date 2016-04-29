@@ -220,8 +220,8 @@
 					penalty2 = -1;
 				}
 				
-				app.$.model.$.matchesModel.put('id/'+this.match.id,{'date':date,'stage':this.match.stage,'grp':this.match.grp,'position':this.match.position,'defaultteam1':this.match.defaultteam1,'defaultteam2':this.match.defaultteam2,'team1':this.match.team1,'team2':this.match.team2,'score1':score1,'score2':score2,'penalty1':penalty1,'penalty2':penalty2})
-				app.$.model.$.checkUpdateModel.put('id/1',{'time':Math.floor( new Date().getTime()/1000)});
+				app.$.model.$.matchesModel.put(this.match.id,{'date':date,'stage':this.match.stage,'grp':this.match.grp,'position':this.match.position,'defaultteam1':this.match.defaultteam1,'defaultteam2':this.match.defaultteam2,'team1':this.match.team1,'team2':this.match.team2,'score1':score1,'score2':score2,'penalty1':penalty1,'penalty2':penalty2})
+				app.$.model.$.checkUpdateModel.put('1',{'time':Math.floor( new Date().getTime()/1000)});
 			},
 			addMatch: function(){
 				app.$.model.$.matchesModel.post({'score1':-1,'score2':-1,'penalty1':-1,'penalty2':-1});
