@@ -32,6 +32,7 @@ source ~/env/bin/activate
 pip install django
 pip install djangorestframework
 pip install djangorestframework-jwt
+pip install django-cors-headers
 pip install mock
 ```
 
@@ -48,7 +49,7 @@ if [ ! -f ~/.secret_key ]; then
 	echo date +%s | sha256sum | base64 | head -c 32 > ~/.secret_key	
 	chmod 700 ~/.secret_key
 fi
-secret_key=`cat ~./secret_key`
+secret_key=`cat ~/.secret_key`
 
 sed -i 's/^\(SECRET_KEY = \).*/\1'\'$secret_key\''/' ~/www/backend/backend/settings.py
 ```
@@ -95,14 +96,14 @@ echo "<VirtualHost *:80>
         </Directory>
 
 
-        <Directory /home/$username/www/backend/backend>
+        <Directory "/home/$username/www/backend/backend">
                 <Files wsgi.py>
                         Require all granted
                 </Files>
         </Directory>
 
 
-        WSGIDaemonProcess $username python-path=/home/$username/www/backend:/home/$username/env$
+        WSGIDaemonProcess $username python-path=/home/$username/www/backend:/home/$username/env/lib/python3.4/site-packages
         WSGIProcessGroup $username
         WSGIScriptAlias / /home/$username/www/backend/backend/wsgi.py
 
