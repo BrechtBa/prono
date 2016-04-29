@@ -48,19 +48,19 @@
 					this.payload = JSON.parse(atob(parts[1]));
 
 					// set headers
-					this.$.get.headers['Authentication'] = this.token;
-					this.$.post.headers['Authentication'] = this.token;
-					this.$.put.headers['Authentication'] = this.token;
-					this.$.delete.headers['Authentication'] = this.token;
+					this.$.get.headers['authorization']    = 'JWT '+this.token;
+					this.$.post.headers['authorization']   = 'JWT '+this.token;
+					this.$.put.headers['authorization']    = 'JWT '+this.token;
+					this.$.delete.headers['authorization'] = 'JWT '+this.token;
 				}
 				catch(e){
 					// the token is not a JWT
 					//this.model['data'] = [];
 
-					this.$.get.headers['Authentication'] = '';
-					this.$.post.headers['Authentication'] = '';
-					this.$.put.headers['Authentication'] = '';
-					this.$.delete.headers['Authentication'] = '';
+					this.$.get.headers['authorization'] = '';
+					this.$.post.headers['authorization'] = '';
+					this.$.put.headers['authorization'] = '';
+					this.$.delete.headers['authorization'] = '';
 
 					this.header = {};
 					this.payload = {};

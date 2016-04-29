@@ -55,7 +55,7 @@
 
 		<iron-localstorage name="token" value="{{token}}"></iron-localstorage>
 
-		<iron-ajax id="loginAjax" url="../../api/authenticate.php" method="POST" handle-as="json" on-response="parseLoginResponse" last-response="{{loginResponse}}" on-error="parseLoginError" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="loginAjax" url="http://pronoapi.duckdns.org/token-auth/" method="POST" content-type="application/json" handle-as="json" on-response="handleLoginResponse" last-response="{{loginResponse}}" on-error="handleLoginError" debounce-duration="300"></iron-ajax>
 		
 		<form is="iron-form" id="loginform" method="POST" on-iron-form-submit="loginFormAjaxSubmit">
 			<paper-input id="login" label="{{trans('Login')}}:" required></paper-input>
@@ -65,7 +65,7 @@
 			<button type="submit" class="hidden">{{trans('Login')}}</button>
 		</form>
 
-		<iron-ajax id="registerAjax" url="../../api/register.php" method="POST" handle-as="json" on-response="parseRegisterResponse" last-response="{{registerResponse}}" on-error="parseRegisterError" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="registerAjax" url="http://pronoapi.duckdns.org/register/" method="POST" content-type="application/json" handle-as="json" on-response="handleRegisterResponse" last-response="{{registerResponse}}" on-error="handleRegisterError" debounce-duration="300"></iron-ajax>
 
 		<default-dialog id="register" entry-animation="scale-up-animation" exit-animation="fade-out-animation">
 			<h2>{{trans('Register')}}</h2>
@@ -126,18 +126,31 @@
 				this.$.loginform.submit();
 			},
 			loginFormAjaxSubmit: function(event){
-				this.$.loginAjax.body = JSON.stringify({'login':this.$.login.value,'password':this.$.password.value});
-    			this.$.loginAjax.generateRequest();
+				this.$.loginAjax.body = JSON.stringify({'username':this.$.login.value,'password':this.$.password.value});
+				this.$.loginAjax.generateRequest();
 
 				// remove values
 				this.$.login.value = '';
 				this.$.password.value = '';
 			},
-			termsandconditionsDialog: function(){
-				this.$.termsandconditions.open();
+			handleLoginResponse: function(){
+				console.log(this.loginResponse)
+				if(this.loginResponse != ''){
+					this.token = this.loginResponse['token'];
+					this.fire('login-form-success');
+				}
+			},
+			handleLoginError: function(){
+				console.log(this.loginResponse)
+				this.fire('login-form-error');
+				app.$.toast.text = this.trans('Login or password are incorrect');
+				app.$.toast.show();
 			},
 			registerDialog: function(){
 				this.$.register.open()
+			},
+			termsandconditionsDialog: function(){
+				this.$.termsandconditions.open();
 			},
 			registerFormSubmit: function(){
 				if(this.passwordValidator() && this.$.newlogin.value!='' && this.$.newpassword.value!=''){
@@ -146,33 +159,14 @@
 			},
 			registerFormAjaxSubmit: function(event){
 				if(this.passwordValidator() && this.$.newlogin.value!='' && this.$.newpassword.value!=''){
-					this.$.registerAjax.body = JSON.stringify({'login':this.$.newlogin.value,'password':this.$.newpassword.value});
+					this.$.registerAjax.body = JSON.stringify({'username':this.$.newlogin.value,'password':this.$.newpassword.value});
     				this.$.registerAjax.generateRequest();
 				}
 			},
-			passwordValidator: function(){
-				if(this.$.newpassword.value == this.$.newpasswordrepeat.value){
-            		return true;
-				}
-				else{
-            		return false;
-				}
-			},
-			parseLoginResponse: function(){
-				if(this.loginResponse != ''){
-					this.token = this.loginResponse;
-					this.fire('login-form-success');
-				}
-			},
-			parseLoginError: function(){
-				this.fire('login-form-error');
-				app.$.toast.text = this.trans('Login or password are incorrect');
-				app.$.toast.show();
-			},
-			parseRegisterResponse: function(){
+			handleRegisterResponse: function(){
 				if(this.registerResponse > 0 ){
 					this.$.logintaken._setInvalid(false);
-					this.$.loginAjax.body = JSON.stringify({'login':this.$.newlogin.value,'password':this.$.newpassword.value});
+					this.$.loginAjax.body = JSON.stringify({'username':this.$.newlogin.value,'password':this.$.newpassword.value});
     				this.$.loginAjax.generateRequest();
 					this.$.register.close();
 
@@ -182,11 +176,19 @@
 					this.$.newpasswordrepeat.value = '';
 				}
 			},
-			parseRegisterError: function(){
+			handleRegisterError: function(){
 				this.$.logintaken._setInvalid(true);
 			},
 			logout: function(){
 				this.token = '';
+			},
+			passwordValidator: function(){
+				if(this.$.newpassword.value == this.$.newpasswordrepeat.value){
+            		return true;
+				}
+				else{
+            		return false;
+				}
 			},
 			tokenChanged: function(){
 			},
