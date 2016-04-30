@@ -51,7 +51,7 @@ class Team(models.Model):
 	abr = models.CharField(max_length=5, blank=True, default='')
 	icon = models.CharField(max_length=256, blank=True, default='')
 	iso_icon = models.CharField(max_length=5, blank=True, default='')
-	group = models.ForeignKey(Group,on_delete=models.SET_NULL,related_name='teams', blank=True, null=True)
+	group = models.ForeignKey(Group,on_delete=models.SET_NULL, related_name='teams', blank=True, null=True)
 	groupstage_points = models.FloatField(blank=True, default=0)
 	
 	def save(self, *args, **kwargs):

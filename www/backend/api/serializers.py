@@ -42,7 +42,7 @@ class TeamSerializer(serializers.ModelSerializer):
 class GroupSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Group
-		fields = ('id','name','teams','matches')
+		fields = ('id','name')
 		
 	
 class MatchSerializer(serializers.ModelSerializer):
