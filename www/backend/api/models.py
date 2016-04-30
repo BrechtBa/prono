@@ -23,6 +23,11 @@ class Points(models.Model):
 	def __str__(self):
 		return '{}'.format(self.points)	
 	
+
+class LastUpdate(models.Model):
+	date = models.BigIntegerField(blank=True, default=0)
+	
+
 ################################################################################
 # Competition
 ################################################################################
@@ -88,6 +93,9 @@ class Match(models.Model):
 		# recalculate the points for all users
 		calculate_points()
 		
+		# set the update field
+		check_update()
+
 	def __str__(self):
 		return '{}'.format(self.id)
 		
@@ -104,7 +112,10 @@ class MatchResult(models.Model):
 		
 		# recalculate the points for all users
 		calculate_points()
-	
+		
+		# set the update field
+		check_update()
+
 	def __str__(self):
 		return '{} - {}'.format(self.score1, self.score2)
 	
@@ -183,7 +194,23 @@ def check_matches():
 			result.save()
 			#print('Added result for match {}'.format(match))
 		
-	
+
+def check_update():	
+	"""
+	checks if the lastupdate model is present and updates is 
+	"""
+
+	try:
+		lastupdate = LastUpdate.objects.get(pk=1)
+		lastupdate.date = unixtimestamp()
+		lastupdate.save()
+
+	except:
+		lastupdate = LastUpdate(date=unixtimestamp())
+		lastupdate.save()
+
+
+
 def check_user(user):
 	"""
 	checks if all database entries are present for the user
