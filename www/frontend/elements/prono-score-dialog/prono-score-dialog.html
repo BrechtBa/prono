@@ -46,7 +46,7 @@
 		</style>
 		
 		<default-dialog id="dialog">
-			<form is="iron-form" id="form" method="post" on-iron-form-submit="save" action="/">
+			<form is="iron-form" id="form" on-iron-form-submit="save" action="/">
 				<div class="vertical layout center-justified">
 					<div class="teamname flex">{{formatTeamName(match.team1,teamsModel)}}</div>
 					<div class="horizontal layout center center-justified">
@@ -70,11 +70,12 @@
 		Polymer({
 			is: 'prono-score-dialog',
 			properties: {
-				match: {
+				result: {
 					type: 'Object'
 				},
-				score:  {
-					type: 'Object'
+				matchesModel: {
+					type: 'Array',
+					value: []
 				},
 				teamsModel: {
 					type: 'Array',
@@ -92,8 +93,16 @@
 			},
 			open: function(){
 				this.$.dialog.open();
-				this.score1 = this.formatScore(this.score.score1);
-				this.score2 = this.formatScore(this.score.score2);
+				var that = this;
+
+				this.matchesModel.forEach(function(match){
+					if(match.id==that.result.match){
+						that.match = match;
+					}
+				});
+
+				this.score1 = this.formatScore(this.result.score1);
+				this.score2 = this.formatScore(this.result.score2);
 			},
 			formSubmit: function(){
 				this.$.form.submit();
@@ -103,15 +112,14 @@
 
 				// parse the score
 				var score1 = this.score1;
-				if(score1 == ''){
+				if(score1 === ''){
 					score1 = -1;
 				}
 				var score2 = this.score2;
-				if(score2 == ''){
+				if(score2 === ''){
 					score2 = -1;
 				}
-
-				this.fire('save',{'match_id':this.match.id, 'score1':score1, 'score2':score2});
+				this.fire('save',{'id':this.result.id, 'score1':score1, 'score2':score2});
 			},
 			formatTeamName: function(id,teams){
 				var name = '';

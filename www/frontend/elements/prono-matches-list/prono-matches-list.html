@@ -68,16 +68,12 @@
 					</div>
 					<div class="horizontal layout center">
 						<div class="flex-1">Stage: {{match.stage}}</div>
-						<div class="flex-2">Group: {{match.grp}}</div>
+						<div class="flex-2">Group: {{formatGroupName(match.group,groupsModel)}}</div>
 					</div>
 					<div class="teams horizontal layout">
 						<div class="team flex-1">
 							<div>{{match.defaultteam1}}</div>
 							<div>{{formatTeamName(match.team1,teamsModel)}}</div>
-						</div>
-						<div class="score horizontal layout center center-justified">
-							<div><span>{{formatScore(match.score1)}}</span> - <span>{{formatScore(match.score2)}}</span></div>
-							<div hidden="{{!penaltiesTaken(match)}}">(<span>{{match.penalty1}}</span> - <span>{{match.penalty2}}</span>)</div>												
 						</div>
 						<div class="team flex-1">
 							<div>{{match.defaultteam2}}</div>
@@ -98,7 +94,14 @@
 				</div>
 				<div class="flex"></div>
 				<div class="flex-4">
-					<paper-input label="Group" value={{match.grp}}></paper-input>
+					<paper-dropdown-menu id="group" label="Group">
+						<paper-menu class="dropdown-content" attr-for-selected="value" selected="{{match.group}}">
+							<paper-item value="0"></paper-item>
+							<template is="dom-repeat" items="{{groupsModel}}" as="group">
+								<paper-item value="{{group.id}}">{{group.name}}</paper-item>
+							</template>
+						</paper-menu>
+					</paper-dropdown-menu>
 				</div>
 				<div class="flex"></div>
 				<div class="flex-4">
@@ -136,24 +139,6 @@
 						</paper-menu>
 					</paper-dropdown-menu>
 				</div>
-			</div>	
-			<div class="horizontal layout wrap">
-				<div class="flex-5">
-					<paper-input label="Score 1" value={{newscore1}} auto-validate pattern="[0-9]*" error-message="not a valid score"></paper-input>
-				</div>
-				<div class="flex"></div>
-				<div class="flex-5">
-					<paper-input label="score 2" value={{newscore2}} auto-validate pattern="[0-9]*" error-message="not a valid score"></paper-input>
-				</div>
-			</div>
-			<div class="horizontal layout wrap">
-				<div class="flex-5">
-					<paper-input label="Penalty 1" value={{newpenalty1}} auto-validate pattern="[0-9]*" error-message="not a valid score"></paper-input>
-				</div>
-				<div class="flex"></div>
-				<div class="flex-5">
-					<paper-input label="Penalty 2" value={{newpenalty2}} auto-validate pattern="[0-9]*" error-message="not a valid score"></paper-input>
-				</div>
 			</div>
 			<div class="buttons">
 				<paper-button raised class="primary" on-tap="saveMatch">Save</paper-button>
@@ -166,6 +151,12 @@
 		Polymer({
 			is: 'prono-matches-list',
 			properties: {
+				groupsModel: {
+					type: 'Array'
+				},
+				stagesModel: {
+					type: 'Array'
+				},
 				teamsModel: {
 					type: 'Array'
 				},
@@ -186,11 +177,6 @@
 
 				// some properties need to be formatted
 				this.newdate = this.formatDate(this.match.date);
-				this.newscore1 = this.formatScore(this.match.score1);
-				this.newscore2 = this.formatScore(this.match.score2);
-				this.newpenalty1 = this.formatScore(this.match.penalty1);
-				this.newpenalty2 = this.formatScore(this.match.penalty2);
-
 				this.$.editMatch.open();
 			},
 			saveMatch: function(){
@@ -202,35 +188,14 @@
 				var timeparts = parts[1].split(':');
    				var date = Date.parse(dateparts[1]+'-'+dateparts[0]+'-'+dateparts[2]+' '+timeparts[0]+':'+timeparts[1])/1000;
 
-				var score1 = this.newscore1;
-				if(score1 == ''){
-					score1 = -1;
-				}
-				var score2 = this.newscore2;
-				if(score2 == ''){
-					score2 = -1;
-				}
-
-				var penalty1 = this.newpenalty1;
-				if(penalty1 == ''){
-					penalty1 = -1;
-				}
-				var penalty2 = this.newpenalty2;
-				if(penalty2 == ''){
-					penalty2 = -1;
-				}
-				
-				app.$.model.$.matchesModel.put(this.match.id,{'date':date,'stage':this.match.stage,'grp':this.match.grp,'position':this.match.position,'defaultteam1':this.match.defaultteam1,'defaultteam2':this.match.defaultteam2,'team1':this.match.team1,'team2':this.match.team2,'score1':score1,'score2':score2,'penalty1':penalty1,'penalty2':penalty2})
-				app.$.model.$.checkUpdateModel.put('1',{'time':Math.floor( new Date().getTime()/1000)});
+				app.$.model.$.matchesModel.put(this.match.id,{'date':date,'stage':this.match.stage,'group':this.match.group,'position':this.match.position,'defaultteam1':this.match.defaultteam1,'defaultteam2':this.match.defaultteam2,'team1':this.match.team1,'team2':this.match.team2})
 			},
 			addMatch: function(){
-				app.$.model.$.matchesModel.post({'score1':-1,'score2':-1,'penalty1':-1,'penalty2':-1});
-				app.$.model.$.checkUpdateModel.put('id/1',{'time':Math.floor( new Date().getTime()/1000)});
+				app.$.model.$.matchesModel.post({});
 			},
 			deleteMatch: function(){
 				this.$.editMatch.close();
-				app.$.model.$.matchesModel.delete('id/'+this.match.id)
-				app.$.model.$.checkUpdateModel.put('id/1',{'time':Math.floor( new Date().getTime()/1000)});
+				app.$.model.$.matchesModel.delete(this.match.id)
 			},
 			formatDate: function(timestamp){
 				var date = new Date(timestamp * 1000);
@@ -241,14 +206,6 @@
 				var minutes = date.getMinutes();
 				return (day < 10? '0' : '') + day + '-' + (month < 10? '0' : '') + month + '-' + date.getFullYear() + ' ' + (hours < 10? '0' : '') + hours + ':' +  (minutes < 10? '0' : '') + minutes;
 			},
-			formatScore: function(score){
-				if(score<0){
-					return '';
-				}
-				else{
-					return score;
-				}
-			},
 			formatTeamName: function(id,teamsModel){
 				var name = '';
 				teamsModel.forEach(function(item){
@@ -258,22 +215,14 @@
 				});
 				return name;
 			},
-			formatGroupName: function(id,groups){
+			formatGroupName: function(id,groupsModel){
 				var name = '';
-				groups.forEach(function(item){
+				groupsModel.forEach(function(item){
 					if(item.id == id){
 						name = item.name;
 					}
 				});
 				return name;
-			},
-			penaltiesTaken: function(match){
-				if(match.penalty1 > -1 || match.penalty2 > -1){
-					return true;
-				}
-				else{
-					return false;
-				}
 			},
 			_sortMatches: function(a, b) {  
   

@@ -40,11 +40,19 @@
 					type: 'Array',
 					notify: true
 				},
+				groupsModel: {
+					type: 'Array',
+					notify: true
+				},
 				teamsModel: {
 					type: 'Array',
 					notify: true
 				},
 				matchesModel: {
+					type: 'Array',
+					notify: true
+				},
+				matchresultsModel: {
 					type: 'Array',
 					notify: true
 				},
@@ -59,10 +67,6 @@
 				allPronoScoreModel: {
 					type: 'Array',
 					notify: false
-				},
-				groupsModel: {
-					type: 'Array',
-					notify: true
 				},
 				stagesModel: {
 					type: 'Array',
@@ -87,6 +91,13 @@
 			},
 			tokenChanged: function(){
 				console.log('token changed');	
+				try{
+					this.user = {'id':this.tokenPayload.user_id,'username':this.tokenPayload.username};
+				}
+				catch(e){
+					this.user = {};
+				}
+
 				this.$.usersModel.get();
 				this.$.groupsModel.get();
 				this.$.teamsModel.get();
