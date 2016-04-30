@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view,permission_classes
 from rest_framework.response import Response
 
-from api.models import UserProfile,Points,Team,Group,Match,MatchResult,PronoResult,PronoGroupstageWinners,PronoKnockoutstageTeams,PronoTotalGoals,PronoTeamResult
+from api.models import UserProfile,Points,LastUpdate,Team,Group,Match,MatchResult,PronoResult,PronoGroupstageWinners,PronoKnockoutstageTeams,PronoTotalGoals,PronoTeamResult
 from api.serializers import *
 from api.permissions import *
 
@@ -91,6 +91,22 @@ class PointsDetail(generics.RetrieveUpdateDestroyAPIView):
 	serializer_class = PointsSerializer
 	permission_classes = (PointsPermissions,)
 	queryset = Points.objects.all()
+
+
+# lastupdate	
+class LastUpdateList(generics.ListCreateAPIView):
+	serializer_class = LastUpdateSerializer
+	permission_classes = (IsAdminOrReadOnly,)
+	def get_queryset(self):
+		queryset = simplefilter(filterargs(self.kwargs),LastUpdate)
+		for obj in queryset:
+			self.check_object_permissions(self.request, obj)
+		return queryset
+	
+class LastUpdateDetail(generics.RetrieveUpdateDestroyAPIView):
+	serializer_class = LastUpdateSerializer
+	permission_classes = (IsAdminOrReadOnly,)
+	queryset = LastUpdate.objects.all()
 
 		
 # teams
