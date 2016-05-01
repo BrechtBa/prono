@@ -43,46 +43,31 @@
 			
 		</style>
 
-		<template is="dom-repeat" items="{{usersModel}}" as="item" sort="_sortUsers">
+		<api-model id="pointsTotal" token="[[token]]" url="http://pronoapi.duckdns.org/points/?prono=total" model="{{pointsTotal}}"></api-model>
+		<api-model id="pointsDetail" token="[[token]]" url="http://pronoapi.duckdns.org/points/" model="{{pointsDetail}}" on-change="handlePointsDetailChange"></api-model>
+		
+		<template is="dom-repeat" items="{{pointsTotal}}" as="points" sort="_sortUsers">
 			<paper-card elevation="2" class$="horizontal layout center {{userClass(item,user)}}" on-tap="pointDetails">
 				<div class="ranking">{{ranking(index)}}</div>
-				<avatar-image class="avatar" user="{{item}}"></avatar-image>
-				<div class="flex name">{{item.name}}</div>
-				<div class="points">{{item.points}}</div>
+				<avatar-image class="avatar" user="{{getUser(points.user,usersModel)}}"></avatar-image>
+				<div class="flex name">{{getUserName(points.user,usersModel)}}</div>
+				<div class="points">{{points.points}}</div>
 			</paper-card>
 		</template>
 
 		<default-dialog id="pointDetails">
 			<div class="vertical layout">
-				<div class="horizontal layout">
-					<div class="flex">{{trans('Group stage')}}:</div>
-					<div class="points">{{pronoGroupstage}}</div>
-				</div>
-				<div class="horizontal layout">
-					<div class="flex">{{trans('Group stage winners')}}:</div>
-					<div class="points">{{pronoGroupstageWinners}}</div>
-				</div>
-				<div class="horizontal layout">
-					<div class="flex">{{trans('Knockout stage teams')}}:</div>
-					<div class="points">{{pronoKnockoutstageTeams}}</div>
-				</div>
-				<div class="horizontal layout">
-					<div class="flex">{{trans('Knockout stage')}}:</div>
-					<div class="points">{{pronoKnockoutstage}}</div>
-				</div>
-				<div class="horizontal layout">
-					<div class="flex">{{trans('Total goals')}}:</div>
-					<div class="points">{{pronoTotalGoals}}</div>
-				</div>
-				<div class="horizontal layout">
-					<div class="flex">{{trans('Team result')}}:</div>
-					<div class="points">{{pronoTeamResult}}</div>
-				</div>
+				<template is="dom-repeat" items="{{pointsDetail}}" as="points" filter="_notTotal">
+					<div class="horizontal layout">
+						<div class="flex">{{trans(points.prono)}}:</div>
+						<div class="points">{{points.points}}</div>
+					</div>
+				</template>
 			</div>
 			<hr>
 			<div class="horizontal layout">
 				<div class="flex total">{{trans('Total')}}:</div>
-				<div class="points">{{totalPoints}}</div>
+				<div class="points">{{total}}</div>
 			</div>
 		</default-dialog>
 	
@@ -93,6 +78,10 @@
 		Polymer({
 			is: 'prono-ranking',
 			properties: {
+				token:{
+					type: 'String',
+					value: ''
+				},
 				permission: {
 					type: 'Number',
 					value: 1
@@ -105,23 +94,73 @@
 					type: 'Object'
 				}
 			},
+			observers:[
+				'getPointsTotal(token,user)',
+			],
 			created: function(){
 				// create the local dictionary
 				this.dictionary = {};
-				this.dictionary['Group stage'] 			= {'nl':'Groepsfase'};
-				this.dictionary['Group stage winners'] 	= {'nl':'Winnaars groepsfase'};
-				this.dictionary['Knockout stage teams']	= {'nl':'Knockout fase ploegen'};
-				this.dictionary['Total goals'] 			= {'nl':'Aantal goals'};
-				this.dictionary['Team result'] 			= {'nl':'Ploeg resultaat'};
+				this.dictionary['groupstage_result'] 	= {'nl':'Groepsfase resultaat'};
+				this.dictionary['groupstage_score'] 	= {'nl':'Groepsfase score'};
+				this.dictionary['knockoutstage_result'] = {'nl':'Knockout fase resultaat'};
+				this.dictionary['knockoutstage_score'] 	= {'nl':'Knockout fase score'};
+				this.dictionary['groupstage_winners'] 	= {'nl':'Winnaars groepsfase'};
+				this.dictionary['knockoutstage_teams']	= {'nl':'Knockout fase ploegen'};
+				this.dictionary['total_goals'] 			= {'nl':'Aantal goals'};
+				this.dictionary['team_result'] 			= {'nl':'Ploeg resultaat'};
 				this.dictionary['Total'] 				= {'nl':'Totaal'};
 			},
 			ready: function(){
 				console.log('ready');
-				// add global event listeners
-				var that = this;
-				document.addEventListener('user-points', function(e){
-					that.handleUserPoints(e.detail);
+			},
+			getPointsTotal: function(token,user){
+				if(typeof user.id == 'undefined' || token == ''){
+					this.pointsTotal = [];
+				}
+				else{
+					this.$.pointsTotal.get();
+				}
+			},
+			getUser: function(points,usersModel){
+				var user = {};
+				usersModel.forEach(function(tempuser){
+					if(points.user = tempuser.id){
+						user = tempuser;
+					}
 				});
+				return user;
+			},
+			getUserName: function(points,usersModel){
+				var user = this.getUser(points,usersModel);
+				if( typeof user != 'undefined'){
+					return user.displayname;
+				}
+			},
+			ranking: function(index){
+				return index+1;
+			},
+			pointDetails: function(e){
+				var points = e.model.__data__.points;
+				var user = this.getUser(points,this.usersModel);
+
+				this.$.pointDetails.close();
+				this.total = 0;
+
+				// get the points
+				if(user.id == this.user.id || this.permission >8){
+					this.$.pointsDetail.get('?user='+user.id);
+
+					this.$.pointDetails.open();
+				}
+			},
+			handlePointsDetailChange: function(e){
+				var total = 0;
+				this.pointsDetail.forEach(function(points){
+					if(points.prono=='total'){
+						total = points.points;
+					}
+				});
+				this.total = total;
 			},
 			userClass: function(user1,user2){
 				var cl = '';
@@ -133,51 +172,6 @@
 				catch(e){
 				}
 				return cl;
-			},
-			ranking: function(index){
-				return index+1;
-			},
-			pointDetails: function(e){
-				var user = e.model.__data__.item;
-				this.$.pointDetails.close();
-
-				// set all detail points to zero
-				this.pronoGroupstage = 0;
-				this.pronoGroupstageWinners = 0;
-				this.pronoKnockoutstageTeams = 0;
-				this.pronoKnockoutstage = 0;
-				this.pronoTotalGoals = 0;
-				this.pronoTeamResult = 0;
-
-				// get the points
-				if(user.id == this.user.id || this.permission >8){
-					this.fire('calculate-user-points',user.id);
-					this.$.pointDetails.open();
-				}
-			},
-			handleUserPoints: function(detail){
-				var that = this;
-				switch(detail.prono){
-					case 'prono-groupstage':
-						that.pronoGroupstage = detail.points; 
-						break;
-					case 'prono-groupstage-winners':
-						that.pronoGroupstageWinners = detail.points;
-						break;
-					case 'prono-knockoutstage-teams':
-						that.pronoKnockoutstageTeams = detail.points;
-						break;
-					case 'prono-knockoutstage':
-						that.pronoKnockoutstage = detail.points;
-						break;
-					case 'prono-total-goals':
-						that.pronoTotalGoals = detail.points;
-						break;
-					case 'prono-team-result':
-						that.pronoTeamResult = detail.points;
-						break;
-				}
-				this.totalPoints = this.pronoGroupstage + this.pronoGroupstageWinners + this.pronoKnockoutstageTeams + this.pronoKnockoutstage + this.pronoTotalGoals + this.pronoTeamResult;
 			},
 			_getAvatar: function(src){
 				if(src==''){
@@ -197,6 +191,9 @@
 				else{
 					return 0;
 				}
+			},
+			_notTotal: function(points){
+				return (points.prono != 'total');
 			},
 			trans: function(key){
 				return app.trans(key,this.dictionary);

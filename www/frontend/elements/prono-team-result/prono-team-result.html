@@ -327,9 +327,6 @@
 				});
 				
 				var result = parseInt(this.result);
-				if(result<0){
-					result = null;
-				}
 				if(prono_id>0){
 					this.$.prono.put(prono_id+'/',{'result': result});
 				}

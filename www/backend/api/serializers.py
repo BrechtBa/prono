@@ -20,7 +20,7 @@ class UserSerializer(serializers.ModelSerializer):
 class UserProfileSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = UserProfile
-		fields = ('id','user','avatar')
+		fields = ('id','user','displayname','avatar')
 		
 		
 class PointsSerializer(serializers.ModelSerializer):

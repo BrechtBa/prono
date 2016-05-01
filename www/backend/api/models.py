@@ -12,6 +12,7 @@ from .utils import unixtimestamp
 ################################################################################
 class UserProfile(models.Model):
 	user = models.OneToOneField(AuthUser, on_delete=models.SET_NULL, related_name='profile', blank=True, null=True)
+	displayname = models.CharField(max_length=100, blank=True, default='')
 	avatar = models.CharField(max_length=512, blank=True, default='')
 
 	
@@ -221,7 +222,7 @@ def check_user(user):
 	try:
 		user.profile
 	except:
-		user_profile = UserProfile(user=user)
+		user_profile = UserProfile(user=user,displayname=user.username)
 		user_profile.save()
 		
 
