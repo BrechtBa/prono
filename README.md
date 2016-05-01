@@ -32,6 +32,7 @@ source ~/env/bin/activate
 pip install django
 pip install djangorestframework
 pip install djangorestframework-jwt
+pip install django-filter
 pip install django-cors-headers
 pip install mock
 ```

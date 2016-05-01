@@ -49,11 +49,8 @@ def register(request):
 class UserList(generics.ListCreateAPIView):
 	serializer_class = UserSerializer
 	permission_classes = (permissions.IsAdminUser,)
-	def get_queryset(self):
-		queryset = simplefilter(filterargs(self.kwargs),AuthUser)
-		for obj in queryset:
-			self.check_object_permissions(self.request, obj)
-		return queryset
+	queryset = AuthUser.objects.all()
+	filter_fields = ('groups',)
 		
 class UserDetail(generics.RetrieveUpdateDestroyAPIView):
 	serializer_class = UserSerializer
@@ -65,11 +62,7 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
 class UserProfileList(generics.ListCreateAPIView):
 	serializer_class = UserProfileSerializer
 	permission_classes = (IsAdminOrReadOnly,)
-	def get_queryset(self):
-		queryset = simplefilter(filterargs(self.kwargs),UserProfile)
-		for obj in queryset:
-			self.check_object_permissions(self.request, obj)
-		return queryset
+	queryset = UserProfile.objects.all()
 		
 class UserProfileDetail(generics.RetrieveUpdateDestroyAPIView):
 	serializer_class = UserProfileSerializer
@@ -81,11 +74,8 @@ class UserProfileDetail(generics.RetrieveUpdateDestroyAPIView):
 class PointsList(generics.ListCreateAPIView):
 	serializer_class = PointsSerializer
 	permission_classes = (PointsPermissions,)
-	def get_queryset(self):
-		queryset = simplefilter(filterargs(self.kwargs),Points)
-		for obj in queryset:
-			self.check_object_permissions(self.request, obj)
-		return queryset
+	queryset = Points.objects.all()
+	filter_fields = ('user','prono',)
 	
 class PointsDetail(generics.RetrieveUpdateDestroyAPIView):
 	serializer_class = PointsSerializer
@@ -97,11 +87,7 @@ class PointsDetail(generics.RetrieveUpdateDestroyAPIView):
 class LastUpdateList(generics.ListCreateAPIView):
 	serializer_class = LastUpdateSerializer
 	permission_classes = (IsAdminOrReadOnly,)
-	def get_queryset(self):
-		queryset = simplefilter(filterargs(self.kwargs),LastUpdate)
-		for obj in queryset:
-			self.check_object_permissions(self.request, obj)
-		return queryset
+	queryset = LastUpdate.objects.all()
 	
 class LastUpdateDetail(generics.RetrieveUpdateDestroyAPIView):
 	serializer_class = LastUpdateSerializer
@@ -113,11 +99,8 @@ class LastUpdateDetail(generics.RetrieveUpdateDestroyAPIView):
 class TeamList(generics.ListCreateAPIView):
 	serializer_class = TeamSerializer
 	permission_classes = (IsAdminOrReadOnly,)
-	def get_queryset(self):
-		queryset = simplefilter(filterargs(self.kwargs),Team)
-		for obj in queryset:
-			self.check_object_permissions(self.request, obj)
-		return queryset
+	queryset = Team.objects.all()
+	filter_fields = ('group','name',)
 		
 class TeamDetail(generics.RetrieveUpdateDestroyAPIView):
 	serializer_class = TeamSerializer
@@ -129,11 +112,8 @@ class TeamDetail(generics.RetrieveUpdateDestroyAPIView):
 class GroupList(generics.ListCreateAPIView):
 	serializer_class = GroupSerializer
 	permission_classes = (IsAdminOrReadOnly,)
-	def get_queryset(self):
-		queryset = simplefilter(filterargs(self.kwargs),Group)
-		for obj in queryset:
-			self.check_object_permissions(self.request, obj)
-		return queryset
+	queryset = Group.objects.all()
+	filter_fields = ('name',)
 		
 class GroupDetail(generics.RetrieveUpdateDestroyAPIView):
 	serializer_class = GroupSerializer
@@ -145,24 +125,8 @@ class GroupDetail(generics.RetrieveUpdateDestroyAPIView):
 class MatchList(generics.ListCreateAPIView):
 	serializer_class = MatchSerializer
 	permission_classes = (IsAdminOrReadOnly,)
-	def get_queryset(self):
-		args = filterargs(self.kwargs)
-		
-		if 'team' in args:
-			filterargs1 = dict(args)
-			filterargs2 = dict(args)
-			filterargs1['team1'] = args['team']
-			filterargs2['team2'] = args['team']
-			del filterargs1['team']
-			del filterargs2['team']
-			
-			queryset = simplefilter(filterargs1,Match) | simplefilter(filterargs2,Match)
-		else:
-			queryset = simplefilter(args,Match)
-			
-		for obj in queryset:
-			self.check_object_permissions(self.request, obj)
-		return queryset
+	queryset = Match.objects.all()
+	filter_fields = ('group','stage','team1','team2',)
 
 class MatchDetail(generics.RetrieveUpdateDestroyAPIView):
 	serializer_class = MatchSerializer
@@ -174,11 +138,8 @@ class MatchDetail(generics.RetrieveUpdateDestroyAPIView):
 class MatchResultList(generics.ListCreateAPIView):
 	serializer_class = MatchResultSerializer
 	permission_classes = (IsAdminOrReadOnly,)
-	def get_queryset(self):
-		queryset = simplefilter(filterargs(self.kwargs),MatchResult)
-		for obj in queryset:
-			self.check_object_permissions(self.request, obj)
-		return queryset
+	queryset = MatchResult.objects.all()
+	filter_fields = ('match',)
 
 class MatchResultDetail(generics.RetrieveUpdateDestroyAPIView):
 	serializer_class = MatchResultSerializer
@@ -190,11 +151,8 @@ class MatchResultDetail(generics.RetrieveUpdateDestroyAPIView):
 class PronoResultList(generics.ListCreateAPIView):
 	serializer_class = PronoResultSerializer
 	permission_classes = (PronoResultPermission,)
-	def get_queryset(self):
-		queryset = simplefilter(filterargs(self.kwargs),PronoResult)
-		for obj in queryset:
-			self.check_object_permissions(self.request, obj)
-		return queryset
+	queryset = PronoResult.objects.all()
+	filter_fields = ('user','match',)
 
 class PronoResultDetail(generics.RetrieveUpdateDestroyAPIView):
 	serializer_class = PronoResultSerializer
@@ -206,11 +164,8 @@ class PronoResultDetail(generics.RetrieveUpdateDestroyAPIView):
 class PronoGroupstageWinnersList(generics.ListCreateAPIView):
 	serializer_class = PronoGroupstageWinnersSerializer
 	permission_classes = (IsOwnerOrAdminGroupstage,)
-	def get_queryset(self):
-		queryset = simplefilter(filterargs(self.kwargs),PronoGroupstageWinners)
-		for obj in queryset:
-			self.check_object_permissions(self.request, obj)
-		return queryset
+	queryset = PronoGroupstageWinners.objects.all()
+	filter_fields = ('user','group','ranking',)
 
 class PronoGroupstageWinnersDetail(generics.RetrieveUpdateDestroyAPIView):
 	serializer_class = PronoGroupstageWinnersSerializer
@@ -222,11 +177,8 @@ class PronoGroupstageWinnersDetail(generics.RetrieveUpdateDestroyAPIView):
 class PronoKnockoutstageTeamsList(generics.ListCreateAPIView):
 	serializer_class = PronoKnockoutstageTeamsSerializer
 	permission_classes = (IsOwnerOrAdminGroupstage,)
-	def get_queryset(self):
-		queryset = simplefilter(filterargs(self.kwargs),PronoKnockoutstageTeams)
-		for obj in queryset:
-			self.check_object_permissions(self.request, obj)
-		return queryset
+	queryset = PronoKnockoutstageTeams.objects.all()
+	filter_fields = ('user','stage','team',)
 
 class PronoKnockoutstageTeamsDetail(generics.RetrieveUpdateDestroyAPIView):
 	serializer_class = PronoKnockoutstageTeamsSerializer
@@ -238,11 +190,8 @@ class PronoKnockoutstageTeamsDetail(generics.RetrieveUpdateDestroyAPIView):
 class PronoTotalGoalsList(generics.ListCreateAPIView):
 	serializer_class = PronoTotalGoalsSerializer
 	permission_classes = (IsOwnerOrAdminGroupstage,)
-	def get_queryset(self):
-		queryset = simplefilter(filterargs(self.kwargs),PronoTotalGoals)
-		for obj in queryset:
-			self.check_object_permissions(self.request, obj)
-		return queryset
+	queryset = PronoTotalGoals.objects.all()
+	filter_fields = ('user',)
 
 class PronoTotalGoalsDetail(generics.RetrieveUpdateDestroyAPIView):
 	serializer_class = PronoTotalGoalsSerializer
@@ -250,15 +199,12 @@ class PronoTotalGoalsDetail(generics.RetrieveUpdateDestroyAPIView):
 	queryset = PronoTotalGoals.objects.all()
 
 
-# prono total goals
+# prono team result
 class PronoTeamResultList(generics.ListCreateAPIView):
 	serializer_class = PronoTeamResultSerializer
 	permission_classes = (IsOwnerOrAdminGroupstage,)
-	def get_queryset(self):
-		queryset = simplefilter(filterargs(self.kwargs),PronoTeamResult)
-		for obj in queryset:
-			self.check_object_permissions(self.request, obj)
-		return queryset
+	queryset = PronoTeamResult.objects.all()
+	filter_fields = ('user','team','result',)
 
 class PronoTeamResultDetail(generics.RetrieveUpdateDestroyAPIView):
 	serializer_class = PronoTeamResultSerializer

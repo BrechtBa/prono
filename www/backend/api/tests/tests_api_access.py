@@ -135,7 +135,7 @@ class APIAccessTests(PronoTest):
 	def test_prono_results_filtered_access_with_token(self):
 		id = self.users[1].prono_result.all()[0].id
 		token = self.generate_token(self.usercredentials[1])
-		response = self.client.get('/pronoresults/user/{}/'.format(id), HTTP_AUTHORIZATION='JWT {}'.format(token))
+		response = self.client.get('/pronoresults/?user={}/'.format(id), HTTP_AUTHORIZATION='JWT {}'.format(token))
 		self.assertEqual(response.status_code, status.HTTP_200_OK)
 		
 	def test_wrong_user_prono_results_access_with_token(self):

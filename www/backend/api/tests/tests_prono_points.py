@@ -86,7 +86,7 @@ class PronoPointsTests(PronoTest):
 		token = self.generate_token(self.usercredentials[1])
 		
 		# get all prono results of the user
-		response = self.client.get('/pronoresults/user/2/', HTTP_AUTHORIZATION='JWT {}'.format(token))
+		response = self.client.get('/pronoresults/?user=2', HTTP_AUTHORIZATION='JWT {}'.format(token))
 		responsedata = json.loads(response.rendered_content.decode('utf-8'))
 
 		# edit the prono results
