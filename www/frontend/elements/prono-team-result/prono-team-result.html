@@ -78,9 +78,8 @@
 
 		<!--<api-model id="teamIds" token="{{token}}" url="../../api/index.php/prono_team_result_teams/" model="{{teamIds}}" on-change="handleTeamIdsChange"></api-model>-->
 
-		<api-model id="prono" token="{{token}}" url="../../api/index.php/prono_team_result/user_id/{{user.id}}" model="{{prono}}" on-change="handlePronoChange"></api-model>
-		<api-model id="allProno" token="{{token}}" url="../../api/index.php/prono_team_result/" model="{{allProno}}" on-change="handleAllPronoChange"></api-model>
-
+		<api-model id="prono" token="{{token}}" url="http://pronoapi.duckdns.org/pronoteamresult/" model="{{prono}}"></api-model>
+		
 		<template is="dom-if" if="{{isProno(user)}}">
 			<paper-material class$="{{disabledClass(currentStage,user)}}" elevation="2">
 				<h3>{{trans('Team result')}}:</h3>
@@ -115,7 +114,7 @@
 
 
 		<default-dialog id="editResult">
-			<form is="iron-form" id="formProno" method="post" on-iron-form-submit="saveProno" action="/">
+			<form is="iron-form" id="formProno" on-iron-form-submit="saveProno" action="/">
 				<div class="horizontal layout center">
 					<prono-team-icon class="teamicon" team="{{editTeam}}"></prono-team-icon>
 					<prono-team-name class="teamname" team="{{editTeam}}"></prono-team-name>
@@ -123,8 +122,8 @@
 				<paper-dropdown-menu label="{{trans('Result')}}">
 					<paper-menu class="dropdown-content" attr-for-selected="value" selected="{{result}}">
 						<paper-item value="-1"></paper-item>
-						<template is="dom-repeat" items="{{getStages(matchesModel)}}" as="stage">
-							<paper-item value="{{stage}}">{{parseResult(stage)}}</paper-item>
+						<template is="dom-repeat" items="{{getStages(stagesModel)}}" as="stage">
+							<paper-item value="{{stage.id}}">{{parseResult(stage.id)}}</paper-item>
 						</template>
 					</paper-menu>
 				</paper-dropdown-menu>
@@ -176,7 +175,7 @@
 				teamsModel: {
 					type: 'Array',
 				},
-				matchesModel: {
+				stagesModel: {
 					type: 'Array',
 				},
 				user: {
@@ -184,6 +183,9 @@
 					value: {}
 				}
 			},
+			observers:[
+				'getProno(token,user)',
+			],
 			created: function(){
 				// create the local dictionary
 				this.dictionary = {};
@@ -199,21 +201,15 @@
 			},
 			ready: function(){
 				console.log('ready');
-				
-				// add global event listeners
-				var that = this;
-				/*that.$.teamIds.get();*/
-				// for now define the teams on which to bet static
-				that.teamIds = [3];
-
-
-				document.addEventListener('prono-model-changed', function(e){
-					that.$.prono.get();
-				});
-				document.addEventListener('calculate-user-points', function(e){
-					var user_id = e.detail;
-					that.calculateUserPoints(user_id);
-				});
+				this.teamIds = [3];
+			},
+			getProno: function(token,user){
+				if(typeof user.id == 'undefined' || token == ''){
+					this.prono = [];
+				}
+				else{
+					this.$.prono.get('?user='+user.id);
+				}
 			},
 			isProno: function(user){
 				return (typeof user.id != 'undefined');
@@ -243,65 +239,52 @@
 				});
 				return teams;
 			},
-			getStages: function(matchesModel){
-				var tempstages = []
-				var stages = []
+			getStages: function(stagesModel){
+				var stages = JSON.parse(JSON.stringify(stagesModel));
 
-				matchesModel.forEach(function(item){
-					if(item.stage>0 && tempstages.indexOf(item.stage)<0 && item.stage>0){
-						tempstages.push(item.stage);
+				// sort
+				stages.sort(function(a,b){
+					if(a.numberofteams>b.numberofteams){
+						return 1;
+					}
+					else if(a.numberofteams<b.numberofteams){
+						return -1;
+					}
+					else{
+						return 0;
 					}
 				});
 
-				// sort tempstages
-				tempstages.sort(function(a, b){return a-b}).reverse();
-				if(tempstages.indexOf(this.currentStage)<0){
-					this.expandedStage = tempstages[0];
-				}
-				else{
-					this.expandedStage = this.currentStage;
-				}
+				// add the winner
+				stages.push({'id':1, 'numberofteams':1});
 
-				// groupstage
-				stages.push("0");
 
-				// knockout stage
-				tempstages.forEach(function(stage){
-					var tempmatches = [];
-					matchesModel.forEach(function(match){
-						if(match.stage == stage && match.position < stage/4+1){
-							tempmatches.push(match);
-						}
-					});
-
-					stages.push(stage);
+				stages.forEach(function(stage){
+					stage.id = String(stage.id);
 				});
-
-				// winner
-				stages.push("1");
 
 				return stages;
 			},
 			getResult: function(prono,teamId){
-				var tempresult = -1;
-				prono.every(function(tempprono){
-					if(tempprono.team_id==teamId){
-						tempresult = tempprono.result;
-						return true;
-					}
-					return false;
+				var result = -1;
+				prono.forEach(function(tempprono){
+					if(tempprono.team == teamId){
+						result = tempprono.result;
+					};
 				});
-				return tempresult;
+				return result;
 			},
 			getParsedResult: function(prono,teamId){
 				return this.parseResult(this.getResult(prono,teamId));
 			},
 			parseResult: function(result){
+				result = String(result)
+
 				var description = '';
 				if(result === "0"){
 					description = this.trans('eliminated in the groupstage');
 				}
-				else if(result-0 > 16){
+				else if(parseInt(result) > 16){
 					description = this.trans('eliminated in the round of ')+result;
 				}
 				else if(result === "16"){
@@ -335,7 +318,21 @@
 			saveProno: function(){
 				this.$.editResult.close();
 
-				this.$.prono.put('team_id/'+this.editTeam.id,{'result': this.result});
+				var that = this;
+				var prono_id = -1;
+				this.prono.forEach(function(prono){
+					if(prono.team == that.editTeam.id){
+						prono_id = prono.id;
+					};
+				});
+				
+				var result = parseInt(this.result);
+				if(result<0){
+					result = null;
+				}
+				if(prono_id>0){
+					this.$.prono.put(prono_id+'/',{'result': result});
+				}
 			},
 			/*formSubmitConfig: function(){
 				this.$.formConfig.submit();
@@ -358,181 +355,6 @@
 					}
 				}
 			},*/
-
-			handlePronoChange: function(){
-				var done = true;
-				console.log('check prono team result');
-				try{
-					if(typeof this.user.id != 'undefined'){
-						var that = this;
-						pronos = that.teamIds;
-						pronos.every(function(prono){
-							// check if the prono is in the database
-							var found = false;
-							that.prono.forEach(function(tempprono){
-								if(tempprono.team_id == prono){
-									found = true;
-								}
-							});
-
-							if(!found){
-								done = false;
-								// post the prono
-								console.log('adding prono team result ' + prono);
-								that.$.prono.post({'user_id':that.user.id,'team_id':prono,'result':-1});
-							}
-							return found;
-						});
-					}
-					else{
-						this.prono = [];
-					}
-				}
-				catch(e){
-				}
-				
-				// proceed to the next step
-				if(done){
-					this.$.allProno.get();
-				}
-			},
-			handleAllPronoChange: function(){
-				if(this.permission > 5){
-					var that = this;
-					var points = {};
-					this.allProno.forEach(function(prono){
-						if( !(prono.user_id in points) ){
-							points[prono.user_id] = 0;
-						}
-						points[prono.user_id] += that.calculatePronoPoints(prono);
-						
-					});
-					this.fire('prono-team-result-points-changed',points);
-				}
-			},
-			calculateUserPoints: function(user_id){
-				if(typeof this.user.id != 'undefined'){
-					var that = this;
-					var points = 0;
-					if(user_id == this.user.id){
-						var prono = this.prono;
-					}
-					else if(this.permission > 8){
-						var prono = this.allProno.filter(function(prono){
-							return (prono.user_id == user_id);
-						});
-					}
-					prono.forEach(function(prono){
-						points += that.calculatePronoPoints(prono);
-					});
-					this.fire('user-points',{'prono':'prono-team-result', 'points':points});
-				}
-			},
-			calculatePronoPoints: function(prono){
-				var that = this;
-
-				// find the actual result of the team
-				var stages = this.getStages(this.matchesModel)
-				stages.pop(); // remove final element
-
-				var teaminstage = [];
-
-				var that = this;
-				stages.forEach(function(stage){
-					var matches = that.matchesModel.filter(function(tempmatch){
-						return tempmatch.stage==stage
-					});
-					
-					var tempteaminstage = 0;
-					matches.forEach(function(tempmatch){
-						if(tempmatch.team1 == prono.team_id || tempmatch.team2 == prono.team_id){
-							tempteaminstage = 1;
-						}
-						if(tempmatch.team1 <= 0 || tempmatch.team2 <= 0){
-							tempteaminstage = -1;  // teams not known yet
-						}
-					});
-					teaminstage.push(tempteaminstage);
-				});
-
-				var result = -1;
-				for(var i=0;i<teaminstage.length;i++){
-					if(teaminstage[i] == 1 && teaminstage[i+1] == 0){
-						result = stages[i];
-						break;
-					}
-				}
-
-				// final or winner, check the score
-				if(result == -1 && teaminstage[teaminstage.length-1] == 1){
-					var matches = this.matchesModel.filter(function(tempmatch){
-						return tempmatch.stage==2
-					});
-					var finalmatch = matches[0];
-
-					
-					if(prono.team_id==finalmatch.team1){
-						if(finalmatch.score1>-1 && finalmatch.score2>-1){
-							if(finalmatch.score1 + 0.1*finalmatch.penalty1 > finalmatch.score2 + 0.1*finalmatch.penalty2){
-								result = 1;
-							}
-							else{
-								result = 2;
-							}
-						}
-					}
-					else if(prono.team_id==finalmatch.team2){
-						if(finalmatch.score1>-1 && finalmatch.score2>-1){
-							if(finalmatch.score1 + 0.1*finalmatch.penalty1 > finalmatch.score2 + 0.1*finalmatch.penalty2){
-								result = 2;
-							}
-							else{
-								result = 1;
-							}
-						}
-					}
-				}
-
-				// calculate the points
-				var points = 0;
-				if(prono.result>-1 && prono.result == result){
-					if(result == 0){
-						points = 5;
-					}
-					else if(result == 16){
-						points = 10;
-					}
-					else if(result == 8){
-						points = 30;
-					}
-					else if(result == 4){
-						points = 50;
-					}
-					else if(result == 2){
-						points = 100;
-					}
-					else if(result == 1){
-						points = 150;
-					}
-				}
-				else{
-					points = 0;
-				}
-
-				return points;
-			},
-			_sortTeams: function(a, b) {  
-  
-				if(a.name > b.name){
-					return -1;
-				}
-				else if(a.name < b.name){
-					return 1;
-				}
-				else{
-					return 0;
-				}
-			},
 			trans: function(key){
 				return app.trans(key,this.dictionary);
 			}
