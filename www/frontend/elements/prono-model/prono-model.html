@@ -20,7 +20,7 @@
 		<api-model id="matchesModel"      token="[[token]]" url="http://pronoapi.duckdns.org/matches/"      model="{{matchesModel}}"      on-change="handleMatchesModelChange"></api-model>
 		<api-model id="matchresultsModel" token="[[token]]" url="http://pronoapi.duckdns.org/matchresults/" model="{{matchresultsModel}}" on-change="handleMatchresultsModelChange"></api-model>
 		
-		<!--<api-model id="checkUpdateModel" token="[[token]]" url="../../api/index.php/last_update" model="{{updateModel}}" on-change="handleCheckUpdateChange"></api-model>-->
+		<api-model id="lastUpdateModel" token="[[token]]" url="http://pronoapi.duckdns.org/lastupdate/" model="{{lastUpdateModel}}" on-change="handleLastUpdateModelChange"></api-model>
 
 	</template>
 
@@ -77,7 +77,7 @@
 					notify: true,
 					value: {}
 				},
-				last_update: {
+				lastUpdate: {
 					type: 'Number',
 					value: 0
 				}
@@ -96,6 +96,7 @@
 				}
 				catch(e){
 					this.user = {};
+					clearInterval(window.updateCheckInterval);
 				}
 
 				this.$.usersModel.get();
@@ -103,6 +104,16 @@
 				this.$.teamsModel.get();
 				this.$.matchesModel.get();
 				this.$.matchresultsModel.get();	
+			
+
+				this.lastUpdate = Math.floor( new Date().getTime()/1000 );
+
+				var that = this;
+				clearInterval(window.updateCheckInterval);
+				window.updateCheckInterval = window.setInterval(function(){
+					that.$.lastUpdateModel.get();
+				}, 30000);
+
 			},
 			handleUsersModelChange: function(e){
 			},
@@ -129,16 +140,21 @@
 				this.stagesModel = stages;
 			},
 			handleMatchresultsModelChange: function(){
-				this.last_update = Math.floor( new Date().getTime()/1000 );
+				
 				this.fire('prono-model-changed');
 			},
-			handleCheckUpdateChange: function(){
+			handleLastUpdateModelChange: function(){
 				console.log('check if update is required')
-				if( this.updateModel.length > 0 ){
-					if( parseInt(this.updateModel[0]['time']) > this.last_update){
+				if( this.lastUpdateModel.length > 0 ){
+					if( parseInt(this.lastUpdateModel[0]['date']) > this.lastUpdate){
 						console.log('update');
-						this.last_update = this.updateModel[0]['time'];
-						this.$.usersModel.get();
+						this.lastUpdate = this.lastUpdateModel[0]['date'];
+
+						this.$.teamsModel.get();
+						this.$.matchesModel.get();
+						this.$.matchresultsModel.get();
+
+						this.fire('update')
 					}
 				}
 			}

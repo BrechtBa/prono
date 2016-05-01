@@ -112,6 +112,11 @@
 			},
 			ready: function(){
 				console.log('ready');
+				// add event listeners
+				var that = this;
+				document.addEventListener('update', function(e){
+					that.getPointsTotal(that.token,that.user);
+				});
 			},
 			getPointsTotal: function(token,user){
 				if(typeof user.id == 'undefined' || token == ''){
