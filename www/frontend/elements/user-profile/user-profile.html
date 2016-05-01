@@ -53,8 +53,8 @@
 
 		<paper-card elevation="2">
 			<div class="horizontal layout center">
-				<avatar-image class="avatar" user="{{user}}"></avatar-image>
-				<div class="flex name">{{user.name}}</div>
+				<avatar-image class="avatar" user="{{userProfile}}"></avatar-image>
+				<div class="flex name">{{userProfile.displayname}}</div>
 			</div>
 
 			<div class="buttons">
@@ -69,7 +69,7 @@
 			<form is="iron-form" id="changeProfileForm" method="post" on-iron-form-submit="saveProfile" action="/">
 				<div class="horizontal layout">
 					<avatar-image id="newavatar" class="avatar" user="{{newuser}}"></avatar-image>
-					<file-input target="images/avatars/" prepend="{{user.id}}" on-success="setNewAvatar">{{trans('Change avatar')}}</file-input>
+					<file-input target="images/avatars/" prepend="{{userProfile.id}}" on-success="setNewAvatar">{{trans('Change avatar')}}</file-input>
 				</div>
 			
 				<div class="buttons">
@@ -104,13 +104,17 @@
 				token: {
 					type: 'String',
 					value: '',
-					notify: true
 				},
 				user: {
 					type: 'Object',
-					notify: true
-				}
+				},
+				usersModel: {
+					type: 'Array',
+				},
 			},
+			observers:[
+				'getUserProfile(user,usersModel)',
+			],
 			created: function(){
 				// create the local dictionary
 				this.dictionary = {};
@@ -120,6 +124,15 @@
 			},
 			ready: function(){
 				this.$.passwordValidator.validate = this.passwordValidator.bind(this);
+			},
+			getUserProfile: function(user,usersModel){
+				var userProfile = {};
+				usersModel.forEach(function(tempuser){
+					if( tempuser.user == user.id ){
+						userProfile = tempuser;
+					}
+				});
+				this.userProfile = userProfile;
 			},
 			setNewAvatar: function(e,detail){
 				this.set('newuser.avatar', detail.url);

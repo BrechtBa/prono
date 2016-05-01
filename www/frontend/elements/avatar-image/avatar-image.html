@@ -18,14 +18,14 @@
 			}
 		</style>
 
-		<div class="circular" style$="background: url( {{getSrc(user.avatar)}} ) no-repeat;"></div>
+		<div class="circular" style$="background: url( {{getSrc(userProfile.avatar)}} ) no-repeat;"></div>
 
 	</template>
 	<script>
 		Polymer({
 			is: 'avatar-image',
 			properties: {
-				user: {
+				userProfile: {
 					type: 'Object',
 					value: {}
 				},
