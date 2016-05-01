@@ -188,7 +188,19 @@
 				var timeparts = parts[1].split(':');
    				var date = Date.parse(dateparts[1]+'-'+dateparts[0]+'-'+dateparts[2]+' '+timeparts[0]+':'+timeparts[1])/1000;
 
-				app.$.model.$.matchesModel.put(this.match.id,{'date':date,'stage':this.match.stage,'group':this.match.group,'position':this.match.position,'defaultteam1':this.match.defaultteam1,'defaultteam2':this.match.defaultteam2,'team1':this.match.team1,'team2':this.match.team2})
+				var group = null
+				if(this.match.group>0){
+					group = this.match.group;
+				}
+				var team1 = null
+				if(this.match.team1>0){
+					team1 = this.match.team1;
+				}
+				var team2 = null
+				if(this.match.team2>0){
+					team2 = this.match.team2;
+				}
+				app.$.model.$.matchesModel.put(this.match.id+'/',{'date':date,'stage':this.match.stage,'group':group,'position':this.match.position,'defaultteam1':this.match.defaultteam1,'defaultteam2':this.match.defaultteam2,'team1':team1,'team2':team2})
 			},
 			addMatch: function(){
 				app.$.model.$.matchesModel.post({});

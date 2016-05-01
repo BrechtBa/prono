@@ -33,7 +33,11 @@
 				},
 				url: {
 					type: 'String'
-				}
+				},
+				debug: {
+					type: 'Boolean',
+					value: false,
+				},
 			},
 			listeners: {
 			},
@@ -82,20 +86,20 @@
 					this.$.get.url = this.url;
 				}
 				else{
-					this.$.get.url = this.url + selector + '/';
+					this.$.get.url = this.url + selector;
 				};
 				console.log('get ' + this.$.get.url);
 				this.$.get.generateRequest();
 			},
 			put: function(selector,data){
-				this.$.put.url = this.url + selector + '/';
+				this.$.put.url = this.url + selector;
 
 				this.$.put.body = JSON.stringify(data);
 				console.log('put ' + JSON.stringify(data) + ' in ' + this.$.put.url);
 				this.$.put.generateRequest();
 			},
 			delete: function(selector){
-				this.$.delete.url = this.url + selector + '/';
+				this.$.delete.url = this.url + selector;
 				this.$.delete.generateRequest();
 			},
 			handlePostResponse: function(e,request){
@@ -131,7 +135,11 @@
 				});
 				console.log('loaded ' + this.$.get.url);
 				this.model = tempmodel;
+				if(this.debug){
+					console.log(this.model);
+				}
 				this.fire('change');
+				
 			},
 			handleError: function(){
 			},

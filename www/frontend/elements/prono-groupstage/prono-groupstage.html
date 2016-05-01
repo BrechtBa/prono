@@ -88,7 +88,7 @@
 						</template>
 					</div>
 					
-					<!--<prono-groupwinners token="{{token}}" permission="{{permission}}" group="{{group}}" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" user="{{user}}"></prono-groupwinners>-->
+					<prono-groupwinners token="{{token}}" permission="{{permission}}" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" group="{{group}}" user="{{user}}"></prono-groupwinners>
 
 				</paper-material>
 			</template>
@@ -148,7 +148,7 @@
 					this.prono = [];
 				}
 				else{
-					this.$.prono.get('user/'+user.id);
+					this.$.prono.get('?user='+user.id);
 				}
 			},
 			getResults: function(user,matchresultsModel,prono){
@@ -178,10 +178,10 @@
 			},
 			saveScore: function(e){
 				if(typeof this.user.id != 'undefined'){
-					this.$.prono.put(e.detail.id,{'score1':e.detail.score1,'score2':e.detail.score2});	
+					this.$.prono.put(e.detail.id+'/',{'score1':e.detail.score1,'score2':e.detail.score2});	
 				}
 				else{
-					app.$.model.$.matchresultsModel.put(e.detail.id,{'score1':e.detail.score1,'score2':e.detail.score2});
+					app.$.model.$.matchresultsModel.put(e.detail.id+'/',{'score1':e.detail.score1,'score2':e.detail.score2});
 				}
 			},
 			filterGroupMatches: function(group){

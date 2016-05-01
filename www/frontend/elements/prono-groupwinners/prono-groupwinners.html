@@ -56,20 +56,19 @@
 			}
 		</style>
 
-		<api-model id="prono" token="{{token}}" url="../../api/index.php/prono_groupstage_winners/user_id/{{user.id}}" model="{{prono}}" on-change="handlePronoChange"></api-model>
-		<api-model id="allProno" token="{{token}}" url="../../api/index.php/prono_groupstage_winners/" model="{{allProno}}" on-change="handleAllPronoChange"></api-model>
-
+		<api-model id="prono" token="{{token}}" url="http://pronoapi.duckdns.org/pronogroupstagewinners/" model="{{prono}}" on-change="handlePronoChange"></api-model>
+		
 		<template is="dom-if" if="{{isProno(user)}}">
 			<div on-tap="editWinners">
 				<div class="horizontal layout center">
 					<div class="flex">{{trans('Winner')}}:</div>
-					<prono-team-icon class="teamicon" team="{{getWinner(group,teamsModel,prono)}}"></prono-team-icon>
-					<prono-team-name class="flex-2 teamname" team="{{getWinner(group,teamsModel,prono)}}" default=""></prono-team-name>
+					<prono-team-icon class="teamicon" team="{{getTeam(teamsModel,prono,1)}}"></prono-team-icon>
+					<prono-team-name class="flex-2 teamname" team="{{getTeam(teamsModel,prono,1)}}" default=""></prono-team-name>
 				</div>
 				<div class="horizontal layout center">
 					<div class="flex">{{trans('Runner up')}}:</div>
-					<prono-team-icon class="teamicon" team="{{getRunnerup(group,teamsModel,prono)}}"></prono-team-icon>
-					<prono-team-name class="flex-2 teamname" team="{{getRunnerup(group,teamsModel,prono)}}" default=""></prono-team-name>
+					<prono-team-icon class="teamicon" team="{{getTeam(teamsModel,prono,2)}}"></prono-team-icon>
+					<prono-team-name class="flex-2 teamname" team="{{getTeam(teamsModel,prono,2)}}" default=""></prono-team-name>
 				</div>
 			</div>
 		</template>
@@ -92,7 +91,7 @@
 
 
 		<default-dialog id="editWinners">
-			<form is="iron-form" id="formProno" method="post" on-iron-form-submit="saveProno" action="/">
+			<form is="iron-form" id="formProno" on-iron-form-submit="saveProno" action="/">
 				<div>
 					<paper-dropdown-menu label="{{trans('Winner')}}">
 						<paper-menu class="dropdown-content" attr-for-selected="value" selected="{{winner}}">
@@ -123,7 +122,7 @@
 
 
 		<default-dialog id="editPoints">
-			<form is="iron-form" id="formRanking" method="post" on-iron-form-submit="saveRanking" action="/">
+			<form is="iron-form" id="formRanking" on-iron-form-submit="saveRanking" action="/">
 				<div>
 					<template is="dom-repeat" items="{{newTeams}}" as="team" sort="_sortTeams">
 						<div class="horizontal layout center">
@@ -163,7 +162,7 @@
 					type: 'Array',
 				},
 				group: {
-					type: 'String'
+					type: 'Object'
 				},
 				currentStage:{
 					type: 'Number',
@@ -174,6 +173,9 @@
 					value: {}
 				}
 			},
+			observers:[
+				'getProno(token,user,group)',
+			],
 			created: function(){
 				// create the local dictionary
 				this.dictionary = {};
@@ -182,51 +184,31 @@
 			},
 			ready: function(){
 				console.log('ready');
-				// add global event listeners
-				var that = this;
-				document.addEventListener('prono-model-changed', function(e){
-					that.$.prono.get();
-				});
-				document.addEventListener('calculate-user-points', function(e){
-					var user_id = e.detail;
-					that.calculateUserPoints(user_id);
-				});
-				//get the prono when the component is ready is it is only initialize after the groups are known
-				that.$.prono.get();
+			},
+			getProno: function(token,user,group){
+				if(typeof user.id == 'undefined' || typeof group.id == 'undefined'  || token == ''){
+					this.prono = [];
+				}
+				else{
+					this.$.prono.get('?user='+user.id+'&group='+group.id);
+				}
+			},
+			handlePronoChange: function(e){
+				console.log('test')
+				console.log(this.prono)
 			},
 			isProno: function(user){
 				return (typeof user.id != 'undefined');
 			},
-			getWinner: function(group,teamsModel,prono){
+			getTeam: function(teamsModel,prono,ranking){
 				var team = {};
-				var id = -1;
 				try{
+					var id = -1;
 					prono.forEach(function(item){
-						if(item.prono_id == group + '1'){					
-							id = item.team_id;
+						if(item.ranking == ranking){					
+							id = item.team;
 						}
 					});
-
-					teamsModel.forEach(function(item){
-						if(item.id == id){					
-							team = item;
-						}
-					});
-				}
-				catch(e){
-				}
-				return team;
-			},
-			getRunnerup: function(group,teamsModel,prono){
-				var team = {};
-				var id = -1;
-				try{
-					prono.forEach(function(item){
-						if(item.prono_id == group + '2'){					
-							id = item.team_id;
-						}
-					});
-
 					teamsModel.forEach(function(item){
 						if(item.id == id){					
 							team = item;
@@ -238,12 +220,12 @@
 				return team;
 			},
 			editWinners: function(){
-				winner = this.getWinner(this.group,this.teamsModel,this.prono);
+				winner = this.getTeam(this.teamsModel,this.prono,1);
 				if( winner != {} ){
 					this.winner = winner.id;
 				}
 
-				runnerup = this.getRunnerup(this.group,this.teamsModel,this.prono);
+				runnerup = this.getTeam(this.teamsModel,this.prono,2);
 				if( runnerup != {} ){
 					this.runnerup = runnerup.id;
 				}
@@ -254,7 +236,7 @@
 				// find the matches in the group
 				try{			
 					var matches = matchesModel.filter(function( match ){
-						return ( match.grp == group );
+						return ( match.group == group.id );
 					});
 				}
 				catch(e){
@@ -280,8 +262,27 @@
 			saveProno: function(){
 				this.$.editWinners.close();
 
-				this.$.prono.put('prono_id/'+this.group+'1',{'team_id': this.winner});
-				this.$.prono.put('prono_id/'+this.group+'2',{'team_id': this.runnerup});
+				var winner_prono_id = -1; 
+				var runnerup_prono_id = -1; 
+				this.prono.forEach(function(item){
+					if(item.ranking == 1){					
+						winner_prono_id = item.id;
+					}
+					if(item.ranking == 2){					
+						runnerup_prono_id  = item.id;
+					}
+				});
+				var winner = null
+				if(this.winner > 0){
+					winner = this.winner;
+				}
+				var runnerup = null
+				if(this.runnerup > 0){
+					runnerup = this.runnerup;
+				}
+			
+				this.$.prono.put(winner_prono_id+'/',{'team': winner});
+				this.$.prono.put(runnerup_prono_id+'/',{'team': runnerup});
 			},
 			roundPoints: function(points){
 				return Math.floor(parseFloat(points));
@@ -313,101 +314,10 @@
 				this.$.editPoints.close();
 
 				this.newTeams.forEach( function(team){
-					app.$.model.$.teamsModel.put('id/'+team.id,{'groupstage_points': team.groupstage_points})
+					app.$.model.$.teamsModel.put(team.id+'/',{'groupstage_points': team.groupstage_points})
 				});
-				app.$.model.$.checkUpdateModel.put('id/1',{'time':Math.floor( new Date().getTime()/1000)});
 			},
 			handlePronoChange: function(){
-				var done = true;
-				console.log('check prono groupstage winners');
-				try{
-					if(typeof this.user.id != 'undefined'){
-						var that = this;
-						pronos = [this.group+'1',this.group+'2'];
-						pronos.every(function(prono){
-							// check if the prono is in the database
-							var found = false;
-							that.prono.forEach(function(tempprono){
-								if(tempprono.prono_id == prono){
-									found = true;
-								}
-							});
-
-							if(!found){
-								done = false;
-								// post the prono
-								console.log('adding prono groupstage winners ' + prono);
-								that.$.prono.post({'user_id':that.user.id,'prono':prono,'team_id':-1});
-							}
-							return found;
-						});
-					}
-					else{
-						this.prono = [];
-					}
-				}
-				catch(e){
-				}
-				
-				// proceed to the next step
-				if(done){
-					this.$.allProno.get();
-				}
-			},
-			handleAllPronoChange: function(){
-				if(this.permission > 5){
-					var that = this;
-					var points = {};
-					this.allProno.forEach(function(prono){
-						if( !(prono.user_id in points) ){
-							points[prono.user_id] = 0;
-						}
-						points[prono.user_id] += that.calculatePronoPoints(prono);
-						
-					});
-					this.fire('prono-groupstage-winners-points-changed',points);
-				}
-			},
-			calculateUserPoints: function(user_id){
-				if(typeof this.user.id != 'undefined'){
-					var that = this;
-					var points = 0;
-					if(user_id == this.user.id){
-						var prono = this.prono;
-					}
-					else if(this.permission > 8){
-						var prono = this.allProno.filter(function(prono){
-							return (prono.user_id == user_id);
-						});
-					}
-					prono.forEach(function(prono){
-						points += that.calculatePronoPoints(prono);
-					});
-					this.fire('user-points',{'prono':'prono-groupstage-winners', 'points':points});
-				}
-			},
-			calculatePronoPoints: function(prono){
-				var that = this;
-				var points = 0;
-				var group = prono.prono_id.substr(0,prono.prono_id.length-1);
-
-				filter = that.filterGroupTeams(group,that.matchesModel)
-				var teams = that.teamsModel.filter(function(team){
-					return filter(team);
-				});
-
-				// sort the teams
-				teams.sort(that._sortTeams);
-
-				// check if the winner is correct
-				if(prono.prono_id.substr(prono.prono_id.length-1)=='1' && prono.team_id==teams[0].id){
-					points += 3;
-				}
-				// check if the runnerup is correct
-				if(prono.prono_id.substr(prono.prono_id.length-1)=='2' && prono.team_id==teams[1].id){
-					points += 3;
-				}
-				return points;
 			},
 			_sortTeams: function(a, b) {  
   

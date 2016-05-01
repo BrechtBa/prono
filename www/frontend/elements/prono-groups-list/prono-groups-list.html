@@ -73,7 +73,7 @@
 			},
 			save: function(){
 				this.$.edit.close();
-				app.$.model.$.groupsModel.put(this.group.id,{'name':this.group.name});
+				app.$.model.$.groupsModel.put(this.group.id+'/',{'name':this.group.name});
 			},
 			add: function(){
 				app.$.model.$.groupsModel.post();

@@ -53,6 +53,9 @@
 					<div class="name">{{team.name}}</div>
 					<div class="abr">{{team.abr}}</div>
 				</div>
+				<div class="flex">
+					<div class="group">Group: {{formatGroupName(team.group,groupsModel)}}</div>
+				</div>
 				<prono-team-icon class="teamicon" team="{{team}}"></prono-team-icon>
 			</paper-card>
 		</template>
@@ -63,6 +66,14 @@
 			<paper-input id="abr" label="Abreviation:" value="{{team.abr}}"></paper-input>
 			<paper-input id="iso" label="ISO icon code:" value="{{team.iso_icon}}"></paper-input>
 			<paper-input id="icon" label="icon url:" value="{{team.icon}}"></paper-input>
+			<paper-dropdown-menu id="group" label="Group">
+				<paper-menu class="dropdown-content" attr-for-selected="value" selected="{{team.group}}">
+					<paper-item value="0"></paper-item>
+					<template is="dom-repeat" items="{{groupsModel}}" as="group">
+						<paper-item value="{{group.id}}">{{group.name}}</paper-item>
+					</template>
+				</paper-menu>
+			</paper-dropdown-menu>
 			<div class="buttons">
 				<paper-button raised class="primary" on-tap="saveTeam">Save</paper-button>
 				<paper-button raised on-tap="deleteTeam">Delete</paper-button>
@@ -76,9 +87,11 @@
 		Polymer({
 			is: 'prono-teams-list',
 			properties: {
+				groupsModel: {
+					type: 'Array',
+				},
 				teamsModel: {
 					type: 'Array',
-					notify: true
 				}
 			},
 			ready: function(){
@@ -89,7 +102,12 @@
 			},
 			saveTeam: function(){
 				this.$.editTeam.close();
-				app.$.model.$.teamsModel.put(this.team.id,{'name':this.team.name,'abr':this.team.abr,'iso_icon':this.team.iso_icon,'icon':this.team.icon});
+
+				var group = null;
+				if(this.team.group>0){
+					group = this.team.group;
+				}
+				app.$.model.$.teamsModel.put(this.team.id+'/',{'name':this.team.name,'abr':this.team.abr,'iso_icon':this.team.iso_icon,'icon':this.team.icon,'group':group});
 			},
 			addTeam: function(){
 				app.$.model.$.teamsModel.post();
@@ -104,6 +122,15 @@
 				else{
 					return icon;
 				}
+			},
+			formatGroupName: function(id,groupsModel){
+				var name = '';
+				groupsModel.forEach(function(item){
+					if(item.id == id){
+						name = item.name;
+					}
+				});
+				return name;
 			},
 			_sortTeams: function(a, b) {  
   
