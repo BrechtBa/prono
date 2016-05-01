@@ -81,23 +81,25 @@
 				margin-top: 5px;
 				margin-bottom: 5px;
 			}
+			.selectable{
+				cursor: pointer;
+			}
 			.selected{
 				background-color: #dddddd;
 			}
 		</style>
 
-		<api-model id="prono" token="{{token}}" url="../../api/index.php/prono_knockoutstage_teams/user_id/{{user.id}}" model="{{prono}}" on-change="handlePronoChange"></api-model>
-		<api-model id="allProno" token="{{token}}" url="../../api/index.php/prono_knockoutstage_teams/" model="{{allProno}}" on-change="handleAllPronoChange"></api-model>
-
+		<api-model id="prono" token="{{token}}" url="http://pronoapi.duckdns.org/pronoknockoutstageteams/" model="{{prono}}"></api-model>
+		
 		<div class="horizontal layout center-justified">
 			<div class="flex vertical layout">
-				<template is="dom-repeat" items="{{stages}}" as="stage">
+				<template is="dom-repeat" items="{{getStages(stagesModel)}}" as="stage">
 
 					<div class$="{{disabledClass(currentStage)}} vertical-layout">
-						<paper-material elevation="2" class$="stage {{stageClass(stage)}} vertical layout" on-tap="editTeams">
-							<h3>{{formatStageText(stage)}}</h3>
+						<paper-material elevation="2" class$="stage {{stageClass(stage.id)}} vertical layout" on-tap="editTeams">
+							<h3>{{formatStageText(stage.id)}}</h3>
 							<div class="horizontal layout center-justified wrap">
-								<template is="dom-repeat" items="{{getPronoTeamStage(teamsModel,prono,stage)}}" as="team" sort="_sortTeams">
+								<template is="dom-repeat" items="{{getPronoTeamStage(teamsModel,prono,stage.id)}}" as="team" sort="_sortTeams">
 									<div class="team horizontal layout center">
 										<prono-team-icon class="teamicon" team="{{team}}"></prono-team-icon>
 										<prono-team-name class="teamname" team="{{team}}"></prono-team-name>
@@ -113,10 +115,10 @@
 
 		<default-dialog id="editTeams">
 			<div class="before-scrolling">{{selectionsRemaining}} {{trans('selections remaining')}}</div>
-			<form is="iron-form" id="form" method="post" on-iron-form-submit="save" action="/">
+			<form is="iron-form" id="form" on-iron-form-submit="save" action="/">
 
 				<template is="dom-repeat" items="{{teamsModel}}" as="team">
-	        		<div class$="horizontal layout center {{selectedClass(team,selectedTeams)}}" on-tap="selectTeam">
+	        		<div class$="horizontal layout center {{selectedClass(team,selectedTeams)}} selectable" on-tap="selectTeam">
 						<prono-team-icon class="teamicon" team="{{team}}"></prono-team-icon>
 						<prono-team-name class="teamname" team="{{team}}"></prono-team-name>
 					</div>
@@ -143,6 +145,10 @@
 					type: 'Number',
 					value: 1
 				},
+				stagesModel: {
+					type: 'Array',
+					value: []
+				},
 				teamsModel: {
 					type: 'Array',
 					value: []
@@ -160,6 +166,9 @@
 					value: {}
 				}
 			},
+			observers:[
+				'getProno(token,user)',
+			],
 			created: function(){
 				// create the local dictionary
 				this.dictionary = {};
@@ -172,153 +181,53 @@
 			},
 			ready: function(){
 				console.log('ready');
-				// add global event listeners
-				var that = this;
-				document.addEventListener('prono-model-changed', function (e) {
-					that.getStages();
-				});
-				document.addEventListener('calculate-user-points', function(e){
-					var user_id = e.detail;
-					that.calculateUserPoints(user_id);
-				});
 			},
-			getStages: function(){
-				var stages = [];
-				this.matchesModel.forEach(function(match){
-					if(match.stage > 0 && stages.indexOf(match.stage)==-1){
-						stages.push(match.stage);
+			getProno: function(token,user){
+				if(typeof user.id == 'undefined' || token == ''){
+					this.prono = [];
+				}
+				else{
+					this.$.prono.get('?user='+user.id);
+				}
+			},
+			getStages: function(stagesModel){
+				// filter knockoutstages
+				var stages = stagesModel.filter(function(item){
+					return (item.type=='knockoutstage');
+				});
+
+				// sort
+				stages.sort(function(a,b){
+					if(a.numberofteams>b.numberofteams){
+						return 1;
 					}
-				});
-				stages.push("1");
-
-				// remove the 1st stage after the group stage
-				stages = stages.slice(1);
-
-				this.stages = stages;
-				this.$.prono.get();
-			},
-			handlePronoChange: function(){
-				var done = true;
-				console.log('check prono knockoutstage teams');
-				try{
-					if(typeof this.user.id != 'undefined'){
-						var that = this;
-						// check which prono's should be present
-						var pronos = [];
-						this.stages.forEach(function(stage){
-							for(var i=1; i<=stage; i++){
-								pronos.push('stage' + stage + '_'+ i);
-							}
-						});
-
-						pronos.every(function(prono_id){
-							// check if the prono is in pronoTeam
-							var found = false;
-							that.prono.forEach(function(tempprono){
-								if(tempprono.prono_id == prono_id){
-									found = true;
-								}
-							});
-
-							if(!found){
-								done = false;
-								// post the prono
-								console.log('adding prono team '+prono_id);
-								that.$.prono.post({'user_id':that.user.id,'prono_id':prono_id,'team_id':-1});
-							}
-							return found;				
-						});
+					else if(a.numberofteams<b.numberofteams){
+						return -1;
 					}
 					else{
-						this.prono = [];
-					}
-				}
-				catch(e){
-				}
-			
-				// proceed to the next step
-				if(done){
-					this.$.allProno.get();
-				}
-			},
-			handleAllPronoChange: function(){
-				// calculate the points for every user if permitted and fire an event which says these have changed
-				if(this.permission > 5){
-					var that = this;
-					var points = {};
-					this.allProno.forEach(function(prono){
-						if( !(prono.user_id in points) ){
-							points[prono.user_id] = 0;
-						}
-						points[prono.user_id] += that.calculatePronoPoints(prono);
-					});
-					this.fire('prono-knockoutstage-teams-points-changed',points);
-				}
-			},
-			calculateUserPoints: function(user_id){
-				if(typeof this.user.id != 'undefined'){
-					var that = this;
-					var points = 0;
-					if(user_id == this.user.id){
-						var prono = this.prono;
-					}
-					else if(this.permission > 8){
-						var prono = this.allProno.filter(function(prono){
-							return (prono.user_id == user_id);
-						});
-					}
-					prono.forEach(function(prono){
-						points += that.calculatePronoPoints(prono);
-					});
-					this.fire('user-points',{'prono':'prono-knockoutstage-teams', 'points':points});
-				}
-			},
-			calculatePronoPoints: function(prono){
-				var that = this;
-				var points = 0;
-				var stage = prono.prono_id.split('_')[0];
-				// check is the team is still in the tournament in the stage
-				that.matchesModel.forEach(function(match){
-					var c1 = (stage == 'stage'+match.stage  && (prono.team_id == match.team1 || prono.team_id == match.team2));
-					
-					// check for winner							
-					var c21 = (match.stage == 2 && prono.team_id == match.team1 && match.score1+0.01*match.penalty1 > match.score2+0.01*match.penalty2 && match.score1 >-1 && match.score2 >-1);
-					var c22 = (match.stage == 2 && prono.team_id == match.team2 && match.score1+0.01*match.penalty1 < match.score2+0.01*match.penalty2 && match.score1 >-1 && match.score2 >-1);
-					var c2 = (stage == 'stage1' && ( c21 || c22 ));
-				
-					if( c1 || c2 ){
-						// the team is there, award points
-						switch(stage){
-							case 'stage16':
-								points = 6;
-								break;
-							case 'stage8':
-								points = 18;
-								break;
-							case 'stage4':
-								points = 28;
-								break;
-							case 'stage2':
-								points = 42;
-								break;
-							case 'stage1':
-								points = 60;
-								break;
-						}
+						return 0;
 					}
 				});
-				return points;
+
+				// remove the 1st stage after the group stage
+				if(stages.length>0){
+					stages.shift()
+				}
+
+				// add the winner
+				stages.push({'id':1, 'numberofteams':1});
+
+				return stages;
 			},
 			getPronoTeamStage: function(teamsModel,prono,stage){
 				var teams = []
-
 				var stageProno = this.prono.filter(function(prono){
-					return ( prono.prono_id.indexOf('stage' + stage + '_')>-1 );
+					return ( prono.stage == stage );
 				});
 
 				stageProno.forEach(function(prono){
 					var team = teamsModel.filter(function(team){
-						return team.id == prono.team_id;
+						return team.id == prono.team;
 					});
 					if(team.length>0){
 						teams.push( team[0] );
@@ -328,21 +237,22 @@
 				return teams;
 			},
 			formatStageText: function(stage){
+				stage = parseInt(stage)
 				var text = ''
 				switch(stage){
-					case '16':
+					case 16:
 						text = this.trans('Teams in round of 16:');
 						break;
-					case '8':
+					case 8:
 						text = this.trans('Teams in quarterfinal:');
 						break;
-					case '4':
+					case 4:
 						text = this.trans('Teams in semifinal:');
 						break;
-					case '2':
+					case 2:
 						text = this.trans('Teams in final:');
 						break;
-					case '1':
+					case 1:
 						text = this.trans('Winner:');
 						break;
 					default:
@@ -386,16 +296,16 @@
 
 					var selectedTeams = []
 					var stageProno = this.prono.filter(function(prono){
-						return ( prono.prono_id.indexOf('stage' + editStage + '_')>-1 );
+						return ( prono.stage == editStage.id );
 					});
 
 					stageProno.forEach(function(prono){
-						if(prono.team_id>0){
-							selectedTeams.push(prono.team_id);
+						if(prono.team != null){
+							selectedTeams.push(prono.team);
 						}
 					});
 					this.selectedTeams = selectedTeams;
-					this.selectionsRemaining = parseInt(editStage) - this.selectedTeams.length
+					this.selectionsRemaining = parseInt(editStage.numberofteams) - this.selectedTeams.length
 
 					this.$.editTeams.open();
 				}
@@ -409,13 +319,13 @@
 					// remove the team
 					selectedTeams.splice(index, 1);
 				}
-				else if(parseInt(this.editStage) - this.selectedTeams.length > 0){
+				else if(parseInt(this.editStage.numberofteams) - this.selectedTeams.length > 0){
 					// add the team
 					selectedTeams.push(team_id);
 				}
 				this.selectedTeams = selectedTeams;
 
-				this.selectionsRemaining = parseInt(this.editStage) - this.selectedTeams.length;
+				this.selectionsRemaining = parseInt(this.editStage.numberofteams) - this.selectedTeams.length;
 			},
 			selectedClass: function(team,selectedTeams){
 				if( selectedTeams.indexOf(team.id)>-1){
@@ -437,14 +347,18 @@
 				});			
 				teams.sort(this._sortTeams);
 
-				for(var i=1; i<=this.editStage; i++){
-					if(typeof teams[i-1] != 'undefined'){
-						this.$.prono.put('prono_id/stage' + this.editStage + '_' + i,{'team_id':teams[i-1].id});
+				var stageProno = this.prono.filter(function(prono){
+					return (prono.stage == that.editStage.id);
+				});
+
+				stageProno.forEach(function(prono,index){
+					if(typeof teams[index] != 'undefined'){
+						that.$.prono.put(prono.id+'/',{'team':teams[index].id});
 					}
 					else{
-						this.$.prono.put('prono_id/stage' + this.editStage + '_' + i,{'team_id':-1});
+						that.$.prono.put(prono.id+'/',{'team':null});
 					}
-				}
+				});
 			},
 			_sortTeams: function(a, b) {  
   
