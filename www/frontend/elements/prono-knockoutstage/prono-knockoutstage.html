@@ -100,12 +100,11 @@
 			}
 		</style>
 
-		<api-model id="prono" token="{{token}}" url="../../api/index.php/prono_knockoutstage/user_id/{{user.id}}" model="{{prono}}" on-change="handlePronoChange"></api-model>
-		<api-model id="allProno" token="{{token}}" url="../../api/index.php/prono_knockoutstage/" model="{{allProno}}" on-change="handleAllPronoChange"></api-model>
-
+		<api-model id="prono" token="{{token}}" url="http://pronoapi.duckdns.org/pronoresults/" model="{{prono}}"></api-model>
+		
 		<div class="horizontal layout center-justified">
 			<div class="flex horizontal layout center">
-				<template is="dom-repeat" items="{{getStages(matchesModel)}}" as="stage">
+				<template is="dom-repeat" items="{{getStages(stagesModel,matchesModel)}}" as="stage">
 					<div class$="stage {{stageClass(stage)}} {{collapsedClass(stage,expandedStage)}} {{disabledClass(stage,currentStage,user)}} vertical-layout ">
 						<template is="dom-repeat" items="{{stage.matches}}" as="match">
 							
@@ -122,9 +121,9 @@
 										<prono-team-icon class="teamicon" team="{{getTeam(match.team1,teamsModel)}}"></prono-team-icon>
 									</div>
 									<div class$="score flex {{scoreLayoutClass(stage,expandedStage)}} layout center center-justified">
-										<div>{{getScore1(match,prono,user)}}</div>
+										<div>{{getScore1(match,results)}}</div>
 										<div class="dash">-</div>
-										<div>{{getScore2(match,prono,user)}}</div>
+										<div>{{getScore2(match,results)}}</div>
 									</div>
 									<div class="flex">
 										<prono-team-icon class="teamicon" team="{{getTeam(match.team2,teamsModel)}}"></prono-team-icon>
@@ -146,7 +145,7 @@
 			</div>
 		</div>
 
-		<prono-score-dialog id="editScore" teams-model="{{teamsModel}}" match="{{editmatch}}" score="{{score}}"></prono-score-dialog>
+		<prono-score-dialog id="editScore" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" result="{{result}}" on-save="saveScore"></prono-score-dialog>
 	</template>
 
 	<script>
@@ -161,11 +160,19 @@
 					type: 'Number',
 					value: 1
 				},
+				stagesModel:{
+					type: 'Array',
+					value: []
+				},
 				teamsModel: {
 					type: 'Array',
 					value: []
 				},
 				matchesModel: {
+					type: 'Array',
+					value: []
+				},
+				matchrestulsModel: {
 					type: 'Array',
 					value: []
 				},
@@ -182,6 +189,10 @@
 					value: {}
 				}
 			},
+			observers:[
+				'getProno(token,user)',
+				'getResults(user,matchresultsModel,prono)'
+			],
 			listeners:{
 				'editScore.save': 'saveScore'
 			},
@@ -191,75 +202,171 @@
 			},
 			ready: function(){
 				console.log('ready');
-				// add global event listeners
-				var that = this;
-				document.addEventListener('prono-model-changed', function(e){
-					that.$.prono.get();
-				});
-				document.addEventListener('calculate-user-points', function(e){
-					var user_id = e.detail;
-					that.calculateUserPoints(user_id);
-				});
 			},
-			getStages: function(matchesModel){
-				var tempstages = []
-				var stages = []
+			getProno: function(token,user){
+				if(typeof user.id == 'undefined' || token == ''){
+					this.prono = [];
+				}
+				else{
+					this.$.prono.get('?user='+user.id);
+				}
+			},
+			getResults: function(user,matchresultsModel,prono){
+				if(typeof user.id != 'undefined'){
+					this.results = this.prono.filter(function(prono){
+						return (prono.user == user.id);
+					});
+				}
+				else{
+					this.results = matchresultsModel;
+				}
+			},
+			getStages: function(stagesModel,matchesModel){
+				var tempstages = [];
+				var stages = [];
 
-				//try{
-					matchesModel.forEach(function(item){
-						if(item.stage>0 && tempstages.indexOf(item.stage)<0 && item.stage>2){
-							tempstages.push(item.stage);
+				// filter knockoutstages
+				var tempstages = stagesModel.filter(function(item){
+					return (item.type=='knockoutstage');
+				});
+
+				if(tempstages.length > 0){
+					// sort
+					tempstages.sort(function(a,b){
+						if(a.numberofteams>b.numberofteams){
+							return 1;
+						}
+						else if(a.numberofteams<b.numberofteams){
+							return -1;
+						}
+						else{
+							return 0;
 						}
 					});
 
-					// sort tempstages
-					tempstages.sort(function(a, b){return a-b}).reverse();
-					if(tempstages.indexOf(this.currentStage)<0){
-						this.expandedStage = tempstages[0];
-					}
-					else{
-						this.expandedStage = this.currentStage;
-					}
-
-
+					// get the exapanded stage       fixme
+					tempstages.forEach(function(item){
+						if(item.numberofteams < this.currentStage){
+							this.expandedStage = tempstages[0];
+						}
+						else{
+							this.expandedStage = this.currentStage;
+						}
+					});
+					this.expandedStage = 1;
 
 					//left side
 					tempstages.forEach(function(stage){
 						var tempmatches = [];
 						matchesModel.forEach(function(match){
-							if(match.stage == stage && match.position < stage/4+1){
+							if(match.stage == stage.id && match.position < stage.numberofteams/4+1){
 								tempmatches.push(match);
 							}
 						});
-						stages.push({'id':stage-0,'matches':tempmatches,'side':'left'});
+						stages.push({'id':parseInt(stage.id),'matches':tempmatches,'side':'left'});
 					});
 
 					//final
-					var stage = 2;
-					var teams = [];
-					var tempmatches = [];
-					matchesModel.forEach(function(match){
-						if(match.stage == stage){
-							tempmatches.push(match);
-						}
-					});
-					stages.push({'id':stage-0,'matches':tempmatches,'side':'final'});
+					var stage = tempstages[tempstages.length-1];
+					if(stage.numberofteams==2){
+						var teams = [];
+						var tempmatches = [];
+						matchesModel.forEach(function(match){
+							if(match.stage == stage.id){
+								tempmatches.push(match);
+							}
+						});
+						stages.push({'id':parseInt(stage.id),'matches':tempmatches,'side':'final'});
+					}
 
 					//right side
 					tempstages.reverse().forEach(function(stage){		
 						var tempmatches = [];
 						matchesModel.forEach(function(match){
-							if(match.stage == stage && match.position > stage/4){
+							if(match.stage == stage.id && match.position > stage.numberofteams/4){
 								tempmatches.push(match);
 							}
 						});
-						stages.push({'id':stage-0,'matches':tempmatches,'side':'right'});
+						stages.push({'id':parseInt(stage.id),'matches':tempmatches,'side':'right'});
 					});
-				/*}
-				catch(e){
-				}*/
-
+				}
+		
 				return stages;
+			},
+			getScore1: function(match,results){
+				var score = -1;
+				results.forEach(function(item){
+					if(item.match == match.id){
+						score = item.score1
+					}
+				});
+				return this.formatScore(score);
+			},
+			getScore2: function(match,results){
+				var score = -1;
+				results.forEach(function(item){
+					if(item.match == match.id){
+						score = item.score2
+					}
+				});
+				return this.formatScore(score)
+			},
+			formatScore: function(score){
+				var val = '';
+				if(score<0){
+					val = '';
+				}
+				else{
+					val = score;
+				}
+				return val;
+			},
+			getTeam: function(id,teamsModel){
+				var team = {};
+				teamsModel.forEach(function(item){
+					if(item.id == id){					
+						team = item;
+					}
+				});
+				return team;
+			},
+			formatTeamName: function(id,teamsModel){
+				var name = '';
+				teamsModel.forEach(function(item){
+					if(item.id == id){
+						name = item.name;
+					}
+				});
+				return name;
+			},
+			editScore: function(e){
+				var match = e.model.__data__.match;
+
+				if(match.stage == this.expandedStage || !this.isSmall()){
+					if( (typeof this.user.id == 'undefined' && this.permission > 5) || ( typeof this.user.id != 'undefined' && match.stage==this.currentStage ) ){
+					
+						var that = this;
+						that.result = {}
+						// find the result in the results list
+						that.results.forEach(function(result){
+							if(result.id==match.id){
+								that.result = result;
+							}
+						});
+						this.$.editScore.open();
+					}
+				}
+				else{
+					this.expandedStage = match.stage;
+				}
+			},
+			saveScore: function(e){
+				if(typeof this.user.id != 'undefined'){
+					this.$.prono.put(e.detail.id+'/',{'score1':e.detail.score1,'score2':e.detail.score2});	
+				}
+				else{
+					app.$.model.$.matchresultsModel.put(e.detail.id+'/',{'score1':e.detail.score1,'score2':e.detail.score2});
+				}
 			},
 			addSpacerAfter: function(stage,match){
 				return ( (stage.id==8 && (match.position==1 || match.position==3)) || (stage.id==4 && match.position==1) );
@@ -328,180 +435,6 @@
 			},
 			expandStage: function(stage){
 				this.expandedStage = stage;
-			},
-			editScore: function(e){
-				this.editmatch = e.model.__data__.match;
-				if(this.editmatch.stage == this.expandedStage || !this.isSmall()){
-					if( typeof this.user.id == 'undefined' ){
-						// check permission
-						if(this.permission > 5){ 
-							this.score = {'score1':this.editmatch.score1,'score2':this.editmatch.score2};
-							this.$.editScore.open();
-						}
-					}
-					else if( this.editmatch.stage==this.currentStage ){
-						this.score = {'score1':-1,'score2':-1};
-						that = this;
-						// find the match in the prono list
-						var prono = this.prono.filter(function(prono){
-							return (prono.match_id == that.editmatch.id);
-						});
-						prono = prono[0];
-						this.score = {'score1':prono.score1,'score2':prono.score2};
-						this.$.editScore.open();
-					}
-				}
-				else{
-					this.expandedStage = this.editmatch.stage;
-				}
-			},
-			saveScore: function(e){
-				if(typeof this.user.id != 'undefined'){
-					this.$.prono.put('match_id/'+e.detail.match_id,{'score1':e.detail.score1,'score2':e.detail.score2});	
-				}
-				else{
-					app.$.model.$.matchesModel.put('id/'+e.detail.match_id,{'score1':e.detail.score1,'score2':e.detail.score2});
-					app.$.model.$.checkUpdateModel.put('id/1',{'time':Math.floor( new Date().getTime()/1000)});
-				}
-			},
-			formatTeamName: function(id,teamsModel){
-				var name = '';
-				teamsModel.forEach(function(item){
-					if(item.id == id){
-						name = item.name;
-					}
-				});
-				return name;
-			},
-			getTeam: function(id,teamsModel){
-				var team = {};
-				teamsModel.forEach(function(item){
-					if(item.id == id){					
-						team = item;
-					}
-				});
-				return team;
-			},
-			getScore1: function(match,prono,user){
-				var score = match.score1;
-				if(typeof user.id != 'undefined'){
-					prono.forEach(function(item){
-						if(item.match_id == match.id){
-							score = item.score1
-						}
-					});
-				}
-				return this.formatScore(score);
-			},
-			getScore2: function(match,prono,user){
-				var score = match.score2;
-				if(typeof user.id != 'undefined'){
-					prono.forEach(function(item){
-						if(item.match_id == match.id){
-							score = item.score2
-						}
-					});
-				}
-				return this.formatScore(score);
-			},
-			formatScore: function(score){
-				var val = '';
-				if(score<0){
-					val = '';
-				}
-				else{
-					val = score;
-				}
-				return val;
-			},
-			handlePronoChange: function(){
-				var done = true;
-				console.log('check prono knockoutstage');
-				try{
-					if(typeof this.user.id != 'undefined'){
-						var that = this;
-						this.matchesModel.every(function(match){
-							var found = true;
-							if(match.stage > 0){
-								// check if the match_id is in the database
-								found = false;
-								that.prono.forEach(function(prono){
-									if(prono.match_id == match.id){
-										found = true;
-									}
-								});
-
-								if(!found ){
-									done = false;
-									// the match has no prono, it must be created
-									console.log('adding prono knockoutstage match'+match.id);
-									that.$.prono.post({'user_id':that.user.id,'match_id':match.id,'score1':-1,'score2':-1,'penalty1':-1,'penalty2':-1});
-								}
-							}
-							return found;
-						});
-					}
-					else{
-						this.prono = [];
-					}
-				}
-				catch(e){
-				}
-				
-				// proceed to the next step
-				if(done){
-					this.$.allProno.get();
-				}
-			},
-			handleAllPronoChange: function(){
-				if(this.permission > 5){
-					var that = this;
-					var points = {};
-					this.allProno.forEach(function(prono){
-						if( !(prono.user_id in points) ){
-							points[prono.user_id] = 0;
-						}
-						points[prono.user_id] += that.calculatePronoPoints(prono);
-					});
-					this.fire('prono-knockoutstage-points-changed',points);
-				}
-			},
-			calculateUserPoints: function(user_id){
-				if(typeof this.user.id != 'undefined'){
-					var that = this;
-					var points = 0;
-					if(user_id == this.user.id){
-						var prono = this.prono;
-					}
-					else if(this.permission > 8){
-						var prono = this.allProno.filter(function(prono){
-							return (prono.user_id == user_id);
-						});
-					}
-					prono.forEach(function(prono){
-						points += that.calculatePronoPoints(prono);
-					});
-					this.fire('user-points',{'prono':'prono-knockoutstage', 'points':points});
-				}
-			},
-			calculatePronoPoints: function(prono){
-				var that = this;
-				var points = 0;
-				var match = that.matchesModel.filter(function(match){
-					return match.id == prono.match_id;
-				});
-				match = match[0]
-				if(typeof match != 'undefined' && match.score1>-1 && match.score2 >-1 && prono.score1>-1 && prono.score2 >-1){
-					// check for a correct result prono
-					if( (prono.score1>prono.score2 && match.score1>match.score2) || (prono.score1<prono.score2 && match.score1<match.score2) || (prono.score1==prono.score2 && match.score1==match.score2) ){
-						points += 6;
-					}
-					// check for a correct score prono
-					if( prono.score1==match.score1 && prono.score2==match.score2){
-						points += 8;
-					}
-				}
-				return points;
 			},
 			_sortMatches: function(a, b) {  
   

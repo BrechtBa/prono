@@ -69,7 +69,7 @@
 			}
 		</style>
 
-		<api-model id="prono" token="{{token}}" url="http://pronoapi.duckdns.org/pronoresults/" model="{{prono}}" on-change="handlePronoChange"></api-model>
+		<api-model id="prono" token="{{token}}" url="http://pronoapi.duckdns.org/pronoresults/" model="{{prono}}"></api-model>
 		
 		<div class$="{{disabledClass(currentStage,user)}} horizontal layout wrap center-justified">
 
@@ -160,8 +160,6 @@
 				else{
 					this.results = matchresultsModel;
 				}
-			},
-			handlePronoChange: function(e){
 			},
 			editScore: function(e){
 				var match = e.model.__data__.match;

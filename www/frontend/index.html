@@ -148,11 +148,11 @@
 								<h3>{{trans('Varia')}}</h3>
 								<prono-total-goals token="{{token}}" permission="{{tokenPayload.permission}}" matches-model="{{matchesModel}}" current-stage="{{tokenPayload.stage}}" user="{{user}}"></prono-total-goals>
 		
-								<prono-team-result token="{{token}}" permission="{{tokenPayload.permission}}" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" current-stage="{{tokenPayload.stage}}" user="{{user}}"></prono-team-result>
+								<prono-team-result token="{{token}}" permission="{{tokenPayload.permission}}" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" current-stage="{{tokenPayload.stage}}" user="{{user}}"></prono-team-result>-->
 		
 
 								<h3>{{trans('Finals')}}</h3>		
-								<prono-knockoutstage token="{{token}}" permission="{{tokenPayload.permission}}" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" current-stage="{{tokenPayload.stage}}" user="{{user}}"></prono-knockoutstage>-->
+								<prono-knockoutstage token="{{token}}" permission="{{tokenPayload.permission}}" stages-model="{{stagesModel}}"  teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" matchresults-model="{{matchresultsModel}}" current-stage="{{tokenPayload.stage}}" user="{{user}}"></prono-knockoutstage>
 							
 							</section>
 
@@ -163,7 +163,7 @@
 								<prono-groupstage permission="{{tokenPayload.permission}}" groups-model="{{groupsModel}}" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" matchresults-model="{{matchresultsModel}}"></prono-groupstage>
 
 								<h3>{{trans('Knockout stage')}}</h3>
-								<!--<prono-knockoutstage permission="{{tokenPayload.permission}}" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}"></prono-knockoutstage>-->
+								<prono-knockoutstage permission="{{tokenPayload.permission}}" stages-model="{{stagesModel}}" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" matchresults-model="{{matchresultsModel}}"></prono-knockoutstage>
 
 							</section>
 
@@ -209,7 +209,7 @@
 
 			<renew-token token="{{token}}"></renew-token>
 			<parse-token token="{{token}}" payload="{{tokenPayload}}"></parse-token>
-			<prono-model id="model" token="{{token}}" groups-model="{{groupsModel}}" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" matchresults-model="{{matchresultsModel}}" rules-model="{{rulesModel}}" stages-model="{{stagesModel}}" users-model="{{usersModel}}" user="{{user}}"></prono-model>
+			<prono-model id="model" token="{{token}}" groups-model="{{groupsModel}}" stages-model="{{stagesModel}}" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" matchresults-model="{{matchresultsModel}}" rules-model="{{rulesModel}}" users-model="{{usersModel}}" user="{{user}}"></prono-model>
 			
 		</template>
 

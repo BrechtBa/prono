@@ -115,9 +115,15 @@
 			handleMatchesModelChange: function(){
 				console.log('get stages');
 				var stages = [];
+				var stagesFound = [];
 				this.matchesModel.forEach(function(match){
-					if(match.stage > 0 && stages.indexOf(match.stage)==-1){
-						stages.push(match.stage);
+					if(match.stage === 0 && stagesFound.indexOf(match.stage)==-1){
+						stagesFound.push(match.stage);
+						stages.push({'id':0, 'type':'groupstage', 'numberofteams':0})
+					}
+					if(match.stage > 0 && stagesFound.indexOf(match.stage)==-1){
+						stagesFound.push(match.stage);
+						stages.push({'id':match.stage, 'type':'knockoutstage', 'numberofteams':match.stage})
 					}
 				});
 				this.stagesModel = stages;
