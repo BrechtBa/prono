@@ -49,7 +49,7 @@
 		<template is="dom-repeat" items="{{pointsTotal}}" as="points" sort="_sortUsers">
 			<paper-card elevation="2" class$="horizontal layout center {{userClass(item,user)}}" on-tap="pointDetails">
 				<div class="ranking">{{ranking(index)}}</div>
-				<avatar-image class="avatar" user="{{getUser(points.user,usersModel)}}"></avatar-image>
+				<avatar-image class="avatar" user-profile="{{getUser(points.user,usersModel)}}"></avatar-image>
 				<div class="flex name">{{getUserName(points.user,usersModel)}}</div>
 				<div class="points">{{points.points}}</div>
 			</paper-card>

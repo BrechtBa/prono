@@ -37,10 +37,6 @@
 				prepend: {
 					type: 'String'
 				},
-				url: {
-					type: 'String',
-					notify: true
-				}
 			},
 			ready: function(){
 			},
@@ -64,14 +60,10 @@
 			},
 			uploadFile: function(file){
 				var that = this;
-				var filename = this.prepend + '_' + Date.now() + '_' + file.name;
-				var folder = this.target;
-
+				
 				// create form data
 				var formData = new FormData();
       			formData.append('file', file, file.name);
-				formData.append('folder', folder);
-				formData.append('filename', filename);
 
 
 				// create ajax request
@@ -79,17 +71,16 @@
 
 				xhr.onload = function(){
 					if (xhr.status === 200){
-						var url = JSON.parse(xhr.response).substring(3);
+						var response = JSON.parse(xhr.response);
 						
-						that.url = url;
-						that.fire('success',{'url': url});
+						that.fire('success',{'url': response.url});
 					}
 					else {
 						console.log('error uploading file');
 					}
 				};
-
-				xhr.open('post', 'api/upload.php', true);
+				xhr.open('put',this.target, true);
+				xhr.setRequestHeader('Authorization', 'JWT '+this.token);
             	xhr.send(formData);
 			}
 		});

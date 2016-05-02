@@ -6,11 +6,12 @@ from rest_framework import permissions
 from rest_framework import status
 from rest_framework.decorators import api_view,permission_classes
 from rest_framework.response import Response
+from rest_framework.parsers import MultiPartParser
+from rest_framework.views import APIView
 
-from api.models import UserProfile,Points,LastUpdate,Team,Group,Match,MatchResult,PronoResult,PronoGroupstageWinners,PronoKnockoutstageTeams,PronoTotalGoals,PronoTeamResult
+from api.models import UserProfile,AvatarUpload,Points,LastUpdate,Team,Group,Match,MatchResult,PronoResult,PronoGroupstageWinners,PronoKnockoutstageTeams,PronoTotalGoals,PronoTeamResult
 from api.serializers import *
 from api.permissions import *
-
 
 ################################################################################
 # Helper functions
@@ -69,6 +70,21 @@ class UserProfileDetail(generics.RetrieveUpdateDestroyAPIView):
 	permission_classes = (IsOwnerOrAdmin,)
 	queryset = UserProfile.objects.all()
 	
+
+# avatar upload
+class AvatarUploadView(APIView):
+	parser_classes = (MultiPartParser,)
+	permission_classes = (permissions.AllowAny,)
+
+	def put(self, request, format=None):
+		file_obj = request.data['file']
+
+		avatarupload = AvatarUpload.objects.get(user=request.user)
+
+		avatarupload.file = file_obj
+		avatarupload.save()
+
+		return Response({'url':'http://pronoapi.duckdns.org/media/{}'.format(avatarupload.file)},status=status.HTTP_200_OK)
 	
 # points	
 class PointsList(generics.ListCreateAPIView):

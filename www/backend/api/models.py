@@ -13,7 +13,12 @@ from .utils import unixtimestamp
 class UserProfile(models.Model):
 	user = models.OneToOneField(AuthUser, on_delete=models.SET_NULL, related_name='profile', blank=True, null=True)
 	displayname = models.CharField(max_length=100, blank=True, default='')
-	avatar = models.CharField(max_length=512, blank=True, default='')
+	avatar = models.CharField(max_length=256, blank=True, default='')
+
+
+class AvatarUpload(models.Model):
+	user = models.OneToOneField(AuthUser, on_delete=models.CASCADE, related_name='avatar_upload', blank=True, null=True)
+	file = models.FileField(upload_to='avatars/', blank=True, default='')
 
 	
 class Points(models.Model):
@@ -225,6 +230,12 @@ def check_user(user):
 		user_profile = UserProfile(user=user,displayname=user.username)
 		user_profile.save()
 		
+	try:
+		user.avatar_upload
+	except:
+		avatar_upload = AvatarUpload(user=user)
+		avatar_upload.save()
+	
 
 	############################################################################
 	# check if the user has points entries for all pronos	

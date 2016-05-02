@@ -63,9 +63,8 @@ sed -i 's/^\(DEBUG = \).*/\1True/' ~/www/backend/backend/settings.py
 Set the allowed hosts to the api url
 ```
 apiurl="pronoapi.duckdns.org"
-sed -i 's/^\(ALLOWED_HOSTS = \).*/\1[$apiurl]/' ~/www/backend/backend/settings.py
+sed -i 's/^\(ALLOWED_HOSTS = \).*/\1['\'$apiurl\'']/' ~/www/backend/backend/settings.py
 ```
-
 
 Create or update the database and collect static files
 ```
@@ -103,6 +102,10 @@ echo "<VirtualHost *:80>
                 Require all granted
         </Directory>
 
+		Alias /media /home/$username/www/backend/media
+        <Directory "/home/$username/www/backend/media">
+                Require all granted
+        </Directory>
 
         <Directory "/home/$username/www/backend/backend">
                 <Files wsgi.py>

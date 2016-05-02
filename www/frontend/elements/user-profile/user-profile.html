@@ -53,7 +53,7 @@
 
 		<paper-card elevation="2">
 			<div class="horizontal layout center">
-				<avatar-image class="avatar" user="{{userProfile}}"></avatar-image>
+				<avatar-image class="avatar" user-profile="{{userProfile}}"></avatar-image>
 				<div class="flex name">{{userProfile.displayname}}</div>
 			</div>
 
@@ -66,10 +66,10 @@
 
 
 		<default-dialog id="changeProfileDialog">
-			<form is="iron-form" id="changeProfileForm" method="post" on-iron-form-submit="saveProfile" action="/">
+			<form is="iron-form" id="changeProfileForm" on-iron-form-submit="saveProfile" action="/">
 				<div class="horizontal layout">
-					<avatar-image id="newavatar" class="avatar" user="{{newuser}}"></avatar-image>
-					<file-input target="images/avatars/" prepend="{{userProfile.id}}" on-success="setNewAvatar">{{trans('Change avatar')}}</file-input>
+					<avatar-image id="newavatar" class="avatar" user-profile="{{newuser}}"></avatar-image>
+					<file-input token="{{token}}" target="http://pronoapi.duckdns.org/avatarupload/" prepend="{{userProfile.id}}" on-success="setNewAvatar">{{trans('Change avatar')}}</file-input>
 				</div>
 			
 				<div class="buttons">
@@ -82,7 +82,7 @@
 
 
 		<default-dialog id="changePasswordDialog">
-			<form is="iron-form" id="changePasswordForm" method="post" on-iron-form-submit="savePassword" action="/">
+			<form is="iron-form" id="changePasswordForm" on-iron-form-submit="savePassword" action="/">
 				<paper-input id="oldpassword" label="Old password:" type="password" required auto-validate error-message="required"></paper-input>
 				<paper-input id="newpassword" label="New password:" type="password" required auto-validate error-message="required"></paper-input>
 				<paper-input id="newpasswordrepeat" label="Repeat new Password:" type="password" required auto-validate error-message="does not match" validator="passwordValidator"></paper-input>
@@ -134,7 +134,19 @@
 				});
 				this.userProfile = userProfile;
 			},
+			changeProfileDialog: function(){
+				this.newuser = JSON.parse(JSON.stringify(this.userProfile));
+				this.$.changeProfileDialog.open();
+			},
+			changeProfileFormSubmit: function(){
+				this.$.changeProfileForm.submit();
+			},
+			saveProfile: function(){
+				this.$.changeProfileDialog.close();
+				app.$.model.$.usersModel.put(this.userProfile.id+'/',{'avatar': this.newuser.avatar});
+			},
 			setNewAvatar: function(e,detail){
+				this.$.changeProfileDialog.open();
 				this.set('newuser.avatar', detail.url);
 			},
 			getUser: function(users,user_id){
@@ -145,17 +157,6 @@
 					}
 				});
 				return user;
-			},
-			changeProfileDialog: function(){
-				this.newuser = {'user_id': this.user.user_id, 'name': this.user.name, 'avatar': this.user.avatar};
-				this.$.changeProfileDialog.open();
-			},
-			changeProfileFormSubmit: function(){
-				this.$.changeProfileForm.submit();
-			},
-			saveProfile: function(){
-				this.$.changeProfileDialog.close();
-				app.$.model.$.usersModel.put('user_id/'+this.user.user_id,{'name': this.newuser.name, 'avatar': this.newuser.avatar});
 			},
 			handlePutUserProfileResponse: function(){
 				this.set('user.name', this.newuser.name);
