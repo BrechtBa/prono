@@ -215,7 +215,7 @@
 			},
 			deleteMatch: function(){
 				this.$.editMatch.close();
-				app.$.model.$.matchesModel.delete(this.match.id)
+				app.$.model.$.matchesModel.delete(this.match.id+'/')
 			},
 			formatDate: function(timestamp){
 				var date = new Date(timestamp * 1000);

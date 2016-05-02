@@ -6,6 +6,7 @@ from rest_framework_jwt.utils import jwt_decode_handler
 import json
 import datetime
 import random
+import time
 
 from ..models import UserProfile,Points,Group,Team,Match,MatchResult,PronoResult
 from ..utils import unixtimestamp
@@ -78,16 +79,14 @@ class PronoTest(TestCase):
 
 		
 		
-class EC2016Test(TestCase):
+class EC2016Test(PronoTest):
 	"""
 	base class
 	"""
 
 	def setUp(self):
 
-		self.usercredentials = [{'username':'user1','password':'password123'},
-								{'username':'user2','password':'password123'},
-								{'username':'user3','password':'password123'},]
+		self.usercredentials = [{'username':'user1','password':'password123'},]
 
 		# add admin user
 		self.users = []
@@ -95,6 +94,10 @@ class EC2016Test(TestCase):
 		self.users[0].is_staff = True
 		self.users[0].save()
 
+
+		print(' ')
+		print('-'*70)
+		time1 = time.time()
 		# add groups
 		self.groups = []
 		self.groups.append( Group.objects.create(name='A') )
@@ -206,18 +209,18 @@ class EC2016Test(TestCase):
 		# final random
 		self.matches.append( Match.objects.create(team1=self.team_dict['D1'],team2=self.team_dict['F3'],defaultteam1='W49',defaultteam2='W50',stage=2,position=1,date=unixtimestamp(datetime.datetime(2016,7,10,21-2)) ) )
 
-		# add users
-		for credentials in self.usercredentials[1:]:
-			self.users.append( AuthUser.objects.create_user(username=credentials['username'],password=credentials['password']) )
-		
-	def add_scores_constant():
+
+		time2 = time.time()
+		print('EC2016 created in         {:>5.2f}s'.format(time2-time1))
+
+	def add_scores_constant(self):
 		for match in Match.objects.all():
 			match_result = match.result
 			match_result.score1 = 3
 			match_result.score2 = 1
 			match_result.save()
 			
-	def add_scores_random():
+	def add_scores_random(self):
 		for match in Match.objects.all():
 			match_result = match.result
 			match_result.score1 = random.randint(0,5)
@@ -230,16 +233,6 @@ class EC2016Test(TestCase):
 					match_result.penalty2 = 5
 					match_result.penalty1 = random.randint(0,4)
 		
-		
-	def generate_token(self,credentials):	
-		response = self.client.post('/token-auth/', {'username':credentials['username'], 'password':credentials['password']})
-		responsedata = json.loads(response.rendered_content.decode('utf-8'))
-		token = responsedata['token']
-		return token
-	
-
-	def tearDown(self):
-		pass
 
 
 

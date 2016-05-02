@@ -355,13 +355,14 @@ def calculate_user_points(user):
 			# score correct
 			if match_played and (prono_result.score1 == match_result.score1) and ( prono_result.score2 == match_result.score2):
 				knockoutstage_score = knockoutstage_score + 8
-				
+	
 	userpoints['knockoutstage_result'] = knockoutstage_result
 	userpoints['knockoutstage_score'] = knockoutstage_score
 
 	############################################################################
 	# groupstage winners
 	groupstage_winners = 0
+
 	for group in Group.objects.all():
 		teams = group.teams.order_by('groupstage_points').reverse()
 		
@@ -369,12 +370,12 @@ def calculate_user_points(user):
 		if sum([team.groupstage_points for team in teams]) > 0:
 			prono_groupwinner = user.prono_groupstage_winners.filter(group=group,ranking=1)[0].team
 			prono_grouprunnerup = user.prono_groupstage_winners.filter(group=group,ranking=2)[0].team
-		
+			
 			if len(teams)>0:
 				if teams[0] in [prono_groupwinner,prono_grouprunnerup]:
 					groupstage_winners = groupstage_winners + 2
 				
-			if len(teams)> 1:
+			if len(teams)>1:
 				if teams[1] in [prono_groupwinner,prono_grouprunnerup]:
 					groupstage_winners = groupstage_winners + 2
 					

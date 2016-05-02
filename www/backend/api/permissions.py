@@ -53,7 +53,7 @@ class PronoResultPermission(permissions.BasePermission):
 		if request.method in permissions.SAFE_METHODS:
 			return obj.user == request.user or request.user.is_staff
 		else:		
-			return (obj.user == request.user and get_payload_access_exp(request) and get_payload_stage(request)==obj.match.stage) or request.user.is_staff
+			return (obj.user == request.user and get_payload_access_exp(request) and get_payload_stage(request)<=obj.match.stage) or request.user.is_staff
 		
 		
 class IsAdminOrReadOnly(permissions.BasePermission):

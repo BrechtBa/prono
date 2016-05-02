@@ -60,6 +60,13 @@ Now set debug to False
 sed -i 's/^\(DEBUG = \).*/\1True/' ~/www/backend/backend/settings.py
 ```
 
+Set the allowed hosts to the api url
+```
+apiurl="pronoapi.duckdns.org"
+sed -i 's/^\(ALLOWED_HOSTS = \).*/\1[$apiurl]/' ~/www/backend/backend/settings.py
+```
+
+
 Create or update the database and collect static files
 ```
 cd ~/www/backend
