@@ -37,7 +37,7 @@
 				if(typeof payload['db_exp'] != 'undefined'){
 					that = this;
 					var now = new Date();
-					timeuntilrenewal = Math.max(1,payload['db_exp']*1000-now);
+					timeuntilrenewal = Math.min(24*3600*1000,Math.max(1,payload['access_exp']*1000-now));
 
 					setTimeout(function(){
 						console.log('renew token');

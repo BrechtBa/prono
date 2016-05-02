@@ -203,7 +203,15 @@
 				app.$.model.$.matchesModel.put(this.match.id+'/',{'date':date,'stage':this.match.stage,'group':group,'position':this.match.position,'defaultteam1':this.match.defaultteam1,'defaultteam2':this.match.defaultteam2,'team1':team1,'team2':team2})
 			},
 			addMatch: function(){
-				app.$.model.$.matchesModel.post({});
+				// add a match one hour after the last match in the list
+				date = new Date();
+				date = date/1000;
+				this.matchesModel.forEach(function(match){
+					if(match.date > date){
+						date = match.date;
+					}
+				});
+				app.$.model.$.matchesModel.post({'date':date+3600});
 			},
 			deleteMatch: function(){
 				this.$.editMatch.close();
@@ -250,10 +258,10 @@
 			},
 			_sortTeams: function(a, b) {  
   
-				if(parseInt(a.name) > parseInt(b.name)){
+				if(a.name > b.name){
 					return 1;
 				}
-				else if(parseInt(a.name) < parseInt(b.name)){
+				else if(a.name < b.name){
 					return -1;
 				}
 				else{

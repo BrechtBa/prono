@@ -132,12 +132,11 @@
 				});
 				return name;
 			},
-			_sortTeams: function(a, b) {  
-  
-				if(parseInt(a.name) > parseInt(b.name)){
+			_sortTeams: function(a, b){
+				if(a.name > b.name){
 					return 1;
 				}
-				else if(parseInt(a.name) < parseInt(b.name)){
+				else if(a.name < b.name){
 					return -1;
 				}
 				else{
