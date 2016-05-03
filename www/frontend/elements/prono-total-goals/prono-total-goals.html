@@ -126,10 +126,12 @@
 				}
 			},
 			editGoals: function(){
-				var goals = this.getGoals(this.prono);
-				this.goals = goals;
+				if(this.currentStage == 0){
+					var goals = this.getGoals(this.prono);
+					this.goals = goals;
 
-				this.$.editGoals.open();
+					this.$.editGoals.open();
+				}
 			},
 			formSubmitProno: function(){
 				this.$.formProno.submit();

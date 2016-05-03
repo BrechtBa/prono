@@ -305,12 +305,14 @@
 				return description;
 			},
 			editResult: function(e){
-				this.editTeam = e.model.__data__.team;
+				if(this.currentStage == 0){
+					this.editTeam = e.model.__data__.team;
 
-				var result = this.getResult(this.prono,this.editTeam.id);
-				this.result = result;
+					var result = this.getResult(this.prono,this.editTeam.id);
+					this.result = result;
 
-				this.$.editResult.open();
+					this.$.editResult.open();
+				}
 			},
 			formSubmitProno: function(){
 				this.$.formProno.submit();

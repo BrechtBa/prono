@@ -258,17 +258,19 @@
 				return team;
 			},
 			editWinners: function(){
-				winner = this.getWinner(this.group,this.teamsModel,this.prono);
-				if( winner != {} ){
-					this.winner = winner.id;
-				}
+				if(this.currentStage == 0){
+					winner = this.getWinner(this.group,this.teamsModel,this.prono);
+					if( winner != {} ){
+						this.winner = winner.id;
+					}
 
-				runnerup = this.getRunnerup(this.group,this.teamsModel,this.prono);
-				if( runnerup != {} ){
-					this.runnerup = runnerup.id;
-				}
+					runnerup = this.getRunnerup(this.group,this.teamsModel,this.prono);
+					if( runnerup != {} ){
+						this.runnerup = runnerup.id;
+					}
 
-				this.$.editWinners.open();
+					this.$.editWinners.open();
+				}
 			},
 			filterGroupTeams: function(group,matchesModel){
 				// find the matches in the group
