@@ -47,7 +47,7 @@
 		<api-model id="pointsDetail" token="[[token]]" url="http://pronoapi.duckdns.org/points/" model="{{pointsDetail}}" on-change="handlePointsDetailChange"></api-model>
 		
 		<template is="dom-repeat" items="{{pointsTotal}}" as="points" sort="_sortUsers">
-			<paper-card elevation="2" class$="horizontal layout center {{userClass(item,user)}}" on-tap="pointDetails">
+			<paper-card elevation="2" class$="horizontal layout center {{userClass(points.user,user)}}" on-tap="showPointDetails">
 				<div class="ranking">{{ranking(index)}}</div>
 				<avatar-image class="avatar" user-profile="{{getUser(points.user,usersModel)}}"></avatar-image>
 				<div class="flex name">{{getUserName(points.user,usersModel)}}</div>
@@ -126,17 +126,17 @@
 					this.$.pointsTotal.get();
 				}
 			},
-			getUser: function(points,usersModel){
+			getUser: function(id,usersModel){
 				var user = {};
 				usersModel.forEach(function(tempuser){
-					if(points.user = tempuser.id){
+					if(id == tempuser.id){
 						user = tempuser;
 					}
 				});
 				return user;
 			},
-			getUserName: function(points,usersModel){
-				var user = this.getUser(points,usersModel);
+			getUserName: function(id,usersModel){
+				var user = this.getUser(id,usersModel);
 				if( typeof user != 'undefined'){
 					return user.displayname;
 				}
@@ -144,10 +144,11 @@
 			ranking: function(index){
 				return index+1;
 			},
-			pointDetails: function(e){
+			showPointDetails: function(e){
 				var points = e.model.__data__.points;
-				var user = this.getUser(points,this.usersModel);
+				var user = this.getUser(points.user,this.usersModel);
 
+				this.pointsDetail = [];
 				this.$.pointDetails.close();
 				this.total = 0;
 
@@ -167,10 +168,10 @@
 				});
 				this.total = total;
 			},
-			userClass: function(user1,user2){
+			userClass: function(id,user){
 				var cl = '';
 				try{
-					if(user1.user_id == user2.user_id){
+					if(user.id == id){
 						cl = 'me';
 					}
 				}
