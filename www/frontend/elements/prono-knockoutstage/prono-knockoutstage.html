@@ -352,8 +352,15 @@
 						that.result = {}
 						// find the result in the results list
 						that.results.forEach(function(result){
-							if(result.id==match.id){
-								that.result = result;
+							if( typeof result.user == 'undefined'){ 
+								if(result.id==match.id){
+									that.result = result;
+								}
+							}
+							else{
+								if(result.match==match.id){
+									that.result = result;
+								}
 							}
 						});
 						this.$.editScore.open();
