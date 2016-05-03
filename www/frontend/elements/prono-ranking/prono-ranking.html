@@ -95,7 +95,7 @@
 				}
 			},
 			observers:[
-				'getPointsTotal(token,user)',
+				'getPointsTotal(token,user,usersModel)',
 			],
 			created: function(){
 				// create the local dictionary
@@ -118,7 +118,7 @@
 					that.getPointsTotal(that.token,that.user);
 				});
 			},
-			getPointsTotal: function(token,user){
+			getPointsTotal: function(token,user,usersModel){
 				if(typeof user.id == 'undefined' || token == ''){
 					this.pointsTotal = [];
 				}
