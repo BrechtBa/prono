@@ -164,15 +164,18 @@
 			editScore: function(e){
 				var match = e.model.__data__.match;
 
-				var that = this;
-				that.result = {}
-				// find the result in the results list
-				that.results.forEach(function(result){
-					if(result.id==match.id){
-						that.result = result;
-					}
-				});
-				this.$.editScore.open();
+				if( (typeof this.user.id == 'undefined' && this.permission > 5) || ( typeof this.user.id != 'undefined' && match.stage==this.currentStage ) ){
+					
+					var that = this;
+					that.result = {}
+					// find the result in the results list
+					that.results.forEach(function(result){
+						if(result.id==match.id){
+							that.result = result;
+						}
+					});
+					this.$.editScore.open();
+				}
 			},
 			saveScore: function(e){
 				if(typeof this.user.id != 'undefined'){
