@@ -548,7 +548,7 @@ def jwt_payload_handler(user):
 		# all matches of the stage are in the future
 		if len( Match.objects.filter(stage=stage) ) == len(  Match.objects.filter(stage=stage,date__gt=unixtimestamp()+3600) ):
 			currentstage = stage
-			matches = Match.objects.filter(stage=stage).order_by('date').reverse()
+			matches = Match.objects.filter(stage=stage).order_by('date')
 			firstmatchdate = matches[0].date
 			break
 	
@@ -556,7 +556,7 @@ def jwt_payload_handler(user):
 	# add aditional data to the payload	
 	payload['stage'] = currentstage
 	payload['access_exp'] = firstmatchdate-3600
-	
+
 	if user.is_staff:
 		payload['permission'] = 9
 	else:

@@ -9,10 +9,10 @@
 		<style>
 		</style>
 
-		<iron-ajax id="post"   method="POST"   content-type="application/json" handle-as="json" last-response="{{postResponse}}"   on-response="handlePostResponse"   on-error="handleError" debounce-duration="500"></iron-ajax>
-		<iron-ajax id="get"    method="GET"    content-type="application/json" handle-as="json" last-response="{{getResponse}}"    on-response="handleGetResponse"    on-error="handleError" debounce-duration="500"></iron-ajax>
-		<iron-ajax id="put"    method="PUT"    content-type="application/json" handle-as="json" last-response="{{putResponse}}"    on-response="handlePutResponse"    on-error="handleError" debounce-duration="500"></iron-ajax>
-		<iron-ajax id="delete" method="DELETE" content-type="application/json" handle-as="json" last-response="{{deleteResponse}}" on-response="handleDeleteResponse" on-error="handleError" debounce-duration="500"></iron-ajax>
+		<iron-ajax id="post"   method="POST"   content-type="application/json" handle-as="json" last-response="{{postResponse}}"   on-response="handlePostResponse"   on-error="handleError" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="get"    method="GET"    content-type="application/json" handle-as="json" last-response="{{getResponse}}"    on-response="handleGetResponse"    on-error="handleError" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="put"    method="PUT"    content-type="application/json" handle-as="json" last-response="{{putResponse}}"    on-response="handlePutResponse"    on-error="handleError" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="delete" method="DELETE" content-type="application/json" handle-as="json" last-response="{{deleteResponse}}" on-response="handleDeleteResponse" on-error="handleError" debounce-duration="300"></iron-ajax>
 
 
 	</template>

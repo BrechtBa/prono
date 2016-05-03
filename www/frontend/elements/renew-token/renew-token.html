@@ -12,8 +12,8 @@
 		</style>
 
 		<parse-token token="{{token}}" payload="{{payload}}"></parse-token>
-		<iron-ajax id="authenticate" url="../../api/authenticate.php" method="POST" handle-as="json" on-response="handleAuthenticateResponse" last-response="{{authenticateResponse}}" debounce-duration="300"></iron-ajax>
-
+		<iron-ajax id="renew" url="http://pronoapi.duckdns.org/token-refresh/" method="POST" content-type="application/json" handle-as="json" last-response="{{renewResponse}}"   on-response="handleRenewResponse"   on-error="handleRenewError" debounce-duration="300"></iron-ajax>
+		
 	</template>
 
 	
@@ -34,24 +34,29 @@
 				},
 			},
 			payloadChanged: function(payload){
-				if(typeof payload['db_exp'] != 'undefined'){
-					that = this;
+				if(typeof payload['access_exp'] != 'undefined'){
+					var that = this;
 					var now = new Date();
 					timeuntilrenewal = Math.min(24*3600*1000,Math.max(1,payload['access_exp']*1000-now));
-
+					
 					setTimeout(function(){
-						console.log('renew token');
 
-						that.$.authenticate.headers['Authentication'] = that.token;
-						that.$.authenticate.generateRequest();
+						that.$.renew.body = JSON.stringify({'token':that.token});
+						that.$.renew.generateRequest();
 
 					}, timeuntilrenewal);
 				}
 			},
-			handleAuthenticateResponse: function(){
-				if(this.authenticateResponse != ''){
-					this.token = this.authenticateResponse;
+			handleRenewResponse: function(){
+				if( typeof this.renewResponse['token'] != 'undefined'){
+					this.token = this.renewResponse['token'];
 				}
+				else{
+					this.token = '';
+				}
+			},
+			handleRenewError: function(e){
+				console.log(e)
 			},
 		});
 	</script>
