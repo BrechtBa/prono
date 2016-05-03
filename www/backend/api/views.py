@@ -10,6 +10,7 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.views import APIView
 
 from api.models import UserProfile,AvatarUpload,Points,LastUpdate,Team,Group,Match,MatchResult,PronoResult,PronoGroupstageWinners,PronoKnockoutstageTeams,PronoTotalGoals,PronoTeamResult
+from api.models import check_user
 from api.serializers import *
 from api.permissions import *
 
@@ -85,7 +86,16 @@ class AvatarUploadView(APIView):
 		avatarupload.save()
 
 		return Response({'url':'http://pronoapi.duckdns.org/media/{}'.format(avatarupload.file)},status=status.HTTP_200_OK)
-	
+
+# check user tables
+class CheckUserView(APIView):
+	permission_classes = (permissions.AllowAny,)
+
+	def post(self, request, format=None):
+		check_user(request.user)
+
+		return Response(status=status.HTTP_200_OK)
+
 # points	
 class PointsList(generics.ListCreateAPIView):
 	serializer_class = PointsSerializer

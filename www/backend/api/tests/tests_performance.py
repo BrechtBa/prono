@@ -28,7 +28,7 @@ class PerformanceTests(EC2016Test):
 		time2 = time.time()
 		print('{} users created in       {:>5.2f}s'.format(numusers,time2-time1))
 
-
+	"""
 	def test_enter_prono(self):
 		
 		numusers = 50
@@ -149,5 +149,5 @@ class PerformanceTests(EC2016Test):
 			print('{}: {}'.format(key,scores[0][key]))
 			self.assertEqual(scores_avg[key], scores[0][key])
 
-
+	"""
 

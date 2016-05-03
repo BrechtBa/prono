@@ -177,8 +177,8 @@ def prepare_user(sender, **kwargs):
 	"""
 	
 	user = kwargs["instance"]
-	if kwargs["created"]:
-		check_user(user)
+	#if kwargs["created"]:
+	#	check_user(user)
 	
 	if user.is_staff:
 		check_matches()

@@ -129,7 +129,7 @@
 			getUser: function(id,usersModel){
 				var user = {};
 				usersModel.forEach(function(tempuser){
-					if(id == tempuser.id){
+					if(id == tempuser.user){
 						user = tempuser;
 					}
 				});
@@ -153,8 +153,8 @@
 				this.total = 0;
 
 				// get the points
-				if(user.id == this.user.id || this.permission >8){
-					this.$.pointsDetail.get('?user='+user.id);
+				if(user.user == this.user.id || this.permission >8){
+					this.$.pointsDetail.get('?user='+user.user);
 
 					this.$.pointDetails.open();
 				}

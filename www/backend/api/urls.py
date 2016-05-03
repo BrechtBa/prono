@@ -12,6 +12,7 @@ urlpatterns = [
 	url(r'^token-auth/', obtain_jwt_token, name='token-auth'),
 	url(r'^token-refresh/', refresh_jwt_token),
 	url(r'^register/$', views.register),
+	url(r'^checkuser/$', views.CheckUserView.as_view()),
 
 	url(r'^users/$', views.UserList.as_view()),
 	url(r'^users/(?P<pk>[0-9]+)/$', views.UserDetail.as_view()),

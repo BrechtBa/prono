@@ -12,6 +12,7 @@
 		</style>
 
 		<parse-token token="{{token}}" payload="{{tokenPayload}}"></parse-token>
+		<iron-ajax id="checkUser" url="http://pronoapi.duckdns.org/checkuser/" method="POST" content-type="application/json" handle-as="json" on-response="handleCheckUserResponse" last-response="{{checkUserResponse}}" debounce-duration="300"></iron-ajax>
 
 		<api-model id="usersModel"        token="[[token]]" url="http://pronoapi.duckdns.org/userprofiles/" model="{{usersModel}}"        on-change="handleUsersModelChange"></api-model>
 		<!--<api-model id="rulesModel" token="[[token]]" url="../../api/index.php/rules" model="{{rulesModel}}" on-change="handleRulesModelChange"></api-model>-->	
@@ -93,18 +94,34 @@
 				console.log('token changed');	
 				try{
 					this.user = {'id':this.tokenPayload.user_id,'username':this.tokenPayload.username};
+
+					// send a request to fill in the user database entries
+					if(this.token != ''){
+						console.log('check user')
+						this.$.checkUser.headers['Authorization']   = 'JWT '+this.token;
+						this.$.checkUser.body = '{}';
+						this.$.checkUser.generateRequest();
+
+						this.$.usersModel.get();
+						this.$.groupsModel.get();
+						this.$.teamsModel.get();
+						this.$.matchesModel.get();
+						this.$.matchresultsModel.get();
+					}
 				}
 				catch(e){
+					// token is not valid
 					this.user = {};
+					this.usersModel = [];
+
 					clearInterval(window.updateCheckInterval);
 				}
+			},
+			handleCheckUserResponse: function(e){
+				console.log(e)
+				console.log(this.checkUserResponse)
 
 				this.$.usersModel.get();
-				this.$.groupsModel.get();
-				this.$.teamsModel.get();
-				this.$.matchesModel.get();
-				this.$.matchresultsModel.get();	
-			
 
 				this.lastUpdate = Math.floor( new Date().getTime()/1000 );
 
