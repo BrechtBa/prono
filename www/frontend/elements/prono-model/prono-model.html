@@ -12,8 +12,11 @@
 		</style>
 
 		<parse-token token="{{token}}" payload="{{tokenPayload}}"></parse-token>
-		<iron-ajax id="checkUser" url="http://pronoapi.duckdns.org/checkuser/" method="POST" content-type="application/json" handle-as="json" on-response="handleCheckUserResponse" last-response="{{checkUserResponse}}" debounce-duration="300"></iron-ajax>
-
+		<iron-ajax id="prepareDatabaseForUser" url="http://pronoapi.duckdns.org/preparedatabaseforuser/" method="POST" content-type="application/json" handle-as="json" on-response="handlePrepareDatabaseForUserResponse" last-response="{{prepareDatabaseForUserResponse}}" debounce-duration="300"></iron-ajax>
+		<iron-ajax id="calculatePoints"        url="http://pronoapi.duckdns.org/claculatepoints/"        method="POST" content-type="application/json" handle-as="json" on-response="handleCalculatePointsResponse"        last-response="{{calculatePointsResponse}}"        debounce-duration="300"></iron-ajax>
+		
+		
+		<api-model id="userStatus"        token="[[token]]" url="http://pronoapi.duckdns.org/userstatus/" model="{{userStatusModel}}"     on-change="handleUserStatusModelChange"></api-model>
 		<api-model id="usersModel"        token="[[token]]" url="http://pronoapi.duckdns.org/userprofiles/" model="{{usersModel}}"        on-change="handleUsersModelChange"></api-model>
 		<!--<api-model id="rulesModel" token="[[token]]" url="../../api/index.php/rules" model="{{rulesModel}}" on-change="handleRulesModelChange"></api-model>-->	
 		<api-model id="groupsModel"       token="[[token]]" url="http://pronoapi.duckdns.org/groups/"       model="{{groupsModel}}"       on-change="handleGroupsModelChange"></api-model>
@@ -91,48 +94,53 @@
 			ready: function(){
 			},
 			tokenChanged: function(){
-				console.log('token changed');	
-				try{
+				console.log('token changed');
+				if( typeof this.tokenPayload['user_id'] != 'undefined' ){
 					this.user = {'id':this.tokenPayload.user_id,'username':this.tokenPayload.username};
 
-					// send a request to fill in the user database entries
-					if(this.token != ''){
-						console.log('check user')
-						this.$.checkUser.headers['Authorization']   = 'JWT '+this.token;
-						this.$.checkUser.body = '{}';
-						this.$.checkUser.generateRequest();
-
-						this.$.usersModel.get();
-						this.$.groupsModel.get();
-						this.$.teamsModel.get();
-						this.$.matchesModel.get();
-						this.$.matchresultsModel.get();
-					}
+					// check the user status
+					this.$.userStatus.get('?user='+this.user['id']);
+					
+					// get temporary users model
+					this.$.usersModel.get();
+					
+					// get the competition models
+					this.$.groupsModel.get();
+					this.$.teamsModel.get();
+					this.$.matchesModel.get();
+					this.$.matchresultsModel.get();
+					
+					this.setLastUpdate();
 				}
-				catch(e){
+				else{
 					// token is not valid
 					this.user = {};
 					this.usersModel = [];
-
+					
 					clearInterval(window.updateCheckInterval);
 				}
+				
 			},
-			handleCheckUserResponse: function(e){
+			handleUserStatusModelChange: function(e){
+				console.log(this.userStatusModel)
+				if( typeof this.userStatusModel['databaseprepared'] != undefined){
+					if(!this.userStatusModel['databaseprepared']){
+						console.log('prepare the data base for the user')
+						this.$.prepareDatabaseForUser.headers['Authorization']   = 'JWT '+this.token;
+						this.$.prepareDatabaseForUser.body = '{}';
+						this.$.prepareDatabaseForUser.generateRequest();
+					}
+				}
+			},
+			handlePrepareDatabaseForUserResponse: function(e){
 				console.log(e)
-				console.log(this.checkUserResponse)
+				console.log(this.prepareDatabaseForUserResponse)
 
 				this.$.usersModel.get();
-
-				this.lastUpdate = Math.floor( new Date().getTime()/1000 );
-
-				var that = this;
-				clearInterval(window.updateCheckInterval);
-				window.updateCheckInterval = window.setInterval(function(){
-					that.$.lastUpdateModel.get();
-				}, 30000);
-
 			},
 			handleUsersModelChange: function(e){
+				console.log('users-model-changed')
+				this.fire('users-model-changed')
 			},
 			handleRulesModelChange: function(){
 			},
@@ -174,7 +182,15 @@
 						this.fire('update')
 					}
 				}
-			}
+			},
+			setLastUpdate: function(){
+				this.lastUpdate = Math.floor( new Date().getTime()/1000 );
+				var that = this;
+				clearInterval(window.updateCheckInterval);
+				window.updateCheckInterval = window.setInterval(function(){
+					that.$.lastUpdateModel.get();
+				}, 30000);
+			},
 		});
 	</script>
 
