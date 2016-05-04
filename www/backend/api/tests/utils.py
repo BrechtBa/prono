@@ -9,6 +9,7 @@ import random
 import time
 
 from ..models import UserProfile,Points,Group,Team,Match,MatchResult,PronoResult
+from ..models import prepare_database_for_user
 from ..utils import unixtimestamp
 
 
@@ -31,7 +32,6 @@ class PronoTest(TestCase):
 		self.usercredentials = [{'username':'user1','password':'password123'},
 								{'username':'user2','password':'password123'},
 								{'username':'user3','password':'password123'},]
-
 
 		# add admin user
 		self.users = []
@@ -64,7 +64,9 @@ class PronoTest(TestCase):
 		for credentials in self.usercredentials[1:]:
 			self.users.append( AuthUser.objects.create_user(username=credentials['username'],password=credentials['password']) )
 		
-		
+		# prepare the database for the users
+		for user in AuthUser.objects.all():
+			prepare_database_for_user(user)
 		
 		
 	def generate_token(self,credentials):	
@@ -73,7 +75,6 @@ class PronoTest(TestCase):
 		token = responsedata['token']
 		return token
 	
-
 	def tearDown(self):
 		pass
 

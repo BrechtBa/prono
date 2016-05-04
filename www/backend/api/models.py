@@ -4,39 +4,32 @@ from django.contrib.auth.models import Group as AuthGroup
 from django.db.models.signals import post_save
 from rest_framework_jwt.utils import jwt_payload_handler as base_jwt_payload_handler
 
-from .utils import unixtimestamp
+from api.utils import unixtimestamp
 
 # model definition
 ################################################################################
 # Users
 ################################################################################
+class UserStatus(models.Model):
+	user = models.OneToOneField(AuthUser, on_delete=models.SET_NULL, related_name='status', blank=True, null=True)
+	databaseprepared = models.BooleanField(default=False)
+
 class UserProfile(models.Model):
 	user = models.OneToOneField(AuthUser, on_delete=models.SET_NULL, related_name='profile', blank=True, null=True)
 	displayname = models.CharField(max_length=100, blank=True, default='')
 	avatar = models.CharField(max_length=256, blank=True, default='')
 
-
 class AvatarUpload(models.Model):
-	user = models.OneToOneField(AuthUser, on_delete=models.CASCADE, related_name='avatar_upload', blank=True, null=True)
+	user = models.OneToOneField(AuthUser, on_delete=models.SET_NULL, related_name='avatar_upload', blank=True, null=True)
 	file = models.FileField(upload_to='avatars/', blank=True, default='')
 
-	
-class Points(models.Model):
-	user = models.ForeignKey(AuthUser, on_delete=models.CASCADE, related_name='points', blank=True, null=True)
-	prono = models.CharField(max_length=100, blank=True, default='')
-	points = models.IntegerField(blank=True, default=0)
-	
-	def __str__(self):
-		return '{}'.format(self.points)	
-	
-
-class LastUpdate(models.Model):
-	date = models.BigIntegerField(blank=True, default=0)
-	
 
 ################################################################################
 # Competition
 ################################################################################
+class LastUpdate(models.Model):
+	date = models.BigIntegerField(blank=True, default=0)
+	
 
 class Group(models.Model):
 	name = models.CharField(max_length=100, blank=True, default='')
@@ -46,10 +39,10 @@ class Group(models.Model):
 		
 		# create prono results for all users
 		for user in AuthUser.objects.all(): 
-			check_user(user)
+			prepare_database_for_user(user)
 		
 	def __str__(self):
-		return '{}'.format(self.name)	
+		return '{}'.format(self.name)
 		
 
 class Team(models.Model):
@@ -65,7 +58,7 @@ class Team(models.Model):
 		
 		# create prono results for all users
 		for user in AuthUser.objects.all(): 
-			check_user(user)
+			prepare_database_for_user(user)
 	
 		# recalculate the points for all users
 		calculate_points()
@@ -94,13 +87,10 @@ class Match(models.Model):
 
 		# create prono results for all users
 		for user in AuthUser.objects.all(): 
-			check_user(user)
-		
-		# recalculate the points for all users
-		calculate_points()
+			prepare_database_for_user(user)
 		
 		# set the update field
-		check_update()
+		set_last_update()
 
 	def __str__(self):
 		return '{}'.format(self.id)
@@ -115,12 +105,9 @@ class MatchResult(models.Model):
 	
 	def save(self, *args, **kwargs):
 		super(MatchResult, self).save(*args, **kwargs)
-		
-		# recalculate the points for all users
-		calculate_points()
-		
+			
 		# set the update field
-		check_update()
+		set_last_update()
 
 	def __str__(self):
 		return '{} - {}'.format(self.score1, self.score2)
@@ -130,6 +117,14 @@ class MatchResult(models.Model):
 ################################################################################
 # Prono
 ################################################################################
+class Points(models.Model):
+	user = models.ForeignKey(AuthUser, on_delete=models.SET_NULL, related_name='points', blank=True, null=True)
+	prono = models.CharField(max_length=100, blank=True, default='')
+	points = models.IntegerField(blank=True, default=0)
+	
+	def __str__(self):
+		return '{}'.format(self.points)	
+
 class PronoResult(models.Model):
 	match = models.ForeignKey(Match, on_delete=models.CASCADE, related_name='prono_result', blank=True, null=True)
 	user = models.ForeignKey(AuthUser, on_delete=models.CASCADE, related_name='prono_result', blank=True, null=True)
@@ -139,24 +134,20 @@ class PronoResult(models.Model):
 	def __str__(self):
 		return '{} - {}'.format(self.score1, self.score2)
 
-
 class PronoGroupstageWinners(models.Model):
 	user = models.ForeignKey(AuthUser, on_delete=models.CASCADE, related_name='prono_groupstage_winners', blank=True, null=True)
 	group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='prono_groupstage_winners', blank=True, null=True)
 	ranking = models.IntegerField(blank=True, default=-1)
 	team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='prono_groupstage_winners', blank=True, null=True)
 	
-
 class PronoKnockoutstageTeams(models.Model):
 	user = models.ForeignKey(AuthUser, on_delete=models.CASCADE, related_name='prono_knockoutstage_teams', blank=True, null=True)
 	stage = models.IntegerField(blank=True, default=-1)
 	team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='prono_knockoutstage_teams', blank=True, null=True)
 	
-	
 class PronoTotalGoals(models.Model):
 	user = models.ForeignKey(AuthUser, on_delete=models.CASCADE, related_name='prono_total_goals', blank=True, null=True)
 	goals = models.IntegerField(blank=True, default=-1)
-	
 	
 class PronoTeamResult(models.Model):
 	user = models.ForeignKey(AuthUser, on_delete=models.CASCADE, related_name='prono_team_result', blank=True, null=True)
@@ -164,12 +155,10 @@ class PronoTeamResult(models.Model):
 	result = models.IntegerField(blank=True, default=-1)
 	
 	
-
-
 	
-# helper elements	
+	
 ################################################################################
-# signals
+# helper functions	
 ################################################################################
 def prepare_user(sender, **kwargs):
 	"""
@@ -177,9 +166,29 @@ def prepare_user(sender, **kwargs):
 	"""
 	
 	user = kwargs["instance"]
-	#if kwargs["created"]:
-	#	check_user(user)
-	
+	if kwargs["created"]:
+		# create the user status
+		try:
+			user.status
+		except:
+			user_status = UserStatus(user=user)
+			user_status.save()
+			
+		# create the user profile
+		try:
+			user.profile
+		except:
+			user_profile = UserProfile(user=user,displayname=user.username)
+			user_profile.save()
+		
+		# create the avatar upload
+		try:
+			user.avatar_upload
+		except:
+			avatar_upload = AvatarUpload(user=user)
+			avatar_upload.save()
+			
+	# check if all matches have the required database entries		
 	if user.is_staff:
 		check_matches()
 
@@ -187,57 +196,18 @@ post_save.connect(prepare_user, sender=AuthUser)
 
 
 
-def check_matches():
-	"""
-	checks if all database entries are present for all matches
-	"""
-	# check if all matches have a result
-	for match in Match.objects.all():
-		try:
-			match.result
-		except:
-			result = MatchResult(match=match)
-			result.save()
-			#print('Added result for match {}'.format(match))
-		
-
-def check_update():	
-	"""
-	checks if the lastupdate model is present and updates is 
-	"""
-
-	try:
-		lastupdate = LastUpdate.objects.get(pk=1)
-		lastupdate.date = unixtimestamp()
-		lastupdate.save()
-
-	except:
-		lastupdate = LastUpdate(date=unixtimestamp())
-		lastupdate.save()
 
 
-
-def check_user(user):
+def prepare_database_for_user(user):
 	"""
 	checks if all database entries are present for the user
-	"""
-	#print('check {}'.format(user.username))
-	############################################################################
-	# check if the user has a profile
-	try:
-		user.profile
-	except:
-		user_profile = UserProfile(user=user,displayname=user.username)
-		user_profile.save()
+	Arguments::
+		user		django.contrib.auth.models.user object
 		
-	try:
-		user.avatar_upload
-	except:
-		avatar_upload = AvatarUpload(user=user)
-		avatar_upload.save()
+	Returns::
+		None
+	"""
 	
-
-	############################################################################
 	# check if the user has points entries for all pronos	
 	for prono in ['total','groupstage_result','groupstage_score','knockoutstage_result','knockoutstage_score','groupstage_winners','knockoutstage_teams','total_goals','team_result']:
 		if not prono in [p.prono for p in user.points.all()]:
@@ -246,10 +216,7 @@ def check_user(user):
 			#print('Added points for user {} on prono {}'.format(user,prono))
 		
 
-
-	############################################################################
 	# check if the user has entries for all pronos
-	############################################################################
 	# groupstage and knockoutstage result
 	for match in Match.objects.all():
 		if len(user.prono_result.filter(match=match)) == 0:
@@ -257,7 +224,6 @@ def check_user(user):
 			prono.save()
 			#print('Added prono_result for user {} on match {}'.format(user,match))
 
-	############################################################################
 	# groupstage_winners
 	for ranking in [1,2]:
 		for group in Group.objects.all():
@@ -266,7 +232,6 @@ def check_user(user):
 				prono.save()
 				#print('Added prono_groupstage_winners {} for user {} on group {}'.format(ranking,user,group))
 
-	############################################################################
 	# knockoutstage_teams
 	stages = get_stages()
 
@@ -288,24 +253,35 @@ def check_user(user):
 				prono.save()
 				#print('Added prono_knockoutstage_teams {} for user {} on stage {}'.format(i+1,user,stage))
 
-	############################################################################
 	# total_goals
 	pronos = user.prono_total_goals.all()
 	if len(pronos) == 0:
 		prono = PronoTotalGoals(user=user)
 		prono.save()
 
-
-	############################################################################
 	# team_result
 	for team in Team.objects.all():
 		pronos = user.prono_team_result.filter(team=team)
 		if len(pronos) == 0:
 			prono = PronoTeamResult(user=user,team=team)
-			prono.save()
-
-
+			prono.save()		
+		
+	# set the user status
+	user_status = user.status
+	user_status.databaseprepared = True
+	user_status.save()
+	
+		
 def calculate_points():
+	"""
+	Calculates the points for all users and writes results to the database
+	
+	Arguments::
+		None
+		
+	Returns::
+		None
+	"""
 	for user in AuthUser.objects.all():
 		userpoints = calculate_user_points(user)
 		
@@ -313,16 +289,23 @@ def calculate_points():
 			if points.prono in userpoints:
 				points.points = userpoints[points.prono]
 				points.save()
-		
-		
-			
+
+	set_last_update()
+	
+				
 def calculate_user_points(user):
 	"""
 	calculates the points of a user
+	
+	Arguments::
+		user		django.contrib.auth.models.user object
+		
+	Returns::
+		userpoints	dictionaty with the users points for different pronos
 	"""
 	userpoints = {}
 	
-	############################################################################
+
 	# groupstage
 	groupstage_result = 0
 	groupstage_score = 0
@@ -346,7 +329,7 @@ def calculate_user_points(user):
 	userpoints['groupstage_result'] = groupstage_result
 	userpoints['groupstage_score'] = groupstage_score
 	
-	############################################################################
+
 	# knockoutstage
 	knockoutstage_result = 0
 	knockoutstage_score = 0
@@ -370,7 +353,7 @@ def calculate_user_points(user):
 	userpoints['knockoutstage_result'] = knockoutstage_result
 	userpoints['knockoutstage_score'] = knockoutstage_score
 
-	############################################################################
+
 	# groupstage winners
 	groupstage_winners = 0
 
@@ -396,7 +379,7 @@ def calculate_user_points(user):
 
 	userpoints['groupstage_winners'] = groupstage_winners
 
-	############################################################################
+
 	# knockoutstage teams
 	knockoutstage_teams = 0
 	stages = get_stages()
@@ -435,7 +418,6 @@ def calculate_user_points(user):
 	userpoints['knockoutstage_teams'] = knockoutstage_teams
 
 
-	############################################################################
 	# total_goals
 	goals = 0
 	for result in MatchResult.objects.all():
@@ -454,7 +436,6 @@ def calculate_user_points(user):
 	else:
 		userpoints['total_goals'] = 0
 
-	############################################################################
 	# team_result
 	team_result_points = 0
 	stages = get_stages()
@@ -510,14 +491,42 @@ def calculate_user_points(user):
 
 	userpoints['team_result'] = team_result_points
 
-	############################################################################
 	# total
 	keys = ['groupstage_result','groupstage_score','knockoutstage_result','knockoutstage_score','groupstage_winners','knockoutstage_teams','total_goals','team_result']
 
 	userpoints['total'] = sum([userpoints[key] for key in keys])
-	return userpoints
 	
+	return userpoints
 
+
+
+def check_matches():
+	"""
+	checks if all database entries are present for all matches
+	"""
+	# check if all matches have a result
+	for match in Match.objects.all():
+		try:
+			match.result
+		except:
+			result = MatchResult(match=match)
+			result.save()
+			#print('Added result for match {}'.format(match))
+		
+
+def set_last_update():	
+	"""
+	checks if the lastupdate model is present and updates is 
+	"""
+
+	try:
+		lastupdate = LastUpdate.objects.get(pk=1)
+		lastupdate.date = unixtimestamp()
+		lastupdate.save()
+
+	except:
+		lastupdate = LastUpdate(date=unixtimestamp())
+		lastupdate.save()
 
 
 def get_stages():
@@ -533,9 +542,8 @@ def get_stages():
 
 	return stages
 
-################################################################################
-# JWT
-################################################################################
+	
+
 def jwt_payload_handler(user):
 	payload = base_jwt_payload_handler(user)
 	

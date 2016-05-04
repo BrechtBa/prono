@@ -10,7 +10,7 @@ from rest_framework.parsers import MultiPartParser
 from rest_framework.views import APIView
 
 from api.models import UserProfile,AvatarUpload,Points,LastUpdate,Team,Group,Match,MatchResult,PronoResult,PronoGroupstageWinners,PronoKnockoutstageTeams,PronoTotalGoals,PronoTeamResult
-from api.models import check_user
+from api.models import prepare_database_for_user, calculate_points
 from api.serializers import *
 from api.permissions import *
 
@@ -59,7 +59,18 @@ class UserDetail(generics.RetrieveUpdateDestroyAPIView):
 	permission_classes = (IsOwnerOrAdmin,)
 	queryset = AuthUser.objects.all()
 	
-	
+
+# user status	
+class UserStatusList(generics.ListCreateAPIView):
+	serializer_class = UserStatusSerializer
+	permission_classes = (IsAdminOrReadOnly,)
+	queryset = UserStatus.objects.all()
+		
+class UserStatusDetail(generics.RetrieveUpdateDestroyAPIView):
+	serializer_class = UserStatusSerializer
+	permission_classes = (IsAdminOrReadOnly,)
+	queryset = UserStatus.objects.all()
+
 # user profiles	
 class UserProfileList(generics.ListCreateAPIView):
 	serializer_class = UserProfileSerializer
@@ -87,13 +98,13 @@ class AvatarUploadView(APIView):
 
 		return Response({'url':'http://pronoapi.duckdns.org/media/{}'.format(avatarupload.file)},status=status.HTTP_200_OK)
 
-# check user tables
-class CheckUserView(APIView):
+# prepare database for user
+class PrepareDatabaseForUserView(APIView):
 	permission_classes = (permissions.AllowAny,)
 
 	def post(self, request, format=None):
-		check_user(request.user)
-
+		prepare_database_for_user(request.user)
+		
 		return Response(status=status.HTTP_200_OK)
 
 # points	
@@ -108,7 +119,16 @@ class PointsDetail(generics.RetrieveUpdateDestroyAPIView):
 	permission_classes = (PointsPermissions,)
 	queryset = Points.objects.all()
 
+# calculate points
+class CalculatePointsView(APIView):
+	permission_classes = (permissions.AllowAny,)
 
+	def post(self, request, format=None):
+		calculate_points(request.user)
+		
+		return Response(status=status.HTTP_200_OK)
+
+	
 # lastupdate	
 class LastUpdateList(generics.ListCreateAPIView):
 	serializer_class = LastUpdateSerializer

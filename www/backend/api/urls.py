@@ -3,21 +3,21 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from rest_framework_jwt.views import obtain_jwt_token
 from rest_framework_jwt.views import refresh_jwt_token
 
-
 from api import views
-
-
 
 urlpatterns = [
 	url(r'^token-auth/', obtain_jwt_token, name='token-auth'),
 	url(r'^token-refresh/', refresh_jwt_token),
 	url(r'^register/$', views.register),
-	url(r'^checkuser/$', views.CheckUserView.as_view()),
+	url(r'^preparedatabaseforuser/$', views.PrepareDatabaseForUserView.as_view()),
+	url(r'^calculatepoints/$', views.CalculatePointsView.as_view()),
 
 	url(r'^users/$', views.UserList.as_view()),
 	url(r'^users/(?P<pk>[0-9]+)/$', views.UserDetail.as_view()),
 	url(r'^userprofiles/$', views.UserProfileList.as_view()),
 	url(r'^userprofiles/(?P<pk>[0-9]+)/$', views.UserProfileDetail.as_view()),
+	url(r'^userstatus/$', views.UserStatusList.as_view()),
+	url(r'^userstatus/(?P<pk>[0-9]+)/$', views.UserStatusDetail.as_view()),
 	url(r'^avatarupload/$', views.AvatarUploadView.as_view()),
 	url(r'^points/$', views.PointsList.as_view()),
 	url(r'^points/(?P<pk>[0-9]+)/$', views.PointsDetail.as_view()),

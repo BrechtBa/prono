@@ -3,7 +3,7 @@ from django.contrib.auth.models import Group as AuthGroup
 
 from rest_framework import serializers
 
-from api.models import UserProfile,Points,LastUpdate,Team,Group,Match,MatchResult,PronoResult,PronoGroupstageWinners,PronoKnockoutstageTeams,PronoTotalGoals,PronoTeamResult
+from api.models import UserStatus,UserProfile,Points,LastUpdate,Team,Group,Match,MatchResult,PronoResult,PronoGroupstageWinners,PronoKnockoutstageTeams,PronoTotalGoals,PronoTeamResult
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -16,23 +16,17 @@ class UserSerializer(serializers.ModelSerializer):
 		model = AuthUser
 		fields = ('id','username','email','groups')
 
-		
+class UserStatusSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = UserStatus
+		fields = ('id','user','databaseprepared')
+
 class UserProfileSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = UserProfile
 		fields = ('id','user','displayname','avatar')
 		
-		
-class PointsSerializer(serializers.ModelSerializer):
-	class Meta:
-		model = Points
-		fields = ('id','user','prono','points')
-		
-class LastUpdateSerializer(serializers.ModelSerializer):
-	class Meta:
-		model = LastUpdate
-		fields = ('id','date')
-		
+	
 class TeamSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Team
@@ -56,16 +50,20 @@ class MatchResultSerializer(serializers.ModelSerializer):
 		model = MatchResult
 		fields = ('id','match','score1','score2','penalty1','penalty2')
 
+
+
+class PointsSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = Points
+		fields = ('id','user','prono','points')
 		
 class PronoResultSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = PronoResult
 
-
 class PronoGroupstageWinnersSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = PronoGroupstageWinners
-
 
 class PronoKnockoutstageTeamsSerializer(serializers.ModelSerializer):
 	class Meta:
@@ -79,7 +77,11 @@ class PronoTeamResultSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = PronoTeamResult
 
-
+class LastUpdateSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = LastUpdate
+		fields = ('id','date')
+		
 
 
 
