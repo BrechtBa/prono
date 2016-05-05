@@ -129,7 +129,6 @@
 				});
 			},
 			getPointsTotal: function(token,user,usersModel,databasePrepared){
-				console.log(this.displayWaitMessage)
 				if(typeof user.id == 'undefined' || token == '' || databasePrepared==0){
 					this.pointsTotal = [];
 					this.displayWaitMessage = true;
