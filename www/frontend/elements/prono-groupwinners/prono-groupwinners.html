@@ -171,10 +171,13 @@
 				user: {
 					type: 'Object',
 					value: {}
-				}
+				},
+				databasePrepared: {
+					type: 'Number',
+				},
 			},
 			observers:[
-				'getProno(token,user,group)',
+				'getProno(token,user,group,databasePrepared)',
 			],
 			created: function(){
 				// create the local dictionary
@@ -184,9 +187,13 @@
 			},
 			ready: function(){
 				console.log('ready');
+				var that = this;
+				document.addEventListener('clear-prono', function(e){
+					that.prono = [];
+				});
 			},
-			getProno: function(token,user,group){
-				if(typeof user.id == 'undefined' || typeof group.id == 'undefined'  || token == ''){
+			getProno: function(token,user,group,databasePrepared){
+				if(databasePrepared!=1 || typeof user.id == 'undefined' || typeof group.id == 'undefined'  || token == ''){
 					this.prono = [];
 				}
 				else{

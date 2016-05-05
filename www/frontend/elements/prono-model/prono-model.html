@@ -13,7 +13,7 @@
 
 		<parse-token token="{{token}}" payload="{{tokenPayload}}"></parse-token>
 		<iron-ajax id="prepareDatabaseForUser" url="http://pronoapi.duckdns.org/preparedatabaseforuser/" method="POST" content-type="application/json" handle-as="json" on-response="handlePrepareDatabaseForUserResponse" last-response="{{prepareDatabaseForUserResponse}}" debounce-duration="300"></iron-ajax>
-		<iron-ajax id="calculatePoints"        url="http://pronoapi.duckdns.org/claculatepoints/"        method="POST" content-type="application/json" handle-as="json" on-response="handleCalculatePointsResponse"        last-response="{{calculatePointsResponse}}"        debounce-duration="300"></iron-ajax>
+		<iron-ajax id="calculatePoints"        url="http://pronoapi.duckdns.org/calculatepoints/"        method="POST" content-type="application/json" handle-as="json" on-response="handleCalculatePointsResponse"        last-response="{{calculatePointsResponse}}"        debounce-duration="300"></iron-ajax>
 		
 		
 		<api-model id="userStatus"        token="[[token]]" url="http://pronoapi.duckdns.org/userstatus/" model="{{userStatusModel}}"     on-change="handleUserStatusModelChange"></api-model>
@@ -81,27 +81,31 @@
 					notify: true,
 					value: {}
 				},
-				lastUpdate: {
+				databasePrepared: {
 					type: 'Number',
-					value: 0
+					notify: true
+				},
+				lastUpdate: {
+					type: 'Array',
+					value: []
 				}
 			},
 			listeners: {
 			},
 			observers: [
-				'tokenChanged(token)',
+				'tokenPayloadChanged(tokenPayload)',
 			],
 			ready: function(){
 			},
-			tokenChanged: function(){
-				console.log('token changed');
+			tokenPayloadChanged: function(){
+				console.log('token payload changed');
 				if( typeof this.tokenPayload['user_id'] != 'undefined' ){
 					this.user = {'id':this.tokenPayload.user_id,'username':this.tokenPayload.username};
 
 					// check the user status
 					this.$.userStatus.get('?user='+this.user['id']);
 					
-					// get temporary users model
+					// get users model
 					this.$.usersModel.get();
 					
 					// get the competition models
@@ -116,39 +120,42 @@
 					// token is not valid
 					this.user = {};
 					this.usersModel = [];
-					
+					this.databasePrepared = 0;
+
+					this.fire('clear-prono');
 					clearInterval(window.updateCheckInterval);
 				}
 				
 			},
 			handleUserStatusModelChange: function(e){
-				console.log(this.userStatusModel)
-				if( typeof this.userStatusModel['databaseprepared'] != undefined){
-					if(!this.userStatusModel['databaseprepared']){
-						console.log('prepare the data base for the user')
+				if( this.userStatusModel.length > 0){
+					if(!this.userStatusModel[0]['databaseprepared']){
+						console.log('prepare the database for the user')
 						this.$.prepareDatabaseForUser.headers['Authorization']   = 'JWT '+this.token;
 						this.$.prepareDatabaseForUser.body = '{}';
 						this.$.prepareDatabaseForUser.generateRequest();
 					}
+					else{
+						console.log('test')
+						// prono database is ready for the user
+						this.databasePrepared = 1;
+						console.log(this.databasePrepared)
+					}
 				}
 			},
 			handlePrepareDatabaseForUserResponse: function(e){
-				console.log(e)
-				console.log(this.prepareDatabaseForUserResponse)
-
-				this.$.usersModel.get();
+				this.$.userStatus.get('?user='+this.user['id']);
 			},
 			handleUsersModelChange: function(e){
-				console.log('users-model-changed')
-				this.fire('users-model-changed')
 			},
-			handleRulesModelChange: function(){
+			handleRulesModelChange: function(e){
 			},
-			handleGroupsModelChange: function(){
+			handleGroupsModelChange: function(e){
 			},
-			handleTeamsModelChange: function(){
+			handleTeamsModelChange: function(e){
+				this.$.lastUpdateModel.get();
 			},
-			handleMatchesModelChange: function(){
+			handleMatchesModelChange: function(e){
 				console.log('get stages');
 				var stages = [];
 				var stagesFound = [];
@@ -163,28 +170,49 @@
 					}
 				});
 				this.stagesModel = stages;
+				this.$.lastUpdateModel.get();
 			},
-			handleMatchresultsModelChange: function(){
-				
-				this.fire('prono-model-changed');
+			handleMatchresultsModelChange: function(e){
+				this.$.lastUpdateModel.get();
 			},
-			handleLastUpdateModelChange: function(){
+			handleLastUpdateModelChange: function(e){
 				console.log('check if update is required')
-				if( this.lastUpdateModel.length > 0 ){
-					if( parseInt(this.lastUpdateModel[0]['date']) > this.lastUpdate){
-						console.log('update');
-						this.lastUpdate = this.lastUpdateModel[0]['date'];
+				if( this.lastUpdateModel.length > 1 ){
+					if( parseInt(this.lastUpdateModel[0]['date']) > this.lastUpdate[0] ){
+						console.log('update points')
+						this.lastUpdate[0] = this.lastUpdateModel[0]['date'];
+						
+						this.fire('update-points')
+					}
+					if( parseInt(this.lastUpdateModel[1]['date']) > this.lastUpdate[1] ){
+						console.log('update competition')
+						this.lastUpdate[1] = this.lastUpdateModel[1]['date'];
 
+						this.fire('update-competition')
 						this.$.teamsModel.get();
 						this.$.matchesModel.get();
 						this.$.matchresultsModel.get();
 
-						this.fire('update')
+						this.calculatePoints();
+					}
+				}
+			},
+			handleCalculatePointsResponse: function(){
+				console.log('points calculated')
+			},
+			calculatePoints: function(){
+				if( typeof this.tokenPayload != 'undefined' ){
+					if(this.tokenPayload['permission']>5){
+						console.log('calculate points')
+						this.$.calculatePoints.headers['Authorization']   = 'JWT '+this.token;
+						this.$.calculatePoints.body = '{}';
+						this.$.calculatePoints.generateRequest();
 					}
 				}
 			},
 			setLastUpdate: function(){
-				this.lastUpdate = Math.floor( new Date().getTime()/1000 );
+				this.lastUpdate[0] = Math.floor( new Date().getTime()/1000 );
+				this.lastUpdate[1] = Math.floor( new Date().getTime()/1000 );
 				var that = this;
 				clearInterval(window.updateCheckInterval);
 				window.updateCheckInterval = window.setInterval(function(){

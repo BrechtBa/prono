@@ -70,7 +70,7 @@
 		</style>
 
 		<api-model id="prono" token="{{token}}" url="http://pronoapi.duckdns.org/pronoresults/" model="{{prono}}"></api-model>
-		
+
 		<div class$="{{disabledClass(currentStage,user)}} horizontal layout wrap center-justified">
 
 			<template is="dom-repeat" items="{{groupsModel}}" as="group">
@@ -88,7 +88,7 @@
 						</template>
 					</div>
 					
-					<prono-groupwinners token="{{token}}" permission="{{permission}}" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" group="{{group}}" user="{{user}}"></prono-groupwinners>
+					<prono-groupwinners token="{{token}}" permission="{{permission}}" database-prepared="{{databasePrepared}}" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" group="{{group}}" user="{{user}}"></prono-groupwinners>
 
 				</paper-material>
 			</template>
@@ -129,10 +129,13 @@
 				user: {
 					type: 'Object',
 					value: {}
-				}
+				},
+				databasePrepared: {
+					type: 'Number',
+				},
 			},
 			observers:[
-				'getProno(token,user)',
+				'getProno(token,user,databasePrepared)',
 				'getResults(user,matchresultsModel,prono)'
 			],
 			created: function(){
@@ -142,9 +145,14 @@
 			},
 			ready: function(){
 				console.log('ready');
+				var that = this;
+				document.addEventListener('clear-prono', function(e){
+					that.prono = [];
+				});
 			},
-			getProno: function(token,user){
-				if(typeof user.id == 'undefined' || token == ''){
+			getProno: function(token,user,databasePrepared){
+				console.log('get groupstage prono')
+				if(databasePrepared!=1 || typeof user.id == 'undefined' || token == '' ){
 					this.prono = [];
 				}
 				else{

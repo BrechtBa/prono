@@ -65,6 +65,7 @@ class UserStatusList(generics.ListCreateAPIView):
 	serializer_class = UserStatusSerializer
 	permission_classes = (IsAdminOrReadOnly,)
 	queryset = UserStatus.objects.all()
+	filter_fields = ('user','databaseprepared',)
 		
 class UserStatusDetail(generics.RetrieveUpdateDestroyAPIView):
 	serializer_class = UserStatusSerializer
@@ -76,12 +77,13 @@ class UserProfileList(generics.ListCreateAPIView):
 	serializer_class = UserProfileSerializer
 	permission_classes = (IsAdminOrReadOnly,)
 	queryset = UserProfile.objects.all()
+	filter_fields = ('user','displayname',)	
 		
 class UserProfileDetail(generics.RetrieveUpdateDestroyAPIView):
 	serializer_class = UserProfileSerializer
 	permission_classes = (IsOwnerOrAdmin,)
 	queryset = UserProfile.objects.all()
-	
+
 
 # avatar upload
 class AvatarUploadView(APIView):
@@ -124,7 +126,7 @@ class CalculatePointsView(APIView):
 	permission_classes = (permissions.AllowAny,)
 
 	def post(self, request, format=None):
-		calculate_points(request.user)
+		calculate_points()
 		
 		return Response(status=status.HTTP_200_OK)
 

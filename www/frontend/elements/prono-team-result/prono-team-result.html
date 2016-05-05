@@ -181,10 +181,13 @@
 				user: {
 					type: 'Object',
 					value: {}
-				}
+				},
+				databasePrepared: {
+					type: 'Number',
+				},
 			},
 			observers:[
-				'getProno(token,user)',
+				'getProno(token,user,databasePrepared)',
 			],
 			created: function(){
 				// create the local dictionary
@@ -201,10 +204,14 @@
 			},
 			ready: function(){
 				console.log('ready');
-				this.teamIds = [3];
+				var that = this;
+				document.addEventListener('clear-prono', function(e){
+					that.prono = [];
+				});
+				this.teamIds = [19];
 			},
-			getProno: function(token,user){
-				if(typeof user.id == 'undefined' || token == ''){
+			getProno: function(token,user,databasePrepared){
+				if(databasePrepared!=1 || typeof user.id == 'undefined' || token == ''){
 					this.prono = [];
 				}
 				else{

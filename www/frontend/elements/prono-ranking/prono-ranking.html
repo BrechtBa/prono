@@ -46,6 +46,10 @@
 		<api-model id="pointsTotal" token="[[token]]" url="http://pronoapi.duckdns.org/points/?prono=total" model="{{pointsTotal}}"></api-model>
 		<api-model id="pointsDetail" token="[[token]]" url="http://pronoapi.duckdns.org/points/" model="{{pointsDetail}}" on-change="handlePointsDetailChange"></api-model>
 		
+		<template is="dom-if" if="{{displayWaitMessage}}">
+			{{trans('Please wait while the database is prepared.')}}
+		</template>
+
 		<template is="dom-repeat" items="{{pointsTotal}}" as="points" sort="_sortUsers">
 			<paper-card elevation="2" class$="horizontal layout center {{userClass(points.user,user)}}" on-tap="showPointDetails">
 				<div class="ranking">{{ranking(index)}}</div>
@@ -92,14 +96,18 @@
 				},
 				user: {
 					type: 'Object'
-				}
+				},
+				databasePrepared: {
+					type: 'Number',
+				},
 			},
 			observers:[
-				'getPointsTotal(token,user,usersModel)',
+				'getPointsTotal(token,user,usersModel,databasePrepared)',
 			],
 			created: function(){
 				// create the local dictionary
 				this.dictionary = {};
+				this.dictionary['Please wait while the database is prepared.'] = {'nl':'Even geduld, de database wordt voorbereid.'}
 				this.dictionary['groupstage_result'] 	= {'nl':'Groepsfase resultaat'};
 				this.dictionary['groupstage_score'] 	= {'nl':'Groepsfase score'};
 				this.dictionary['knockoutstage_result'] = {'nl':'Knockout fase resultaat'};
@@ -109,21 +117,26 @@
 				this.dictionary['total_goals'] 			= {'nl':'Aantal goals'};
 				this.dictionary['team_result'] 			= {'nl':'Ploeg resultaat'};
 				this.dictionary['Total'] 				= {'nl':'Totaal'};
+
 			},
 			ready: function(){
 				console.log('ready');
+				this.displayWaitMessage = true;
 				// add event listeners
 				var that = this;
-				document.addEventListener('update', function(e){
+				document.addEventListener('update-points', function(e){
 					that.getPointsTotal(that.token,that.user);
 				});
 			},
-			getPointsTotal: function(token,user,usersModel){
-				if(typeof user.id == 'undefined' || token == ''){
+			getPointsTotal: function(token,user,usersModel,databasePrepared){
+				console.log(this.displayWaitMessage)
+				if(typeof user.id == 'undefined' || token == '' || databasePrepared==0){
 					this.pointsTotal = [];
+					this.displayWaitMessage = true;
 				}
 				else{
 					this.$.pointsTotal.get();
+					this.displayWaitMessage = false;
 				}
 			},
 			getUser: function(id,usersModel){

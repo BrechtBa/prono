@@ -41,6 +41,9 @@ class Group(models.Model):
 		for user in AuthUser.objects.all(): 
 			prepare_database_for_user(user)
 		
+		# set the update field
+		set_last_update(pk=2)
+
 	def __str__(self):
 		return '{}'.format(self.name)
 		
@@ -60,9 +63,9 @@ class Team(models.Model):
 		for user in AuthUser.objects.all(): 
 			prepare_database_for_user(user)
 	
-		# recalculate the points for all users
-		calculate_points()
-	
+		# set the update field
+		set_last_update(pk=2)
+
 	def __str__(self):
 		return '{}'.format(self.name)
 
@@ -90,7 +93,7 @@ class Match(models.Model):
 			prepare_database_for_user(user)
 		
 		# set the update field
-		set_last_update()
+		set_last_update(pk=2)
 
 	def __str__(self):
 		return '{}'.format(self.id)
@@ -107,7 +110,7 @@ class MatchResult(models.Model):
 		super(MatchResult, self).save(*args, **kwargs)
 			
 		# set the update field
-		set_last_update()
+		set_last_update(pk=2)
 
 	def __str__(self):
 		return '{} - {}'.format(self.score1, self.score2)
@@ -290,7 +293,7 @@ def calculate_points():
 				points.points = userpoints[points.prono]
 				points.save()
 
-	set_last_update()
+	set_last_update(pk=1)
 	
 				
 def calculate_user_points(user):
@@ -514,13 +517,13 @@ def check_matches():
 			#print('Added result for match {}'.format(match))
 		
 
-def set_last_update():	
+def set_last_update(pk=1):	
 	"""
 	checks if the lastupdate model is present and updates is 
 	"""
 
 	try:
-		lastupdate = LastUpdate.objects.get(pk=1)
+		lastupdate = LastUpdate.objects.get(pk=pk)
 		lastupdate.date = unixtimestamp()
 		lastupdate.save()
 

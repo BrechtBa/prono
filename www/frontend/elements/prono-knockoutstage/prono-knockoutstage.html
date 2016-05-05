@@ -101,7 +101,7 @@
 		</style>
 
 		<api-model id="prono" token="{{token}}" url="http://pronoapi.duckdns.org/pronoresults/" model="{{prono}}"></api-model>
-		
+
 		<div class="horizontal layout center-justified">
 			<div class="flex horizontal layout center">
 				<template is="dom-repeat" items="{{getStages(stagesModel,matchesModel)}}" as="stage">
@@ -187,10 +187,13 @@
 				user: {
 					type: 'Object',
 					value: {}
-				}
+				},
+				databasePrepared: {
+					type: 'Number',
+				},
 			},
 			observers:[
-				'getProno(token,user)',
+				'getProno(token,user,databasePrepared)',
 				'getResults(user,matchresultsModel,prono)'
 			],
 			listeners:{
@@ -202,9 +205,13 @@
 			},
 			ready: function(){
 				console.log('ready');
+				var that = this;
+				document.addEventListener('clear-prono', function(e){
+					that.prono = [];
+				});
 			},
-			getProno: function(token,user){
-				if(typeof user.id == 'undefined' || token == ''){
+			getProno: function(token,user,databasePrepared){
+				if(databasePrepared!=1 || typeof user.id == 'undefined' || token == ''){
 					this.prono = [];
 				}
 				else{

@@ -89,7 +89,7 @@
 				<paper-input id="newpasswordrepeat" label="{{trans('Repeat password')}}:" type="password" required auto-validate error-message="{{trans('does not match')}}" validator="passwordrepeatValidator"></paper-input>
 				
 				<div class="buttons">
-					<paper-button raised class="main" on-tap="registerFormSubmit">{{trans('Register')}}</paper-button>
+					<paper-button id="registerButton" raised class="main" on-tap="registerFormSubmit">{{trans('Register')}}</paper-button>
 					<button type="submit" class="hidden">{{trans('Register')}}</button>
 				</div>
 			</form>
@@ -171,9 +171,11 @@
 				if(this.passwordValidator() && this.$.newlogin.value!='' && this.$.newpassword.value!=''){
 					this.$.registerAjax.body = JSON.stringify({'username':this.$.newlogin.value,'password':this.$.newpassword.value});
     				this.$.registerAjax.generateRequest();
+					this.$.registerButton.disabled = true;
 				}
 			},
 			handleRegisterResponse: function(){
+				this.$.registerButton.disabled = false;
 				if( typeof this.registerResponse['username'] != 'undefined' ){
 					this.$.logintaken._setInvalid(false);
 					this.$.loginAjax.body = JSON.stringify({'username':this.registerResponse['username'],'password':this.registerResponse['password']});
