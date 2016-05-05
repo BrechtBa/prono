@@ -1,0 +1,155 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+
+<link rel="import" href="../../elements/default-dialog/default-dialog.html">
+<link rel="import" href="../../elements/paper-number-input/paper-number-input.html">
+
+<dom-module is="prono-score-dialog">
+	<template>
+		<style>
+			:host{
+			}
+			paper-button{
+				background: var(--button-background-color);
+				color: var(--button-text-color);
+			}
+			paper-button.primary{
+				background: var(--button-background-primary-color);
+				color: var(--button-text-primary-color);
+			}
+			.teamname{
+				text-align: center;
+				margin-top: 10px;
+			}
+			.score{
+				text-align: center;
+				width: 80px;
+			}
+			.dash{
+				margin-top: 10px;
+				width: 40px;
+			}
+			.teamicon{
+				width: 45px;
+				height: 45px;
+				margin: 25px 10px 10px 10px;
+			}
+			.score paper-input{
+				margin-top: -10px;
+			}
+			.hidden{
+				display: none;
+			}
+		</style>
+		
+		<default-dialog id="dialog">
+			<form is="iron-form" id="form" on-iron-form-submit="save" action="/">
+				<div class="vertical layout center-justified">
+					<div class="teamname flex">{{formatTeamName(match.team1,teamsModel)}}</div>
+					<div class="horizontal layout center center-justified">
+						<prono-team-icon class="teamicon" team="{{getTeam(match.team1,teamsModel)}}"></prono-team-icon>
+						<div class="score"><paper-number-input label="" auto-validate pattern="[0-9]*" error-message="x" value={{score1}}></paper-input></div>
+						<div class="score dash"> - </div>
+						<div class="score"><paper-number-input label="" auto-validate pattern="[0-9]*" error-message="x" value={{score2}}></paper-input></div>
+						<prono-team-icon class="teamicon" team="{{getTeam(match.team2,teamsModel)}}"></prono-team-icon>
+					</div>
+					<div class="teamname flex">{{formatTeamName(match.team2,teamsModel)}}</div>
+				</div>
+				<div class="buttons">
+					<paper-button raised class="primary" on-tap="formSubmit">{{trans('Save')}}</paper-button>
+					<button type="submit" class="hidden">{{trans('Save')}}</button>
+				</div>
+			</form>
+		</default-dialog>
+			
+	</template>
+	<script>
+		Polymer({
+			is: 'prono-score-dialog',
+			properties: {
+				result: {
+					type: 'Object'
+				},
+				matchesModel: {
+					type: 'Array',
+					value: []
+				},
+				teamsModel: {
+					type: 'Array',
+					value: []
+				},
+				score1: {
+					type: 'Number',
+				},
+				score2: {
+					type: 'Number',
+				},
+			},
+			close: function(){
+				this.$.dialog.close();
+			},
+			open: function(){
+				this.$.dialog.open();
+				var that = this;
+
+				this.matchesModel.forEach(function(match){
+					if(match.id==that.result.match){
+						that.match = match;
+					}
+				});
+
+				this.score1 = this.formatScore(this.result.score1);
+				this.score2 = this.formatScore(this.result.score2);
+			},
+			formSubmit: function(){
+				this.$.form.submit();
+			},
+			save: function(){
+				this.close();
+
+				// parse the score
+				var score1 = this.score1;
+				if(score1 === ''){
+					score1 = -1;
+				}
+				var score2 = this.score2;
+				if(score2 === ''){
+					score2 = -1;
+				}
+				this.fire('save',{'id':this.result.id, 'score1':score1, 'score2':score2});
+			},
+			formatTeamName: function(id,teams){
+				var name = '';
+				teams.forEach(function(item){
+					if(item.id == id){
+						name = item.name;
+					}
+				});
+				return name;
+			},
+			getTeam: function(id,teams){
+				var team = {};
+				teams.forEach(function(item){
+					if(item.id == id){					
+						team = item;
+					}
+				});
+				return team;
+			},
+			formatScore: function(score){
+				if(score<0){
+					return '';
+				}
+				else{
+					return score;
+				}
+			},
+			trans: function(key){
+				return app.trans(key,{});
+			}
+		});
+	</script>
+</dom-module>

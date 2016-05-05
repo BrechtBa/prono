@@ -1,0 +1,166 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animations.html">
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
+
+<link rel="import" href="../../elements/parse-token/parse-token.html">
+<link rel="import" href="../../elements/default-dialog/default-dialog.html">
+
+<dom-module id="prono-total-goals">
+	<template>
+
+		<style>
+			:host{
+				display: block;
+				width: 100%;
+			}
+			paper-material{
+      			margin: 5px;
+				cursor: pointer;
+				padding: 10px;
+				background: var(--background-secondary-color);
+				color: var(--text-secondary-color);
+				border-radius: 2px;
+    		}
+			paper-button{
+				background: var(--button-background-color);
+				color: var(--button-text-color);
+			}
+			paper-button.primary{
+				background: var(--button-background-primary-color);
+				color: var(--button-text-primary-color);
+			}
+			.disabled::after{
+				content: "";
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background-color: rgba(1,1,1,0.3);
+				border-radius: 2px;
+			}
+			.hidden{
+				display: none;
+			}
+		</style>
+
+		<api-model id="prono" token="{{token}}" url="http://pronoapi.duckdns.org/pronototalgoals/" model="{{prono}}"></api-model>
+		
+		<paper-material class$="{{disabledClass(currentStage,user)}} horizontal layout" elevation="2" on-tap="editGoals">
+			<div class="flex-1"><h3>{{trans('Total goals')}}:</h3></div>
+			<div class="flex-1"><h3>{{getGoals(prono)}}</h3></div>
+		</paper-material>
+		
+
+		<default-dialog id="editGoals">
+			<form is="iron-form" id="formProno" on-iron-form-submit="save" action="/">
+				<div>
+					<paper-number-input label="{{trans('Total goals')}}" auto-validate pattern="[0-9]*" error-message="x" value={{goals}}></paper-input>
+				</div>
+				<div class="buttons">
+					<paper-button raised class="primary" on-tap="formSubmitProno">{{trans('Save')}}</paper-button>
+					<button type="submit" class="hidden">{{trans('Save')}}</button>
+				</div>
+			</form>
+		</default-dialog>
+
+	</template>
+
+	<script>
+		Polymer({
+			is: 'prono-total-goals',
+			properties: {
+				token: {
+					type: 'String',
+					value: ''
+				},
+				permission: {
+					type: 'Number',
+					value: 1
+				},
+				currentStage:{
+					type: 'Number',
+					value: -1
+				},
+				user: {
+					type: 'Object',
+					value: {}
+				},
+				databasePrepared: {
+					type: 'Number',
+				},
+			},
+			observers:[
+				'getProno(token,user,databasePrepared)',
+			],
+			created: function(){
+				// create the local dictionary
+				this.dictionary = {};
+				app.dictionary['Total goals'] 	= {'nl':'Aantal goals'};
+			},
+			ready: function(){
+				console.log('ready');
+				var that = this;
+				document.addEventListener('clear-prono', function(e){
+					that.prono = [];
+				});
+			},
+			getProno: function(token,user,databasePrepared){
+				if(databasePrepared!=1 || typeof user.id == 'undefined' || token == ''){
+					this.prono = [];
+				}
+				else{
+					this.$.prono.get('?user='+user.id);
+				}
+			},
+			getGoals: function(prono){
+				if(prono.length >0){
+					if(prono[0].goals>-1){
+						return prono[0].goals;
+					}
+					else{
+						return "";
+					}
+				}
+				else{
+					return "";
+				}
+			},
+			editGoals: function(){
+				if(this.currentStage == 0){
+					var goals = this.getGoals(this.prono);
+					this.goals = goals;
+
+					this.$.editGoals.open();
+				}
+			},
+			formSubmitProno: function(){
+				this.$.formProno.submit();
+			},
+			save: function(){
+				this.$.editGoals.close();
+				console.log(this.goals)
+
+				this.$.prono.put(this.prono[0].id+'/',{'goals': this.goals});
+			},
+			disabledClass: function(currentStage,user){
+				if( 0==currentStage || typeof user.id == 'undefined'){
+					return '';
+				}
+				else{
+					return 'disabled';
+				}
+			},
+			trans: function(key){
+				return app.trans(key,this.dictionary);
+			},
+		});
+	</script>
+
+</dom-module>

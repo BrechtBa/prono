@@ -1,0 +1,103 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animations.html">
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
+
+<link rel="import" href="../../elements/default-dialog/default-dialog.html">
+<link rel="import" href="../../elements/prono-team-icon/prono-team-icon.html">
+
+<dom-module id="prono-rules">
+	<template>
+
+		<style>
+			:host{
+				display: block;
+				width: 100%;
+			}
+		</style>
+
+		<h3>Voor de start van het EK</h3>
+		<p>
+			Er worden score's opgegeven voor alle matchen van de groepsfase.<br>
+			Voor een juiste voorspelling van de uitslag (winst/verlies/gelijkspel) krijg je <b>3 punten</b>.<br>
+			Indien je ook de juiste score voorspelde krijg je nog <b>4 punten</b> daarbovenop.
+		</p>
+		<p>
+			Je moet ook de ploegen opgeven die doorstromen naar de eliminatie fase opgeven evenals of ze groepswinnaar of tweede zullen worden.<br>
+			Per juiste ploeg krijg je <b>2 punten</b>.<br>
+			Per juiste groepswinnaar krijge je daarbovenop <b>4 punten</b>.<br>
+			Tijdens de groepsfase zijn in totaal <b>300 punten</b> te verdienen.
+		</p>
+		<p>
+			De ploegen die in elke eliminatie ronde halen, worden opgegeven.<br>
+			Indien je de ploegen die de kwartfinales halen kan voorspellen krijg je <b>18 punten</b> per ploeg. <br>
+			Indien je de ploegen die de halve finales halen kan voorspellen krijg je <b>28 punten</b> per ploeg. <br>
+			Indien je de ploegen die de finale spelen kan voorspellen krijg je <b>42 punten</b> per ploeg. <br>
+			Indien je kan voorspellen wie het WK wint krijg je <b>60 punten</b>.<br>
+			Hier zijn in totaal <b>400 punten</b> te verdienen.
+		</p>
+		<p>
+			Probeer het totaal aantal goals gedurende het hele WK te raden.<br>
+			Penaltys tijdens een eventuele shootouts tellen hier niet mee. Goals gescoord tijdens verlengingen wel.<br>
+			Indien je het juist hebt krijg je <b>100 punten</b><br>
+			Per doepunt verschil worden <b>6 punten</b> van deze 100 afgetrokken, je kan niet onder 0 gaan.
+		</p>
+		<p>
+			Voorspel tot in welke ronde de Rode Duivels geraken.<br>
+			Indien je voorspelde dat ze niet verder dan de groepsfase raken en ze worden in de groepsfase uitgeschakeld, krijg je <b>5 punten</b>.<br>
+			Indien je voorspelde dat ze niet verder dan de 8e finales raken en ze worden in de 8e finales uitgeschakeld, krijg je <b>10 punten</b>.<br>
+			Indien je voorspelde dat ze niet verder dan de kwartfinales raken en ze worden in de kwartfinales uitgeschakeld, krijg je <b>30 punten</b>.<br>
+			Indien je voorspelde dat ze niet verder dan de halve finales raken en ze worden in de halve finales uitgeschakeld, krijg je <b>50 punten</b>.<br>
+			Indien je voorspelde dat ze niet verder dan de finale raken en ze worden in de finale uitgeschakeld, krijg je <b>100 punten</b>.<br>
+			Indien je voorspelde dat de Rode Duivels Europees kampioen worden en ze worden Europees kampioen dan krijg je <b>150 punten</b>.<br>
+		</p>
+		
+		<h3>Voor elke eliminatie ronde</h3>
+		<p>
+			Voor elke eliminatie ronde worden er score's opgegeven voor alle matchen van die ronde. <br>
+			Voor een juiste voorspelling van de uitslag (winst/verlies/gelijkspel) krijg je <b>6 punten</b>.<br>
+			Indien je ook de juiste score voorspelde krijg je nog <b>8 punten</b> daarbovenop.<br>
+			Bij de uitslag en score tellen penaltys van een eventuele shootout niet mee. Gelijkspel kan dus.<br>
+			Hier zijn in totaal <b>210 punten</b> te verdienen.
+		</p>
+		
+		<h3>Deadlines</h3>
+		<p>Pronostieken kunnen telkens ingegeven worden tot één uur voor de eerste wedstrijd van een fase.</p>
+		
+		<h3>Winnaar</h3>
+		<p>Elke deelnemer legt 10 euro in de pot bij 3Fase.</p>
+		<p>
+			Na het EK krijgt degene met het 3e meeste punten 10% van de inleg.<br>
+			Degene met het 2e meeste punten 30% van de inleg.<br>
+			Degene met het meeste punten wordt tot winnaar gekroond en krijgt 60% van de inleg.<br>
+			Bij eventuele exequo's wordt de winst verdeeld.<br>
+		</p>
+
+	</template>
+
+	<script>
+		Polymer({
+			is: 'prono-rules',
+			properties: {
+			},
+			created: function(){
+				// create the local dictionary
+				this.dictionary = {};
+				this.dictionary['Rules'] = {'nl':'Spelregels'};
+				this.dictionary['general'] = {'en':'xxx','nl':'xxx'}
+			},
+			ready: function(){
+			},
+			trans: function(key){
+				return app.trans(key,this.dictionary);
+			}
+			
+		});
+	</script>
+
+</dom-module>

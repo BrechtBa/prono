@@ -1,2 +1,6 @@
+env
+*.pyc
 *.pdf
-_mysql.php
+*.sqlite3
+build
+node_modules

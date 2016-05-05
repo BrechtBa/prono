@@ -1,0 +1,149 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../../bower_components/neon-animation/neon-animations.html">
+<link rel="import" href="../../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
+
+<link rel="import" href="../../elements/default-dialog/default-dialog.html">
+<link rel="import" href="../../elements/prono-team-icon/prono-team-icon.html">
+
+<dom-module id="prono-teams-list">
+	<template>
+
+		<style>
+			:host{
+				display: block;
+				width: 100%;
+			}
+			paper-card{
+      			margin-bottom: 5px;
+				cursor: pointer;
+				padding: 10px;
+				background: var(--background-secondary-color);
+				color: var(--text-secondary-color);
+    		}
+			paper-button{
+				background: var(--button-background-color);
+				color: var(--button-text-color);
+			}
+			paper-button.primary{
+				background: var(--button-background-primary-color);
+				color: var(--button-text-primary-color);
+			}
+			.teamicon{
+				width: 45px;
+				height: 45px;
+			}
+			.closeDialog{
+				position: absolute;
+				top: -20px;
+				right: 10px;
+				margin: 0px;
+				cursor: pointer;
+			}
+		</style>
+
+		<template is="dom-repeat" items="{{teamsModel}}" as="team" sort="_sortTeams">
+			<paper-card elevation="2" class="horizontal layout" on-tap="editTeam">
+				<div class="flex">
+					<div class="name">{{team.name}}</div>
+					<div class="abr">{{team.abr}}</div>
+				</div>
+				<div class="flex">
+					<div class="group">Group: {{formatGroupName(team.group,groupsModel)}}</div>
+				</div>
+				<prono-team-icon class="teamicon" team="{{team}}"></prono-team-icon>
+			</paper-card>
+		</template>
+		<paper-button raised on-tap="addTeam">Add team</paper-button>
+
+		<default-dialog id="editTeam">
+			<paper-input id="name" label="Name:" value="{{team.name}}"></paper-input>
+			<paper-input id="abr" label="Abreviation:" value="{{team.abr}}"></paper-input>
+			<paper-input id="iso" label="ISO icon code:" value="{{team.iso_icon}}"></paper-input>
+			<paper-input id="icon" label="icon url:" value="{{team.icon}}"></paper-input>
+			<paper-dropdown-menu id="group" label="Group">
+				<paper-menu class="dropdown-content" attr-for-selected="value" selected="{{team.group}}">
+					<paper-item value="0"></paper-item>
+					<template is="dom-repeat" items="{{groupsModel}}" as="group">
+						<paper-item value="{{group.id}}">{{group.name}}</paper-item>
+					</template>
+				</paper-menu>
+			</paper-dropdown-menu>
+			<div class="buttons">
+				<paper-button raised class="primary" on-tap="saveTeam">Save</paper-button>
+				<paper-button raised on-tap="deleteTeam">Delete</paper-button>
+			</div>
+		</default-dialog>
+	
+
+	</template>
+
+	<script>
+		Polymer({
+			is: 'prono-teams-list',
+			properties: {
+				groupsModel: {
+					type: 'Array',
+				},
+				teamsModel: {
+					type: 'Array',
+				}
+			},
+			ready: function(){
+			},
+			editTeam: function(e){
+				this.team = e.model.__data__.team
+				this.$.editTeam.open();
+			},
+			saveTeam: function(){
+				this.$.editTeam.close();
+
+				var group = null;
+				if(this.team.group>0){
+					group = this.team.group;
+				}
+				app.$.model.$.teamsModel.put(this.team.id+'/',{'name':this.team.name,'abr':this.team.abr,'iso_icon':this.team.iso_icon,'icon':this.team.icon,'group':group});
+			},
+			addTeam: function(){
+				app.$.model.$.teamsModel.post();
+			},
+			deleteTeam: function(){
+				app.$.model.$.teamsModel.delete(this.team.id);
+			},
+			parseIcon: function(iso_icon,icon){
+				if(iso_icon != ''){
+					return 'images/flags/'+iso_icon+'.png';
+				}
+				else{
+					return icon;
+				}
+			},
+			formatGroupName: function(id,groupsModel){
+				var name = '';
+				groupsModel.forEach(function(item){
+					if(item.id == id){
+						name = item.name;
+					}
+				});
+				return name;
+			},
+			_sortTeams: function(a, b){
+				if(a.name > b.name){
+					return 1;
+				}
+				else if(a.name < b.name){
+					return -1;
+				}
+				else{
+					return 0;
+				}
+			},
+		});
+	</script>
+
+</dom-module>

@@ -1,0 +1,151 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../elements/default-dialog/default-dialog.html">
+<link rel="import" href="../../elements/api-model/api-model.html">
+
+<dom-module id="users-list">
+	<template>
+
+		<style>
+			:host{
+				display: block;
+				width: 100%;
+			}
+			paper-card{
+      			margin-bottom: 5px;
+				cursor: pointer;
+				padding: 10px;
+				background: var(--background-secondary-color);
+				color: var(--text-secondary-color);
+				width: 100%;
+    		}
+			.buttons{
+				margin-top: 20px;
+				text-align: right;
+			}
+			paper-button{
+				background: var(--button-background-color);
+				color: var(--button-text-color);
+			}
+			paper-button.primary{
+				background: var(--button-background-primary-color);
+				color: var(--button-text-primary-color);
+			}
+			.name{
+				padding: 10px;
+			}
+			.hidden{
+				display: none;
+			}
+			default-dialog .avatar{
+				--size: 80px;
+			}
+		</style>
+
+		
+		<api-model id="usersModel"        token="[[token]]" url="http://pronoapi.duckdns.org/users/"        model="{{usersModel}}"        on-change="handleUsersModelChange"></api-model>
+		<api-model id="userProfilesModel" token="[[token]]" url="http://pronoapi.duckdns.org/userprofiles/" model="{{userProfilesModel}}" on-change="handleUserProfilesModelChange"></api-model>
+		
+
+		<template is="dom-repeat" id="usersList" items="{{usersList(usersModel,userProfilesModel)}}" as="user">
+			<paper-card elevation="2" on-tap="editUserDialog">
+				<div class="horizontal layout center">
+					<avatar-image class="avatar" user="{{user}}"></avatar-image>
+					<div class="flex name">{{user.username}}</div>
+					<div class="flex name">{{user.displayname}}</div>
+					<div class="flex email">{{user.email}}</div>
+				</div>
+			</paper-card>
+		</template>
+
+
+		<default-dialog id="editUserDialog">
+			<h2>{{user.username}}</h2>
+			<form is="iron-form" id="editUserForm" method="post" on-iron-form-submit="saveUser" action="/">
+				<!--<paper-input id="permission" label="Permission:" value="{{user.permission}}" auto-validate pattern="[0-9]" error-message="0-9"></paper-input>-->
+				<div class="buttons">
+					<paper-button raised class="primary" on-tap="editUserFormSubmit">Save</paper-button>
+				</div>
+			</form>
+			<div class="buttons">
+				<paper-button raised on-tap="resetPassword">Reset password</paper-button>
+				<paper-button raised on-tap="deleteUser">Delete</paper-button>
+			</div>
+				
+		</default-dialog>
+
+	</template>
+
+	<script>
+		Polymer({
+			is: 'users-list',
+			properties: {
+				token: {
+					type: 'String',
+					value: '',
+					notify: true,
+					observer: 'tokenChanged'
+				}
+			},
+			ready: function(){
+			},
+			closeDialog: function(){
+				this.$.editUser.close();
+			},
+			tokenChanged: function(){
+				if( this.token != '' && this.token != null ){
+					this.$.usersModel.get();
+					this.$.userProfilesModel.get();
+				}
+				else{
+					// token is not valid
+					this.usersModel = [];
+					this.userProfilesModel = [];
+
+				}
+			},
+			usersList: function(usersModel,userProfilesModel){
+				var list = [];
+				usersModel.forEach(function(user){
+					var tempuser = {'id':user['id'],'username':user['username'],'email':user['email']};
+					
+					userProfilesModel.forEach(function(userprofile){
+						if(userprofile['user'] == user['id']){
+							tempuser['userprofile_id'] = userprofile['id'];
+							tempuser['avatar'] = userprofile['avatar'];
+							tempuser['displayname'] = userprofile['displayname'];
+						}
+					});
+					list.push(tempuser);
+				});
+				return list;
+			},
+			handleUsersModelChange: function(e){
+			},
+			handleUserProfilesModelChange: function(e){
+			},
+			editUserDialog: function(e){
+				this.user = e.model.__data__.user;
+				this.$.editUserDialog.open();
+			},
+			editUserFormSubmit: function(){
+				this.$.editUserForm.submit();
+			},
+			saveUser: function(event){
+				this.$.usersModel.put(this.user['id']+'/',{'email':user['email']});
+				this.$.userProfilesModel.put(this.user['userprofile_id']+'/',{'avatar':user['avatar'],'displayname':user['displayname']});
+				this.$.editUserDialog.close();
+			},
+			deleteUser: function(){
+				this.$.editUserDialog.close();
+
+				this.$.usersModel.delete(this.user['id']+'/');
+			},
+			resetPassword: function(){
+				console.log('Not implemented yet');
+			}
+		});
+	</script>
+
+</dom-module>

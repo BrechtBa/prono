@@ -1,0 +1,30 @@
+{
+  "name": "prono",
+  "version": "2.0.0",
+  "description": "App to bet on soccer tournaments among friends",
+  "main": "",
+  "dependencies": {
+    "event-stream": "^3.3.2",
+    "gulp": "^3.9.1",
+    "gulp-vulcanize": "^6.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BrechtBa/prono.git"
+  },
+  "keywords": [
+    "prono",
+    "soccer",
+    "tournament"
+  ],
+  "author": "Brecht Baeten",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/BrechtBa/prono/issues"
+  },
+  "homepage": "https://github.com/BrechtBa/prono"
+}

@@ -1,0 +1,63 @@
+
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+
+<link rel="import" href="../../elements/parse-token/parse-token.html">
+
+<dom-module is="renew-token">
+	<template>
+		<style>
+			:host{
+			}
+		</style>
+
+		<parse-token token="{{token}}" payload="{{payload}}"></parse-token>
+		<iron-ajax id="renew" url="http://pronoapi.duckdns.org/token-refresh/" method="POST" content-type="application/json" handle-as="json" last-response="{{renewResponse}}"   on-response="handleRenewResponse"   on-error="handleRenewError" debounce-duration="300"></iron-ajax>
+		
+	</template>
+
+	
+	
+	<script>
+		Polymer({
+			is: 'renew-token',
+			properties: {
+				token: {
+					type: 'String',
+					value: '',
+					notify: true
+				},
+				payload: {
+					type: 'Object',
+					value: {},
+					observer: 'payloadChanged'
+				},
+			},
+			payloadChanged: function(payload){
+				if(typeof payload['access_exp'] != 'undefined'){
+					var that = this;
+					var now = new Date();
+					timeuntilrenewal = Math.min(24*3600*1000,Math.max(1,payload['access_exp']*1000-now));
+					
+					setTimeout(function(){
+
+						that.$.renew.body = JSON.stringify({'token':that.token});
+						that.$.renew.generateRequest();
+
+					}, timeuntilrenewal);
+				}
+			},
+			handleRenewResponse: function(){
+				if( typeof this.renewResponse['token'] != 'undefined'){
+					this.token = this.renewResponse['token'];
+				}
+				else{
+					this.token = '';
+				}
+			},
+			handleRenewError: function(e){
+				console.log(e)
+			},
+		});
+	</script>
+</dom-module>
