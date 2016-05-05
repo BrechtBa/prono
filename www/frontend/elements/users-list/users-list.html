@@ -1,7 +1,8 @@
 
 <link rel="import" href="../../bower_components/polymer/polymer.html">
-<link rel="import" href="../../bower_components/iron-ajax/iron-ajax.html">
+
 <link rel="import" href="../../elements/default-dialog/default-dialog.html">
+<link rel="import" href="../../elements/api-model/api-model.html">
 
 <dom-module id="users-list">
 	<template>
@@ -42,30 +43,27 @@
 			}
 		</style>
 
-		<iron-ajax id="getUserProfiles" url="../../api/index.php/user_profiles" method="GET" handle-as="json" last-response="{{user_profiles}}" debounce-duration="300"></iron-ajax>
-		<iron-ajax id="getUsers" url="../../api/index.php/users" method="GET" handle-as="json" last-response="{{users}}" debounce-duration="300"></iron-ajax>
 		
-		<iron-ajax id="putUser" method="PUT" handle-as="json" on-response="handlePutUserResponse" last-response="{{putUserResponse}}" debounce-duration="300"></iron-ajax>
+		<api-model id="usersModel"        token="[[token]]" url="http://pronoapi.duckdns.org/users/"        model="{{usersModel}}"        on-change="handleUsersModelChange"></api-model>
+		<api-model id="userProfilesModel" token="[[token]]" url="http://pronoapi.duckdns.org/userprofiles/" model="{{userProfilesModel}}" on-change="handleUserProfilesModelChange"></api-model>
 		
-		<iron-ajax id="deleteUser" method="DELETE" handle-as="json" on-response="handleDeleteUserResponse" last-response="{{deleteUserResponse}}" debounce-duration="300"></iron-ajax>
-		<iron-ajax id="deleteUserProfile" method="DELETE" handle-as="json" on-response="handleDeleteUserProfileResponse" last-response="{{deleteUserProfileResponse}}" debounce-duration="300"></iron-ajax>
 
-
-		<template is="dom-repeat" id="usersList" items="{{user_profiles}}" as="user">
+		<template is="dom-repeat" id="usersList" items="{{usersList(usersModel,userProfilesModel)}}" as="user">
 			<paper-card elevation="2" on-tap="editUserDialog">
 				<div class="horizontal layout center">
 					<avatar-image class="avatar" user="{{user}}"></avatar-image>
-					<div class="flex name">{{user.login}}</div>
-					<div class="flex name">{{user.name}}</div>
+					<div class="flex name">{{user.username}}</div>
+					<div class="flex name">{{user.displayname}}</div>
+					<div class="flex email">{{user.email}}</div>
 				</div>
 			</paper-card>
 		</template>
 
 
 		<default-dialog id="editUserDialog">
-			<h2>{{user.login}}</h2>
+			<h2>{{user.username}}</h2>
 			<form is="iron-form" id="editUserForm" method="post" on-iron-form-submit="saveUser" action="/">
-				<paper-input id="permission" label="Permission:" value="{{user.permission}}" auto-validate pattern="[0-9]" error-message="0-9"></paper-input>
+				<!--<paper-input id="permission" label="Permission:" value="{{user.permission}}" auto-validate pattern="[0-9]" error-message="0-9"></paper-input>-->
 				<div class="buttons">
 					<paper-button raised class="primary" on-tap="editUserFormSubmit">Save</paper-button>
 				</div>
@@ -96,66 +94,53 @@
 				this.$.editUser.close();
 			},
 			tokenChanged: function(){
-				if( this.token != '' && this.token != null){
-					this.$.getUserProfiles.headers['Authentication'] = this.token;
-					this.$.getUserProfiles.generateRequest();
-
-					this.$.getUsers.headers['Authentication'] = this.token;
-					this.$.getUsers.generateRequest();
+				if( this.token != '' && this.token != null ){
+					this.$.usersModel.get();
+					this.$.userProfilesModel.get();
 				}
+				else{
+					// token is not valid
+					this.usersModel = [];
+					this.userProfilesModel = [];
+
+				}
+			},
+			usersList: function(usersModel,userProfilesModel){
+				var list = [];
+				usersModel.forEach(function(user){
+					var tempuser = {'id':user['id'],'username':user['username'],'email':user['email']};
+					
+					userProfilesModel.forEach(function(userprofile){
+						if(userprofile['user'] == user['id']){
+							tempuser['userprofile_id'] = userprofile['id'];
+							tempuser['avatar'] = userprofile['avatar'];
+							tempuser['displayname'] = userprofile['displayname'];
+						}
+					});
+					list.push(tempuser);
+				});
+				return list;
+			},
+			handleUsersModelChange: function(e){
+			},
+			handleUserProfilesModelChange: function(e){
 			},
 			editUserDialog: function(e){
 				this.user = e.model.__data__.user;
-				that = this;
-				var user = {};	
-				that.users.forEach(function(item){
-					if(item.id == that.user.user_id){
-						user = item;
-					}
-				});
-
-				this.set('user.permission',user.permission);
 				this.$.editUserDialog.open();
 			},
 			editUserFormSubmit: function(){
 				this.$.editUserForm.submit();
 			},
 			saveUser: function(event){
-				this.$.putUser.url = 'api/index.php/users/'+this.user.user_id
-				this.$.putUser.headers['Authentication'] = this.token;
-				this.$.putUser.body = JSON.stringify({'permission':this.user.permission});
-				this.$.putUser.generateRequest();
+				this.$.usersModel.put(this.user['id']+'/',{'email':user['email']});
+				this.$.userProfilesModel.put(this.user['userprofile_id']+'/',{'avatar':user['avatar'],'displayname':user['displayname']});
 				this.$.editUserDialog.close();
-			},
-			handlePutUserResponse: function(event,request){
-				var headers = request.xhr.getAllResponseHeaders();
-				this.$.getUsers.headers['Authentication'] = this.token;
-				this.$.getUsers.generateRequest();
-
-				this.$.getUserProfiles.headers['Authentication'] = this.token;
-				this.$.getUserProfiles.generateRequest();
 			},
 			deleteUser: function(){
 				this.$.editUserDialog.close();
 
-				this.$.deleteUser.headers['Authentication'] = this.token;
-				this.$.deleteUser.url = 'api/index.php/users/'+this.user.user_id
-				this.$.deleteUser.generateRequest();
-
-				this.$.deleteUserProfile.headers['Authentication'] = this.token;
-				this.$.deleteUserProfile.url = 'api/index.php/user_profiles/'+this.user.id
-				this.$.deleteUserProfile.generateRequest();
-				
-			},
-			handleDeleteUserResponse: function(event,request){
-				var headers = request.xhr.getAllResponseHeaders();
-				this.$.getUsers.headers['Authentication'] = this.token;
-				this.$.getUsers.generateRequest();
-			},
-			handleDeleteUserProfileResponse: function(event,request){
-				var headers = request.xhr.getAllResponseHeaders();
-				this.$.getUserProfiles.headers['Authentication'] = this.token;
-				this.$.getUserProfiles.generateRequest();
+				this.$.usersModel.delete(this.user['id']+'/');
 			},
 			resetPassword: function(){
 				console.log('Not implemented yet');

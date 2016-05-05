@@ -11,16 +11,16 @@ from api.utils import unixtimestamp
 # Users
 ################################################################################
 class UserStatus(models.Model):
-	user = models.OneToOneField(AuthUser, on_delete=models.SET_NULL, related_name='status', blank=True, null=True)
+	user = models.OneToOneField(AuthUser, on_delete=models.CASCADE, related_name='status', blank=True, null=True)
 	databaseprepared = models.BooleanField(default=False)
 
 class UserProfile(models.Model):
-	user = models.OneToOneField(AuthUser, on_delete=models.SET_NULL, related_name='profile', blank=True, null=True)
+	user = models.OneToOneField(AuthUser, on_delete=models.CASCADE, related_name='profile', blank=True, null=True)
 	displayname = models.CharField(max_length=100, blank=True, default='')
 	avatar = models.CharField(max_length=256, blank=True, default='')
 
 class AvatarUpload(models.Model):
-	user = models.OneToOneField(AuthUser, on_delete=models.SET_NULL, related_name='avatar_upload', blank=True, null=True)
+	user = models.OneToOneField(AuthUser, on_delete=models.CASCADE, related_name='avatar_upload', blank=True, null=True)
 	file = models.FileField(upload_to='avatars/', blank=True, default='')
 
 
@@ -121,7 +121,7 @@ class MatchResult(models.Model):
 # Prono
 ################################################################################
 class Points(models.Model):
-	user = models.ForeignKey(AuthUser, on_delete=models.SET_NULL, related_name='points', blank=True, null=True)
+	user = models.ForeignKey(AuthUser, on_delete=models.CASCADE, related_name='points', blank=True, null=True)
 	prono = models.CharField(max_length=100, blank=True, default='')
 	points = models.IntegerField(blank=True, default=0)
 	
