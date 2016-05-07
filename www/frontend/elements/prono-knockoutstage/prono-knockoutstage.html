@@ -182,7 +182,7 @@
 				},
 				currentStage: {
 					type: 'Number',
-					value: -1
+					value: 1
 				},
 				user: {
 					type: 'Object',
@@ -353,7 +353,7 @@
 				var match = e.model.__data__.match;
 
 				if(match.stage == this.expandedStage || !this.isSmall()){
-					if( (typeof this.user.id == 'undefined' && this.permission > 5) || ( typeof this.user.id != 'undefined' && match.stage==this.currentStage ) ){
+					if( (typeof this.user.id == 'undefined' && this.permission > 5) || ( typeof this.user.id != 'undefined' && match.stage==this.currentStage ) || (typeof this.user.id!='undefined' && this.currentStage==-1 && this.permission > 6) ){
 					
 						var that = this;
 						that.result = {}
@@ -395,7 +395,7 @@
 				return 'stage-'+stage.id;
 			},
 			disabledClass: function(stage,currentStage,user){
-				if(stage.id==currentStage || typeof user.user_id == 'undefined'){
+				if(currentStage==stage.id || currentStage==-1 || typeof user.user_id == 'undefined'){
 					return '';
 				}
 				else{

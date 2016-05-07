@@ -195,7 +195,7 @@
 
 							<section class="page" data-route="users">
 								<h2 class="page-title">{{trans('Users')}}</h2>
-								<users-list token="{{token}}"></users-list>
+								<users-list  token="{{token}}" permission="{{tokenPayload.permission}}" groups-model="{{groupsModel}}" stages-model="{{stagesModel}}" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" matchresults-model="{{matchresultsModel}}" rules-model="{{rulesModel}}" database-prepared="{{databasePrepared}}"></users-list>
 							</section>
 
 						</iron-pages>

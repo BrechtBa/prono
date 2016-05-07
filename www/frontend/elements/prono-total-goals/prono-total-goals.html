@@ -86,7 +86,7 @@
 				},
 				currentStage:{
 					type: 'Number',
-					value: -1
+					value: 1
 				},
 				user: {
 					type: 'Object',
@@ -133,7 +133,7 @@
 				}
 			},
 			editGoals: function(){
-				if(this.currentStage == 0){
+				if(this.currentStage == 0 || this.currentStage==-1){
 					var goals = this.getGoals(this.prono);
 					this.goals = goals;
 
@@ -150,7 +150,7 @@
 				this.$.prono.put(this.prono[0].id+'/',{'goals': this.goals});
 			},
 			disabledClass: function(currentStage,user){
-				if( 0==currentStage || typeof user.id == 'undefined'){
+				if( currentStage==0 || currentStage==-1 || typeof user.id == 'undefined'){
 					return '';
 				}
 				else{
