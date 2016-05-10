@@ -395,7 +395,7 @@
 				return 'stage-'+stage.id;
 			},
 			disabledClass: function(stage,currentStage,user){
-				if(currentStage==stage.id || currentStage==-1 || typeof user.user_id == 'undefined'){
+				if(currentStage==stage.id || currentStage==-1 || typeof user.id == 'undefined'){
 					return '';
 				}
 				else{
