@@ -168,6 +168,7 @@
 						console.log('update points')
 						this.lastUpdate[0] = this.lastUpdateModel[0]['date'];
 						
+						this.$.usersModel.get();
 						this.fire('update-points')
 					}
 					if( parseInt(this.lastUpdateModel[1]['date']) > this.lastUpdate[1] ){

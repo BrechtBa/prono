@@ -217,7 +217,8 @@ def prepare_database_for_user(user):
 			user_points = Points(user=user, prono=prono)
 			user_points.save()
 			#print('Added points for user {} on prono {}'.format(user,prono))
-		
+	set_last_update(pk=1)
+	
 
 	# check if the user has entries for all pronos
 	# groupstage and knockoutstage result
