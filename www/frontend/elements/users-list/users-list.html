@@ -69,11 +69,27 @@
 				</div>
 			</form>
 			<div class="buttons">
-				<paper-button raised on-tap="resetPassword">Reset password</paper-button>
+				<paper-button raised on-tap="changePasswordForm">Change password</paper-button>
 				<paper-button raised on-tap="deleteUser">Delete</paper-button>
 			</div>
-				
 		</default-dialog>
+
+	
+		<default-dialog id="changePasswordDialog">
+			<h2>{{user.username}}</h2>
+			<iron-ajax id="changePasswordAjax" url="http://pronoapi.duckdns.org/changepassword/" method="PUT" content-type="application/json" handle-as="json" on-response="handleChangePasswordResponse" on-error="handleChangePasswordError" debounce-duration="300"></iron-ajax>
+		
+			<form is="iron-form" id="changePasswordForm" on-iron-form-submit="changePasswordFormAjaxSubmit" action="/">
+				<paper-input id="newpassword" label="Password:" type="password" required auto-validate error-message="required"></paper-input>
+				<custom-validator id="passwordValidator" validator-name="passwordrepeatValidator"></custom-validator>
+				<paper-input id="newpasswordrepeat" label="Repeat password:" type="password" required auto-validate error-message="does not match" validator="passwordrepeatValidator"></paper-input>
+
+				<div class="buttons">
+					<paper-button raised class="primary" on-tap="changePasswordFormSubmit">Save</paper-button>
+				</div>
+			</form>
+		</default-dialog>
+
 
 	</template>
 
@@ -89,6 +105,7 @@
 				}
 			},
 			ready: function(){
+				this.$.passwordValidator.validate = this.passwordValidator.bind(this);
 			},
 			closeDialog: function(){
 				this.$.editUser.close();
@@ -142,9 +159,36 @@
 
 				this.$.usersModel.delete(this.user['id']+'/');
 			},
-			resetPassword: function(){
-				console.log('Not implemented yet');
-			}
+			changePasswordForm: function(){
+				this.$.changePasswordDialog.open();
+			},
+			changePasswordFormSubmit: function(){
+				this.$.changePasswordForm.submit();
+			},
+			changePasswordFormAjaxSubmit: function(event){
+				this.$.changePasswordDialog.close();
+
+				this.$.changePasswordAjax.headers['Authorization'] = 'JWT '+this.token;
+				this.$.changePasswordAjax.url = 'http://pronoapi.duckdns.org/changepassword/'+this.user['id']+'/'
+				this.$.changePasswordAjax.body = JSON.stringify({'password':this.$.newpassword.value});
+				this.$.changePasswordAjax.generateRequest();
+
+				// remove values
+				this.$.newpassword.value = '';
+				this.$.newpasswordrepeat.value = '';
+			},
+			handleChangePasswordResponse: function(e){
+			},
+			handleChangePasswordError: function(e){
+			},
+			passwordValidator: function(){
+				if(this.$.newpassword.value == this.$.newpasswordrepeat.value){
+            		return true;
+				}
+				else{
+            		return false;
+				}
+			},
 		});
 	</script>
 
