@@ -11,6 +11,11 @@ class RegisterSerializer(serializers.ModelSerializer):
 		model = AuthUser
 		fields = ('username','email','password')
 
+class ChangePasswordSerializer(serializers.ModelSerializer):
+	class Meta:
+		model = AuthUser
+		fields = ('password',)
+
 class UserSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = AuthUser

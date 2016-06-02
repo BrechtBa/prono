@@ -9,6 +9,7 @@ urlpatterns = [
 	url(r'^token-auth/', obtain_jwt_token, name='token-auth'),
 	url(r'^token-refresh/', refresh_jwt_token),
 	url(r'^register/$', views.register),
+	url(r'^changepassword/(?P<pk>[0-9]+)/$', views.changePassword),
 	url(r'^preparedatabaseforuser/$', views.PrepareDatabaseForUserView.as_view()),
 	url(r'^calculatepoints/$', views.CalculatePointsView.as_view()),
 

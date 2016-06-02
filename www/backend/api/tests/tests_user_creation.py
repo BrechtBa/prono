@@ -36,9 +36,56 @@ class UserCreationTests(PronoTest):
 		payload = jwt_decode_handler(token)
 
 		response = self.client.post('/preparedatabaseforuser/', {}, HTTP_AUTHORIZATION='JWT {}'.format(token))
-		print('/userstatus/?user={}'.format(payload['user_id']))
+
 		response = self.client.get('/userstatus/?user={}'.format(payload['user_id']), content_type='application/json', HTTP_AUTHORIZATION='JWT {}'.format(token))
 		responsedata = json.loads(response.rendered_content.decode('utf-8'))
-		print(responsedata)
 		
-		self.assertEqual(responsedata['databaseprepared'], True)
+		self.assertEqual(responsedata[0]['databaseprepared'], True)
+
+	def test_change_password(self):
+		response = self.client.post('/register/', {'username':'test123', 'password':'somepassword'})
+		
+		token = self.generate_token({'username':'test123', 'password':'somepassword'})
+		payload = jwt_decode_handler(token)
+		user_id = payload['user_id']
+
+		response = self.client.put('/changepassword/{}/'.format(user_id), data=json.dumps({'password':'newpassword'}), content_type='application/json', HTTP_AUTHORIZATION='JWT {}'.format(token))
+		self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+		response = self.client.post('/token-auth/', {'username':'test123', 'password':'newpassword'})
+		self.assertEqual(response.status_code, status.HTTP_200_OK)
+	
+
+	def test_change_password_admin(self):
+		response = self.client.post('/register/', {'username':'test123', 'password':'somepassword'})
+		
+		token = self.generate_token({'username':'test123', 'password':'somepassword'})
+		payload = jwt_decode_handler(token)
+		user_id = payload['user_id']
+
+		token = self.generate_token({'username':'user1', 'password':'password123'})
+		payload = jwt_decode_handler(token)
+
+		response = self.client.put('/changepassword/{}/'.format(user_id), data=json.dumps({'password':'newpassword'}), content_type='application/json', HTTP_AUTHORIZATION='JWT {}'.format(token))
+		self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+		response = self.client.post('/token-auth/', {'username':'test123', 'password':'newpassword'})
+		self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+	def test_change_password_wronguser(self):
+		response = self.client.post('/register/', {'username':'test123', 'password':'somepassword'})
+		
+		token = self.generate_token({'username':'test123', 'password':'somepassword'})
+		payload = jwt_decode_handler(token)
+		user_id = payload['user_id']
+
+		token = self.generate_token({'username':'user2', 'password':'password123'})
+		payload = jwt_decode_handler(token)
+
+		response = self.client.put('/changepassword/{}/'.format(user_id), data=json.dumps({'password':'newpassword'}), content_type='application/json', HTTP_AUTHORIZATION='JWT {}'.format(token))
+		self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+		response = self.client.post('/token-auth/', {'username':'test123', 'password':'somepassword'})
+		self.assertEqual(response.status_code, status.HTTP_200_OK)
+

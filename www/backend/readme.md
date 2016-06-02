@@ -20,8 +20,11 @@ source ../../env/bin/activate
 Install the python dependencies
 ```
 pip install django
+pip install django-filter
 pip install djangorestframework
 pip install djangorestframework-jwt
+pip install django-cors-headers
+pip install mock
 ```
 
 

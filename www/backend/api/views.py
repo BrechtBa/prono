@@ -47,6 +47,31 @@ def register(request):
 	else:
 		return Response(serializer._errors, status=status.HTTP_400_BAD_REQUEST)
 
+# change password
+@api_view(['PUT'])
+def changePassword(request,pk):
+	try:
+		user = AuthUser.objects.get(pk=pk)
+	except:
+		return Response(status=status.HTTP_404_NOT_FOUND)
+
+	# check if the user has permission
+	if not (user==request.user or request.user.is_staff):
+		return Response(status=status.HTTP_401_UNAUTHORIZED)		
+	
+
+	serializer = ChangePasswordSerializer(user,data=request.data)
+
+	if serializer.is_valid():
+		user.set_password(request.data['password'])
+		user.save()
+
+		return Response(status=status.HTTP_200_OK)
+	else:
+		return Response(serializer._errors, status=status.HTTP_400_BAD_REQUEST)
+		
+
+
 # users
 class UserList(generics.ListCreateAPIView):
 	serializer_class = UserSerializer
