@@ -24,6 +24,9 @@ class PronoCreationTests(PronoTest):
 	def test_prono_results_created_when_user_created(self):
 		user = AuthUser.objects.create_user(username='abc',password='password123')
 
+		token = self.generate_token({'username':'abc', 'password':'password123'})
+		response = self.client.post('/preparedatabaseforuser/', HTTP_AUTHORIZATION='JWT {}'.format(token))
+		
 		results = user.prono_result.all()
 		results_matches = []
 		for result in results:
@@ -55,6 +58,9 @@ class PronoCreationTests(PronoTest):
 	def test_prono_groupstage_winners_created_when_user_created(self):
 		user = AuthUser.objects.create_user(username='abc',password='password123')
 
+		token = self.generate_token({'username':'abc', 'password':'password123'})
+		response = self.client.post('/preparedatabaseforuser/', HTTP_AUTHORIZATION='JWT {}'.format(token))
+		
 		for group in Group.objects.all():
 			results = user.prono_groupstage_winners.filter(group=group,ranking=1)
 			self.assertEqual(len(results),1)
@@ -75,7 +81,10 @@ class PronoCreationTests(PronoTest):
 
 	def test_prono_knockoutstage_teams_created_when_user_created(self):
 		user = AuthUser.objects.create_user(username='abc',password='password123')
-
+		
+		token = self.generate_token({'username':'abc', 'password':'password123'})
+		response = self.client.post('/preparedatabaseforuser/', HTTP_AUTHORIZATION='JWT {}'.format(token))
+		
 		results = user.prono_knockoutstage_teams.filter(stage=8)
 		self.assertEqual(len(results),8)
 
@@ -104,13 +113,19 @@ class PronoCreationTests(PronoTest):
 	def test_prono_total_goals_created_when_user_created(self):
 		user = AuthUser.objects.create_user(username='abc',password='password123')
 
+		token = self.generate_token({'username':'abc', 'password':'password123'})
+		response = self.client.post('/preparedatabaseforuser/', HTTP_AUTHORIZATION='JWT {}'.format(token))
+		
 		results = user.prono_total_goals.all()
 		self.assertEqual(len(results),1)
 
 		
 	def test_prono_team_result_created_when_user_created(self):
 		user = AuthUser.objects.create_user(username='abc',password='password123')
-
+		
+		token = self.generate_token({'username':'abc', 'password':'password123'})
+		response = self.client.post('/preparedatabaseforuser/', HTTP_AUTHORIZATION='JWT {}'.format(token))
+		
 		teams = Team.objects.all()
 		
 		results = user.prono_team_result.all()

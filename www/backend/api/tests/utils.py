@@ -53,7 +53,7 @@ class PronoTest(TestCase):
 		# add matches
 		self.matches = []
 		self.matches.append( Match.objects.create(team1=self.teams[0],team2=self.teams[1],defaultteam1='A1',defaultteam2='A2',date=unixtimestamp(datetime.datetime(2016,6,11,21-2)) ) )
-		self.matches.append( Match.objects.create(team1=self.teams[2],team2=self.teams[3],defaultteam1='A3',defaultteam2='A4',date=unixtimestamp(datetime.datetime(2016,6,11,15-2)) ) )
+		self.matches.append( Match.objects.create(team1=self.teams[2],team2=self.teams[3],defaultteam1='A3',defaultteam2='A4',date=unixtimestamp(datetime.datetime(2016,6,12,15-2)) ) )
 		
 		self.matches.append( Match.objects.create(defaultteam1='RA',defaultteam2='RC',stage=16,position=1,date=unixtimestamp(datetime.datetime(2016,6,25,15-2)) ) )
 		self.matches.append( Match.objects.create(defaultteam1='W37',defaultteam2='W39',stage=8,position=1,date=unixtimestamp(datetime.datetime(2016,6,30,21-2)) ) )

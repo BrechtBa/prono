@@ -28,6 +28,9 @@ class PronoPointsTests(PronoTest):
 		match_result.score2 = 2
 		match_result.save()
 
+		# calculate points
+		response = self.client.post('/calculatepoints/')
+
 		# check the user points
 		points = Points.objects.filter(user=user,prono='groupstage_result')[0]
 		self.assertEqual(points.points,3)
@@ -50,6 +53,9 @@ class PronoPointsTests(PronoTest):
 		match_result.score1 = 2
 		match_result.score2 = 2
 		match_result.save()
+
+		# calculate points
+		response = self.client.post('/calculatepoints/')
 
 		# check the user points
 		points = Points.objects.filter(user=user,prono='groupstage_result')[0]
@@ -75,6 +81,9 @@ class PronoPointsTests(PronoTest):
 			match_result.score1 = 4
 			match_result.score2 = 2
 			match_result.save()
+
+		# calculate points
+		response = self.client.post('/calculatepoints/')
 
 		# check the user points
 		points = Points.objects.filter(user=user,prono='groupstage_result')[0]
@@ -103,6 +112,10 @@ class PronoPointsTests(PronoTest):
 			response = self.client.put('/matchresults/{}/'.format(match_result['id']), data=json.dumps({'score1':3, 'score2':2}), content_type='application/json', HTTP_AUTHORIZATION='JWT {}'.format(token))
 
 		matches = Match.objects.filter(stage=0)
+
+		# calculate points
+		response = self.client.post('/calculatepoints/')
+
 		# check the user points
 		points = Points.objects.filter(user=self.users[1],prono='groupstage_result')[0]
 		self.assertEqual(points.points,3*len(matches))	
@@ -125,6 +138,9 @@ class PronoPointsTests(PronoTest):
 		match_result.score2 = 3
 		match_result.save()
 
+		# calculate points
+		response = self.client.post('/calculatepoints/')
+
 		# check the user points
 		points = Points.objects.filter(user=user,prono='groupstage_result')[0]
 		self.assertEqual(points.points,0)	
@@ -146,6 +162,9 @@ class PronoPointsTests(PronoTest):
 		match_result.score1 = 2
 		match_result.score2 = 1
 		match_result.save()
+
+		# calculate points
+		response = self.client.post('/calculatepoints/')
 
 		# check the user points
 		points = Points.objects.filter(user=user,prono='groupstage_score')[0]
@@ -172,6 +191,9 @@ class PronoPointsTests(PronoTest):
 			match_result.score2 = 2
 			match_result.save()
 
+		# calculate points
+		response = self.client.post('/calculatepoints/')
+
 		# check the user points
 		points = Points.objects.filter(user=user,prono='knockoutstage_result')[0]
 		self.assertEqual(points.points,6*len(matches))
@@ -196,6 +218,9 @@ class PronoPointsTests(PronoTest):
 			match_result.score1 = 2
 			match_result.score2 = 1
 			match_result.save()
+
+		# calculate points
+		response = self.client.post('/calculatepoints/')
 
 		# check the user points
 		points = Points.objects.filter(user=user,prono='knockoutstage_score')[0]
@@ -237,6 +262,9 @@ class PronoPointsTests(PronoTest):
 			team.groupstage_points = 7.4
 			team.save()
 			
+		# calculate points
+		response = self.client.post('/calculatepoints/')
+
 		# check the user points
 		points = Points.objects.filter(user=user,prono='groupstage_winners')[0]
 		self.assertEqual(points.points,8)
@@ -278,6 +306,9 @@ class PronoPointsTests(PronoTest):
 			team.groupstage_points = 9
 			team.save()
 			
+		# calculate points
+		response = self.client.post('/calculatepoints/')
+
 		# check the user points
 		points = Points.objects.filter(user=user,prono='groupstage_winners')[0]
 		self.assertEqual(points.points,4)
@@ -318,6 +349,9 @@ class PronoPointsTests(PronoTest):
 			team.groupstage_points = 7.2
 			team.save()
 			
+		# calculate points
+		response = self.client.post('/calculatepoints/')
+
 		# check the user points
 		points = Points.objects.filter(user=user,prono='groupstage_winners')[0]
 		self.assertEqual(points.points,6)
@@ -352,6 +386,9 @@ class PronoPointsTests(PronoTest):
 				match.team2 = teams[2*i+1]
 				match.save()
 				
+		# calculate points
+		response = self.client.post('/calculatepoints/')
+
 		# check the user points
 		points = Points.objects.filter(user=user,prono='knockoutstage_teams')[0]
 		self.assertEqual(points.points,4*28)
@@ -383,6 +420,9 @@ class PronoPointsTests(PronoTest):
 		match_result.penalty2 = 5
 		match_result.save()
 		
+		# calculate points
+		response = self.client.post('/calculatepoints/')
+
 		# check the user points
 		points = Points.objects.filter(user=user,prono='knockoutstage_teams')[0]
 		self.assertEqual(points.points,60)
@@ -413,6 +453,9 @@ class PronoPointsTests(PronoTest):
 		match_result.penalty2 = 5
 		match_result.save()
 		
+		# calculate points
+		response = self.client.post('/calculatepoints/')
+
 		# check the user points
 		points = Points.objects.filter(user=user,prono='knockoutstage_teams')[0]
 		self.assertEqual(points.points,0)
@@ -436,6 +479,9 @@ class PronoPointsTests(PronoTest):
 			match_result.score2 = 4-match_result.score1
 			match_result.save()
 
+		# calculate points
+		response = self.client.post('/calculatepoints/')
+
 		# check the user points
 		points = Points.objects.filter(user=user,prono='total_goals')[0]
 		self.assertEqual(points.points,100)
@@ -458,6 +504,9 @@ class PronoPointsTests(PronoTest):
 			match_result.score2 = 4-match_result.score1
 			match_result.save()
 
+		# calculate points
+		response = self.client.post('/calculatepoints/')
+
 		# check the user points
 		points = Points.objects.filter(user=user,prono='total_goals')[0]
 		self.assertEqual(points.points,100-8*6)
@@ -479,6 +528,10 @@ class PronoPointsTests(PronoTest):
 			match_result.score1 = random.randint(0,4)
 			match_result.score2 = 4-match_result.score1
 			match_result.save()
+
+
+		# calculate points
+		response = self.client.post('/calculatepoints/')
 
 		# check the user points
 		points = Points.objects.filter(user=user,prono='total_goals')[0]
@@ -519,7 +572,9 @@ class PronoPointsTests(PronoTest):
 			match_result.score2 = 0
 			match_result.save()
 			
-			
+		# calculate points
+		response = self.client.post('/calculatepoints/')
+	
 		# check the user points
 		points = Points.objects.filter(user=user,prono='team_result')[0]
 		self.assertEqual(points.points,5)
@@ -559,7 +614,9 @@ class PronoPointsTests(PronoTest):
 			match_result.score2 = 0
 			match_result.save()
 			
-			
+		# calculate points
+		response = self.client.post('/calculatepoints/')
+	
 		# check the user points
 		points = Points.objects.filter(user=user,prono='team_result')[0]
 		self.assertEqual(points.points,10)
@@ -599,7 +656,9 @@ class PronoPointsTests(PronoTest):
 			match_result.score2 = 0
 			match_result.save()
 			
-			
+		# calculate points
+		response = self.client.post('/calculatepoints/')
+	
 		# check the user points
 		points = Points.objects.filter(user=user,prono='team_result')[0]
 		self.assertEqual(points.points,0)	
@@ -639,7 +698,9 @@ class PronoPointsTests(PronoTest):
 			match_result.score2 = 0
 			match_result.save()
 			
-			
+		# calculate points
+		response = self.client.post('/calculatepoints/')
+	
 		# check the user points
 		points = Points.objects.filter(user=user,prono='team_result')[0]
 		self.assertEqual(points.points,50)
@@ -680,7 +741,9 @@ class PronoPointsTests(PronoTest):
 			match_result.score2 = 0
 			match_result.save()
 			
-			
+		# calculate points
+		response = self.client.post('/calculatepoints/')	
+
 		# check the user points
 		points = Points.objects.filter(user=user,prono='team_result')[0]
 		self.assertEqual(points.points,0)
@@ -721,7 +784,12 @@ class PronoPointsTests(PronoTest):
 			match_result.score2 = 0
 			match_result.save()
 			
-			
+		# calculate points
+		response = self.client.post('/calculatepoints/')
+	
 		# check the user points
 		points = Points.objects.filter(user=user,prono='team_result')[0]
 		self.assertEqual(points.points,150)	
+
+
+
