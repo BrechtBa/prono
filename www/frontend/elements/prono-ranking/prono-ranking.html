@@ -130,12 +130,16 @@
 			},
 			getPointsTotal: function(token,user,usersModel,databasePrepared){
 				if(typeof user.id == 'undefined' || token == '' || databasePrepared==0){
-					this.pointsTotal = [];
 					this.displayWaitMessage = true;
 				}
 				else{
-					this.$.pointsTotal.get();
 					this.displayWaitMessage = false;
+				}
+				if(typeof user.id == 'undefined' || token == ''){
+					this.pointsTotal = [];
+				}
+				else{
+					this.$.pointsTotal.get();
 				}
 			},
 			getUser: function(id,usersModel){

@@ -124,7 +124,7 @@
 				},
 				currentStage:{
 					type: 'Number',
-					value: -1
+					value: 1
 				},
 				user: {
 					type: 'Object',
@@ -171,7 +171,7 @@
 			},
 			editScore: function(e){
 				var match = e.model.__data__.match;
-				if( (typeof this.user.id == 'undefined' && this.permission > 5) || ( typeof this.user.id != 'undefined' && match.stage==this.currentStage ) ){
+				if( (typeof this.user.id == 'undefined' && this.permission > 5) || ( typeof this.user.id != 'undefined' && match.stage==this.currentStage ) || (typeof this.user.id!='undefined' && this.currentStage==-1 && this.permission > 6)  ){
 					
 					var that = this;
 					that.result = {}
@@ -205,7 +205,7 @@
 			  	};
 			},
 			disabledClass: function(currentStage,user){
-				if(currentStage==0 || typeof user.id == 'undefined'){
+				if(currentStage==0 || currentStage==-1 || typeof user.id == 'undefined'){
 					return '';
 				}
 				else{
