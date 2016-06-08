@@ -71,6 +71,7 @@
 
 		<api-model id="prono" token="{{token}}" url="http://pronoapi.duckdns.org/pronoresults/" model="{{prono}}"></api-model>
 
+		<div class="status">{{statusMessage(user,tokenPayload,matchesModel,prono)}}</div>
 		<div class$="{{disabledClass(currentStage,user)}} horizontal layout wrap center-justified">
 
 			<template is="dom-repeat" items="{{groupsModel}}" as="group">
@@ -109,6 +110,9 @@
 				permission: {
 					type: 'Number',
 					value: 1
+				},
+				tokenPayload: {
+					type: 'Object'
 				},
 				groupsModel: {
 					type: 'Array'
@@ -252,6 +256,34 @@
 			handlePronoChange: function(){
 
 			},
+			statusMessage: function(user,tokenPayload,matchesModel,prono){
+
+				var message = '';
+
+				if(tokenPayload.stage ==0){
+					message = 'This section is complete!';
+					
+					var date = this.formatDate(tokenPayload.access_exp);
+
+					if( typeof this.user.id != 'undefined' ){			
+						matchesModel.forEach(function(thismatch){
+
+							if(thismatch.stage==0){
+								thisprono = prono.filter(function(prono){
+									return prono.match == thismatch.id;
+								})[0];
+
+								if(typeof thisprono != 'undefined'){ 
+									if(thisprono.score1<0 || thisprono.score2<0){
+										message = 'This section is not complete! Please fill in this section before '+ date;
+									}
+								}
+							}
+						});
+					}
+				}
+				return message;	
+			},
 			_sortMatches: function(a, b) {  
   
 				if(parseInt(a.date) > parseInt(b.date)){
@@ -266,7 +298,16 @@
 			},
 			trans: function(key){
 				return app.trans(key,this.dictionary);
-			}
+			},
+			formatDate: function(timestamp){
+				var date = new Date(timestamp * 1000);
+				var day = date.getDate();
+				var month = (date.getMonth()+1)
+				var year = date.getFullYear();
+				var hours = date.getHours();
+				var minutes = date.getMinutes();
+				return (day < 10? '0' : '') + day + '-' + (month < 10? '0' : '') + month + '-' + date.getFullYear() + ' ' + (hours < 10? '0' : '') + hours + ':' +  (minutes < 10? '0' : '') + minutes;
+			},
 		});
 	</script>
 
