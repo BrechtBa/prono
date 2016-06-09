@@ -71,9 +71,12 @@
 		</style>
 
 		<api-model id="prono" token="{{token}}" url="http://pronoapi.duckdns.org/pronoresults/" model="{{prono}}"></api-model>
-
+		
+		
 		<prono-check status="{{groupstageResultsStatus}}" prono="[[filterGroupstageProno(prono,matchesModel)]]" date="[[tokenPayload.access_exp]]" condition="(prono.score1>-1 && prono.score2>-1 && prono.score1!= null && prono.score2!= null)" pass-message="" fail-message=""></prono-check>
-		<prono-check status="{{computePronoStatus(groupstageResultsStatus,groupwinnersStatus)}}" date="[[tokenPayload.access_exp]]" ></prono-check>
+		<template is="dom-if" if="{{_displayStatus(prono)}}">
+			<prono-check status="{{computePronoStatus(groupstageResultsStatus,groupwinnersStatus)}}" date="[[tokenPayload.access_exp]]" ></prono-check>
+		</template>
 
 		<div class$="{{disabledClass(currentStage,user)}} horizontal layout wrap center-justified">
 			
@@ -286,12 +289,16 @@
 			},
 			computePronoStatus: function(groupstageResultsStatus,groupwinnersStatus){
 				var status = groupstageResultsStatus;
+
 				groupwinnersStatus.forEach(function(s){
 					if(s==0){
 						status = 0;
 					}
 				});
 				return status;
+			},
+			_displayStatus: function(prono){
+				return prono.length!=0;
 			},
 			_sortMatches: function(a, b) {  
   
