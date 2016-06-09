@@ -4,7 +4,7 @@
 <link rel="import" href="../../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
 <link rel="import" href="../../bower_components/neon-animation/neon-animations.html">
 
-<dom-module is="default-dialog">
+<dom-module is="default-dialog-noscroll">
 	<template>
 
 		<style>
@@ -32,16 +32,14 @@
 		<paper-dialog id="dialog" entry-animation="scale-up-animation" exit-animation="fade-out-animation">
 			<a class='close-dialog' on-tap="close">{{trans('close')}}</a>
 			<content select=".before-scrolling"></content>
-			<paper-dialog-scrollable id="scrollable">
-				<content></content>
-			 </paper-dialog-scrollable>
+			<content></content>
 			<content select=".after-scrolling"></content>
 		</paper-dialog>
 
 	</template>
 	<script>
 		Polymer({
-			is: 'default-dialog',
+			is: 'default-dialog-noscroll',
 			properties: {
 			},
 			ready: function(){

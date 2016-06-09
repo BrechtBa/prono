@@ -9,7 +9,7 @@
 <link rel="import" href="../../bower_components/iron-flex-layout/classes/iron-flex-layout.html">
 
 <link rel="import" href="../../elements/parse-token/parse-token.html">
-<link rel="import" href="../../elements/prono-score-dialog/prono-score-dialog.html">
+<link rel="import" href="../../elements/default-dialog-noscroll/default-dialog-noscroll.html">
 <link rel="import" href="../../elements/prono-team-name/prono-team-name.html">
 <link rel="import" href="../../elements/prono-team-icon/prono-team-icon.html">
 
@@ -19,7 +19,7 @@
 		<style>
 			:host{
 				display: block;
-				width: 100%;
+				width: 100%; 
 			}
 			paper-button{
 				background: var(--button-background-color);
@@ -47,6 +47,8 @@
 			}
 			#editPoints .points paper-number-input{
 				margin-top: -16px;
+			}
+			#editWinners{
 			}
 			.hidden{
 				display: none;
@@ -91,7 +93,7 @@
 
 
 
-		<default-dialog id="editWinners">
+		<default-dialog-noscroll id="editWinners">
 			<form is="iron-form" id="formProno" on-iron-form-submit="saveProno" action="/">
 				<div>
 					<paper-dropdown-menu label="{{trans('Winner')}}">
@@ -117,7 +119,7 @@
 					<button type="submit" class="hidden">{{trans('Save')}}</button>
 				</div>
 			</form>
-		</default-dialog>
+		</default-dialog-noscroll>
 
 
 
