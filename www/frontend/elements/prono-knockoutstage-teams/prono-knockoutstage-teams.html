@@ -90,6 +90,7 @@
 		</style>
 
 		<api-model id="prono" token="{{token}}" url="http://pronoapi.duckdns.org/pronoknockoutstageteams/" model="{{prono}}"></api-model>
+		<prono-check prono="[[prono]]" date="[[tokenPayload.access_exp]]" condition="(prono.team>-1  && prono.team != null)"></prono-check>
 		
 		<div class="horizontal layout center-justified">
 			<div class="flex vertical layout">
@@ -144,6 +145,9 @@
 				permission: {
 					type: 'Number',
 					value: 1
+				},
+				tokenPayload: {
+					type: 'Object'
 				},
 				stagesModel: {
 					type: 'Array',

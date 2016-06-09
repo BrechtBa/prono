@@ -51,6 +51,7 @@
 		</style>
 
 		<api-model id="prono" token="{{token}}" url="http://pronoapi.duckdns.org/pronototalgoals/" model="{{prono}}"></api-model>
+		<prono-check prono="[[prono]]" date="[[tokenPayload.access_exp]]" condition="(prono.goals>-1  && prono.goals != null)"></prono-check>
 		
 		<paper-material class$="{{disabledClass(currentStage,user)}} horizontal layout" elevation="2" on-tap="editGoals">
 			<div class="flex-1"><h3>{{trans('Total goals')}}:</h3></div>
@@ -83,6 +84,9 @@
 				permission: {
 					type: 'Number',
 					value: 1
+				},
+				tokenPayload: {
+					type: 'Object'
 				},
 				currentStage:{
 					type: 'Number',
