@@ -13,6 +13,7 @@
 <link rel="import" href="../../elements/prono-team-name/prono-team-name.html">
 <link rel="import" href="../../elements/prono-team-icon/prono-team-icon.html">
 <link rel="import" href="../../elements/prono-groupwinners/prono-groupwinners.html">
+<link rel="import" href="../../elements/prono-check/prono-check.html">
 
 <dom-module id="prono-groupstage">
 	<template>
@@ -71,13 +72,15 @@
 
 		<api-model id="prono" token="{{token}}" url="http://pronoapi.duckdns.org/pronoresults/" model="{{prono}}"></api-model>
 
-		<div class="status">{{statusMessage(user,tokenPayload,matchesModel,prono)}}</div>
-		<div class$="{{disabledClass(currentStage,user)}} horizontal layout wrap center-justified">
+		<prono-check prono="[[filterGroupstageProno(prono,matchesModel)]]" date="[[tokenPayload.access_exp]]" condition="(prono.score1>-1 && prono.score2>-1 && prono.score1!= null && prono.score2!= null)" pass-message="" fail-message=""></prono-check>
+		<prono-check status="1" date="[[tokenPayload.access_exp]]" ></prono-check>
 
+		<div class$="{{disabledClass(currentStage,user)}} horizontal layout wrap center-justified">
+			
 			<template is="dom-repeat" items="{{groupsModel}}" as="group">
 				<paper-material elevation="2" class="group vertical layout">
 					<h3>{{trans('Group')}} {{group.name}}</h3>
-					<div class="matches">
+					<div class="matches">	
 						<template is="dom-repeat" items="{{matchesModel}}" as="match" filter="{{filterGroupMatches(group)}}">
 							<div class="match horizontal layout center center-justified" on-tap="editScore">
 								<div class="teamname left flex"><prono-team-name team="{{getTeam(match.team1,teamsModel)}}" default="{{match.defaultteam1}}"></prono-team-name></div>
@@ -89,7 +92,7 @@
 						</template>
 					</div>
 					
-					<prono-groupwinners token="{{token}}" permission="{{permission}}" database-prepared="{{databasePrepared}}" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" group="{{group}}" user="{{user}}"></prono-groupwinners>
+					<prono-groupwinners status="{{groupwinnersstatus}}" token="{{token}}" permission="{{permission}}" database-prepared="{{databasePrepared}}" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" group="{{group}}" user="{{user}}"></prono-groupwinners>
 
 				</paper-material>
 			</template>
@@ -208,6 +211,19 @@
 					return (item.group == group.id);
 			  	};
 			},
+			filterGroupstageProno: function(prono,matchesModel){
+				
+				var matchids = [];
+				matchesModel.forEach(function(m){
+					if(m.stage==0){
+						matchids.push(m.id)
+					}
+				});
+
+				return prono.filter(function(p){
+					return (p.match in matchids);
+				});
+			},
 			disabledClass: function(currentStage,user){
 				if(currentStage==0 || currentStage==-1 || typeof user.id == 'undefined'){
 					return '';
@@ -255,34 +271,6 @@
 			},
 			handlePronoChange: function(){
 
-			},
-			statusMessage: function(user,tokenPayload,matchesModel,prono){
-
-				var message = '';
-
-				if(tokenPayload.stage ==0){
-					message = 'This section is complete!';
-					
-					var date = this.formatDate(tokenPayload.access_exp);
-
-					if( typeof this.user.id != 'undefined' ){			
-						matchesModel.forEach(function(thismatch){
-
-							if(thismatch.stage==0){
-								thisprono = prono.filter(function(prono){
-									return prono.match == thismatch.id;
-								})[0];
-
-								if(typeof thisprono != 'undefined'){ 
-									if(thisprono.score1<0 || thisprono.score2<0){
-										message = 'This section is not complete! Please fill in this section before '+ date;
-									}
-								}
-							}
-						});
-					}
-				}
-				return message;	
 			},
 			_sortMatches: function(a, b) {  
   

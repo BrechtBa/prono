@@ -57,7 +57,8 @@
 		</style>
 
 		<api-model id="prono" token="{{token}}" url="http://pronoapi.duckdns.org/pronogroupstagewinners/" model="{{prono}}" on-change="handlePronoChange"></api-model>
-		
+		<prono-check status="{{status}}" prono="[[prono]]" date="[[tokenPayload.access_exp]]" condition="(prono.team>-1 && prono.team!= null)" pass-message="" fail-message=""></prono-check>
+
 		<template is="dom-if" if="{{isProno(user)}}">
 			<div on-tap="editWinners">
 				<div class="horizontal layout center">
@@ -174,6 +175,10 @@
 				},
 				databasePrepared: {
 					type: 'Number',
+				},
+				status: {
+					type: 'Number',
+					notify: true
 				},
 			},
 			observers:[
