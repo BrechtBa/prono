@@ -72,8 +72,8 @@
 
 		<api-model id="prono" token="{{token}}" url="http://pronoapi.duckdns.org/pronoresults/" model="{{prono}}"></api-model>
 
-		<prono-check prono="[[filterGroupstageProno(prono,matchesModel)]]" date="[[tokenPayload.access_exp]]" condition="(prono.score1>-1 && prono.score2>-1 && prono.score1!= null && prono.score2!= null)" pass-message="" fail-message=""></prono-check>
-		<prono-check status="1" date="[[tokenPayload.access_exp]]" ></prono-check>
+		<prono-check status="{{groupstageResultsStatus}}" prono="[[filterGroupstageProno(prono,matchesModel)]]" date="[[tokenPayload.access_exp]]" condition="(prono.score1>-1 && prono.score2>-1 && prono.score1!= null && prono.score2!= null)" pass-message="" fail-message=""></prono-check>
+		<prono-check status="{{computePronoStatus(groupstageResultsStatus,groupwinnersStatus)}}" date="[[tokenPayload.access_exp]]" ></prono-check>
 
 		<div class$="{{disabledClass(currentStage,user)}} horizontal layout wrap center-justified">
 			
@@ -92,7 +92,7 @@
 						</template>
 					</div>
 					
-					<prono-groupwinners status="{{groupwinnersstatus}}" token="{{token}}" permission="{{permission}}" database-prepared="{{databasePrepared}}" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" group="{{group}}" user="{{user}}"></prono-groupwinners>
+					<prono-groupwinners token="{{token}}" status="{{group.status}}" on-status-changed="groupwinnerStatusChanged" permission="{{permission}}" database-prepared="{{databasePrepared}}" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" group="{{group}}" user="{{user}}"></prono-groupwinners>
 
 				</paper-material>
 			</template>
@@ -139,6 +139,10 @@
 				},
 				databasePrepared: {
 					type: 'Number',
+				},
+				groupwinnersStatus: {
+					type: 'Array',
+					value: [],
 				},
 			},
 			observers:[
@@ -271,6 +275,23 @@
 			},
 			handlePronoChange: function(){
 
+			},
+			groupwinnerStatusChanged: function(e){
+				var tempstatus = [];
+				this.groupsModel.forEach(function(group){
+					tempstatus.push(group.status);
+				});
+
+				this.groupwinnersStatus = tempstatus;
+			},
+			computePronoStatus: function(groupstageResultsStatus,groupwinnersStatus){
+				var status = groupstageResultsStatus;
+				groupwinnersStatus.forEach(function(s){
+					if(s==0){
+						status = 0;
+					}
+				});
+				return status;
 			},
 			_sortMatches: function(a, b) {  
   
