@@ -13,7 +13,7 @@
 <link rel="import" href="../../bower_components/iron-selector/iron-selector.html">
 
 <link rel="import" href="../../elements/parse-token/parse-token.html">
-<link rel="import" href="../../elements/default-dialog/default-dialog.html">
+<link rel="import" href="../../elements/default-dialog-noscroll/default-dialog-noscroll.html">
 <link rel="import" href="../../elements/prono-team-name/prono-team-name.html">
 <link rel="import" href="../../elements/prono-team-icon/prono-team-icon.html">
 
@@ -114,7 +114,7 @@
 
 
 
-		<default-dialog id="editResult">
+		<default-dialog-noscroll id="editResult">
 			<form is="iron-form" id="formProno" on-iron-form-submit="saveProno" action="/">
 				<div class="horizontal layout center">
 					<prono-team-icon class="teamicon" team="{{editTeam}}"></prono-team-icon>
@@ -135,7 +135,7 @@
 					<button type="submit" class="hidden">{{trans('Save')}}</button>
 				</div>
 			</form>
-		</default-dialog>
+		</default-dialog-noscroll>
 
 
 		<!--<default-dialog id="editTeams">
