@@ -11,7 +11,7 @@
 			}
 		</style>
 
-		<parse-token token="{{token}}" payload="{{payload}}"></parse-token>
+		<parse-token token="{{token}}" payload="{{tokenPayload}}"></parse-token>
 		<iron-ajax id="renew" url="http://pronoapi.duckdns.org/token-refresh/" method="POST" content-type="application/json" handle-as="json" last-response="{{renewResponse}}"   on-response="handleRenewResponse"   on-error="handleRenewError" debounce-duration="300"></iron-ajax>
 		
 	</template>
@@ -24,21 +24,19 @@
 			properties: {
 				token: {
 					type: 'String',
-					value: '',
 					notify: true
 				},
-				payload: {
-					type: 'Object',
-					value: {},
-					observer: 'payloadChanged'
-				},
 			},
-			payloadChanged: function(payload){
+			observers: [
+				'tokenPayloadChanged(tokenPayload)',
+			],
+			tokenPayloadChanged: function(payload){
 				if(typeof payload['access_exp'] != 'undefined'){
 					var that = this;
 					var now = new Date();
-					timeuntilrenewal = Math.min(24*3600*1000,Math.max(1,payload['access_exp']*1000-now));
-					
+
+					timeuntilrenewal = Math.min(24*3600*1000,Math.max(100,payload['access_exp']*1000-now));
+					console.log(timeuntilrenewal)
 					setTimeout(function(){
 
 						that.$.renew.body = JSON.stringify({'token':that.token});
