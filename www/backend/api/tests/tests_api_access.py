@@ -49,20 +49,32 @@ class APIAccessTests(PronoTest):
 		payload = jwt_decode_handler(token)
 		self.assertEqual(payload['permission'], 9)
 	
-	def test_user_token_stage(self):
+	@mock.patch('api.utils.datetime.datetime', MockDatetime)
+	def test_user_token_stage_0(self):
+		MockDatetime.utcnow = classmethod(lambda cls: self.dates['before_first_match'])
 		token = self.generate_token(self.usercredentials[1])
 		payload = jwt_decode_handler(token)
 		self.assertEqual(payload['stage'], 0)
-	
+
+	@mock.patch('api.utils.datetime.datetime', MockDatetime)
+	def test_user_token_stage_0(self):
+		MockDatetime.utcnow = classmethod(lambda cls: self.dates['after_first_match'])
+		token = self.generate_token(self.usercredentials[1])
+		payload = jwt_decode_handler(token)
+		self.assertEqual(payload['stage'], 16)
+
 	@mock.patch('api.utils.datetime.datetime', MockDatetime)
 	def test_user_token_stage_during_groupstage(self):
-		MockDatetime.utcnow = classmethod(lambda cls: datetime.datetime(2016,6,11,21))
+		MockDatetime.utcnow = classmethod(lambda cls: self.dates['after_first_match'])
 	
 		token = self.generate_token(self.usercredentials[1])
 		payload = jwt_decode_handler(token)
 		self.assertEqual(payload['stage'], 16)
 
+	@mock.patch('api.utils.datetime.datetime', MockDatetime)
 	def test_user_token_access_exp(self):
+		MockDatetime.utcnow = classmethod(lambda cls: self.dates['before_first_match'])
+
 		token = self.generate_token(self.usercredentials[1])
 		payload = jwt_decode_handler(token)
 		self.assertEqual(payload['access_exp'], self.matches[0].date-3600)

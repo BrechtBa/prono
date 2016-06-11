@@ -108,9 +108,10 @@ class PronoPointsTests(PronoTest):
 		points = Points.objects.filter(user=user,prono='groupstage_result')[0]
 		self.assertEqual(points.points,3*len(matches))
 		
-		
+	@mock.patch('api.utils.datetime.datetime', MockDatetime)	
 	def test_prono_groupstage_result_points_calculation_all_matches_correct_api(self):
-		
+		MockDatetime.utcnow = classmethod(lambda cls: self.dates['before_first_match'])
+
 		token = self.generate_token(self.usercredentials[1])
 		
 		# get all prono results of the user

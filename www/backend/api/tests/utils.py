@@ -60,6 +60,11 @@ class PronoTest(TestCase):
 		self.matches.append( Match.objects.create(defaultteam1='W45',defaultteam2='W46',stage=4,position=1,date=unixtimestamp(datetime.datetime(2016,7,6,21-2)) ) )
 		self.matches.append( Match.objects.create(defaultteam1='W49',defaultteam2='W50',stage=2,position=1,date=unixtimestamp(datetime.datetime(2016,7,10,21-2)) ) )
 
+		# define dates
+		self.dates = {}
+		self.dates['before_first_match'] = datetime.datetime(2016,6,10,21)
+		self.dates['after_first_match'] = datetime.datetime(2016,6,11,21)
+
 		# add users
 		for credentials in self.usercredentials[1:]:
 			self.users.append( AuthUser.objects.create_user(username=credentials['username'],password=credentials['password']) )
@@ -213,6 +218,11 @@ class EC2016Test(PronoTest):
 
 		time2 = time.time()
 		print('EC2016 created in         {:>5.2f}s'.format(time2-time1))
+
+		# define dates
+		self.dates = {}
+		self.dates['before_first_match'] = datetime.datetime(2016,6,10,21)
+		self.dates['after_first_match'] = datetime.datetime(2016,6,11,21)
 
 	def add_scores_constant(self):
 		for match in Match.objects.all():
