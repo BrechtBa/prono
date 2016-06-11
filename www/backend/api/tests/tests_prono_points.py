@@ -61,7 +61,26 @@ class PronoPointsTests(PronoTest):
 		points = Points.objects.filter(user=user,prono='groupstage_result')[0]
 		self.assertEqual(points.points,3)	
 			
-			
+	def test_prono_groupstage_result_points_calculation_noprono_tie(self):
+	
+		# fill in prono
+		user = AuthUser.objects.all()[1]
+		
+		match = Match.objects.all()[0]
+
+		# edit the match result
+		match_result = match.result
+		match_result.score1 = 1
+		match_result.score2 = 1
+		match_result.save()
+
+		# calculate points
+		response = self.client.post('/calculatepoints/')
+
+		# check the user points
+		points = Points.objects.filter(user=user,prono='groupstage_result')[0]
+		self.assertEqual(points.points,0)
+		
 	def test_prono_groupstage_result_points_calculation_all_matches_correct(self):
 	
 		# fill in prono

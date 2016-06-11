@@ -318,16 +318,18 @@ def calculate_user_points(user):
 		
 		for prono_result in match.prono_result.filter(user=user):
 			match_played = match_result.score1 >-1 and match_result.score2 > -1
+			match_prono = prono_result.score1 >-1 and prono_result.score2 > -1
+
 			team1winscorrect = (prono_result.score1 > prono_result.score2) and (match_result.score1 > match_result.score2)
 			team2winscorrect = (prono_result.score1 < prono_result.score2) and (match_result.score1 < match_result.score2)
 			tiecorrect = (prono_result.score1 == prono_result.score2) and (match_result.score1 == match_result.score2)
 			
 			# result correct
-			if match_played and (team1winscorrect or team2winscorrect or tiecorrect):
+			if match_played and match_prono and (team1winscorrect or team2winscorrect or tiecorrect):
 				groupstage_result = groupstage_result + 3
 			
 			# score correct
-			if match_played and (prono_result.score1 == match_result.score1) and ( prono_result.score2 == match_result.score2):
+			if match_played and match_prono and (prono_result.score1 == match_result.score1) and ( prono_result.score2 == match_result.score2):
 				groupstage_score = groupstage_score + 4
 				
 	userpoints['groupstage_result'] = groupstage_result
@@ -342,16 +344,18 @@ def calculate_user_points(user):
 		
 		for prono_result in match.prono_result.filter(user=user):
 			match_played = match_result.score1 >-1 and match_result.score2 > -1
+			match_prono = prono_result.score1 >-1 and prono_result.score2 > -1
+
 			team1winscorrect = (prono_result.score1 > prono_result.score2) and (match_result.score1 > match_result.score2)
 			team2winscorrect = (prono_result.score1 < prono_result.score2) and (match_result.score1 < match_result.score2)
 			tiecorrect = (prono_result.score1 == prono_result.score2) and (match_result.score1 == match_result.score2)
 			
 			# result correct
-			if match_played and (team1winscorrect or team2winscorrect or tiecorrect):
+			if match_played and match_prono and (team1winscorrect or team2winscorrect or tiecorrect):
 				knockoutstage_result = knockoutstage_result + 6
 			
 			# score correct
-			if match_played and (prono_result.score1 == match_result.score1) and ( prono_result.score2 == match_result.score2):
+			if match_played and match_prono and (prono_result.score1 == match_result.score1) and ( prono_result.score2 == match_result.score2):
 				knockoutstage_score = knockoutstage_score + 8
 	
 	userpoints['knockoutstage_result'] = knockoutstage_result
