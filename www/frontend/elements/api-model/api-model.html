@@ -84,13 +84,7 @@
             observers: [
             ],
             ready: function(){
-
                 this.lastUpdate = 0;
-
-                if(this.pollingInterval>0.01){
-                    this.startIntervalPolling();
-                }
-
             },
             tokenChanged: function(token){
                 try{
@@ -142,6 +136,7 @@
                 };
                 console.log('get ' + this.$.get.url);
                 this.$.get.generateRequest();
+                this.startIntervalPolling();
             },
             put: function(selector,data){
                 this.$.put.url = this.url + selector;
@@ -207,21 +202,23 @@
             handleDeleteError: function(){
             },
             startIntervalPolling: function(){
-                var that = this;
+                if(typeof this.updateCheckInterval == 'undefined' || this.updateCheckInterval == null){
+                    var that = this;
 
-                if(this.pollingInterval > 0.01){
+                    if(this.pollingInterval > 0.01){
 
-                    if(this.lastUpdateUrl == ''){
-                        this.get()
+                        if(this.lastUpdateUrl == ''){
+                            this.get()
+                        }
+                        else{
+                            this.updateCheckInterval = window.setInterval(function(){
+                                that.$.lastUpdateAjax.generateRequest();
+                            }, that.pollingInterval*1000);
+                        }
                     }
                     else{
-                        this.updateCheckInterval = window.setInterval(function(){
-                            that.$.lastUpdateAjax.generateRequest();
-                        }, that.pollingInterval*1000);
+                        console.log('pollingInterval too small');
                     }
-                }
-                else{
-                    console.log('pollingInterval too small');
                 }
             },
             stopIntervalPolling: function(){
