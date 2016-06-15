@@ -43,8 +43,8 @@
 			
 		</style>
 
-		<api-model id="pointsTotal" token="[[token]]" url="http://pronoapi.duckdns.org/points/?prono=total" model="{{pointsTotal}}"></api-model>
-		<api-model id="pointsDetail" token="[[token]]" url="http://pronoapi.duckdns.org/points/" model="{{pointsDetail}}" on-change="handlePointsDetailChange"></api-model>
+		<api-model id="pointsTotal" name="pointsTotal" token="[[token]]" url="http://pronoapi.duckdns.org/points/?prono=total" model="{{pointsTotal}}"></api-model>
+		<api-model id="pointsDetail" name="pointsDetail" token="[[token]]" url="http://pronoapi.duckdns.org/points/" model="{{pointsDetail}}" on-change="handlePointsDetailChange"></api-model>
 		
 		<template is="dom-if" if="{{displayWaitMessage}}">
 			{{trans('Please wait while the database is prepared.')}}
