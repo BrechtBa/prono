@@ -136,7 +136,6 @@
             handleGroupsModelChange: function(e){
             },
             handleTeamsModelChange: function(e){
-                //this.$.lastUpdateModel.get();
             },
             handleMatchesModelChange: function(e){
                 console.log('get stages');
@@ -153,34 +152,9 @@
                     }
                 });
                 this.stagesModel = stages;
-                //this.$.lastUpdateModel.get();
             },
             handleMatchresultsModelChange: function(e){
-                //this.$.lastUpdateModel.get();
             },
-            /*handleLastUpdateModelChange: function(e){
-                console.log('check if update is required')
-                if( this.lastUpdateModel.length > 1 ){
-                    if( parseInt(this.lastUpdateModel[0]['date']) > this.lastUpdate[0] ){
-                        console.log('update points')
-                        this.lastUpdate[0] = this.lastUpdateModel[0]['date'];
-                        
-                        this.$.usersModel.get();
-                        this.fire('update-points')
-                    }
-                    if( parseInt(this.lastUpdateModel[1]['date']) > this.lastUpdate[1] ){
-                        console.log('update competition')
-                        this.lastUpdate[1] = this.lastUpdateModel[1]['date'];
-
-                        this.fire('update-competition')
-                        this.$.teamsModel.get();
-                        this.$.matchesModel.get();
-                        this.$.matchresultsModel.get();
-
-                        this.calculatePoints();
-                    }
-                }
-            },*/
             handleCalculatePointsResponse: function(){
                 console.log('points calculated')
             },
