@@ -125,6 +125,9 @@
             handleDeleteResponse: function(e,request){
                 console.log(e);
                 console.log(request);
+                // completely reload the model
+                // this is overkill, but the easiest way
+                this.model = [];
                 this.get();
             },
             updateModel: function(data){
@@ -138,7 +141,7 @@
                 data.forEach(function(item){
 
                     // check if the item id is in model data
-                    var index = that.indexOfId(tempmodel,item.id);
+                    var index = that._indexOfId(tempmodel,item.id);
 
                     if(index == -1){
                       tempmodel.push(item);
@@ -149,12 +152,19 @@
                 });
                 console.log('loaded ' + this.$.get.url);
                 this.model = tempmodel;
+                this.cacheModel = tempmodel;
                 this.fire('change');
 
             },
-            handleError: function(){
+            handlePostError: function(){
             },
-            indexOfId: function(array,id){
+            handleGetError: function(){
+            },
+            handlePutError: function(){
+            },
+            handleDeleteError: function(){
+            },
+            _indexOfId: function(array,id){
                 var index = -1;
                 array.forEach(function(item,ind){
                     if(item.id == id){
@@ -162,7 +172,6 @@
                     }
                 });
                 return index;
-
             },
             _initializeData: function(e){
                 this.model = [];
