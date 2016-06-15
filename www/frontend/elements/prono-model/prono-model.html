@@ -17,12 +17,12 @@
 		
 		
 		<api-model id="userStatus"        token="[[token]]" url="http://pronoapi.duckdns.org/userstatus/" model="{{userStatusModel}}"     on-change="handleUserStatusModelChange"></api-model>
-		<api-model id="usersModel"        token="[[token]]" url="http://pronoapi.duckdns.org/userprofiles/" model="{{usersModel}}"        on-change="handleUsersModelChange"></api-model>
+		<api-model id="usersModel"        token="[[token]]" url="http://pronoapi.duckdns.org/userprofiles/" model="{{usersModel}}"        on-change="handleUsersModelChange" polling-interval="5" last-update-url="http://pronoapi.duckdns.org/lastupdate/1/"></api-model>
 		<!--<api-model id="rulesModel" token="[[token]]" url="../../api/index.php/rules" model="{{rulesModel}}" on-change="handleRulesModelChange"></api-model>-->	
-		<api-model id="groupsModel"       token="[[token]]" url="http://pronoapi.duckdns.org/groups/"       model="{{groupsModel}}"       on-change="handleGroupsModelChange"></api-model>
-		<api-model id="teamsModel"        token="[[token]]" url="http://pronoapi.duckdns.org/teams/"        model="{{teamsModel}}"        on-change="handleTeamsModelChange"></api-model>
-		<api-model id="matchesModel"      token="[[token]]" url="http://pronoapi.duckdns.org/matches/"      model="{{matchesModel}}"      on-change="handleMatchesModelChange"></api-model>
-		<api-model id="matchresultsModel" token="[[token]]" url="http://pronoapi.duckdns.org/matchresults/" model="{{matchresultsModel}}" on-change="handleMatchresultsModelChange"></api-model>
+		<api-model id="groupsModel"       token="[[token]]" url="http://pronoapi.duckdns.org/groups/"       model="{{groupsModel}}"       on-change="handleGroupsModelChange" polling-interval="600" last-update-url="http://pronoapi.duckdns.org/lastupdate/2/"></api-model>
+		<api-model id="teamsModel"        token="[[token]]" url="http://pronoapi.duckdns.org/teams/"        model="{{teamsModel}}"        on-change="handleTeamsModelChange" polling-interval="600" last-update-url="http://pronoapi.duckdns.org/lastupdate/2/"></api-model>
+		<api-model id="matchesModel"      token="[[token]]" url="http://pronoapi.duckdns.org/matches/"      model="{{matchesModel}}"      on-change="handleMatchesModelChange" polling-interval="600" last-update-url="http://pronoapi.duckdns.org/lastupdate/2/"></api-model>
+		<api-model id="matchresultsModel" token="[[token]]" url="http://pronoapi.duckdns.org/matchresults/" model="{{matchresultsModel}}" on-change="handleMatchresultsModelChange" polling-interval="5" last-update-url="http://pronoapi.duckdns.org/lastupdate/2/"></api-model>
 		
 		<api-model id="lastUpdateModel" name="lastUpdateModel"  token="[[token]]" url="http://pronoapi.duckdns.org/lastupdate/" model="{{lastUpdateModel}}" on-change="handleLastUpdateModelChange"></api-model>
 
@@ -102,7 +102,7 @@
 					this.$.matchesModel.get();
 					this.$.matchresultsModel.get();
 					
-					this.setLastUpdate();
+					//this.setLastUpdate();
 				}
 				else{
 					// token is not valid
