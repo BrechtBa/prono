@@ -60,7 +60,8 @@
                  */
                 pollingInterval: {
                     type: 'Number',
-                    value: -1
+                    value: -1,
+                    observer: 'pollingIntervalChanged'
                 },
                 /**
                  * an api url which supplies a utc timestamp of when the last
@@ -119,6 +120,10 @@
                         this.fire('change');
                     }
                 }
+            },
+            pollingIntervalChanged: function(pollingInterval){
+                this.stopIntervalPolling();
+                this.startIntervalPolling();
             },
             post: function(data){
                 this.$.post.url = this.url;
