@@ -26,6 +26,13 @@
             is: 'api-model',
             properties: {
                 /**
+                 * the data
+                 */
+                model: {
+                    type: 'Array',
+                    notify: true
+                },
+                /**
                  * api url, is also used as the local storage value key
                  */
                 url: {
@@ -41,10 +48,9 @@
                     value: '',
                     observer: 'tokenChanged'
                 },
-                model: {
-                    type: 'Array',
-                    notify: true
-                },
+                /**
+                 * cache the data or not
+                 */
                 useLocalStorage: {
                     type: 'Boolean',
                     value: true,
@@ -56,6 +62,18 @@
                     type: 'Number',
                     value: -1
                 },
+                /**
+                 * an api url which supplies a utc timestamp of when the last
+                 * update to the data has occured. This is usefull when the
+                 * dataset itself is large and polling it with a short interval
+                 * would induce a lot of traffic. Instead the lastUpdateUrl is
+                 * checked, which is not a lot of data transfer, and only if the
+                 * returned date is larger than the stored lastUpdate, the
+                 * actual data is reloaded.
+                 *
+                 * the response should be JSON data with a "date" field which
+                 * contains a unix timestamp in seconds
+                 */
                 lastUpdateUrl: {
                     type: 'String',
                     value: ''
@@ -85,6 +103,7 @@
                     this.$.post.headers['Authorization']   = 'JWT '+this.token;
                     this.$.put.headers['Authorization']    = 'JWT '+this.token;
                     this.$.delete.headers['Authorization'] = 'JWT '+this.token;
+                    this.$.lastUpdateAjax.headers['Authorization'] = 'JWT '+this.token;
                 }
                 catch(e){
                     // the token is not a JWT
@@ -94,6 +113,7 @@
                     this.$.post.headers['Authorization'] = '';
                     this.$.put.headers['Authorization'] = '';
                     this.$.delete.headers['Authorization'] = '';
+                    this.$.lastUpdateAjax.headers['Authorization'] = '';
 
                     this.header = {};
                     this.payload = {};
