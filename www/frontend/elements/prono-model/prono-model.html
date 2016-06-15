@@ -136,6 +136,7 @@
             handleGroupsModelChange: function(e){
             },
             handleTeamsModelChange: function(e){
+                this.calculatePoints();
             },
             handleMatchesModelChange: function(e){
                 console.log('get stages');
@@ -154,17 +155,33 @@
                 this.stagesModel = stages;
             },
             handleMatchresultsModelChange: function(e){
+                this.calculatePoints();
             },
             handleCalculatePointsResponse: function(){
                 console.log('points calculated')
+                this.calculatingPoints = this.calculatingPoints -1 || 0;
             },
             calculatePoints: function(){
                 if( typeof this.tokenPayload != 'undefined' ){
                     if(this.tokenPayload['permission']>5){
-                        console.log('calculate points')
+
                         this.$.calculatePoints.headers['Authorization']   = 'JWT '+this.token;
                         this.$.calculatePoints.body = '{}';
-                        this.$.calculatePoints.generateRequest();
+
+                        if(typeof this.calculatingPoints != 'undefined' && this.calculatingPoints == 1){
+                            console.log('delaying calculate points');
+                            this.calculatingPoints = 2;
+                            var that = this;
+                            setTimeout(function(){
+                                console.log('calculate points')
+                                that.$.calculatePoints.generateRequest();
+                            },120000);
+                        }
+                        else if(typeof this.calculatingPoints == 'undefined' || this.calculatingPoints == 0){
+                            console.log('calculate points')
+                            this.calculatingPoints = 1;
+                            this.$.calculatePoints.generateRequest();
+                        }
                     }
                 }
             },

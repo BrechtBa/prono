@@ -230,7 +230,7 @@
                 clearInterval(this.updateCheckInterval);
             },
             handleLastUpdateResponse: function(e,request){
-                console.log('check if update is required for '+this.url);
+                console.log('checked if update was required for '+this.url);
                 if(this.lastUpdate < e.detail.response['date']){
                     this.get();
                 }
