@@ -15,7 +15,7 @@ from .utils import PronoTest,EC2016Test,MockDatetime
 
 
 class PerformanceTests(EC2016Test):
-    """
+
     def test_create_users(self):
 
         numusers = 50
@@ -38,7 +38,7 @@ class PerformanceTests(EC2016Test):
 
         time2 = time.time()
         print('{} users created in       {:>5.2f}s'.format(numusers,time2-time1))
-    """
+
 
     @mock.patch('api.utils.datetime.datetime', MockDatetime)
     def test_enter_prono(self):
