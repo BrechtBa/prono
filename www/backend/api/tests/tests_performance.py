@@ -8,14 +8,14 @@ import datetime
 import mock
 import time
 
-from ..models import UserProfile,Points,Team,Group,Match,MatchResult,PronoResult,PronoGroupstageWinners,PronoKnockoutstageTeams,PronoTotalGoals,PronoTeamResult
+from ..models import UserStatus,UserProfile,Points,Team,Group,Match,MatchResult,PronoResult,PronoGroupstageWinners,PronoKnockoutstageTeams,PronoTotalGoals,PronoTeamResult
 
 from .utils import PronoTest,EC2016Test,MockDatetime
 
 
 
 class PerformanceTests(EC2016Test):
-
+    """
     def test_create_users(self):
 
         numusers = 50
@@ -29,9 +29,16 @@ class PerformanceTests(EC2016Test):
             response = self.client.post('/preparedatabaseforuser/', HTTP_AUTHORIZATION='JWT {}'.format(token))
             self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+        
+        #time.sleep(5)
+        #user = AuthUser.objects.get(username='testuser1')
+        #print(user.points.all())
+        #for s in UserStatus.objects.all():
+        #    print(s.databaseprepared)
+
         time2 = time.time()
         print('{} users created in       {:>5.2f}s'.format(numusers,time2-time1))
-
+    """
 
     @mock.patch('api.utils.datetime.datetime', MockDatetime)
     def test_enter_prono(self):
@@ -170,5 +177,5 @@ class PerformanceTests(EC2016Test):
             print('{}: {}'.format(key,scores[0][key]))
             self.assertEqual(scores_avg[key], scores[0][key])
 
-    
+
 

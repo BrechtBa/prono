@@ -6,7 +6,8 @@ from rest_framework_jwt.utils import jwt_payload_handler as base_jwt_payload_han
 
 from api.utils import unixtimestamp
 
-import threading
+#import threading
+#from multiprocessing import Process
 
 # model definition
 ################################################################################
@@ -40,8 +41,9 @@ class Group(models.Model):
         super(Group, self).save(*args, **kwargs)
         
         # create prono results for all users
-        for user in AuthUser.objects.all(): 
+        for user in AuthUser.objects.all():
             prepare_database_for_user(user)
+            prepare_prono_groupstage_winners(self,user)
         
         # set the update field
         set_last_update(pk=2)
@@ -92,8 +94,9 @@ class Match(models.Model):
 
         # create prono results for all users
         for user in AuthUser.objects.all(): 
-            prepare_database_for_user(user)
-        
+            prepare_prono_result(self,user)
+            prepare_prono_prono_knockoutstage_teams(user)
+
         # set the update field
         set_last_update(pk=2)
 
@@ -163,7 +166,7 @@ class PronoTeamResult(models.Model):
     
     
 ################################################################################
-# helper functions    
+# database preparation functions
 ################################################################################
 def prepare_user(sender, **kwargs):
     """
@@ -193,12 +196,17 @@ def prepare_user(sender, **kwargs):
             avatar_upload = AvatarUpload(user=user)
             avatar_upload.save()
             
+        # prepare the database for the user in a thread
+        #p = Process(target=prepare_database_for_user,args=(user,))
+        #p.start()
+        #t = threading.Thread(target=prepare_database_for_user,args=(user,))
+        #t.start()
+
     # check if all matches have the required database entries        
     if user.is_staff:
         check_matches()
 
 post_save.connect(prepare_user, sender=AuthUser)
-
 
 
 
@@ -212,35 +220,70 @@ def prepare_database_for_user(user):
     Returns:
         None
     """
-    
+
     # check if the user has points entries for all pronos    
-    for prono in ['total','groupstage_result','groupstage_score','knockoutstage_result','knockoutstage_score','groupstage_winners','knockoutstage_teams','total_goals','team_result']:
-        if not prono in [p.prono for p in user.points.all()]:
-            user_points = Points(user=user, prono=prono)
-            user_points.save()
-            #print('Added points for user {} on prono {}'.format(user,prono))
-    set_last_update(pk=1)
-    
+    prepare_prono_points(user)
 
     # check if the user has entries for all pronos
     # groupstage and knockoutstage result
     for match in Match.objects.all():
-        if len(user.prono_result.filter(match=match)) == 0:
-            prono = PronoResult(user=user,match=match)
-            prono.save()
-            #print('Added prono_result for user {} on match {}'.format(user,match))
+        prepare_prono_result(match,user)
 
     # groupstage_winners
-    for ranking in [1,2]:
-        for group in Group.objects.all():
-            if len(user.prono_groupstage_winners.filter(group=group,ranking=ranking)) == 0:
-                prono = PronoGroupstageWinners(user=user,group=group,ranking=ranking)
-                prono.save()
-                #print('Added prono_groupstage_winners {} for user {} on group {}'.format(ranking,user,group))
+    for group in Group.objects.all():
+        prepare_prono_groupstage_winners(group,user)
 
     # knockoutstage_teams
-    stages = get_stages()
+    prepare_prono_prono_knockoutstage_teams(user)
 
+    # total_goals
+    prepare_prono_total_goals(user)
+
+    # team_result
+    for team in Team.objects.all():
+        prepare_prono_team_result(team,user)
+        
+    # set the user status
+    user_status = user.status
+    user_status.databaseprepared = True
+    user_status.save()
+
+
+def prepare_prono_points(user):
+    """
+    groupstage and knockoutstage result
+    """
+    for prono in ['total','groupstage_result','groupstage_score','knockoutstage_result','knockoutstage_score','groupstage_winners','knockoutstage_teams','total_goals','team_result']:
+        if not prono in [p.prono for p in user.points.all()]:
+            user_points = Points(user=user, prono=prono)
+            user_points.save()
+
+            #print('Added points for user {} on prono {}'.format(user,prono))
+    set_last_update(pk=1)
+
+def prepare_prono_result(match,user):
+    """
+    groupstage and knockoutstage result
+    """
+    if len(user.prono_result.filter(match=match)) == 0:
+        prono = PronoResult(user=user,match=match)
+        prono.save()
+        #print('Added prono_result for user {} on match {}'.format(user,match))
+
+def prepare_prono_groupstage_winners(group,user):
+    """
+    """
+    for ranking in [1,2]:
+        if len(user.prono_groupstage_winners.filter(group=group,ranking=ranking)) == 0:
+            prono = PronoGroupstageWinners(user=user,group=group,ranking=ranking)
+            prono.save()
+            #print('Added prono_groupstage_winners {} for user {} on group {}'.format(ranking,user,group))
+
+def prepare_prono_prono_knockoutstage_teams(user):
+    """
+    """
+    stages = get_stages()
+    
     # remove the largest stage and the groupstage
     if len(stages) > 0:
         if stages[0] == 0:
@@ -259,50 +302,295 @@ def prepare_database_for_user(user):
                 prono.save()
                 #print('Added prono_knockoutstage_teams {} for user {} on stage {}'.format(i+1,user,stage))
 
-    # total_goals
+def prepare_prono_total_goals(user):
+    """
+    """
     pronos = user.prono_total_goals.all()
     if len(pronos) == 0:
         prono = PronoTotalGoals(user=user)
         prono.save()
 
-    # team_result
-    for team in Team.objects.all():
-        prepare_prono_team_result(team,user)
-        
-    # set the user status
-    user_status = user.status
-    user_status.databaseprepared = True
-    user_status.save()
-
-
 def prepare_prono_team_result(team,user):
+    """
+    """
     pronos = user.prono_team_result.filter(team=team)
     if len(pronos) == 0:
         prono = PronoTeamResult(user=user,team=team)
         prono.save()
 
 
+################################################################################
+# points calculations
+################################################################################
 def calculate_points():
     """
     Calculates the points for all users and writes results to the database
     
-    Arguments:
+    Parameters:
         None
         
     Returns:
         None
     """
+
+    calculate_groupstage_points()
+
+    calculate_knockoutstage_points()
+    calculate_groupstage_winners_points()
+    calculate_knockoutstage_teams_points()
+    calculate_total_goals_points()
+    calculate_team_result_points()
+
+    calculate_total_points()
+
+def calculate_groupstage_points():
+    """
+    """
     for user in AuthUser.objects.all():
-        userpoints = calculate_user_points(user)
+
+        groupstage_result = 0
+        groupstage_score = 0
+        for match in Match.objects.filter(stage=0):
+            match_result = match.result
+            
+            for prono_result in match.prono_result.filter(user=user):
+                match_played = match_result.score1 >-1 and match_result.score2 > -1
+                match_prono = prono_result.score1 >-1 and prono_result.score2 > -1
+
+                team1winscorrect = (prono_result.score1 > prono_result.score2) and (match_result.score1 > match_result.score2)
+                team2winscorrect = (prono_result.score1 < prono_result.score2) and (match_result.score1 < match_result.score2)
+                tiecorrect = (prono_result.score1 == prono_result.score2) and (match_result.score1 == match_result.score2)
+                
+                # result correct
+                if match_played and match_prono and (team1winscorrect or team2winscorrect or tiecorrect):
+                    groupstage_result = groupstage_result + 3
+                
+                # score correct
+                if match_played and match_prono and (prono_result.score1 == match_result.score1) and ( prono_result.score2 == match_result.score2):
+                    groupstage_score = groupstage_score + 4
+
+
+        points = user.points.get(prono='groupstage_result')
+        points.points = groupstage_result
+        points.save()
+
+        points = user.points.get(prono='groupstage_score')
+        points.points = groupstage_score
+        points.save()
+
+
+def calculate_knockoutstage_points():
+    """
+    """
+    for user in AuthUser.objects.all():
+        knockoutstage_result = 0
+        knockoutstage_score = 0
+        for match in Match.objects.filter(stage__gt=0):
+            match_result = match.result
+            
+            for prono_result in match.prono_result.filter(user=user):
+                match_played = match_result.score1 >-1 and match_result.score2 > -1
+                match_prono = prono_result.score1 >-1 and prono_result.score2 > -1
+
+                team1winscorrect = (prono_result.score1 > prono_result.score2) and (match_result.score1 > match_result.score2)
+                team2winscorrect = (prono_result.score1 < prono_result.score2) and (match_result.score1 < match_result.score2)
+                tiecorrect = (prono_result.score1 == prono_result.score2) and (match_result.score1 == match_result.score2)
+                
+                # result correct
+                if match_played and match_prono and (team1winscorrect or team2winscorrect or tiecorrect):
+                    knockoutstage_result = knockoutstage_result + 6
+                
+                # score correct
+                if match_played and match_prono and (prono_result.score1 == match_result.score1) and ( prono_result.score2 == match_result.score2):
+                    knockoutstage_score = knockoutstage_score + 8
         
+        points = user.points.get(prono='knockoutstage_result')
+        points.points = knockoutstage_result
+        points.save()
+
+        points = user.points.get(prono='knockoutstage_score')
+        points.points = knockoutstage_score
+        points.save()
+
+def calculate_groupstage_winners_points():
+    """
+    """
+
+    for user in AuthUser.objects.all():
+        groupstage_winners = 0
+
+        for group in Group.objects.all():
+            teams = group.teams.order_by('groupstage_points').reverse()
+            
+            # dont give points when all teams have no points
+            if sum([team.groupstage_points for team in teams]) > 0:
+
+
+                prono_groupwinner = user.prono_groupstage_winners.filter(group=group,ranking=1)[0].team
+                prono_grouprunnerup = user.prono_groupstage_winners.filter(group=group,ranking=2)[0].team
+                
+                if len(teams)>0:
+                    if teams[0] in [prono_groupwinner,prono_grouprunnerup]:
+                        groupstage_winners = groupstage_winners + 2
+                    
+                if len(teams)>1:
+                    if teams[1] in [prono_groupwinner,prono_grouprunnerup]:
+                        groupstage_winners = groupstage_winners + 2
+                        
+                if len(teams)>0:
+                    if teams[0] == prono_groupwinner:
+                        groupstage_winners = groupstage_winners + 4
+                
+        points = user.points.get(prono='groupstage_winners')
+        points.points = groupstage_winners
+        points.save()
+
+def calculate_knockoutstage_teams_points():
+    """
+    """
+    
+    stage_points = {32:6, 16:10, 8:18, 4:28, 2:42, 1:60}
+
+    stages, teams_in_stage = get_teams_in_stage()
+
+    # remove the largest stage and the groupstage
+    if len(stages) > 0:
+        if stages[0] == 0:
+            del stages[0]
+    if len(stages) > 0:        
+        del stages[0]
+
+    # check the users prono for all stages
+    for user in AuthUser.objects.all():
+        knockoutstage_teams = 0
+
+        for stage in stages:
+            for prono in user.prono_knockoutstage_teams.filter(stage=stage):
+                # check if the team is still in the competition at this stage
+                if prono.team in teams_in_stage[stage]:
+                    knockoutstage_teams = knockoutstage_teams + stage_points[stage]
+
+        points = user.points.get(prono='knockoutstage_teams')
+        points.points = knockoutstage_teams
+        points.save()
+
+
+def calculate_total_goals_points():
+    """
+    """
+    # calculate the total number of goals
+    goals = 0
+    for result in MatchResult.objects.all():
+        if result.score1>-1 and result.score2>-1:
+            goals = goals + result.score1 + result.score2
+
+    # check the users prono
+    for user in AuthUser.objects.all():
+        prono_goals = user.prono_total_goals.all()
+        if len(prono_goals)>0:
+            prono_goals = prono_goals[0].goals
+        else:
+            prono_goals = -1
+            
+        if goals>0 and prono_goals > -1:
+            total_goals = max(0,100-6*abs(prono_goals-goals))
+        else:
+            total_goals = 0
+
+        points = user.points.get(prono='total_goals')
+        points.points = total_goals
+        points.save()
+
+
+def calculate_team_result_points():
+    """
+    """
+
+    stage_points = {0:5,16:10,8:30,4:50,2:100,1:150}
+
+    stages, teams_in_stage = get_teams_in_stage()
+
+    # team_result
+    for user in AuthUser.objects.all():
+        team_result_points = 0
+        stages = get_stages()
+        
+        for result in user.prono_team_result.all():
+            if result.result > -1:
+                team = result.team
+
+                stage = -1;
+                for index in range(len(stages)-1):
+                    if (team in teams_in_stage[stages[index]]) and len(teams_in_stage[stages[index+1]])==stages[index+1] and not (team in teams_in_stage[stages[index+1]]):
+                        stage = stages[index]
+                        break
+                if team in teams_in_stage[1]:
+                    stage = 1
+
+                                    
+                if result.result == stage:
+                    # determine the points
+                    team_result_points = team_result_points + stage_points[stage]
+
+
+        points = user.points.get(prono='team_result')
+        points.points = team_result_points
+        points.save()
+
+def calculate_total_points():
+    """
+    """
+    for user in AuthUser.objects.all():
+        total = 0
         for points in user.points.all():
-            if points.prono in userpoints:
-                points.points = userpoints[points.prono]
-                points.save()
+            if not points.prono == 'total':
+                total = total + points.points
+
+        points = user.points.get(prono='total')
+        points.points = total
+        points.save()
 
     set_last_update(pk=1)
-    
-                
+
+
+################################################################################
+# varia
+################################################################################
+
+def get_teams_in_stage():
+    """
+    return a list of stages and a dictionary with lists of all teams
+    that made it to a stage
+    """
+    stages = get_stages()
+
+    teams_in_stage = {}
+    # add the regular stages
+    for stage in stages:
+        teams_in_stage[stage] = []
+        for team in Team.objects.all():
+            if len(team.matches_team1.filter(stage=stage)) > 0 or len(team.matches_team2.filter(stage=stage)) > 0:
+                teams_in_stage[stage].append(team)
+
+
+
+    # add the winner
+    stages.append(1)
+
+    match = Match.objects.filter(stage=2)
+    if len(match)>0:
+        match = match[0]
+        match_result = match.result
+        if (match_result.score1>-1 and match_result.score2>-1):
+            if match_result.score1+match_result.penalty1 > match_result.score2+match_result.penalty2:
+                teams_in_stage[1] = [match.team1]
+            elif match_result.score1+match_result.penalty1 < match_result.score2+match_result.penalty2:
+                teams_in_stage[1] = [match.team2]
+
+    return stages, teams_in_stage
+
+
+
 def calculate_user_points(user):
     """
     calculates the points of a user
