@@ -18,197 +18,210 @@
 
 
 <dom-module id="login-form">
-	<template>
+    <template>
 
-		<style>
-			:host{
-			}
-			paper-button{
-				background: #4E6386;
-      			color: #fff;
-			}
-    		paper-button.main{
-      			background: #5C82C3;
-      			color: #fff;
-    		}
-			.container{
-				position: relative;
-				min-height: 4px;
-			}
-			.hidden{
-				display: none;
-			}
-			#loginform paper-input{
-				--paper-input-container-color: var(--login-paper-input-container-color);
-				--paper-input-container-focus-color: var(--login-paper-input-container-focus-color);
-				--paper-input-container-input-color: var(--login-paper-input-container-input-color);
-			}
-			a.termsandconditions{
-				display: block;
-				margin-top: 10px;
-				text-align: center;
-				cursor: pointer;
-				text-decoration: underline;
-			}
-			div.noaccount{
-				margin-top: 40px;
-			}
-			div.noaccount a{
-				margin-left: 20px;
-				text-decoration: underline;
-				cursor: pointer;
-				color: #5C82C3;
-			}
-		</style>
+        <style>
+            :host{
+            }
+            paper-button{
+                background: #4E6386;
+                color: #fff;
+            }
+            paper-button.main{
+                  background: #5C82C3;
+                  color: #fff;
+            }
+            .container{
+                position: relative;
+                min-height: 4px;
+            }
+            .hidden{
+                display: none;
+            }
+            #loginform paper-input{
+                --paper-input-container-color: var(--login-paper-input-container-color);
+                --paper-input-container-focus-color: var(--login-paper-input-container-focus-color);
+                --paper-input-container-input-color: var(--login-paper-input-container-input-color);
+            }
+            a.termsandconditions{
+                display: block;
+                margin-top: 10px;
+                text-align: center;
+                cursor: pointer;
+                text-decoration: underline;
+            }
+            div.noaccount{
+                margin-top: 40px;
+            }
+            div.noaccount a{
+                margin-left: 20px;
+                text-decoration: underline;
+                cursor: pointer;
+                color: #5C82C3;
+            }
+        </style>
 
-		<iron-localstorage name="token" value="{{token}}"></iron-localstorage>
+        <iron-localstorage name="token" value="{{token}}"></iron-localstorage>
 
-		<iron-ajax id="loginAjax" url="http://pronoapi.duckdns.org/token-auth/" method="POST" content-type="application/json" handle-as="json" on-response="handleLoginResponse" last-response="{{loginResponse}}" on-error="handleLoginError" debounce-duration="300"></iron-ajax>
-		
-		<form is="iron-form" id="loginform" on-iron-form-submit="loginFormAjaxSubmit">
-			<paper-input id="login" label="{{trans('Login')}}:" required></paper-input>
-			<paper-input id="password" label="{{trans('Password')}}:" type="password" required></paper-input>
-			<paper-button raised class="main" on-tap="loginFormSubmit">{{trans('Login')}}</paper-button>
-			
-			<button type="submit" class="hidden">{{trans('Login')}}</button>
-		</form>
-		<div class="noaccount">{{trans('No account yet')}}? <a on-tap="registerDialog">{{trans('Register')}}</a></div>
+        <iron-ajax id="loginAjax" url="http://pronoapi.duckdns.org/token-auth/" method="POST" content-type="application/json" handle-as="json" on-response="handleLoginResponse" last-response="{{loginResponse}}" on-error="handleLoginError" debounce-duration="300"></iron-ajax>
+        
+        <form is="iron-form" id="loginform" on-iron-form-submit="loginFormAjaxSubmit">
+            <paper-input id="login" label="{{trans('Login')}}:" required></paper-input>
+            <paper-input id="password" label="{{trans('Password')}}:" type="password" required></paper-input>
+            <paper-button raised class="main" on-tap="loginFormSubmit">{{trans('Login')}}</paper-button>
+            
+            <button type="submit" class="hidden">{{trans('Login')}}</button>
+        </form>
+        <div class="noaccount">{{trans('No account yet')}}? <a on-tap="registerDialog">{{trans('Register')}}</a></div>
 
-		<iron-ajax id="registerAjax" url="http://pronoapi.duckdns.org/register/" method="POST" content-type="application/json" handle-as="json" on-response="handleRegisterResponse" last-response="{{registerResponse}}" on-error="handleRegisterError" debounce-duration="300"></iron-ajax>
+        <iron-ajax id="registerAjax" url="http://pronoapi.duckdns.org/register/" method="POST" content-type="application/json" handle-as="json" on-response="handleRegisterResponse" last-response="{{registerResponse}}" on-error="handleRegisterError" debounce-duration="300"></iron-ajax>
 
-		<default-dialog id="register" entry-animation="scale-up-animation" exit-animation="fade-out-animation">
-			<h2>{{trans('Register')}}</h2>
+        <default-dialog id="register" entry-animation="scale-up-animation" exit-animation="fade-out-animation">
+            <h2>{{trans('Register')}}</h2>
 
-			<a class="termsandconditions" on-tap="termsandconditionsDialog">{{trans('By registering you agree to the terms and conditions')}}</a>
+            <a class="termsandconditions" on-tap="termsandconditionsDialog">{{trans('By registering you agree to the terms and conditions')}}</a>
 
-			<form is="iron-form" id="registerform" on-iron-form-submit="registerFormAjaxSubmit">
-				<div class="container"><paper-input-error id="logintaken">{{trans('Login is taken')}}</paper-input-error></div>
-				<paper-input id="newlogin" label="{{trans('Login')}}:" required auto-validate error-message="required"></paper-input>
-				<paper-input id="newpassword" label="{{trans('Password')}}:" type="password" required auto-validate error-message="required"></paper-input>
-				<custom-validator id="passwordValidator" validator-name="passwordrepeatValidator"></custom-validator>
-				<paper-input id="newpasswordrepeat" label="{{trans('Repeat password')}}:" type="password" required auto-validate error-message="{{trans('does not match')}}" validator="passwordrepeatValidator"></paper-input>
-				
-				<div class="buttons">
-					<paper-button id="registerButton" raised class="main" on-tap="registerFormSubmit">{{trans('Register')}}</paper-button>
-					<button type="submit" class="hidden">{{trans('Register')}}</button>
-				</div>
-			</form>
-		</default-dialog>
+            <form is="iron-form" id="registerform" on-iron-form-submit="registerFormAjaxSubmit">
+                <div class="container"><paper-input-error id="logintaken">{{trans('Login is taken')}}</paper-input-error></div>
+                <paper-input id="newlogin" label="{{trans('Login')}}:" required auto-validate error-message="required"></paper-input>
+                <paper-input id="newpassword" label="{{trans('Password')}}:" type="password" required auto-validate error-message="required"></paper-input>
+                <custom-validator id="passwordValidator" validator-name="passwordrepeatValidator"></custom-validator>
+                <paper-input id="newpasswordrepeat" label="{{trans('Repeat password')}}:" type="password" required auto-validate error-message="{{trans('does not match')}}" validator="passwordrepeatValidator"></paper-input>
+                
+                <div class="buttons">
+                    <paper-button id="registerButton" raised class="main" on-tap="registerFormSubmit">{{trans('Register')}}</paper-button>
+                    <button type="submit" class="hidden">{{trans('Register')}}</button>
+                </div>
+            </form>
+        </default-dialog>
 
-		<default-dialog id="termsandconditions">
-			<h2>{{trans('Terms')}}</h2>
-			<prono-terms></prono-terms>
-			<h2>{{trans('Rules')}}</h2>
-			<prono-rules></prono-rules>
-		</default-dialog>
+        <default-dialog id="termsandconditions">
+            <h2>{{trans('Terms')}}</h2>
+            <prono-terms></prono-terms>
+            <h2>{{trans('Rules')}}</h2>
+            <prono-rules></prono-rules>
+        </default-dialog>
 
-	</template>
+    </template>
 
-	<script>
-		Polymer({
-			is: 'login-form',
-			properties: {
-				token: {
-					type: 'String',
-					value: '',
-					notify: true,
-					observer: 'tokenChanged'
-				}
-			},
-			created: function(){
-				// create the local dictionary
-				this.dictionary = {};
-				this.dictionary['Login or password are incorrect'] 	= {'nl':'Login of wachtwoord verkeerd'};
-				this.dictionary['Login'] 							= {'nl':'Login'};
-				this.dictionary['Password'] 						= {'nl':'Wachtwoord'};
-				this.dictionary['No account yet'] 					= {'nl':'Nog geen account'};
-				this.dictionary['Register'] 						= {'nl':'Registreer'};
-				this.dictionary['Login is taken'] 					= {'nl':'Login bestaat al'};
-				this.dictionary['Repeat password'] 					= {'nl':'Herhaal wachtwoord'};
-				this.dictionary['does not match'] 					= {'nl':'komt niet overeen'};
-				this.dictionary['By registering you agree to the terms and conditions'] = {'nl':'Door te registreren ga je akkoord met de gebruiksvoorwaarden'};
+    <script>
+        Polymer({
+            is: 'login-form',
+            properties: {
+                token: {
+                    type: 'String',
+                    value: '',
+                    notify: true,
+                    observer: 'tokenChanged'
+                }
+            },
+            created: function(){
+                // create the local dictionary
+                this.dictionary = {};
+                this.dictionary['Login or password are incorrect']     = {'nl':'Login of wachtwoord verkeerd'};
+                this.dictionary['Login']                             = {'nl':'Login'};
+                this.dictionary['Password']                         = {'nl':'Wachtwoord'};
+                this.dictionary['No account yet']                     = {'nl':'Nog geen account'};
+                this.dictionary['Register']                         = {'nl':'Registreer'};
+                this.dictionary['Login is taken']                     = {'nl':'Login bestaat al'};
+                this.dictionary['Repeat password']                     = {'nl':'Herhaal wachtwoord'};
+                this.dictionary['does not match']                     = {'nl':'komt niet overeen'};
+                this.dictionary['By registering you agree to the terms and conditions'] = {'nl':'Door te registreren ga je akkoord met de gebruiksvoorwaarden'};
 
-			},
-			ready: function(){
-				this.$.passwordValidator.validate = this.passwordValidator.bind(this);
-			},
-			loginFormSubmit: function(){
-				this.$.loginform.submit();
-			},
-			loginFormAjaxSubmit: function(event){
-				this.$.loginAjax.body = JSON.stringify({'username':this.$.login.value,'password':this.$.password.value});
-				this.$.loginAjax.generateRequest();
+            },
+            ready: function(){
+                this.$.passwordValidator.validate = this.passwordValidator.bind(this);
+            },
+            loginFormSubmit: function(){
+                this.$.loginform.submit();
+            },
+            loginFormAjaxSubmit: function(event){
+                this.$.loginAjax.body = JSON.stringify({'username':this.$.login.value,'password':this.$.password.value});
+                this.$.loginAjax.generateRequest();
 
-				// remove values
-				this.$.login.value = '';
-				this.$.password.value = '';
-			},
-			handleLoginResponse: function(){
-				console.log(this.loginResponse)
-				if(this.loginResponse != ''){
-					this.token = this.loginResponse['token'];
-					this.fire('login-form-success');
-				}
-			},
-			handleLoginError: function(){
-				console.log(this.loginResponse)
-				this.fire('login-form-error');
-				app.$.toast.text = this.trans('Login or password are incorrect');
-				app.$.toast.show();
-			},
-			registerDialog: function(){
-				this.$.register.open()
-			},
-			termsandconditionsDialog: function(){
-				this.$.termsandconditions.open();
-			},
-			registerFormSubmit: function(){
-				if(this.passwordValidator() && this.$.newlogin.value!='' && this.$.newpassword.value!=''){
-					this.$.registerform.submit();
-				}
-			},
-			registerFormAjaxSubmit: function(event){
-				if(this.passwordValidator() && this.$.newlogin.value!='' && this.$.newpassword.value!=''){
-					this.$.registerAjax.body = JSON.stringify({'username':this.$.newlogin.value,'password':this.$.newpassword.value});
-    				this.$.registerAjax.generateRequest();
-					this.$.registerButton.disabled = true;
-				}
-			},
-			handleRegisterResponse: function(){
-				this.$.registerButton.disabled = false;
-				if( typeof this.registerResponse['username'] != 'undefined' ){
-					this.$.logintaken._setInvalid(false);
-					this.$.loginAjax.body = JSON.stringify({'username':this.registerResponse['username'],'password':this.registerResponse['password']});
-    				this.$.loginAjax.generateRequest();
-					this.$.register.close();
+                // remove values
+                this.$.login.value = '';
+                this.$.password.value = '';
+            },
+            handleLoginResponse: function(){
+                console.log(this.loginResponse)
+                if(this.loginResponse != ''){
+                    this.token = this.loginResponse['token'];
+                    this.fire('login-form-success');
+                }
+            },
+            handleLoginError: function(e,d){
+                if(e.detail.request.status == 400){
+                    app.$.toast.text = this.trans('Login or password are incorrect');
+                    app.$.toast.show();
+                }
+                else{
+                    app.$.toast.text = this.trans('Can not connect to the database, check your internet connection. If your internet connection is up, the server is overloaded. Please try again in 10 minutes.');
+                    app.$.toast.show();
+                }
+                this.fire('login-form-error');
+            },
+            registerDialog: function(){
+                this.$.register.open()
+            },
+            termsandconditionsDialog: function(){
+                this.$.termsandconditions.open();
+            },
+            registerFormSubmit: function(){
+                if(this.passwordValidator() && this.$.newlogin.value!='' && this.$.newpassword.value!=''){
+                    this.$.registerform.submit();
+                }
+            },
+            registerFormAjaxSubmit: function(event){
+                if(this.passwordValidator() && this.$.newlogin.value!='' && this.$.newpassword.value!=''){
+                    this.$.registerAjax.body = JSON.stringify({'username':this.$.newlogin.value,'password':this.$.newpassword.value});
+                    this.$.registerAjax.generateRequest();
+                    this.$.registerButton.disabled = true;
+                }
+            },
+            handleRegisterResponse: function(){
+                this.$.registerButton.disabled = false;
+                if( typeof this.registerResponse['username'] != 'undefined' ){
+                    this.$.logintaken._setInvalid(false);
+                    this.$.loginAjax.body = JSON.stringify({'username':this.registerResponse['username'],'password':this.registerResponse['password']});
+                    this.$.loginAjax.generateRequest();
+                    this.$.register.close();
 
-					// remove values
-					this.$.newlogin.value = '';
-					this.$.newpassword.value = '';
-					this.$.newpasswordrepeat.value = '';
-					this.registerResponse = {};
-				}
-			},
-			handleRegisterError: function(){
-				this.$.logintaken._setInvalid(true);
-			},
-			logout: function(){
-				this.token = '';
-			},
-			passwordValidator: function(){
-				if(this.$.newpassword.value == this.$.newpasswordrepeat.value){
-            		return true;
-				}
-				else{
-            		return false;
-				}
-			},
-			tokenChanged: function(){
-			},
-			trans: function(key){
-				return app.trans(key,this.dictionary);
-			}
-		});
-	</script>
+                    // remove values
+                    this.$.newlogin.value = '';
+                    this.$.newpassword.value = '';
+                    this.$.newpasswordrepeat.value = '';
+                    this.registerResponse = {};
+                }
+            },
+            handleRegisterError: function(e){
+                this.$.registerButton.disabled = false;
+                if(e.detail.request.status == 400){
+                    this.$.logintaken._setInvalid(true);
+                }
+                else{
+                    app.$.toast.text = this.trans('Can not connect to the database, check your internet connection. If your internet connection is up, the server is overloaded. Please try again in 10 minutes.');
+                    app.$.toast.show();
+                }
+                
+            },
+            logout: function(){
+                this.token = '';
+            },
+            passwordValidator: function(){
+                if(this.$.newpassword.value == this.$.newpasswordrepeat.value){
+                    return true;
+                }
+                else{
+                    return false;
+                }
+            },
+            tokenChanged: function(){
+            },
+            trans: function(key){
+                return app.trans(key,this.dictionary);
+            }
+        });
+    </script>
 
 </dom-module>
