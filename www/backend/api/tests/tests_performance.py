@@ -30,7 +30,7 @@ class PerformanceTests(EC2016Test):
             self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         
-        #time.sleep(5)
+        time.sleep(10)
         #user = AuthUser.objects.get(username='testuser1')
         #print(user.points.all())
         #for s in UserStatus.objects.all():
@@ -44,7 +44,7 @@ class PerformanceTests(EC2016Test):
     def test_enter_prono(self):
         MockDatetime.utcnow = classmethod(lambda cls: self.dates['before_first_match'])
 
-        numusers = 50
+        numusers = 10
         time1 = time.time()
         for i in range(numusers):
             response = self.client.post('/register/', {'username':'testuser{}'.format(i+1), 'password':'somepassword'})
@@ -132,7 +132,8 @@ class PerformanceTests(EC2016Test):
         responsedata = json.loads(response.rendered_content.decode('utf-8'))
         for result in responsedata:
             response = self.client.put('/matchresults/{}/'.format(result['id']), data=json.dumps({'score1':3, 'score2':1}), content_type='application/json', HTTP_AUTHORIZATION='JWT {}'.format(token))
-        
+            #response = self.client.post('/calculatepoints/')
+
         time2 = time.time()
         print('all scores entered in     {:>5.2f}s'.format(time2-time1))
         
@@ -146,18 +147,18 @@ class PerformanceTests(EC2016Test):
                 response = self.client.put('/teams/{}/'.format(team['id']), data=json.dumps({'groupstage_points':teampoints[team['id']]}), content_type='application/json', HTTP_AUTHORIZATION='JWT {}'.format(token))
             else:
                 response = self.client.put('/teams/{}/'.format(team['id']), data=json.dumps({'groupstage_points':1}), content_type='application/json', HTTP_AUTHORIZATION='JWT {}'.format(token))
-
+            
+            #response = self.client.post('/calculatepoints/')
 
         time2 = time.time()
         print('groupstage points entered in     {:>5.2f}s'.format(time2-time1))
         
-
+        
         # calculate points
         time1 = time.time()
-        response = self.client.post('/calculatepoints/')
+        #response = self.client.post('/calculatepoints/')
         time2 = time.time()
         print('all points calculated in     {:>5.2f}s'.format(time2-time1))
-        
 
 
         # get scores for all users

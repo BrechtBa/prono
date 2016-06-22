@@ -7,7 +7,7 @@ from rest_framework_jwt.utils import jwt_payload_handler as base_jwt_payload_han
 from api.utils import unixtimestamp
 
 #import threading
-#from multiprocessing import Process
+from multiprocessing import Process
 
 # model definition
 ################################################################################
@@ -67,6 +67,8 @@ class Team(models.Model):
         for user in AuthUser.objects.all(): 
             prepare_prono_team_result(self,user)
 
+        team_changed()
+
         # set the update field
         set_last_update(pk=2)
 
@@ -97,6 +99,8 @@ class Match(models.Model):
             prepare_prono_result(self,user)
             prepare_prono_prono_knockoutstage_teams(user)
 
+        match_changed()
+
         # set the update field
         set_last_update(pk=2)
 
@@ -116,6 +120,19 @@ class MatchResult(models.Model):
             
         # set the update field
         set_last_update(pk=2)
+
+        # calculate points
+        if self.match.stage==0:
+            #p = Process(target=groupstage_result_changed)
+            #p.start()
+            groupstage_result_changed()
+        elif self.match.stage==2:
+            final_result_changed()
+        else:
+            #p = Process(target=knockoutstage_result_changed)
+            #p.start()
+            knockoutstage_result_changed()
+
 
     def __str__(self):
         return '{} - {}'.format(self.score1, self.score2)
@@ -343,6 +360,51 @@ def calculate_points():
 
     calculate_total_points()
 
+
+def groupstage_result_changed():
+    """
+    """
+    calculate_groupstage_points()
+    calculate_total_goals_points()
+
+    calculate_total_points()
+
+
+def knockoutstage_result_changed():
+    """
+    """
+    calculate_knockoutstage_points()
+    calculate_knockoutstage_teams_points()
+    calculate_total_goals_points()
+
+    calculate_total_points()
+
+def final_result_changed():
+    """
+    """
+    calculate_knockoutstage_points()
+    calculate_knockoutstage_teams_points()
+    calculate_total_goals_points()
+    calculate_team_result_points()
+
+    calculate_total_points()
+
+
+def match_changed():
+    """
+    """
+    calculate_knockoutstage_teams_points()
+    calculate_team_result_points()
+
+    calculate_total_points()
+
+def team_changed():
+    """
+    """
+    calculate_groupstage_winners_points()
+    calculate_total_points()
+
+
 def calculate_groupstage_points():
     """
     """
@@ -368,7 +430,6 @@ def calculate_groupstage_points():
                 # score correct
                 if match_played and match_prono and (prono_result.score1 == match_result.score1) and ( prono_result.score2 == match_result.score2):
                     groupstage_score = groupstage_score + 4
-
 
         points = user.points.get(prono='groupstage_result')
         points.points = groupstage_result
@@ -452,7 +513,7 @@ def calculate_knockoutstage_teams_points():
     stage_points = {32:6, 16:10, 8:18, 4:28, 2:42, 1:60}
 
     stages, teams_in_stage = get_teams_in_stage()
-
+    
     # remove the largest stage and the groupstage
     if len(stages) > 0:
         if stages[0] == 0:
@@ -524,14 +585,26 @@ def calculate_team_result_points():
                     if (team in teams_in_stage[stages[index]]) and len(teams_in_stage[stages[index+1]])==stages[index+1] and not (team in teams_in_stage[stages[index+1]]):
                         stage = stages[index]
                         break
+                    elif stages[index]>0 and (team in teams_in_stage[stages[index]]):
+                        match = Match.objects.filter(stage=stages[index],team1=team)
+                        if len(match)==0:
+                            match = Match.objects.filter(stage=stages[index],team2=team)[0]
+                        else:
+                            match = match[0]
+
+                        if match.result.score1 > -1 and match.result.score2 > -1:
+                            if match.team1 == team and match.result.score1+0.1*match.result.penalty1 < match.result.score2+0.1*match.result.penalty2:
+                                stage = stages[index]
+                            elif match.team2 == team and match.result.score1+0.1*match.result.penalty1 > match.result.score2+0.1*match.result.penalty2:
+                                stage = stages[index]
+
                 if team in teams_in_stage[1]:
                     stage = 1
-
-                                    
+                
                 if result.result == stage:
                     # determine the points
                     team_result_points = team_result_points + stage_points[stage]
-
+                
 
         points = user.points.get(prono='team_result')
         points.points = team_result_points
@@ -551,7 +624,6 @@ def calculate_total_points():
         points.save()
 
     set_last_update(pk=1)
-
 
 ################################################################################
 # varia
@@ -576,6 +648,7 @@ def get_teams_in_stage():
 
     # add the winner
     stages.append(1)
+    teams_in_stage[1] = []
 
     match = Match.objects.filter(stage=2)
     if len(match)>0:
