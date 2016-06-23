@@ -58,7 +58,7 @@
 			}
 		</style>
 
-		<api-model id="prono" token="{{token}}" url="http://pronoapi.duckdns.org/pronogroupstagewinners/" model="{{prono}}" on-change="handlePronoChange"></api-model>
+		<api-model id="prono" token="{{token}}" url="http://pronoapi.duckdns.org/pronogroupstagewinners/" model="{{prono}}" on-change="handlePronoChange" overwrite="true"></api-model>
 		<prono-check id="check" status="{{status}}" prono="[[prono]]" date="[[tokenPayload.access_exp]]" condition="(prono.team>-1 && prono.team!= null)" pass-message="" fail-message=""></prono-check>
 
 		<template is="dom-if" if="{{isProno(user)}}">

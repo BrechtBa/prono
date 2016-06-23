@@ -49,11 +49,11 @@
                     observer: 'tokenChanged'
                 },
                 /**
-                 * when false a get request completely replaces the model
+                 * when true a get request completely replaces the model
                  */
-                appendGet: {
+                overwrite: {
                     type: 'Boolean',
-                    value: true,
+                    value: false,
                 },
                 /**
                  * cache the data or not
@@ -186,7 +186,7 @@
                 var that = this;
                 var tempmodel = data;
 
-                if(this.appendGet){
+                if(!this.overwrite){
                     // create a temporary model with the same values
                     tempmodel = []
                     if( typeof this.model != 'undefined' ){
