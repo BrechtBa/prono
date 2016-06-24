@@ -11,7 +11,7 @@ from ..models import UserProfile,Points,Team,Group,Match,MatchResult,PronoResult
 from .utils import PronoTest,EC2016Test,MockDatetime
         
 class PronoPointsTests(EC2016Test):
-
+    
     def test_prono_groupstage_result_points_calculation_correct(self):
     
         # fill in prono
@@ -28,9 +28,6 @@ class PronoPointsTests(EC2016Test):
         match_result.score1 = 4
         match_result.score2 = 2
         match_result.save()
-
-        # calculate points
-        #response = self.client.post('/calculatepoints/')
 
         # check the user points
         points = Points.objects.filter(user=user,prono='groupstage_result')[0]
@@ -55,9 +52,6 @@ class PronoPointsTests(EC2016Test):
         match_result.score2 = 2
         match_result.save()
 
-        # calculate points
-        response = self.client.post('/calculatepoints/')
-
         # check the user points
         points = Points.objects.filter(user=user,prono='groupstage_result')[0]
         self.assertEqual(points.points,3)    
@@ -74,9 +68,6 @@ class PronoPointsTests(EC2016Test):
         match_result.score1 = 1
         match_result.score2 = 1
         match_result.save()
-
-        # calculate points
-        response = self.client.post('/calculatepoints/')
 
         # check the user points
         points = Points.objects.filter(user=user,prono='groupstage_result')[0]
@@ -102,16 +93,13 @@ class PronoPointsTests(EC2016Test):
             match_result.score2 = 2
             match_result.save()
 
-        # calculate points
-        response = self.client.post('/calculatepoints/')
-
         # check the user points
         points = Points.objects.filter(user=user,prono='groupstage_result')[0]
         self.assertEqual(points.points,3*len(matches))
 
     @mock.patch('api.utils.datetime.datetime', MockDatetime)    
     def test_prono_groupstage_result_points_calculation_all_matches_correct_api(self):
-        MockDatetime.utcnow = classmethod(lambda cls: self.dates['before_first_match'])
+        MockDatetime.utcnow = classmethod(lambda cls: self.dates['before_stage_0'])
 
         user = AuthUser.objects.create_user(username='someuser',password='somepassword')
         token = self.generate_token({'username':'someuser','password':'somepassword'})
@@ -137,9 +125,6 @@ class PronoPointsTests(EC2016Test):
 
         matches = Match.objects.filter(stage=0)
 
-        # calculate points
-        response = self.client.post('/calculatepoints/')
-
         # check the user points
         points = Points.objects.filter(user=user,prono='groupstage_result')[0]
         self.assertEqual(points.points,3*len(matches))    
@@ -162,9 +147,6 @@ class PronoPointsTests(EC2016Test):
         match_result.score2 = 3
         match_result.save()
 
-        # calculate points
-        response = self.client.post('/calculatepoints/')
-
         # check the user points
         points = Points.objects.filter(user=user,prono='groupstage_result')[0]
         self.assertEqual(points.points,0)    
@@ -186,9 +168,6 @@ class PronoPointsTests(EC2016Test):
         match_result.score1 = 2
         match_result.score2 = 1
         match_result.save()
-
-        # calculate points
-        response = self.client.post('/calculatepoints/')
 
         # check the user points
         points = Points.objects.filter(user=user,prono='groupstage_score')[0]
@@ -215,9 +194,6 @@ class PronoPointsTests(EC2016Test):
             match_result.score2 = 2
             match_result.save()
 
-        # calculate points
-        response = self.client.post('/calculatepoints/')
-
         # check the user points
         points = Points.objects.filter(user=user,prono='knockoutstage_result')[0]
         self.assertEqual(points.points,6*len(matches))
@@ -242,9 +218,6 @@ class PronoPointsTests(EC2016Test):
             match_result.score1 = 2
             match_result.score2 = 1
             match_result.save()
-
-        # calculate points
-        response = self.client.post('/calculatepoints/')
 
         # check the user points
         points = Points.objects.filter(user=user,prono='knockoutstage_score')[0]
@@ -286,8 +259,6 @@ class PronoPointsTests(EC2016Test):
             team.groupstage_points = 7.4
             team.save()
             
-        # calculate points
-        response = self.client.post('/calculatepoints/')
 
         # check the user points
         points = Points.objects.filter(user=user,prono='groupstage_winners')[0]
@@ -330,8 +301,6 @@ class PronoPointsTests(EC2016Test):
             team.groupstage_points = 9
             team.save()
             
-        # calculate points
-        response = self.client.post('/calculatepoints/')
 
         # check the user points
         points = Points.objects.filter(user=user,prono='groupstage_winners')[0]
@@ -373,8 +342,6 @@ class PronoPointsTests(EC2016Test):
             team.groupstage_points = 7.2
             team.save()
             
-        # calculate points
-        response = self.client.post('/calculatepoints/')
 
         # check the user points
         points = Points.objects.filter(user=user,prono='groupstage_winners')[0]
@@ -410,8 +377,6 @@ class PronoPointsTests(EC2016Test):
                 match.team2 = teams[2*i+1]
                 match.save()
                 
-        # calculate points
-        response = self.client.post('/calculatepoints/')
 
         # check the user points
         points = Points.objects.filter(user=user,prono='knockoutstage_teams')[0]
@@ -444,8 +409,6 @@ class PronoPointsTests(EC2016Test):
         match_result.penalty2 = 5
         match_result.save()
         
-        # calculate points
-        response = self.client.post('/calculatepoints/')
 
         # check the user points
         points = Points.objects.filter(user=user,prono='knockoutstage_teams')[0]
@@ -477,8 +440,6 @@ class PronoPointsTests(EC2016Test):
         match_result.penalty2 = 5
         match_result.save()
         
-        # calculate points
-        response = self.client.post('/calculatepoints/')
 
         # check the user points
         points = Points.objects.filter(user=user,prono='knockoutstage_teams')[0]
@@ -503,8 +464,6 @@ class PronoPointsTests(EC2016Test):
             match_result.score2 = 4-match_result.score1
             match_result.save()
 
-        # calculate points
-        response = self.client.post('/calculatepoints/')
 
         # check the user points
         points = Points.objects.filter(user=user,prono='total_goals')[0]
@@ -528,8 +487,6 @@ class PronoPointsTests(EC2016Test):
             match_result.score2 = 4-match_result.score1
             match_result.save()
 
-        # calculate points
-        response = self.client.post('/calculatepoints/')
 
         # check the user points
         points = Points.objects.filter(user=user,prono='total_goals')[0]
@@ -554,9 +511,6 @@ class PronoPointsTests(EC2016Test):
             match_result.save()
 
 
-        # calculate points
-        response = self.client.post('/calculatepoints/')
-
         # check the user points
         points = Points.objects.filter(user=user,prono='total_goals')[0]
         self.assertEqual(points.points,0)
@@ -564,40 +518,24 @@ class PronoPointsTests(EC2016Test):
     def test_team_result_points_calculation_groupstage_correct(self):
         # fill in prono
         user = self.users[0]
-        team = self.teams[1]
+        team = self.team_dict['A4']
         
         prono = PronoTeamResult.objects.filter(user=user,team=team)[0]
         prono.result = 0
         prono.save()
-        
+
         # set results
-        for i,match in enumerate(Match.objects.filter(stage=16)):
-            match.team1 = self.teams[2+2*i]
-            match.team2 = self.teams[3+2*i]
-            match.save()
-            
-        for i,match in enumerate(Match.objects.filter(stage=8)):
-            match.team1 = self.teams[2+2*i]
-            match.team2 = self.teams[3+2*i]
-            match.save()
-            
-        for i,match in enumerate(Match.objects.filter(stage=4)):
-            match.team1 = self.teams[2+2*i]
-            match.team2 = self.teams[3+2*i]
-            match.save()
-            
+        self.set_stage_matches(0)
+        self.set_stage_matches(16)
+        self.set_stage_matches(8)
+        self.set_stage_matches(4)
+        self.set_stage_matches(2)
+
         for i,match in enumerate(Match.objects.filter(stage=2)):
-            match.team1 = self.teams[2+2*i]
-            match.team2 = self.teams[3+2*i]
-            match.save()
-            
             match_result = match.result
             match_result.score1 = 4
             match_result.score2 = 0
             match_result.save()
-            
-        # calculate points
-        response = self.client.post('/calculatepoints/')
     
         # check the user points
         points = Points.objects.filter(user=user,prono='team_result')[0]
@@ -606,7 +544,7 @@ class PronoPointsTests(EC2016Test):
     def test_team_result_points_calculation_roundof16_correct(self):
         # fill in prono
         user = self.users[0]
-        team = self.teams[1]
+        team = self.team_dict['C2']
         
         prono = PronoTeamResult.objects.filter(user=user,team=team)[0]
         prono.result = 16
@@ -623,28 +561,19 @@ class PronoPointsTests(EC2016Test):
 
             match.save()
             
-        for i,match in enumerate(Match.objects.filter(stage=8)):
-            match.team1 = self.teams[2+2*i]
-            match.team2 = self.teams[3+2*i]
-            match.save()
-            
-        for i,match in enumerate(Match.objects.filter(stage=4)):
-            match.team1 = self.teams[2+2*i]
-            match.team2 = self.teams[3+2*i]
-            match.save()
-            
+        # set results
+        self.set_stage_matches(0)
+        self.set_stage_matches(16)
+        self.set_stage_matches(8)
+        self.set_stage_matches(4)
+        self.set_stage_matches(2)
+
         for i,match in enumerate(Match.objects.filter(stage=2)):
-            match.team1 = self.teams[2+2*i]
-            match.team2 = self.teams[3+2*i]
-            match.save()
-            
             match_result = match.result
             match_result.score1 = 4
             match_result.score2 = 0
             match_result.save()
             
-        # calculate points
-        #response = self.client.post('/calculatepoints/')
     
         # check the user points
         points = Points.objects.filter(user=user,prono='team_result')[0]
@@ -653,40 +582,25 @@ class PronoPointsTests(EC2016Test):
     def test_team_result_points_calculation_quarterfinal_incorrect(self):
         # fill in prono
         user = self.users[0]
-        team = self.teams[1]
+        team = self.team_dict['E2']
         
         prono = PronoTeamResult.objects.filter(user=user,team=team)[0]
         prono.result = 8
         prono.save()
         
         # set results
-        for match in Match.objects.filter(stage=16):
-            match.team1 = self.teams[1]
-            match.team2 = self.teams[3]
-            match.save()
-            
-        for match in Match.objects.filter(stage=8):
-            match.team1 = self.teams[2]
-            match.team2 = self.teams[1]
-            match.save()
-            
-        for match in Match.objects.filter(stage=4):
-            match.team1 = self.teams[1]
-            match.team2 = self.teams[3]
-            match.save()
-            
-        for match in Match.objects.filter(stage=2):
-            match.team1 = self.teams[1]
-            match.team2 = self.teams[3]
-            match.save()
-            
+        self.set_stage_matches(0)
+        self.set_stage_matches(16)
+        self.set_stage_matches(8)
+        self.set_stage_matches(4)
+        self.set_stage_matches(2)
+
+        for i,match in enumerate(Match.objects.filter(stage=2)):
             match_result = match.result
             match_result.score1 = 4
             match_result.score2 = 0
             match_result.save()
             
-        # calculate points
-        response = self.client.post('/calculatepoints/')
     
         # check the user points
         points = Points.objects.filter(user=user,prono='team_result')[0]
@@ -695,40 +609,25 @@ class PronoPointsTests(EC2016Test):
     def test_team_result_points_calculation_semifinal_correct(self):
         # fill in prono
         user = self.users[0]
-        team = self.teams[1]
+        team = self.team_dict['E2']
         
         prono = PronoTeamResult.objects.filter(user=user,team=team)[0]
         prono.result = 4
         prono.save()
         
         # set results
-        for match in Match.objects.filter(stage=16):
-            match.team1 = self.teams[1]
-            match.team2 = self.teams[3]
-            match.save()
-            
-        for match in Match.objects.filter(stage=8):
-            match.team1 = self.teams[2]
-            match.team2 = self.teams[1]
-            match.save()
-            
-        for match in Match.objects.filter(stage=4):
-            match.team1 = self.teams[1]
-            match.team2 = self.teams[3]
-            match.save()
-            
-        for match in Match.objects.filter(stage=2):
-            match.team1 = self.teams[2]
-            match.team2 = self.teams[3]
-            match.save()
-            
+        self.set_stage_matches(0)
+        self.set_stage_matches(16)
+        self.set_stage_matches(8)
+        self.set_stage_matches(4)
+        self.set_stage_matches(2)
+
+        for i,match in enumerate(Match.objects.filter(stage=2)):
             match_result = match.result
             match_result.score1 = 4
             match_result.score2 = 0
             match_result.save()
             
-        # calculate points
-        response = self.client.post('/calculatepoints/')
     
         # check the user points
         points = Points.objects.filter(user=user,prono='team_result')[0]
@@ -738,40 +637,25 @@ class PronoPointsTests(EC2016Test):
     def test_team_result_points_calculation_final_incorrect(self):
         # fill in prono
         user = self.users[0]
-        team = self.teams[1]
+        team = self.team_dict['E2']
         
         prono = PronoTeamResult.objects.filter(user=user,team=team)[0]
         prono.result = 2
         prono.save()
         
         # set results
-        for match in Match.objects.filter(stage=16):
-            match.team1 = self.teams[1]
-            match.team2 = self.teams[3]
-            match.save()
-            
-        for match in Match.objects.filter(stage=8):
-            match.team1 = self.teams[2]
-            match.team2 = self.teams[1]
-            match.save()
-            
-        for match in Match.objects.filter(stage=4):
-            match.team1 = self.teams[1]
-            match.team2 = self.teams[3]
-            match.save()
-            
-        for match in Match.objects.filter(stage=2):
-            match.team1 = self.teams[2]
-            match.team2 = self.teams[3]
-            match.save()
-            
+        self.set_stage_matches(0)
+        self.set_stage_matches(16)
+        self.set_stage_matches(8)
+        self.set_stage_matches(4)
+        self.set_stage_matches(2)
+
+        for i,match in enumerate(Match.objects.filter(stage=2)):
             match_result = match.result
             match_result.score1 = 4
             match_result.score2 = 0
             match_result.save()
-            
-        # calculate points
-        response = self.client.post('/calculatepoints/')    
+
 
         # check the user points
         points = Points.objects.filter(user=user,prono='team_result')[0]
@@ -781,42 +665,28 @@ class PronoPointsTests(EC2016Test):
     def test_team_result_points_calculation_winner_correct(self):
         # fill in prono
         user = self.users[0]
-        team = self.teams[1]
+        team = self.team_dict['D1']
         
         prono = PronoTeamResult.objects.filter(user=user,team=team)[0]
         prono.result = 1
         prono.save()
         
         # set results
-        for match in Match.objects.filter(stage=16):
-            match.team1 = self.teams[1]
-            match.team2 = self.teams[3]
-            match.save()
-            
-        for match in Match.objects.filter(stage=8):
-            match.team1 = self.teams[2]
-            match.team2 = self.teams[1]
-            match.save()
-            
-        for match in Match.objects.filter(stage=4):
-            match.team1 = self.teams[1]
-            match.team2 = self.teams[3]
-            match.save()
-            
-        for match in Match.objects.filter(stage=2):
-            match.team1 = self.teams[1]
-            match.team2 = self.teams[3]
-            match.save()
-            
+        self.set_stage_matches(0)
+        self.set_stage_matches(16)
+        self.set_stage_matches(8)
+        self.set_stage_matches(4)
+        self.set_stage_matches(2)
+
+        for i,match in enumerate(Match.objects.filter(stage=2)):
             match_result = match.result
             match_result.score1 = 4
             match_result.score2 = 0
             match_result.save()
             
-        # calculate points
-        response = self.client.post('/calculatepoints/')
     
         # check the user points
         points = Points.objects.filter(user=user,prono='team_result')[0]
         self.assertEqual(points.points,150)    
+
 

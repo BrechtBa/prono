@@ -16,33 +16,6 @@ from .utils import PronoTest,EC2016Test,MockDatetime
 
 
 class PerformanceTests(EC2016Test):
-    """
-    def test_create_users(self):
-
-        numusers = 50
-
-        # set the teams in stage0
-        self.set_stage_matches(0)
-
-        time1 = time.time()
-        for i in range(numusers):
-            response = self.client.post('/register/', {'username':'testuser{}'.format(i+1), 'password':'somepassword'})
-            self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-            
-            token = self.generate_token({'username':'testuser{}'.format(i+1), 'password':'somepassword'})
-            response = self.client.post('/preparedatabaseforuser/', HTTP_AUTHORIZATION='JWT {}'.format(token))
-            self.assertEqual(response.status_code, status.HTTP_200_OK)
-
-        
-        time.sleep(10)
-        #user = AuthUser.objects.get(username='testuser1')
-        #print(user.points.all())
-        #for s in UserStatus.objects.all():
-        #    print(s.databaseprepared)
-
-        time2 = time.time()
-        print('{} users created in                         {:>5.2f}s'.format(numusers,time2-time1))
-    """
 
     @mock.patch('api.utils.datetime.datetime', MockDatetime)
     def test_enter_prono(self):
