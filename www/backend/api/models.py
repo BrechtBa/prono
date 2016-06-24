@@ -6,8 +6,9 @@ from rest_framework_jwt.utils import jwt_payload_handler as base_jwt_payload_han
 
 from api.utils import unixtimestamp
 
-#import threading
-from multiprocessing import Process
+#from multiprocessing import Process
+#p = Process(target=groupstage_result_changed)
+#p.start()
 
 # model definition
 ################################################################################
@@ -67,7 +68,8 @@ class Team(models.Model):
         for user in AuthUser.objects.all(): 
             prepare_prono_team_result(self,user)
 
-        team_changed()
+        calculate_groupstage_winners_points()
+        calculate_total_points()
 
         # set the update field
         set_last_update(pk=2)
@@ -99,7 +101,11 @@ class Match(models.Model):
             prepare_prono_result(self,user)
             prepare_prono_prono_knockoutstage_teams(user)
 
-        match_changed()
+        # calculate points
+        calculate_knockoutstage_teams_points()
+        calculate_team_result_points()
+        calculate_total_points()
+
 
         # set the update field
         set_last_update(pk=2)
@@ -123,15 +129,22 @@ class MatchResult(models.Model):
 
         # calculate points
         if self.match.stage==0:
-            #p = Process(target=groupstage_result_changed)
-            #p.start()
-            groupstage_result_changed()
+            calculate_groupstage_points()
+            calculate_total_goals_points()
+            calculate_total_points()
+
         elif self.match.stage==2:
-            final_result_changed()
+            calculate_knockoutstage_points()
+            calculate_knockoutstage_teams_points()
+            calculate_total_goals_points()
+            calculate_team_result_points()
+            calculate_total_points()
+
         else:
-            #p = Process(target=knockoutstage_result_changed)
-            #p.start()
-            knockoutstage_result_changed()
+            calculate_knockoutstage_points()
+            calculate_knockoutstage_teams_points()
+            calculate_total_goals_points()
+            calculate_total_points()
 
 
     def __str__(self):
@@ -361,50 +374,6 @@ def calculate_points():
     calculate_total_points()
 
 
-def groupstage_result_changed():
-    """
-    """
-    calculate_groupstage_points()
-    calculate_total_goals_points()
-
-    calculate_total_points()
-
-
-def knockoutstage_result_changed():
-    """
-    """
-    calculate_knockoutstage_points()
-    calculate_knockoutstage_teams_points()
-    calculate_total_goals_points()
-
-    calculate_total_points()
-
-def final_result_changed():
-    """
-    """
-    calculate_knockoutstage_points()
-    calculate_knockoutstage_teams_points()
-    calculate_total_goals_points()
-    calculate_team_result_points()
-
-    calculate_total_points()
-
-
-def match_changed():
-    """
-    """
-    calculate_knockoutstage_teams_points()
-    calculate_team_result_points()
-
-    calculate_total_points()
-
-def team_changed():
-    """
-    """
-    calculate_groupstage_winners_points()
-    calculate_total_points()
-
-
 def calculate_groupstage_points():
     """
     """
@@ -438,7 +407,6 @@ def calculate_groupstage_points():
         points = user.points.get(prono='groupstage_score')
         points.points = groupstage_score
         points.save()
-
 
 def calculate_knockoutstage_points():
     """
