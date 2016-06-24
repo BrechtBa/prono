@@ -377,15 +377,22 @@ def calculate_points():
 def calculate_groupstage_points():
     """
     """
+
+    matches = []
+    match_results = []
+    for match in Match.objects.filter(stage=0):
+        match_result = match.result
+        if match_result.score1 >-1 and match_result.score2 > -1:
+            matches.append(match)
+            match_results.append(match_result)
+
     for user in AuthUser.objects.all():
 
         groupstage_result = 0
         groupstage_score = 0
-        for match in Match.objects.filter(stage=0):
-            match_result = match.result
+        for match,match_result in zip(matches,match_results):
             
             for prono_result in match.prono_result.filter(user=user):
-                match_played = match_result.score1 >-1 and match_result.score2 > -1
                 match_prono = prono_result.score1 >-1 and prono_result.score2 > -1
 
                 team1winscorrect = (prono_result.score1 > prono_result.score2) and (match_result.score1 > match_result.score2)
@@ -393,11 +400,11 @@ def calculate_groupstage_points():
                 tiecorrect = (prono_result.score1 == prono_result.score2) and (match_result.score1 == match_result.score2)
                 
                 # result correct
-                if match_played and match_prono and (team1winscorrect or team2winscorrect or tiecorrect):
+                if match_prono and (team1winscorrect or team2winscorrect or tiecorrect):
                     groupstage_result = groupstage_result + 3
                 
                 # score correct
-                if match_played and match_prono and (prono_result.score1 == match_result.score1) and ( prono_result.score2 == match_result.score2):
+                if match_prono and (prono_result.score1 == match_result.score1) and ( prono_result.score2 == match_result.score2):
                     groupstage_score = groupstage_score + 4
 
         points = user.points.get(prono='groupstage_result')
@@ -411,14 +418,21 @@ def calculate_groupstage_points():
 def calculate_knockoutstage_points():
     """
     """
+
+    matches = []
+    match_results = []
+    for match in Match.objects.filter(stage__gt=0):
+        match_result = match.result
+        if match_result.score1 >-1 and match_result.score2 > -1:
+            matches.append(match)
+            match_results.append(match_result)
+
     for user in AuthUser.objects.all():
         knockoutstage_result = 0
         knockoutstage_score = 0
-        for match in Match.objects.filter(stage__gt=0):
-            match_result = match.result
+        for match,match_result in zip(matches,match_results):
             
             for prono_result in match.prono_result.filter(user=user):
-                match_played = match_result.score1 >-1 and match_result.score2 > -1
                 match_prono = prono_result.score1 >-1 and prono_result.score2 > -1
 
                 team1winscorrect = (prono_result.score1 > prono_result.score2) and (match_result.score1 > match_result.score2)
@@ -426,11 +440,11 @@ def calculate_knockoutstage_points():
                 tiecorrect = (prono_result.score1 == prono_result.score2) and (match_result.score1 == match_result.score2)
                 
                 # result correct
-                if match_played and match_prono and (team1winscorrect or team2winscorrect or tiecorrect):
+                if match_prono and (team1winscorrect or team2winscorrect or tiecorrect):
                     knockoutstage_result = knockoutstage_result + 6
                 
                 # score correct
-                if match_played and match_prono and (prono_result.score1 == match_result.score1) and ( prono_result.score2 == match_result.score2):
+                if match_prono and (prono_result.score1 == match_result.score1) and ( prono_result.score2 == match_result.score2):
                     knockoutstage_score = knockoutstage_score + 8
         
         points = user.points.get(prono='knockoutstage_result')
