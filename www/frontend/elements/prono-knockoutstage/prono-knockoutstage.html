@@ -98,6 +98,12 @@
 			}
 			.teamname.right{
 			}
+            .penalties{
+                font-size: 12px;
+            }
+            .hidden{
+                display: none;
+            }
 		</style>
 
 		<api-model id="prono" token="{{token}}" url="http://pronoapi.duckdns.org/pronoresults/" model="{{prono}}"></api-model>
@@ -120,12 +126,20 @@
 									<div class="flex">
 										<prono-team-icon class="teamicon" team="{{getTeam(match.team1,teamsModel)}}"></prono-team-icon>
 									</div>
-									<div class$="score flex {{scoreLayoutClass(stage,expandedStage)}} layout center center-justified">
-										<div>{{getScore1(match,results)}}</div>
-										<div class="dash">-</div>
-										<div>{{getScore2(match,results)}}</div>
-									</div>
-
+                                    <div class="vertical layout">
+									    <div class$="score {{scoreLayoutClass(stage,expandedStage)}} layout center center-justified">
+										    <div>{{getScore1(match,results)}}</div>
+										    <div class="dash">-</div>
+										    <div>{{getScore2(match,results)}}</div>
+									    </div>
+                                        <template is="dom-if" if="{{showPenaltiesResult(match,results)}}">
+                                            <div class$="score {{penaltyLayoutClass(stage,expandedStage)}} layout center center-justified penalties">
+										        (<div>{{getPenalty1(match,results)}}</div>
+										        <div class="dash">-</div>
+										        <div>{{getPenalty2(match,results)}}</div>)
+                                             </div>
+                                        </template>
+                                    </div>
 									<div class="flex">
 										<prono-team-icon class="teamicon" team="{{getTeam(match.team2,teamsModel)}}"></prono-team-icon>
 									</div>
@@ -308,7 +322,7 @@
 				var score = -1;
 				results.forEach(function(item){
 					if(item.match == match.id){
-						score = item.score1
+						score = item.score1;
 					}
 				});
 				return this.formatScore(score);
@@ -317,11 +331,38 @@
 				var score = -1;
 				results.forEach(function(item){
 					if(item.match == match.id){
-						score = item.score2
+						score = item.score2;
 					}
 				});
 				return this.formatScore(score)
 			},
+            getPenalty1: function(match,results){
+				var score = -1;
+				results.forEach(function(item){
+					if(item.match == match.id){
+						score = item.penalty1;
+					}
+				});
+				return this.formatScore(score);
+			},
+			getPenalty2: function(match,results){
+				var score = -1;
+				results.forEach(function(item){
+					if(item.match == match.id){
+						score = item.penalty2;
+					}
+				});
+				return this.formatScore(score)
+			},
+            showPenaltiesResult(match,results){
+                var show = false
+                results.forEach(function(item){
+					if(item.match == match.id && item.penalty1 >-1 && item.penalty2 >-1){
+						show = true
+					}
+				});
+                return show;
+            },
 			formatScore: function(score){
 				var val = '';
 				if(score<0){
@@ -449,6 +490,14 @@
 			scoreLayoutClass: function(stage,expandedStage){
 				if(this.isTiny() && this.isCollapsed(stage,expandedStage)){
 					return 'vertical';
+				}
+				else{
+					return 'horizontal';
+				}
+			},
+            penaltyLayoutClass: function(stage,expandedStage){
+				if(this.isTiny() || this.isCollapsed(stage,expandedStage)){
+					return 'hidden';
 				}
 				else{
 					return 'horizontal';
