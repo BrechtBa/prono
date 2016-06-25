@@ -496,9 +496,13 @@
 				}
 			},
             penaltyLayoutClass: function(stage,expandedStage){
-				if(this.isTiny() || this.isCollapsed(stage,expandedStage)){
+                
+				if(this.isTiny()){
 					return 'hidden';
 				}
+                else if(this.isSmall() && this.isCollapsed(stage,expandedStage)){
+                    return 'hidden';
+                }
 				else{
 					return 'horizontal';
 				}
