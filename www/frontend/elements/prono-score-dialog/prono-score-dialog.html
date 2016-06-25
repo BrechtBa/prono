@@ -40,6 +40,18 @@
 			.score paper-input{
 				margin-top: -10px;
 			}
+            .penalties{
+                margin-top: -10px;
+            }
+            .penalties .score paper-number-input{
+                margin-top: -20px;
+            }
+            .penalties .score{
+                width: 50px;
+            }
+            .penalties .dash{
+                width: 30px;
+            }
 			.hidden{
 				display: none;
 			}
@@ -50,11 +62,26 @@
 				<div class="vertical layout center-justified">
 					<div class="teamname flex">{{formatTeamName(match.team1,teamsModel)}}</div>
 					<div class="horizontal layout center center-justified">
+
 						<prono-team-icon class="teamicon" team="{{getTeam(match.team1,teamsModel)}}"></prono-team-icon>
-						<div class="score"><paper-number-input label="" auto-validate pattern="[0-9]*" error-message="x" value={{score1}}></paper-input></div>
-						<div class="score dash"> - </div>
-						<div class="score"><paper-number-input label="" auto-validate pattern="[0-9]*" error-message="x" value={{score2}}></paper-input></div>
-						<prono-team-icon class="teamicon" team="{{getTeam(match.team2,teamsModel)}}"></prono-team-icon>
+ 
+                        <div class="vertical layout">
+                            <div class="horizontal layout center center-justified">
+						        <div class="score"><paper-number-input label="" auto-validate pattern="[0-9]*" error-message="x" value={{score1}}></paper-input></div>
+						        <div class="score dash"> - </div>
+						        <div class="score"><paper-number-input label="" auto-validate pattern="[0-9]*" error-message="x" value={{score2}}></paper-input></div>
+    				        </div>
+                            <template is="dom-if" if="{{showPenalties}}">
+                                <div class="horizontal layout center center-justified penalties">
+                                    (<div class="score"><paper-number-input label="" auto-validate pattern="[0-9]*" error-message="x" value={{penalty1}}></paper-input></div>)
+						            <div class="score dash"> - </div>
+						            (<div class="score"><paper-number-input label="" auto-validate pattern="[0-9]*" error-message="x" value={{penalty2}}></paper-input></div>)
+                                </div>
+                            </template>
+    				    </div>
+
+                        <prono-team-icon class="teamicon" team="{{getTeam(match.team2,teamsModel)}}"></prono-team-icon>
+
 					</div>
 					<div class="teamname flex">{{formatTeamName(match.team2,teamsModel)}}</div>
 				</div>
@@ -87,6 +114,16 @@
 				score2: {
 					type: 'Number',
 				},
+                showPenalties:{
+                    type: 'Boolean',
+                    value: false
+                },
+                penalty1: {
+					type: 'Number',
+				},
+				penalty2: {
+					type: 'Number',
+				},
 			},
 			close: function(){
 				this.$.dialog.close();
@@ -103,6 +140,8 @@
 
 				this.score1 = this.formatScore(this.result.score1);
 				this.score2 = this.formatScore(this.result.score2);
+                this.penalty1 = this.formatScore(this.result.penalty1);
+				this.penalty2 = this.formatScore(this.result.penalty2);
 			},
 			formSubmit: function(){
 				this.$.form.submit();
@@ -119,7 +158,16 @@
 				if(score2 === ''){
 					score2 = -1;
 				}
-				this.fire('save',{'id':this.result.id, 'score1':score1, 'score2':score2});
+                // parse the penalties
+				var penalty1 = this.penalty1;
+				if(penalty1 === ''){
+					penalty1 = -1;
+				}
+				var penalty2 = this.penalty2;
+				if(penalty2 === ''){
+					penalty2 = -1;
+				}
+				this.fire('save',{'id':this.result.id, 'score1':score1, 'score2':score2, 'penalty1':penalty1, 'penalty2':penalty2});
 			},
 			formatTeamName: function(id,teams){
 				var name = '';

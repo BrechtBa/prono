@@ -125,6 +125,7 @@
 										<div class="dash">-</div>
 										<div>{{getScore2(match,results)}}</div>
 									</div>
+
 									<div class="flex">
 										<prono-team-icon class="teamicon" team="{{getTeam(match.team2,teamsModel)}}"></prono-team-icon>
 									</div>
@@ -145,7 +146,7 @@
 			</div>
 		</div>
 
-		<prono-score-dialog id="editScore" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" result="{{result}}" on-save="saveScore"></prono-score-dialog>
+		<prono-score-dialog id="editScore" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" result="{{result}}" on-save="saveScore" show-penalties="{{showPenalties(user)}}"></prono-score-dialog>
 	</template>
 
 	<script>
@@ -382,9 +383,12 @@
 					this.$.prono.put(e.detail.id+'/',{'score1':e.detail.score1,'score2':e.detail.score2});	
 				}
 				else{
-					app.$.model.$.matchresultsModel.put(e.detail.id+'/',{'score1':e.detail.score1,'score2':e.detail.score2});
+					app.$.model.$.matchresultsModel.put(e.detail.id+'/',{'score1':e.detail.score1,'score2':e.detail.score2,'penalty1':e.detail.penalty1,'penalty2':e.detail.penalty2});
 				}
 			},
+            showPenalties: function(user){
+                return typeof user.id == 'undefined'
+            },
 			addSpacerAfter: function(stage,match){
 				return ( (stage.id==8 && (match.position==1 || match.position==3)) || (stage.id==4 && match.position==1) );
 			},
