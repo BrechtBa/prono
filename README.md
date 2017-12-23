@@ -29,12 +29,7 @@ Create a python virtual environment for the django project, activate it and inst
 ```
 virtualenv -p python3 ~/env
 source ~/env/bin/activate
-pip install django
-pip install djangorestframework
-pip install djangorestframework-jwt
-pip install django-filter
-pip install django-cors-headers
-pip install mock
+pip install -r requirements.txt
 ```
 
 Copy the django project from the temporary folder to the www folder
