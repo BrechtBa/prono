@@ -5,6 +5,8 @@
   "main": "",
   "dependencies": {
     "event-stream": "^3.3.2",
+    "firebase-admin": "^5.6.0",
+    "firebase-functions": "^0.7.5",
     "gulp": "^3.9.1",
     "gulp-vulcanize": "^6.1.0"
   },

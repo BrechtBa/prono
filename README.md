@@ -1,5 +1,5 @@
 Prono
-==========
+=====
 
 Website/app to make predictions on soccer tournaments among friends for fun
 
@@ -117,7 +117,7 @@ echo "<VirtualHost *:80>
 </VirtualHost>" > ~/$apiurl".conf"
 ```
 
-Next we'll need sudo privelidgest to alter file group owners and move the apache configuration file to the apache folder and enable the site
+Next we'll need sudo privileges to alter file group owners and move the apache configuration file to the apache folder and enable the site
 ```
 sudo chown :www-data ~/www/backend/db.sqlite3
 sudo chmod 775 ~/www/backend/db.sqlite3
@@ -156,14 +156,14 @@ echo "<VirtualHost *:80>
 </VirtualHost>" > ~/$projecturl".conf"
 ```
 
-And with sudo privelidges chand the group ownership of some folders
+And with sudo privileges change the group ownership of some folders
 ```
 sudo chown -R :www-data ~/www/frontend/images/avatars
 sudo chmod -R 775 ~/www/frontend/images/avatars
 ```
 
 
-Again with sudo privelidges copy the file to the apache folder and enable
+Again with sudo privileges copy the file to the apache folder and enable
 ```
 sudo cp ~/$projecturl".conf" /etc/apache2/sites-available/$projecturl".conf"
 sudo a2ensite $projecturl".conf"
