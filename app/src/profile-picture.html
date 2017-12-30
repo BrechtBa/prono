@@ -1,0 +1,92 @@
+
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/iron-icons/social-icons.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+
+<link rel="import" href="../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-query.html">
+
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="profile-picture">
+    <template>
+
+        <style include="iron-flex iron-flex-alignment"></style>
+        <style include="shared-styles">
+            :host {
+                display: inline-block;
+                --size: 80px;
+                --background-color: #cccccc;
+                --background-image;
+                --color: var(--secondary-text-color)
+            }
+            .outer-circle{
+                position: relative;
+                width: var(--size);
+                height: var(--size);
+                line-height: var(--size);
+                border-radius: 50%;
+                font-size: 30px;
+                text-align: center;
+                background-color: var(--background-color);
+                background-image: var(--background-image);
+            }
+            .inner-circle{
+                position: absolute;
+                width: 80%;
+                height: 80%;
+                left: 50%;
+                top: 50%;
+                border-radius: 50%;
+                overflow: hidden;
+                -webkit-transform: translateY(-50%) translateX(-50%);
+            }
+            iron-icon{
+                width: 125%;
+                height: 125%;
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                -webkit-transform: translateY(-50%) translateX(-50%);
+                color: var(--color);
+            }
+
+        </style>
+
+
+        <div class="outer-circle">
+            <div class="inner-circle">
+                <iron-icon icon="social:person"></iron-icon>
+            </div>
+        </div>
+
+    </template>
+
+    <script>
+        class ProfilePicture extends Polymer.Element {
+            static get is() {
+                return 'profile-picture';
+            }
+
+            static get properties() {
+                return {
+                    user: {
+                        type: Object,
+                    },
+                    size: {
+                        type: String,
+                        value: '80px',
+                    },
+                };
+            }
+        }
+
+        window.customElements.define(ProfilePicture.is, ProfilePicture);
+    </script>
+</dom-module>

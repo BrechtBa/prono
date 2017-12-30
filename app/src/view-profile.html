@@ -1,0 +1,75 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+
+<link rel="import" href="../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-query.html">
+
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="profile-picture.html">
+
+<dom-module id="view-profile">
+    <template>
+
+        <style include="iron-flex iron-flex-alignment"></style>
+        <style include="shared-styles">
+            :host {
+                display: block;
+                padding: 10px;
+            }
+            .profile{
+                margin-bottom: 20px;
+            }
+            .profile profile-picture{
+                --size: 120px;
+                --color: #ffffff;
+                margin-right: 40px;
+            }
+
+        </style>
+
+        <paper-material>
+            <div class="profile horizontal layout wrap">
+                <profile-picture user="{{user}}"></profile-picture>
+                <div class="vertical layout">
+                    <paper-input label="Name" value="{{user.displayName}}"></paper-input>
+                </div>
+            </div>
+            <paper-button raised on-tap="changePasswordDialog">Change password</paper-button>
+        </paper-material>
+
+    </template>
+
+    <script>
+        class ViewProfile extends Polymer.Element {
+            static get is() {
+                return 'view-profile';
+            }
+
+            static get properties() {
+                return {
+                    user: {
+                        type: Object,
+                    },
+                };
+            }
+            /*static get observers() {
+                return [
+                    '_displayNameChanged(user.displayName)'
+                ];
+            }*/
+
+            /*_displayNameChanged(displayName){
+                this.displayName = displayName;
+            }*/
+
+        }
+
+        window.customElements.define(ViewProfile.is, ViewProfile);
+    </script>
+</dom-module>

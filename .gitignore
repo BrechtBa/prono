@@ -4,5 +4,6 @@ env
 *.sqlite3
 build
 node_modules
+bower_components
 .idea
 .firebaserc

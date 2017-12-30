@@ -1,0 +1,220 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-password-input/paper-password-input.html">
+<link rel="import" href="../bower_components/paper-password-input/paper-password-input.html">
+<link rel="import" href="../bower_components/paper-password-input/min-length-validator.html">
+<link rel="import" href="../bower_components/paper-password-input/match-passwords-validator.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+
+<link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
+
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="view-auth">
+    <template>
+        <style include="shared-styles"></style>
+        <style>
+
+            :host {
+                display: block;
+            }
+            .page {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                z-index: 100;
+                background: var(--background-primary-color);
+                @apply(--layout);
+                @apply(--layout-center-center);
+            }
+            paper-material{
+                padding: 10px;
+            }
+            paper-button > * {
+                vertical-align: middle;
+                text-transform: none;
+                color: #ffffff;
+                margin-right: 10px;
+            }
+            paper-checkbox {
+                margin-top: 10px;
+            }
+            .buttons {
+                margin-top: 10px;
+            }
+            .hidden {
+                display: none;
+            }
+        </style>
+
+        <firebase-auth id="auth" app-name="prono" user="{{user}}" signed-in="{{signedIn}}" on-error="authError"></firebase-auth>
+
+        <div class$="page {{_hiddenClass(signedIn)}}">
+            <paper-material>
+
+                <iron-form id="signInForm" on-keyup="signInFormChanged" on-change="signInFormChanged" on-iron-form-submit="signIn">
+                    <form>
+                        <div class="container">
+                            <paper-input-error id="signInError">{{trans('Login is taken')}}</paper-input-error>
+                        </div>
+                        <paper-input label="[[trans('Email')]]" value="{{email}}" required auto-validate pattern=".*@.*\..*" error-message="invalid email address"></paper-input>
+                        <paper-password-input label="[[trans('Password')]]" value="{{password}}" required auto-validate error-message="required"></paper-password-input>
+                        <div class="buttons">
+                            <paper-button id="signInButton" on-tap="signIn" raised class="main" on-tap="signInFormSubmit" disabled>
+                                <iron-icon icon="account-circle"></iron-icon><span>Sign in</span>
+                            </paper-button>
+                        </div>
+                    </form>
+                </iron-form>
+                <p>First time? <a href="#" on-tap="registerDialog">register</a></p>
+                <p>Forgot your password?</p>
+            </paper-material>
+        </div>
+
+        <paper-dialog id="register">
+            <h2>{{trans('Register')}}</h2>
+
+            <iron-form id="registerForm" on-keyup="registerFormChanged" on-change="registerFormChanged" on-iron-form-submit="register">
+                <form>
+                    <div class="container">
+                        <paper-input-error id="registerError">{{trans('Login is taken')}}</paper-input-error>
+                    </div>
+                    <paper-input label="[[trans('Email')]]" value="{{registerEmail}}" required auto-validate error-message="required" pattern=".*@.*\..*" error-message="invalid email address"></paper-input>
+                    <match-passwords-validator id="match-passwords-validator" password="[[registerPassword]]"></match-passwords-validator>
+                    <paper-password-input label="[[trans('Password')]]" value="{{registerPassword}}" required></paper-password-input>
+                    <paper-password-input label="[[trans('Confirm')]]" auto-validate validator="match-passwords-validator" required error-message="Passwords need to match"></paper-password-input>
+
+                    <paper-checkbox name="terms" value="agreed" auto-validate required></paper-checkbox>I agree to the <a href="#" on-tap="termsAndConditionsDialog">terms and conditions</a>
+
+                    <div class="buttons">
+                        <paper-button id="registerButton" raised class="main" on-tap="registerFormSubmit" disabled>{{trans('Register')}}</paper-button>
+                        <button type="submit" class="hidden">{{trans('Register')}}</button>
+                    </div>
+                </form>
+            </iron-form>
+
+        </paper-dialog>
+
+
+        <paper-dialog id="resetPassword" class="white">
+            <paper-button class="close" dialog-dismiss>close</paper-button>
+            <paper-input label="email" value="{{resetEmail}}"></paper-input>
+            <div class="buttons">
+                <paper-button raised on-tap="resetPassword">
+                    Send password reset mail
+                </paper-button>
+            </div>
+        </paper-dialog>
+
+        <paper-dialog id="termsAndConditions">
+
+            <h2>{{trans('Terms')}}</h2>
+            <!--<prono-terms></prono-terms>-->
+            <h2>{{trans('Rules')}}</h2>
+            <!--<prono-rules></prono-rules>-->
+        </paper-dialog>
+
+    </template>
+
+    <script>
+        class ViewAuth extends Polymer.Element {
+            static get is() {
+                return 'view-auth';
+            }
+
+            static get properties() {
+                return {
+                    user: {
+                        type: Object,
+                        notify: true,
+                    },
+                    signedIn: {
+                        type: Boolean,
+                        notify: true,
+                    }
+                }
+            }
+
+            signIn() {
+                console.log('sign in')
+                this.$.auth.signInWithEmailAndPassword(this.email, this.password);
+
+                var that = this;
+                setTimeout(function() {
+                    that.password = '';
+                }, 500);
+            }
+
+            signOut() {
+                this.$.auth.signOut()
+            }
+
+            register(event){
+                console.log('register')
+                this.$.auth.createUserWithEmailAndPassword(this.registerEmail, this.registerPassword);
+            }
+
+            signInFormChanged(){
+                this.$.signInButton.disabled = !this.$.signInForm.validate();
+            }
+
+            signInFormSubmit(){
+                console.log('signInFormSubmit')
+                this.$.signInForm.submit();
+            }
+
+
+            registerDialog(){
+                this.$.register.open();
+            }
+
+            registerFormChanged(){
+                this.$.registerButton.disabled = !this.$.registerForm.validate();
+            }
+
+            registerFormSubmit(){
+                console.log('registerFormSubmit')
+                this.$.registerForm.submit();
+            }
+
+            authError(event){
+                console.log(event)
+            }
+
+            trans(key) {
+                return key;
+            }
+
+            termsAndConditionsDialog(){
+                this.$.termsAndConditions.open()
+            }
+
+            _passwordValidator(){
+                if(this.$.newPassword.value == this.$.newPasswordRepeat.value){
+                    return true;
+                }
+                else{
+                    return false;
+                }
+            }
+
+            _hiddenClass(hide){
+                if(hide){
+                    return 'hidden';
+                }
+            }
+
+        }
+
+        window.customElements.define(ViewAuth.is, ViewAuth);
+    </script>
+</dom-module>

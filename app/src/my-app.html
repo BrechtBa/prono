@@ -1,0 +1,241 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer/app-drawer.html">
+<link rel="import" href="../bower_components/app-layout/app-drawer-layout/app-drawer-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-header/app-header.html">
+<link rel="import" href="../bower_components/app-layout/app-header-layout/app-header-layout.html">
+<link rel="import" href="../bower_components/app-layout/app-scroll-effects/app-scroll-effects.html">
+<link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
+<link rel="import" href="../bower_components/app-route/app-location.html">
+<link rel="import" href="../bower_components/app-route/app-route.html">
+
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-selector/iron-selector.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+
+<link rel="import" href="../bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-document.html">
+
+<link rel="import" href="my-icons.html">
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="profile-picture.html">
+
+
+<link rel="lazy-import" href="view-ranking.html">
+<link rel="lazy-import" href="view-view2.html">
+<link rel="lazy-import" href="view-view3.html">
+<link rel="lazy-import" href="view-profile.html">
+<link rel="lazy-import" href="view-view404.html">
+
+<dom-module id="my-app">
+    <template>
+        <style include="iron-flex iron-flex-alignment"></style>
+        <style include="shared-styles"></style>
+        <style>
+            :host {
+                display: block;
+            }
+
+            app-drawer-layout{
+                background: var(--background-primary-color);
+            }
+
+            app-drawer-layout:not([narrow]) [drawer-toggle] {
+                display: none;
+            }
+
+            app-header {
+                color: var(--text-secondary-color);
+                background-color: var(--app-primary-color);
+                box-shadow: 0px 2px 4px 2px rgba(0, 0, 0, 0.3);
+            }
+
+            app-header paper-icon-button {
+                --paper-icon-button-ink-color: white;
+            }
+
+            .drawer-list {
+                margin: 0 20px;
+            }
+
+            .drawer-list a {
+                display: block;
+                padding: 0 16px;
+                text-decoration: none;
+                color: var(--app-secondary-color);
+                line-height: 40px;
+            }
+
+            .drawer-list a.iron-selected {
+                color: black;
+                font-weight: bold;
+            }
+
+            [main-title] {
+                margin: 16px 5px;
+                font-size: 30px;
+            }
+            [condensed-title] {
+                margin: 14px 0;
+                font-size: 20px;
+            }
+            @media (max-width: 639px) {
+                [main-title] {
+                    font-size: 26px;
+                }
+            }
+
+            .drawer-header{
+                height: 180px;
+                background-color: var(--primary-color);
+                color: #ffffff;
+                text-decoration: none;
+            }
+            .drawer-header profile-picture{
+                margin-bottom: 30px;
+            }
+            .drawer-header .name{
+                font-size: 0.8em;
+                height: 1.2em;
+                font-weight: bold;
+            }
+            .drawer-header .email{
+                font-size: 0.8em;
+                height: 1.2em;
+                margin-bottom: 8px;
+            }
+        </style>
+
+        <app-location route="{{route}}" url-space-regex="^[[rootPath]]"></app-location>
+
+        <app-route route="{{route}}" pattern="[[rootPath]]:page" data="{{routeData}}" tail="{{subroute}}"></app-route>
+
+        <firebase-app name="prono" auth-domain="project-3359822390427923494.firebaseapp.com" database-url="https://project-3359822390427923494.firebaseio.com" storage-bucket="project-3359822390427923494.appspot.com" api-key="AIzaSyCa8aBURSPVw6ayEYpZBdlhiA0DCv1LH5A"></firebase-app>
+
+        <view-auth id="login" user="{{authUser}}" signed-in="{{signedIn}}"></view-auth>
+        <firebase-document app-name="prono"  path="/[[pronoGroupId]]/users/[[authUser.uid]]" data="{{user}}"></firebase-document>
+
+
+        <app-drawer-layout fullbleed narrow="{{narrow}}">
+            <!-- Drawer content -->
+            <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]">
+                <a href="profile" class="drawer-header">
+                    <app-toolbar class="drawer-header vertical layout start">
+                        <div class="flex"></div>
+                        <profile-picture user="{{authUser}}"></profile-picture>
+                        <div class="name">{{user.displayName}}</div>
+                        <div class="email">{{authUser.email}}</div>
+                    </app-toolbar>
+                </a>
+
+                <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
+                    <a name="ranking" href="[[rootPath]]ranking">Ranking</a>
+                    <a name="view2" href="[[rootPath]]view2">View Two</a>
+                    <a name="view3" href="[[rootPath]]view3">View Three</a>
+                    <a name="signout" href="#" on-tap="signOut">Sign out</a>
+                </iron-selector>
+            </app-drawer>
+
+             <!-- Main content -->
+            <app-header-layout has-scrolling-region>
+
+                <app-header slot="header" condenses reveals effects="resize-title blend-background parallax-background">
+                    <app-toolbar>
+                        <paper-icon-button icon="my-icons:menu" drawer-toggle></paper-icon-button>
+                        <h1 condensed-title>Prono</h1>
+
+                    </app-toolbar>
+                    <app-toolbar class="tall">
+                        <h1 main-title>Prono</h1>
+                    </app-toolbar>
+                </app-header>
+
+                <iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="view404" role="main">
+                    <view-ranking name="ranking" prono-group-id="[[pronoGroupId]]" user="[[user]]"></view-ranking>
+                    <my-view2 name="view2"></my-view2>
+                    <my-view3 name="view3"></my-view3>
+                    <view-profile name="profile" user="{{user}}"></view-profile>
+                    <my-view404 name="view404"></my-view404>
+                </iron-pages>
+            </app-header-layout>
+        </app-drawer-layout>
+    </template>
+
+    <script>
+        class MyApp extends Polymer.Element {
+            static get is() { return 'my-app'; }
+
+            static get properties() {
+                return {
+                    page: {
+                        type: String,
+                        reflectToAttribute: true,
+                        observer: '_pageChanged',
+                    },
+                    routeData: Object,
+                    subroute: String,
+                    // This shouldn't be neccessary, but the Analyzer isn't picking up
+                    // Polymer.Element#rootPath
+                    rootPath: String,
+                    pronoGroupId: {
+                        type: String,
+                        value: 'pronogroupid1',
+                    },
+                };
+            }
+
+            static get observers() {
+                return [
+                    '_routePageChanged(routeData.page, signedIn)',
+                ];
+            }
+
+            signOut(){
+                this.$.login.signOut();
+            }
+
+            _routePageChanged(page, signedIn) {
+                // Polymer 2.0 will call with `undefined` on initialization.
+                // Ignore until we are properly called with a string.
+                if (page === undefined) {
+                  return;
+                }
+
+                // Prevent not signed in uses to see views
+                if(!signedIn){
+                    this.page = 'auth';
+                    return;
+                }
+                else if(page == 'auth'){
+                    page = '';
+                }
+
+                // If no page was found in the route data, page will be an empty string.
+                // Deault to 'nested-object' in that case.
+                this.page = page || 'ranking';
+
+                // Close a non-persistent drawer when the page & route are changed.
+                if (!this.$.drawer.persistent) {
+                  this.$.drawer.close();
+                }
+            }
+
+            _pageChanged(page) {
+                // Load page import on demand. Show 404 page if fails
+                var resolvedPageUrl = this.resolveUrl('view-' + page + '.html');
+                Polymer.importHref(
+                    resolvedPageUrl,
+                    null,
+                    this._showPage404.bind(this),
+                    true);
+            }
+
+            _showPage404() {
+                this.page = 'view404';
+            }
+        }
+
+        window.customElements.define(MyApp.is, MyApp);
+    </script>
+</dom-module>

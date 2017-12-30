@@ -1,0 +1,104 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+
+<!-- shared styles for all views -->
+<dom-module id="shared-styles">
+    <template>
+        <style>
+            :host {
+                --app-primary-color: #ffffff;
+                --app-secondary-color: black;
+                --primary-color: #af2020;
+                --primary-text-color: #111111;
+                --secondary-text-color: #aaaaaa;
+
+
+
+                --dark-primary-color: #303F9F;
+
+                --default-primary-color: #ffffff;
+                --light-primary-color: #C5CAE9;
+
+                --accent-color: #FF4081;
+                --background-primary-color: linear-gradient( #DD0000,#440000 );
+                --background-secondary-color: #ffffff;
+                --disabled-text-color: #bdbdbd;
+                --divider-color: #B6B6B6;
+            }
+
+            paper-material {
+                display: block;
+                margin-bottom: 5px;
+                padding: 10px;
+                background-color: #ffffff;
+            }
+            paper-button {
+                background-color: #cccccc;
+            }
+            paper-button.primary {
+                background-color: var(--app-primary-color);
+                color: #ffffff;
+            }
+            .hidden {
+                display: none;
+            }
+            .floating-button{
+                border-radius: 25px;
+                width: 50px;
+                height: 50px;
+                min-width: 0;
+                position: fixed;
+                bottom: 40px;
+                right: 40px;
+            }
+
+
+
+            .profile-picture{
+                position: relative;
+                width: 64px;
+                height: 64px;
+                text-align: center;
+                line-height: 64px;
+                border-radius: 40px;
+                border: 8px solid;
+                border-color: #ffffff;
+                background-color: #ffffff;
+                overflow: hidden;
+                margin-bottom: 30px;
+            }
+            .profile-picture iron-icon{
+                position: absolute;
+                width: 80px;
+                height: 80px;
+                left: 50%;
+                top: 50%;
+                -webkit-transform: translateY(-50%) translateX(-50%);
+                color: var(--app-primary-color);
+            }
+
+
+
+            .card {
+                margin: 24px;
+                padding: 16px;
+                color: #757575;
+                border-radius: 5px;
+                background-color: #fff;
+                box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12), 0 3px 1px -2px rgba(0, 0, 0, 0.2);
+            }
+            .circle{
+                display: inline-block;
+                width: 64px;
+                height: 64px;
+                min-width: 0px;
+                text-align: center;
+                color: #555;
+                border-radius: 50%;
+                background: #ddd;
+                font-size: 30px;
+                line-height: 64px;
+            }
+
+        </style>
+    </template>
+</dom-module>
