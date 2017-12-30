@@ -10,6 +10,9 @@
 <link rel="import" href="../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 
+<link rel="import" href="../bower_components/polymerfire/firebase-document.html">
+
+
 <link rel="import" href="shared-styles.html">
 <link rel="import" href="profile-picture.html">
 
@@ -33,11 +36,13 @@
 
         </style>
 
+        <firebase-document app-name="prono"  path="/[[pronoGroupId]]/users/[[user.uid]]" data="{{userProfile}}"></firebase-document>
+
         <paper-material>
             <div class="profile horizontal layout wrap">
-                <profile-picture user="{{user}}"></profile-picture>
+                <profile-picture user="{{userProfile}}"></profile-picture>
                 <div class="vertical layout">
-                    <paper-input label="Name" value="{{user.displayName}}"></paper-input>
+                    <paper-input label="Name" value="{{userProfile.displayName}}"></paper-input>
                 </div>
             </div>
             <paper-button raised on-tap="changePasswordDialog">Change password</paper-button>
@@ -53,6 +58,9 @@
 
             static get properties() {
                 return {
+                    pronoGroupId: {
+                        type: String,
+                    },
                     user: {
                         type: Object,
                     },

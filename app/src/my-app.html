@@ -153,10 +153,10 @@
                 </app-header>
 
                 <iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="view404" role="main">
-                    <view-ranking name="ranking" prono-group-id="[[pronoGroupId]]" user="[[user]]"></view-ranking>
+                    <view-ranking name="ranking" prono-group-id="[[pronoGroupId]]" user="[[authUser]]"></view-ranking>
                     <view-results name="results" prono-group-id="[[pronoGroupId]]"></view-results>
                     <my-view3 name="view3"></my-view3>
-                    <view-profile name="profile" user="{{user}}"></view-profile>
+                    <view-profile name="profile" prono-group-id="[[pronoGroupId]]"  user="{{authUser}}"></view-profile>
                     <my-view404 name="view404"></my-view404>
                 </iron-pages>
             </app-header-layout>
