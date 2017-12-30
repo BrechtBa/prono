@@ -1,0 +1,41 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/app-localize-behavior/app-localize-behavior.html">
+
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<link rel="import" href="prono-groupstage.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="view-results">
+    <template>
+
+        <style include="iron-flex iron-flex-alignment"></style>
+        <style include="shared-styles"></style>
+        <style include="shared-styles">
+            :host {
+                display: block;
+                padding: 10px;
+            }
+        </style>
+
+        <prono-groupstage prono-group-id="[[pronoGroupId]]"></prono-groupstage>
+
+    </template>
+
+    <script>
+        class ViewResults extends Polymer.Element {
+            static get is() { return 'view-results'; }
+
+            static get properties() {
+                return {
+                    pronoGroupId: {
+                        type: String,
+                    },
+                };
+            }
+
+        }
+
+        window.customElements.define(ViewResults.is, ViewResults);
+    </script>
+</dom-module>

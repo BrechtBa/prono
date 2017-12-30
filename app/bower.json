@@ -24,7 +24,9 @@
     "paper-material": "PolymerElements/paper-material#^2.0.0",
     "paper-password-input": "Collaborne/paper-password-input#^2.2.0",
     "iron-form": "PolymerElements/iron-form#^2.0.1",
-    "paper-checkbox": "PolymerElements/paper-checkbox#^2.0.1"
+    "paper-checkbox": "PolymerElements/paper-checkbox#^2.0.1",
+    "app-localize-behavior": "PolymerElements/app-localize-behavior#^2.0.0",
+    "intl": "^1.2.5"
   },
   "resolutions": {
     "polymer": "^2.0.0"

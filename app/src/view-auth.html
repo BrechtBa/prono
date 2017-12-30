@@ -1,4 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/app-localize-behavior/app-localize-behavior.html">
+
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
 <link rel="import" href="../bower_components/iron-icon/iron-icon.html">
@@ -39,6 +41,9 @@
             paper-material{
                 padding: 10px;
             }
+            paper-button {
+                color: #ffffff;
+            }
             paper-button > * {
                 vertical-align: middle;
                 text-transform: none;
@@ -64,10 +69,10 @@
                 <iron-form id="signInForm" on-keyup="signInFormChanged" on-change="signInFormChanged" on-iron-form-submit="signIn">
                     <form>
                         <div class="container">
-                            <paper-input-error id="signInError">{{trans('Login is taken')}}</paper-input-error>
+                            <paper-input-error id="signInError">{{localize('email exists')}}</paper-input-error>
                         </div>
-                        <paper-input label="[[trans('Email')]]" value="{{email}}" required auto-validate pattern=".*@.*\..*" error-message="invalid email address"></paper-input>
-                        <paper-password-input label="[[trans('Password')]]" value="{{password}}" required auto-validate error-message="required"></paper-password-input>
+                        <paper-input label="Email" value="{{email}}" required auto-validate pattern=".*@.*\..*" error-message="invalid email address"></paper-input>
+                        <paper-password-input label="{{localize('Password')}}" value="{{password}}" required auto-validate error-message="required"></paper-password-input>
                         <div class="buttons">
                             <paper-button id="signInButton" on-tap="signIn" raised class="main" on-tap="signInFormSubmit" disabled>
                                 <iron-icon icon="account-circle"></iron-icon><span>Sign in</span>
@@ -75,29 +80,29 @@
                         </div>
                     </form>
                 </iron-form>
-                <p>First time? <a href="#" on-tap="registerDialog">register</a></p>
-                <p>Forgot your password?</p>
+                <p>{{localize('No account?')}} <a href="#" on-tap="registerDialog">register</a></p>
+                <p>{{localize('Forgot your password?')}} <a href="#" on-tap="resetPasswordDialog">reset {{localize('password')}}</a></p>
             </paper-material>
         </div>
 
         <paper-dialog id="register">
-            <h2>{{trans('Register')}}</h2>
+            <h2>{{localize('Register')}}</h2>
 
             <iron-form id="registerForm" on-keyup="registerFormChanged" on-change="registerFormChanged" on-iron-form-submit="register">
                 <form>
                     <div class="container">
-                        <paper-input-error id="registerError">{{trans('Login is taken')}}</paper-input-error>
+                        <paper-input-error id="registerError">{{localize('email exists')}}</paper-input-error>
                     </div>
-                    <paper-input label="[[trans('Email')]]" value="{{registerEmail}}" required auto-validate error-message="required" pattern=".*@.*\..*" error-message="invalid email address"></paper-input>
+                    <paper-input label="Email" value="{{registerEmail}}" required auto-validate error-message="required" pattern=".*@.*\..*" error-message="invalid email address"></paper-input>
                     <match-passwords-validator id="match-passwords-validator" password="[[registerPassword]]"></match-passwords-validator>
-                    <paper-password-input label="[[trans('Password')]]" value="{{registerPassword}}" required></paper-password-input>
-                    <paper-password-input label="[[trans('Confirm')]]" auto-validate validator="match-passwords-validator" required error-message="Passwords need to match"></paper-password-input>
+                    <paper-password-input label="Password" value="{{registerPassword}}" required></paper-password-input>
+                    <paper-password-input label="Confirm" auto-validate validator="match-passwords-validator" required error-message="Passwords need to match"></paper-password-input>
 
-                    <paper-checkbox name="terms" value="agreed" auto-validate required></paper-checkbox>I agree to the <a href="#" on-tap="termsAndConditionsDialog">terms and conditions</a>
+                    <paper-checkbox name="terms" value="agreed" auto-validate required></paper-checkbox>{{localize('I agree to the')}} <a href="#" on-tap="termsAndConditionsDialog">{{localize('terms and conditions')}}</a>
 
                     <div class="buttons">
-                        <paper-button id="registerButton" raised class="main" on-tap="registerFormSubmit" disabled>{{trans('Register')}}</paper-button>
-                        <button type="submit" class="hidden">{{trans('Register')}}</button>
+                        <paper-button id="registerButton" raised class="main" on-tap="registerFormSubmit" disabled>Register</paper-button>
+                        <button type="submit" class="hidden">Register</button>
                     </div>
                 </form>
             </iron-form>
@@ -106,27 +111,24 @@
 
 
         <paper-dialog id="resetPassword" class="white">
-            <paper-button class="close" dialog-dismiss>close</paper-button>
             <paper-input label="email" value="{{resetEmail}}"></paper-input>
             <div class="buttons">
-                <paper-button raised on-tap="resetPassword">
-                    Send password reset mail
-                </paper-button>
+                <paper-button raised class="main" on-tap="resetPassword">Send password reset mail</paper-button>
             </div>
         </paper-dialog>
 
         <paper-dialog id="termsAndConditions">
 
-            <h2>{{trans('Terms')}}</h2>
+            <h2>{{localize('Terms')}}</h2>
             <!--<prono-terms></prono-terms>-->
-            <h2>{{trans('Rules')}}</h2>
+            <h2>{{localize('Rules')}}</h2>
             <!--<prono-rules></prono-rules>-->
         </paper-dialog>
 
     </template>
 
     <script>
-        class ViewAuth extends Polymer.Element {
+        class ViewAuth extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.Element){
             static get is() {
                 return 'view-auth';
             }
@@ -140,7 +142,40 @@
                     signedIn: {
                         type: Boolean,
                         notify: true,
-                    }
+                    },
+                    language: {
+                        value: 'nl-BE',
+                    },
+                    resources: {
+                        value() {
+                            return {
+                                'en': {
+                                    'Register': 'Register',
+                                    'email exists': 'An account with this email address already exists',
+                                    'I agree to the': 'I agree to the',
+                                    'terms and conditions': 'terms and conditions',
+                                    'No account?': 'No account?',
+                                    'Forgot your password?': 'Forgot your password?',
+                                    'Password': 'Password',
+                                    'password': 'password',
+                                    'Terms': 'Terms',
+                                    'Rules': 'Rules',
+                                },
+                                'nl-BE': {
+                                    'Register': 'Registreren',
+                                    'email exists': 'Er bestaat reeds een account met dit email adres',
+                                    'I agree to the': 'Ik ga akkoord met de',
+                                    'terms and conditions': 'gebruiksvoorwaarden',
+                                    'No account?': 'Nog geen account?',
+                                    'Forgot your password?': 'Wachtwoord vergeten?',
+                                    'Password': 'Wachtwoord',
+                                    'password': 'wachtwoord',
+                                    'Terms': 'Gebruiksvoorwaarden',
+                                    'Rules': 'Regels',
+                                }
+                            }
+                        }
+                    },
                 }
             }
 
@@ -190,12 +225,13 @@
                 console.log(event)
             }
 
-            trans(key) {
-                return key;
-            }
 
             termsAndConditionsDialog(){
                 this.$.termsAndConditions.open()
+            }
+
+            resetPasswordDialog(){
+                this.$.resetPassword.open();
             }
 
             _passwordValidator(){

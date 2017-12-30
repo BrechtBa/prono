@@ -7,6 +7,7 @@
 <link rel="import" href="../bower_components/app-layout/app-toolbar/app-toolbar.html">
 <link rel="import" href="../bower_components/app-route/app-location.html">
 <link rel="import" href="../bower_components/app-route/app-route.html">
+<link rel="import" href="../bower_components/app-localize-behavior/app-localize-behavior.html">
 
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/iron-selector/iron-selector.html">
@@ -23,7 +24,7 @@
 
 
 <link rel="lazy-import" href="view-ranking.html">
-<link rel="lazy-import" href="view-view2.html">
+<link rel="lazy-import" href="view-results.html">
 <link rel="lazy-import" href="view-view3.html">
 <link rel="lazy-import" href="view-profile.html">
 <link rel="lazy-import" href="view-view404.html">
@@ -131,7 +132,7 @@
 
                 <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
                     <a name="ranking" href="[[rootPath]]ranking">Ranking</a>
-                    <a name="view2" href="[[rootPath]]view2">View Two</a>
+                    <a name="results" href="[[rootPath]]results">Results</a>
                     <a name="view3" href="[[rootPath]]view3">View Three</a>
                     <a name="signout" href="#" on-tap="signOut">Sign out</a>
                 </iron-selector>
@@ -153,7 +154,7 @@
 
                 <iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="view404" role="main">
                     <view-ranking name="ranking" prono-group-id="[[pronoGroupId]]" user="[[user]]"></view-ranking>
-                    <my-view2 name="view2"></my-view2>
+                    <view-results name="results" prono-group-id="[[pronoGroupId]]"></view-results>
                     <my-view3 name="view3"></my-view3>
                     <view-profile name="profile" user="{{user}}"></view-profile>
                     <my-view404 name="view404"></my-view404>
@@ -163,11 +164,14 @@
     </template>
 
     <script>
-        class MyApp extends Polymer.Element {
+        class MyApp extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.Element) {
             static get is() { return 'my-app'; }
 
             static get properties() {
                 return {
+                    language: {
+                        value: 'nl-BE',
+                    },
                     page: {
                         type: String,
                         reflectToAttribute: true,
