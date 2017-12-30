@@ -1,6 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 
-<dom-module id="prono-team-name">
+<dom-module id="team-name">
 	<template>
         <style include="shared-styles"></style>
 		<style>
@@ -14,8 +14,8 @@
 	
 	</template>
 	<script>
-        class PronoTeamName extends Polymer.Element {
-            static get is() { return 'prono-team-name'; }
+        class TeamName extends Polymer.Element {
+            static get is() { return 'team-name'; }
 
             static get properties() {
                 return {
@@ -52,6 +52,6 @@
 
         }
 
-        window.customElements.define(PronoTeamName.is, PronoTeamName);
+        window.customElements.define(TeamName.is, TeamName);
 	</script>
 </dom-module>

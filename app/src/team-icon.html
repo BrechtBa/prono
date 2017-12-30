@@ -1,0 +1,48 @@
+
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+
+<dom-module id="team-icon">
+	<template>
+		<style>
+			:host{
+				display: inline-block;
+			}
+			img{
+				width: 100%;
+				height: 100%;
+			}
+		</style>
+
+		<img src="{{_getSrc(team.iso_icon, team.icon)}}">
+
+	
+	</template>
+	<script>
+	    class TeamIcon extends Polymer.Element {
+            static get is() { return 'team-icon'; }
+
+            static get properties() {
+                return {
+                    team: {
+                        type: Object,
+                    },
+                }
+            }
+
+            _getSrc(iso_icon, icon){
+                if(typeof iso_icon != 'undefined' && iso_icon != ''){
+                    return 'images/flags/'+iso_icon+'.png';
+                }
+                else if(typeof icon != 'undefined' && icon != ''){
+                    return icon;
+                }
+                else{
+				    return 'images/flags/_blank.png';
+                }
+			}
+
+        }
+
+        window.customElements.define(TeamIcon.is, TeamIcon);
+	</script>
+</dom-module>

@@ -1,0 +1,126 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/app-localize-behavior/app-localize-behavior.html">
+
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+
+<link rel="import" href="../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-document.html">
+
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="team-icon.html">
+
+
+<dom-module id="view-teams">
+    <template>
+        <style include="iron-flex iron-flex-alignment"></style>
+        <style include="shared-styles"></style>
+        <style>
+            :host {
+                display: block;
+                padding: 10px;
+            }
+            .teamicon{
+				width: 45px;
+				height: 45px;
+			}
+        </style>
+
+        <firebase-query id="query" app-name="prono" path="/[[pronoGroupId]]/competition/teams" data="{{teams}}"></firebase-query>
+        <firebase-document id="document" app-name="prono" data="" ></firebase-document>
+
+        <template is="dom-repeat" items="{{teams}}" as="team">
+
+            <paper-material class="vertical layout">
+                <div class="horizontal layout" on-tap="_editTeam">
+                    <div class="flex">
+                        <div class="name">{{team.name}}</div>
+                        <div class="abr">{{team.abr}}</div>
+                    </div>
+                    <team-icon class="teamicon" team="{{team}}"></team-icon>
+                </div>
+                <template is="dom-if" if="{{_showEditTeam(team, editTeam)}}">
+                    <paper-input value="{{team.name}}" label="Name"></paper-input>
+                    <paper-input value="{{team.abr}}" label="Abbreviation"></paper-input>
+                    <paper-input value="{{team.iso_icon}}" label="ISO code"></paper-input>
+                    <paper-input value="{{team.icon}}" label="Icon url"></paper-input>
+                    <paper-button on-tap="_deleteTeamDialog">delete</paper-button>
+                </template>
+            </paper-material>
+        </template>
+        <paper-button raised on-tap="_addTeam" class="floating-button"><iron-icon icon="add"></iron-icon></paper-button>
+
+
+        <paper-dialog id="deleteTeam">
+            Are you sure?
+            <paper-button on-tap="_deleteTeam">delete</paper-button>
+            <paper-button dialog-dismiss>cancel</paper-button>
+        </paper-dialog>
+
+    </template>
+
+    <script>
+        class ViewTeams extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.Element){
+            static get is() { return 'view-teams'; }
+
+            static get properties() {
+                return {
+                    pronoGroupId: {
+                        type: String,
+                    },
+                    language: {
+                        value: 'nl-BE',
+                    },
+                    resources: {
+                        value() {
+                            return {
+                                'en': { 'groupname': 'Group {group}' },
+                                'nl-BE': { 'groupname': 'Groep {group}' }
+                            }
+                        }
+                    },
+                };
+            }
+
+            _editTeam(event){
+                if(this.editTeam == event.model.__data.team.$key){
+                    this.editTeam = '';
+                }
+                else{
+                    this.editTeam = event.model.__data.team.$key;
+                }
+            }
+
+            _showEditTeam(team, editTeam){
+                return team.$key == editTeam;
+            }
+
+            _deleteTeamDialog(){
+                this.$.deleteTeam.open()
+            }
+
+            _deleteTeam(){
+                this.$.deleteTeam.close();
+                console.log('delete team ', this.editTeam)
+                this.$.document.path = '/'+this.pronoGroupId+'/competition/teams/'+this.editTeam
+                this.$.document.data = null;
+                this.$.document.path = '';
+            }
+
+            _addTeam(){
+                this.$.document.data = {'name': 'new team'};
+                this.$.document.saveValue('/'+this.pronoGroupId+'/competition/teams');
+            }
+
+        }
+
+        window.customElements.define(ViewTeams.is, ViewTeams);
+
+    </script>
+
+</dom-module>

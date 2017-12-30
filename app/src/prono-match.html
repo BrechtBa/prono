@@ -9,8 +9,8 @@
 <link rel="import" href="../bower_components/polymerfire/firebase-document.html">
 
 <link rel="import" href="shared-styles.html">
-<link rel="import" href="prono-team-name.html">
-<link rel="import" href="prono-team-icon.html">
+<link rel="import" href="team-name.html">
+<link rel="import" href="team-icon.html">
 
 
 <dom-module id="prono-match">
@@ -46,17 +46,17 @@
 
         <div class="match horizontal layout center center-justified" on-tap="editScore">
             <div class="teamname left flex">
-                <prono-team-name team="{{team1}}" default="{{match.defaultteam1}}"></prono-team-name>
+                <team-name team="{{team1}}" default="{{match.defaultteam1}}"></team-name>
             </div>
             <div>
-                <prono-team-icon class="teamicon" team="{{team1}}"></prono-team-icon>
+                <team-icon class="teamicon" team="{{team1}}"></team-icon>
             </div>
             <div class="score">{{_formatScore(match.score1)}} - {{_formatScore(match.score2)}}</div>
             <div>
-                <prono-team-icon class="teamicon" team="{{team2}}"></prono-team-icon>
+                <team-icon class="teamicon" team="{{team2}}"></team-icon>
             </div>
             <div class="teamname right flex">
-                <prono-team-name team="{{team2}}" default="{{match.defaultteam2}}"></prono-team-name>
+                <team-name team="{{team2}}" default="{{match.defaultteam2}}"></team-name>
             </div>
         </div>
 
