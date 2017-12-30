@@ -1,35 +1,39 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
 
-<link rel="import" href="../../bower_components/polymer/polymer.html">
-
-<dom-module is="prono-team-name">
+<dom-module id="prono-team-name">
 	<template>
+        <style include="shared-styles"></style>
 		<style>
 			:host{
 				display: inline-block;
+				color: #000;
 			}
 		</style>
 
-		<span>{{getName(team,abr,default)}}</span>
+		<span>{{_getName(team, abr, default)}}</span>
 	
 	</template>
 	<script>
-		Polymer({
-			is: 'prono-team-name',
-			properties: {
-				team: {
-					type: 'Object',
-					value: {}
-				},
-				abr:{
-					type: 'Boolean',
-					value: false
-				},
-				default: {
-					type: 'String',
-					value: ''
-				}
-			},
-			getName: function(team,abr,def){
+        class PronoTeamName extends Polymer.Element {
+            static get is() { return 'prono-team-name'; }
+
+            static get properties() {
+                return {
+                    team: {
+                        type: Object,
+                    },
+                    abr: {
+                        type: Boolean,
+                        value: false,
+                    },
+                    default: {
+                        type: String,
+                        value: '',
+                    },
+                }
+            }
+
+            _getName(team, abr, def){
 				var name = def;
 				if(typeof team != 'undefined' && team != {}){
 					if(abr){
@@ -45,6 +49,9 @@
 				}
 				return name;
 			}
-		});
+
+        }
+
+        window.customElements.define(PronoTeamName.is, PronoTeamName);
 	</script>
 </dom-module>

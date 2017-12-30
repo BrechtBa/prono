@@ -1,7 +1,7 @@
 
-<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
 
-<dom-module is="prono-team-icon">
+<dom-module id="prono-team-icon">
 	<template>
 		<style>
 			:host{
@@ -13,21 +13,23 @@
 			}
 		</style>
 
-		<img src={{getSrc(team)}}>		
+		<img src="{{_getSrc(team)}}">
 
 	
 	</template>
 	<script>
-		Polymer({
-			is: 'prono-team-icon',
-			properties: {
-				team: {
-					type: 'Object',
-					value: {}
-				},
-			},
-			getSrc: function(team){
-				var src = 'images/flags/_blank.png';
+	    class PronoTeamIcon extends Polymer.Element {
+            static get is() { return 'prono-team-icon'; }
+
+            static get properties() {
+                return {
+                    team: {
+                        type: Object,
+                    },
+                }
+            }
+
+            _getSrc(team){
 				if(typeof team != 'undefined' && team != {}){
 					if(typeof team.iso_icon != 'undefined' && team.iso_icon != ''){
 						return 'images/flags/'+team.iso_icon+'.png';
@@ -36,8 +38,11 @@
 						return team.icon;
 					}
 				}
-				return src;
+				return 'images/flags/_blank.png';
 			}
-		});
+
+        }
+
+        window.customElements.define(PronoTeamIcon.is, PronoTeamIcon);
 	</script>
 </dom-module>
