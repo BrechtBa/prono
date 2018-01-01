@@ -1,0 +1,76 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+
+<link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
+<link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
+<link rel="import" href="../bower_components/paper-item/paper-item.html">
+
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="team-icon.html">
+
+
+
+<dom-module id="team-select">
+	<template>
+        <style include="shared-styles"></style>
+		<style>
+			:host{
+				display: inline-block;
+			}
+			team-icon{
+                width: 30px;
+                height: 30px;
+                margin-right: 5px;
+            }
+		</style>
+
+        <firebase-query id="query" app-name="prono" path="/[[pronoGroupId]]/competition/teams" data="{{queryTeams}}" order-by-key="number"></firebase-query>
+
+        <paper-dropdown-menu label="[[label]]">
+            <paper-listbox slot="dropdown-content" attr-for-selected="value" selected="{{team}}">
+                <paper-item value="0"></paper-item>
+                <template is="dom-repeat" items="{{queryTeams}}" as="item">
+                    <paper-item value="{{item.$key}}"><team-icon team="{{item}}"></team-icon>{{item.name}}</paper-item>
+                </template>
+            </paper-listbox>
+        </paper-dropdown-menu>
+	
+	</template>
+	<script>
+        class TeamSelect extends Polymer.Element {
+            static get is() { return 'team-select'; }
+
+            static get properties() {
+                return {
+                    teams: {
+                        type: Array,
+                        value: null,
+                    },
+                    team: {
+                        type: Object,
+                        notify: true,
+                    },
+                    pronoGroupId: {
+                        type: String,
+                    },
+                    label: {
+                        type: String,
+                        Value: 'Team',
+                    }
+                }
+            }
+
+            teamsList(teams){
+                console.log(teams)
+                if(teams == null){
+                    return this.queryTeams;
+                }
+                else{
+                    return teams;
+                }
+            }
+
+        }
+
+        window.customElements.define(TeamSelect.is, TeamSelect);
+	</script>
+</dom-module>
