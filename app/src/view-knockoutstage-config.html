@@ -1,0 +1,169 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/app-localize-behavior/app-localize-behavior.html">
+
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
+<link rel="import" href="../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-document.html">
+
+<link rel="import" href="../bower_components/datetime-picker/datetime-picker.html">
+
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="team-select.html">
+
+
+<dom-module id="view-knockoutstage-config">
+    <template>
+        <style include="iron-flex iron-flex-alignment"></style>
+        <style include="shared-styles"></style>
+        <style>
+            :host {
+                display: block;
+                padding: 10px;
+            }
+            h1.stage{
+                font-size: 16px;
+            }
+        </style>
+
+        <firebase-query id="query" app-name="prono" path="/[[pronoGroupId]]/competition/stages" data="{{stages}}"></firebase-query>
+        <firebase-query app-name="prono" path="/[[pronoGroupId]]/competition/matches" data="{{matches}}"></firebase-query>
+
+        <firebase-document id="document" app-name="prono" data="" ></firebase-document>
+
+
+        <template is="dom-repeat" items="{{stages}}" as="stage" filter="_notGroupstage" sort="_stagesSort">
+
+            <paper-material>
+                <h1 class="stage">{{_getStageName(stage.$key)}}</h1>
+                <template is="dom-repeat" items="{{_getStageMatches(stage)}}" as="tempmatch">
+
+                    <paper-dropdown-menu label="Match {{_plusOne(index)}}">
+                        <paper-listbox slot="dropdown-content" attr-for-selected="value" selected="[[tempmatch]]">
+                            <paper-item value=""></paper-item>
+                            <template is="dom-repeat" items="{{_getAllMatches(matches, teams, stage, index)}}" as="item">
+                                <paper-item value="{{item.$key}}" on-tap="_matchChanged">{{item.number}}</paper-item>
+                            </template>
+                        </paper-listbox>
+                    </paper-dropdown-menu>
+
+                </template>
+            </paper-material>
+        </template>
+        <paper-button raised on-tap="_addItem" class="floating-button"><iron-icon icon="add"></iron-icon></paper-button>
+
+
+        <paper-dialog id="deleteItem">
+            <p>Are you sure?</p>
+            <paper-button on-tap="_deleteItem">delete</paper-button>
+            <paper-button dialog-dismiss>cancel</paper-button>
+        </paper-dialog>
+
+    </template>
+
+    <script>
+        class ViewKnockoutstageConfig extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.Element){
+            static get is() { return 'view-knockoutstage-config'; }
+
+            static get properties() {
+                return {
+                    pronoGroupId: {
+                        type: String,
+                    },
+                    language: {
+                        value: 'nl-BE',
+                    },
+                };
+            }
+
+            _deleteItemDialog(){
+                this.$.deleteItem.open()
+            }
+
+            _deleteItem(){
+                this.$.deleteItem.close();
+                console.log('delete item ', this.editItem)
+                this.$.document.path = '/'+this.pronoGroupId+'/competition/stages/'+this.editItem
+                this.$.document.data = null;
+                this.$.document.path = '';
+            }
+
+            _addItem(){
+                console.log('add stage not implemented')
+                //this.$.document.data = {'date': 0, 'defaultteam1': 'T1', 'defaultteam2': 'T2'};
+                //this.$.document.saveValue('/'+this.pronoGroupId+'/competition/stages');
+            }
+
+
+            _plusOne(index){
+                return index+1;
+            }
+
+            _matchChanged(event){
+                item = event.model.__data.item;
+                this.$.document.path = '/'+this.pronoGroupId+'/competition/stages/'+item.stage+'/'+item.stagematch;
+                this.$.document.data = item.$key;
+            }
+
+            _getAllMatches(matches, teams, stage, index){
+                var newmatches = []
+                for(var i=0; i<matches.length; i++){
+                    newmatches.push(matches[i])
+                    newmatches[i].stage = stage.$key;
+                    newmatches[i].stagematch = index;
+                }
+                return JSON.parse(JSON.stringify(newmatches));
+            }
+
+            _getStageMatches(stage){
+                var matches = [];
+                for(var i=0; i<parseInt(stage.$key/2); i++){
+                    try{
+                        matches.push(stage[i])
+                    }
+                    catch(e){
+                        matches.push('')
+                    }
+                }
+                return matches;
+            }
+            _getStageName(stage){
+                if(stage == 'groupstage'){
+                    return 'Groepsfase';
+                }
+                else if(stage == 2){
+                    return 'Finale';
+                }
+                else if(stage == 4){
+                    return 'Halve Finale';
+                }
+                else if(stage == 8){
+                    return 'Kwartfinale';
+                }
+                else if(stage == 16){
+                    return '8e Finale';
+                }
+
+            }
+
+            _notGroupstage(stage){
+                return stage.$key != 'groupstage';
+            }
+
+            _stagesSort(a,b){
+                return parseInt(a.$key)-parseInt(b.$key);
+            }
+        }
+
+        window.customElements.define(ViewKnockoutstageConfig.is, ViewKnockoutstageConfig);
+
+    </script>
+
+</dom-module>
