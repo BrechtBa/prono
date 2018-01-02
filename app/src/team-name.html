@@ -10,6 +10,9 @@
 			}
 		</style>
 
+        <template is="dom-if" if="{{teamId}}">
+            <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/teams/[[teamId]]" data="{{team}}"></firebase-document>
+        </template>
 		<span>{{_getName(team, abr, default)}}</span>
 	
 	</template>
@@ -19,6 +22,12 @@
 
             static get properties() {
                 return {
+                    pronoGroupId: {
+                        type: String,
+                    },
+                    teamId: {
+                        type: String,
+                    },
                     team: {
                         type: Object,
                     },

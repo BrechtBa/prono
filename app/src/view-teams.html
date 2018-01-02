@@ -43,7 +43,7 @@
                         <div class="name">{{team.name}}</div>
                         <div class="abr">{{team.abr}}</div>
                     </div>
-                    <team-icon class="teamicon" team="{{team}}"></team-icon>
+                    <team-icon class="teamicon" team="[[team]]"></team-icon>
                 </div>
                 <template is="dom-if" if="{{_showEditItem(team, editItem)}}">
                     <paper-input value="{{team.name}}" label="Name"></paper-input>

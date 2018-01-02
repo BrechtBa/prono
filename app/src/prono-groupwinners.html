@@ -1,0 +1,120 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/app-localize-behavior/app-localize-behavior.html">
+
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+
+<link rel="import" href="../bower_components/polymerfire/firebase-query.html">
+
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="team-name.html">
+<link rel="import" href="team-icon.html">
+
+
+<dom-module id="prono-groupwinners">
+    <template>
+        <style include="iron-flex iron-flex-alignment"></style>
+        <style include="shared-styles"></style>
+        <style>
+            :host{
+                display: block;
+                width: 100%;
+            }
+            .teamicon{
+				width: 30px;
+				height: 30px;
+			}
+			.teamname{
+				padding-left: 20px;
+			}
+			.points{
+				width: 70px;
+			}
+			h1{
+				margin: 0;
+				font-size: 14px;
+			}
+        </style>
+
+        <!--<firebase-query id="query" app-name="prono" path="/[[pronoGroupId]]/competition/stages/groupstage/points" data="{{points}}"></firebase-query>-->
+
+        <h1>{{localize('Ranking')}}</h1>
+        <div on-tap="editPoints">
+            <template is="dom-repeat" items="{{group.teams}}" as="team" sort="_sortByPoints">
+                <div class="horizontal layout center">
+                    <team-icon class="teamicon" prono-group-id="[[pronoGroupId]]" team-id="[[team]]"></team-icon>
+                    <team-name class="flex teamname" prono-group-id="[[pronoGroupId]]" team-id="[[team]]" default=""></team-name>
+                    <div class="points">{{_getRoundedPoints(group, team)}}</div>
+                </div>
+            </template>
+        </div>
+
+
+    </template>
+
+    <script>
+        class PronoGroupwinners extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.Element){
+            static get is() { return 'prono-groupwinners'; }
+
+            static get properties() {
+                return {
+                    pronoGroupId: {
+                        type: String,
+                    },
+                    language: {
+                        value: 'nl-BE',
+                    },
+                    resources: {
+                        value() {
+                            return {
+                                'en': { 'ranking': 'Ranking' },
+                                'nl-BE': { 'ranking': 'Rangschikking' }
+                            }
+                        }
+                    },
+                };
+            }
+
+            _sortByPoints(a, b){
+                try{
+                    pa = this._getPoints(this.group, a)
+                    pb = this._getPoints(this.group, b)
+
+                    return pb-pa;
+                }
+                catch(e){
+                    return 0;
+                }
+            }
+
+            _getPoints(group, team){
+                var points = 0
+                if(typeof group.points != 'undefined' && typeof group.points[team] != 'undefined'){
+                    points = group.points[team];
+                }
+				return parseFloat(points);
+			}
+
+            _getRoundedPoints(group, team){
+				return Math.floor(this._getPoints(group, team));
+			}
+
+            _toArray(obj){
+                var arr = [];
+                for(var key in obj){
+                    arr.push({$key: key, $val: obj[key]})
+                }
+                return arr;
+            }
+
+            _plusOne(index){
+                return index+1;
+            }
+
+        }
+
+        window.customElements.define(PronoGroupwinners.is, PronoGroupwinners);
+    </script>
+
+</dom-module>

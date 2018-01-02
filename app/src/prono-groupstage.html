@@ -9,8 +9,8 @@
 <link rel="import" href="../bower_components/polymerfire/firebase-query.html">
 
 <link rel="import" href="shared-styles.html">
-<link rel="import" href="prono-match.html">s
-
+<link rel="import" href="prono-match.html">
+<link rel="import" href="prono-groupwinners.html">
 
 <dom-module id="prono-groupstage">
     <template>
@@ -67,9 +67,8 @@
                             <prono-match prono-group-id="[[pronoGroupId]]" match-id="{{match}}" groupstage></prono-match>
                         </template>
                     </div>
-                    <!--
-                    <prono-groupwinners token="{{token}}" status="{{group.status}}" on-status-changed="groupwinnerStatusChanged" permission="{{permission}}" database-prepared="{{databasePrepared}}" teams-model="{{teamsModel}}" matches-model="{{matchesModel}}" group="{{group}}" user="{{user}}"></prono-groupwinners>
-                    -->
+
+                    <prono-groupwinners prono-group-id="[[pronoGroupId]]" group="{{group}}"></prono-groupwinners>
 
                 </paper-material>
             </template>

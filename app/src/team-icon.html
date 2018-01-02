@@ -12,7 +12,9 @@
 				height: 100%;
 			}
 		</style>
-
+        <template is="dom-if" if="{{teamId}}">
+            <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/teams/[[teamId]]" data="{{team}}"></firebase-document>
+        </template>
 		<img src="{{_getSrc(team.iso_icon, team.icon)}}">
 
 	
@@ -23,6 +25,12 @@
 
             static get properties() {
                 return {
+                    pronoGroupId: {
+                        type: String,
+                    },
+                    teamId: {
+                        type: String
+                    },
                     team: {
                         type: Object,
                     },
