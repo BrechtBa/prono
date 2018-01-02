@@ -106,6 +106,7 @@
             }
 
             _addItem(){
+                this.$.document.path = null;
                 this.$.document.data = {'name': 'new team'};
                 this.$.document.saveValue('/'+this.pronoGroupId+'/competition/teams');
             }

@@ -60,6 +60,10 @@
                 --paper-icon-button-ink-color: white;
             }
 
+            app-header-layout iron-pages {
+                margin-bottom: 100px;
+            }
+
             .drawer-list {
                 margin: 0 20px;
             }
@@ -148,7 +152,7 @@
                     <hr>
                     <a name="teams" href="[[rootPath]]teams">Teams</a>
                     <a name="matches" href="[[rootPath]]matches">Matches</a>
-                    <a name="groupstage-config" href="[[rootPath]]groupstage-config">Groupstage stage</a>
+                    <a name="groupstage-config" href="[[rootPath]]groupstage-config">Groupstage</a>
                     <a name="knockoutstage-config" href="[[rootPath]]knockoutstage-config">Knockout stage</a>
                     <hr>
                     <a name="signout" href="#" on-tap="signOut">Sign out</a>
@@ -170,7 +174,7 @@
                 </app-header>
 
                 <iron-pages selected="[[page]]" attr-for-selected="name" fallback-selection="view404" role="main">
-                    <view-ranking name="ranking" prono-group-id="[[pronoGroupId]]" user="[[authUser]]"></view-ranking>
+                    <view-ranking name="ranking" prono-group-id="[[pronoGroupId]]" prono-user-id="[[authUser.uid]]"></view-ranking>
                     <view-results name="results" prono-group-id="[[pronoGroupId]]"></view-results>
                     <view-teams name="teams" prono-group-id="[[pronoGroupId]]"></view-teams>
                     <view-matches name="matches" prono-group-id="[[pronoGroupId]]"></view-matches>

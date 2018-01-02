@@ -1,4 +1,5 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/app-localize-behavior/app-localize-behavior.html">
 
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 
@@ -48,12 +49,12 @@
 
         <firebase-query id="query" app-name="prono" path="/[[pronoGroupId]]/users" data="{{users}}"></firebase-query>
 
-        <template is="dom-repeat" items="{{users}}" as="userData" sort="_sortUsers">
-			<paper-material elevation="2" class$="horizontal layout center {{_userClass(userData.$key, user)}}" on-tap="showPointDetails">
+        <template is="dom-repeat" items="{{users}}" as="user" sort="_sortUsers">
+			<paper-material elevation="2" class$="horizontal layout center {{_userClass(user.$key, pronoUserId)}}" on-tap="pointDetailsDialog">
 				<div class="ranking">{{_ranking(index)}}</div>
 				<!--<avatar-image class="avatar" user-profile="{{getUser(points.user,usersModel)}}"></avatar-image>-->
-				<div class="flex name">{{userData.displayName}}</div>
-				<div class="points">{{_totalPoints(userData.points)}}</div>
+				<div class="flex name">{{user.displayName}}</div>
+				<div class="points">{{_totalPoints(user.points)}}</div>
 			</paper-material>
 		</template>
 
@@ -61,50 +62,22 @@
 			<div class="vertical layout">
 				<template is="dom-repeat" items="{{pointsDetail}}" as="points" filter="_notTotal">
 					<div class="horizontal layout">
-						<div class="flex">{{trans(points.prono)}}:</div>
-						<div class="points">{{points.points}}</div>
+						<div class="flex">{{localize(points.$key)}}:</div>
+						<div class="points">{{points.$val}}</div>
 					</div>
 				</template>
 			</div>
 			<hr>
 			<div class="horizontal layout">
-				<div class="flex total">{{trans('Total')}}:</div>
-				<div class="points">{{total}}</div>
+				<div class="flex total">{{localize('total')}}:</div>
+				<div class="points">{{pointsDetailTotal.$val}}</div>
 			</div>
 		</paper-dialog>
 
-
-        <div class="card">
-            <div class="circle">1</div>
-            <h1>Ranking</h1>
-            <p>Ut labores minimum atomorum pro. Laudem tibique ut has.</p>
-            <p>Lorem ipsum dolor sit amet, per in nusquam nominavi periculis, sit elit oportere ea.Lorem ipsum dolor sit amet, per in nusquam nominavi periculis, sit elit oportere ea.Cu mei vide viris gloriatur, at populo eripuit sit.</p>
-        </div>
-
-        <div class="card">
-            <div class="circle">1</div>
-            <h1>Ranking</h1>
-            <p>Ut labores minimum atomorum pro. Laudem tibique ut has.</p>
-            <p>Lorem ipsum dolor sit amet, per in nusquam nominavi periculis, sit elit oportere ea.Lorem ipsum dolor sit amet, per in nusquam nominavi periculis, sit elit oportere ea.Cu mei vide viris gloriatur, at populo eripuit sit.</p>
-        </div>
-
-        <div class="card">
-            <div class="circle">1</div>
-            <h1>Ranking</h1>
-            <p>Ut labores minimum atomorum pro. Laudem tibique ut has.</p>
-            <p>Lorem ipsum dolor sit amet, per in nusquam nominavi periculis, sit elit oportere ea.Lorem ipsum dolor sit amet, per in nusquam nominavi periculis, sit elit oportere ea.Cu mei vide viris gloriatur, at populo eripuit sit.</p>
-        </div>
-
-        <div class="card">
-            <div class="circle">1</div>
-            <h1>Ranking</h1>
-            <p>Ut labores minimum atomorum pro. Laudem tibique ut has.</p>
-            <p>Lorem ipsum dolor sit amet, per in nusquam nominavi periculis, sit elit oportere ea.Lorem ipsum dolor sit amet, per in nusquam nominavi periculis, sit elit oportere ea.Cu mei vide viris gloriatur, at populo eripuit sit.</p>
-        </div>
     </template>
 
     <script>
-        class ViewRanking extends Polymer.Element {
+        class ViewRanking extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.Element){
             static get is() { return 'view-ranking'; }
 
             static get properties() {
@@ -112,10 +85,51 @@
                     pronoGroupId: {
                         type: String,
                     },
-                    user: {
+                    pronoUserId: {
                         type: Object,
                     },
+                    language: {
+                        value: 'nl-BE',
+                    },
+                    resources: {
+                        value() {
+                            return {
+                                'en': {
+                                    'groupstage': 'Group stage',
+                                    'knockoutstage': 'Knockout stage',
+                                    'groupstagewinners': 'Group stage winners',
+                                    'knockoutstageteams': 'Knockout stage teams',
+                                    'totalgoals': 'Total goals',
+                                    'hometeamresult': 'Home team result',
+                                    'total': 'Total',
+                                },
+                                'nl-BE': {
+                                    'groupstage': 'Groepsfase',
+                                    'knockoutstage': 'Knockout fase',
+                                    'groupstagewinners': 'Groepsfase winnaars',
+                                    'knockoutstageteams': 'Knockout fase teams',
+                                    'totalgoals': 'Totaal aantal goals',
+                                    'hometeamresult': 'Thuisploeg resultaat',
+                                    'total': 'Totaal',
+                                }
+                            }
+                        }
+                    },
                 }
+            }
+
+            pointDetailsDialog(event){
+                var pointsDetail = []
+                for(key in event.model.__data.user.points){
+                    pointsDetail.push({$key: key, $val: event.model.__data.user.points[key]});
+                }
+                this.pointsDetail = pointsDetail;
+
+                this.pointsDetailTotal = {$key: 'total', $val: this._totalPoints(event.model.__data.user.points)};
+                this.$.pointDetails.open();
+            }
+            _notTotal(item){
+                return item.$key != 'total';
             }
 
             _ranking(index){
@@ -130,10 +144,10 @@
 			    return total;
 			}
 
-            _userClass(id, user){
+            _userClass(id, uid){
 				var cl = '';
 				try{
-					if(user.uid == id){
+					if(uid == id){
 						cl = 'me';
 					}
 				}

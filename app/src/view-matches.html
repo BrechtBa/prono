@@ -130,7 +130,8 @@
             }
 
             _addItem(){
-                this.$.document.data = {'date': 0, 'defaultteam1': 'T1', 'defaultteam2': 'T2'};
+                this.$.document.path = null;
+                this.$.document.data = {'date': 1514761200000, 'defaultteam1': 'T1', 'defaultteam2': 'T2'};
                 this.$.document.saveValue('/'+this.pronoGroupId+'/competition/matches');
             }
 

@@ -41,7 +41,10 @@
         <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/matches/[[matchId]]" data="{{match}}"></firebase-document>
         <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/teams/[[match.team1]]" data="{{team1}}"></firebase-document>
         <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/teams/[[match.team2]]" data="{{team2}}"></firebase-document>
-        <firebase-document app-name="prono" path="/[[pronoGroupId]]/userpronos/[[authUser.uid]]/matches/[[matchId]]" data="{{pronoMatch}}"></firebase-document>
+
+        <template is="dom-if" if="{{_hasValue(pronoUserId)}}">
+            <firebase-document app-name="prono" path="/[[pronoGroupId]]/userpronos/[[pronoUserId]]/matches/[[matchId]]" data="{{prono}}"></firebase-document>
+        </template>
 
 
         <div class="match horizontal layout center center-justified" on-tap="editScore">
@@ -51,7 +54,14 @@
             <div>
                 <team-icon class="teamicon" team="{{team1}}"></team-icon>
             </div>
-            <div class="score">{{_formatScore(match.score1)}} - {{_formatScore(match.score2)}}</div>
+            <div class="score">
+                <template is="dom-if" if="{{_hasValue(pronoUserId)}}">
+                    {{_formatScore(pronoMatch.score1)}} - {{_formatScore(pronoMatch.score2)}}
+                </template>
+                <template is="dom-if" if="{{!_hasValue(pronoUserId)}}">
+                    {{_formatScore(match.score1)}} - {{_formatScore(match.score2)}}
+                </template>
+            </div>
             <div>
                 <team-icon class="teamicon" team="{{team2}}"></team-icon>
             </div>
@@ -78,8 +88,9 @@
                     matchId: {
                         type: String,
                     },
-                    authUser: {
-                        type: Object,
+                    pronoUserId: {
+                        type: String,
+                        value: '',
                     },
                     groupstage: {
                         type: Boolean,
@@ -112,6 +123,10 @@
                 else{
                     return 'disabled';
                 }
+            }
+
+            _hasValue(str){
+                return str != ''
             }
 
         }

@@ -23,12 +23,12 @@
             }
 		</style>
 
-        <firebase-query id="query" app-name="prono" path="/[[pronoGroupId]]/competition/teams" data="{{queryTeams}}" order-by-key="number"></firebase-query>
+        <firebase-query id="query" app-name="prono" path="/[[pronoGroupId]]/competition/teams" data="{{queryTeams}}" order-by-key="name"></firebase-query>
 
         <paper-dropdown-menu label="[[label]]">
             <paper-listbox slot="dropdown-content" attr-for-selected="value" selected="{{team}}">
                 <paper-item value="0"></paper-item>
-                <template is="dom-repeat" items="{{queryTeams}}" as="item">
+                <template is="dom-repeat" items="{{queryTeams}}" as="item" sort="_orderByName">
                     <paper-item value="{{item.$key}}"><team-icon team="{{item}}"></team-icon>{{item.name}}</paper-item>
                 </template>
             </paper-listbox>
@@ -66,6 +66,18 @@
                 }
                 else{
                     return teams;
+                }
+            }
+
+            _orderByName(a, b){
+                if(a.name > b.name){
+                    return 1;
+                }
+                else if(a.name < b.name){
+                    return -1;
+                }
+                else{
+                    return 0;
                 }
             }
 
