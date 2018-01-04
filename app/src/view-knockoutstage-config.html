@@ -107,7 +107,7 @@
             }
 
             _matchChanged(event){
-                item = event.model.__data.item;
+                var item = event.model.__data.item;
                 this.$.document.path = '/'+this.pronoGroupId+'/competition/stages/'+item.stage+'/'+item.stagematch;
                 this.$.document.data = item.$key;
             }

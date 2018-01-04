@@ -1,0 +1,245 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/app-localize-behavior/app-localize-behavior.html">
+
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-material/paper-material.html">
+
+<link rel="import" href="../bower_components/polymerfire/firebase-query.html">
+
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="prono-match.html">
+
+<dom-module id="prono-knockoutstage">
+    <template>
+        <style include="iron-flex iron-flex-alignment"></style>
+        <style include="shared-styles"></style>
+        <style>
+            :host{
+                display: block;
+                width: 100%;
+            }
+            paper-material{
+                margin: 5px;
+                cursor: pointer;
+                padding: 1px;
+                background: var(--background-secondary-color);
+                color: var(--primary-text-color);
+                border-radius: 2px;
+            }
+            .disabled .match::after{
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: rgba(1,1,1,0.3);
+                border-radius: 2px;
+            }
+            .stage{
+				transition: width 0.5s;
+				-webkit-transition: width 0.5s;
+			}
+			.stage.expanded{
+				@apply(--layout-flex-5);
+			}
+			.stage.collapsed{
+				@apply(--layout-flex-2);
+			}
+			.spacer{
+				height: 80px;
+			}
+			.stage-4 .spacer{
+				height: 50px;
+			}
+			.stage-4.left .spacer.before{
+			    height: 0px;
+			}
+			.stage-4.right .spacer.after{
+			    height: 0px;
+			}
+        </style>
+
+        <firebase-query id="query" app-name="prono" path="/[[pronoGroupId]]/competition/stages" data="{{stages}}"></firebase-query>
+
+        <div class="horizontal layout center-justified">
+			<div class="flex horizontal layout center">
+				<template is="dom-repeat" items="{{_getStages(stages)}}" as="stage" filter="_notGroupstage">
+					<div class$="stage {{_stageClass(stage)}} {{_collapsedClass(stage, expandedStage)}} {{_disabledClass(stage, currentStage, user)}} {{_leftRightClass(stages, index)}} vertical-layout ">
+						<template is="dom-repeat" items="{{stage}}" as="match">
+
+							<template is="dom-if" if="{{_addSpacerBefore(stage, index)}}">
+								<div class="spacer before"></div>
+							</template>
+
+							<paper-material elevation="2" class="match vertical layout" on-tap="editScore">
+                                <prono-match prono-group-id="{{pronoGroupId}}" match-id="{{match}}" stage="{{stage.$key}}"></prono-match>
+                            </paper-material>
+
+							<template is="dom-if" if="{{_addSpacerAfter(stage, index)}}">
+								<div class="spacer after"></div>
+							</template>
+
+
+						</template>
+					</div>
+				</template>
+			</div>
+		</div>
+
+
+    </template>
+
+    <script>
+        class PronoKnockoutstage extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.Element){
+            static get is() { return 'prono-knockoutstage'; }
+
+            static get properties() {
+                return {
+                    pronoGroupId: {
+                        type: String,
+                    },
+                    language: {
+                        value: 'nl-BE',
+                    },
+                    resources: {
+                        value() {
+                            return {
+                                'en': {
+                                    'groupname': 'Group {group}'
+                                },
+                                'nl-BE': {
+                                    'groupname': 'Groep {group}'
+                                }
+                            }
+                        }
+                    },
+                };
+            }
+
+            _stageClass(stage){
+				return 'stage-'+stage.$key;
+			}
+
+            _isCollapsed(stage, expandedStage){
+				return (stage.id != expandedStage);
+			}
+
+			_collapsedClass(stage, expandedStage){
+			    if(this._isCollapsed(stage, expandedStage) && this._isSmall()){
+					return 'collapsed';
+				}
+				else{
+					return 'expanded';
+				}
+			}
+
+			_leftRightClass(stages, index){
+                if(index > stages.length/2){
+                    return 'right';
+                }
+                else{
+                    return 'left';
+                }
+			}
+
+            _addSpacerAfter(stage, matchIndex){
+				return ( (stage.$key == '8' && matchIndex == 0) || (stage.$key == '4' && matchIndex == 0) );
+			}
+
+			_addSpacerBefore(stage, matchIndex){
+				return ( (stage.$key == '4' && matchIndex==0) );
+			}
+
+            _sortMatches(a, b) {
+                return parseInt(a.date) - parseInt(b.date);
+            }
+
+            _disabledClass(stage, currentStage, user){
+                if(currentStage==stage.id || currentStage==-1 || typeof user.id == 'undefined'){
+					return '';
+				}
+				else{
+					return 'disabled';
+				}
+            }
+
+            _notGroupstage(stage){
+                return stage.$key != 'groupstage';
+            }
+
+            _isTiny(){
+				var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+				return (w<500);
+			}
+			_isSmall(){
+				var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+				return (w<1200);
+			}
+			_isLow(){
+				var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+				return (h<400);
+			}
+
+			_getStages(stages){
+				var tempstages = [];
+				var newstages = [];
+
+				// filter knockoutstages
+				var tempstages = stages.filter(function(item){
+					return item.$key != 'groupstage';
+				});
+
+
+				if(tempstages.length > 0){
+					// sort
+					tempstages.sort(function(a,b){
+						return b.length - a.length
+					});
+
+                    /*
+					// get the exapanded stage       FIXME
+					tempstages.forEach(function(item){
+						if(item.numberofteams < this.currentStage){
+							this.expandedStage = tempstages[0];
+						}
+						else{
+							this.expandedStage = this.currentStage;
+						}
+					});
+					this.expandedStage = 1;
+                    */
+
+					//left side
+					tempstages.forEach(function(stage){
+						if(stage.length > 1){
+						    var newstage = stage.slice(0, stage.length/2)
+						    newstage.$key = stage.$key
+							newstages.push( newstage );
+						}
+					});
+
+					//final
+					var stage = tempstages[tempstages.length-1];
+					newstages.push(stage)
+
+					//right side
+					tempstages.reverse().forEach(function(stage){
+						if(stage.length > 1){
+						    var newstage = stage.slice(stage.length/2, stage.length)
+						    newstage.$key = stage.$key
+							newstages.push( newstage );
+						}
+					});
+				}
+				return newstages;
+            }
+        }
+
+        window.customElements.define(PronoKnockoutstage.is, PronoKnockoutstage);
+    </script>
+
+</dom-module>
