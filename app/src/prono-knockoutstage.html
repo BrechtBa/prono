@@ -22,7 +22,10 @@
                 width: 100%;
             }
             paper-material{
-                margin: 5px;
+                margin-top: 5px;
+                margin-bottom: 5px;
+                margin-left: 2px;
+                margin-right: 2px;
                 cursor: pointer;
                 padding: 1px;
                 background: var(--background-secondary-color);
@@ -30,14 +33,14 @@
                 border-radius: 2px;
             }
             .disabled .match::after{
-                content: "";
+                /*content: "";
                 position: absolute;
                 top: 0;
                 left: 0;
                 right: 0;
                 bottom: 0;
                 background-color: rgba(1,1,1,0.3);
-                border-radius: 2px;
+                border-radius: 2px;*/
             }
             .stage{
 				transition: width 0.5s;
@@ -48,6 +51,7 @@
 			}
 			.stage.collapsed{
 				@apply(--layout-flex-2);
+				overflow-x: hidden;
 			}
 			.spacer{
 				height: 80px;
@@ -64,19 +68,20 @@
         </style>
 
         <firebase-query id="query" app-name="prono" path="/[[pronoGroupId]]/competition/stages" data="{{stages}}"></firebase-query>
+        <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/currentstage" data="{{currentStage}}"></firebase-document>
 
         <div class="horizontal layout center-justified">
 			<div class="flex horizontal layout center">
-				<template is="dom-repeat" items="{{_getStages(stages)}}" as="stage" filter="_notGroupstage">
-					<div class$="stage {{_stageClass(stage)}} {{_collapsedClass(stage, expandedStage)}} {{_disabledClass(stage, currentStage, user)}} {{_leftRightClass(stages, index)}} vertical-layout ">
+				<template is="dom-repeat" items="{{_getStages(stages, currentStage)}}" as="stage" filter="_notGroupstage">
+					<div class$="stage {{_stageClass(stage)}} {{_collapsedClass(stage, expandedStage)}} {{_disabledClass(stage, currentStage, pronoUserId)}} {{_leftRightClass(stages, index)}} vertical-layout" on-tap="_expandStage">
 						<template is="dom-repeat" items="{{stage}}" as="match">
 
 							<template is="dom-if" if="{{_addSpacerBefore(stage, index)}}">
 								<div class="spacer before"></div>
 							</template>
 
-							<paper-material elevation="2" class="match vertical layout" on-tap="editScore">
-                                <prono-match prono-group-id="{{pronoGroupId}}" match-id="{{match}}" stage="{{stage.$key}}"></prono-match>
+							<paper-material elevation="2" class="match vertical layout">
+                                <prono-match prono-group-id="{{pronoGroupId}}" match-id="{{match}}" stage="{{stage.$key}}" collapsed="{{_isCollapsed(stage, expandedStage)}}" abr-team-name="{{_isSmall()}}" hide-team-name="{{_hideTeamName(stage, expandedStage)}}"></prono-match>
                             </paper-material>
 
 							<template is="dom-if" if="{{_addSpacerAfter(stage, index)}}">
@@ -102,6 +107,13 @@
                     pronoGroupId: {
                         type: String,
                     },
+                    pronoUserId: {
+                        type: String,
+                        value: '-1'
+                    },
+                    permission: {
+                        type: String,
+                    },
                     language: {
                         value: 'nl-BE',
                     },
@@ -125,11 +137,15 @@
 			}
 
             _isCollapsed(stage, expandedStage){
-				return (stage.id != expandedStage);
+				return (parseInt(stage.$key) != expandedStage && this._isSmall());
+			}
+
+            _hideTeamName(stage, expandedStage){
+				return (this._isCollapsed(stage, expandedStage) && this._isTiny());
 			}
 
 			_collapsedClass(stage, expandedStage){
-			    if(this._isCollapsed(stage, expandedStage) && this._isSmall()){
+			    if(this._isCollapsed(stage, expandedStage)){
 					return 'collapsed';
 				}
 				else{
@@ -159,7 +175,7 @@
             }
 
             _disabledClass(stage, currentStage, user){
-                if(currentStage==stage.id || currentStage==-1 || typeof user.id == 'undefined'){
+                if(currentStage==stage.$key || currentStage==-1 || typeof pronoUserId == '-1'){
 					return '';
 				}
 				else{
@@ -184,7 +200,11 @@
 				return (h<400);
 			}
 
-			_getStages(stages){
+            _expandStage(event){
+				this.expandedStage = parseInt(event.model.__data.stage.$key);
+			}
+
+			_getStages(stages, currentStage){
 				var tempstages = [];
 				var newstages = [];
 
@@ -200,18 +220,19 @@
 						return b.length - a.length
 					});
 
-                    /*
-					// get the exapanded stage       FIXME
-					tempstages.forEach(function(item){
-						if(item.numberofteams < this.currentStage){
-							this.expandedStage = tempstages[0];
-						}
-						else{
-							this.expandedStage = this.currentStage;
-						}
-					});
-					this.expandedStage = 1;
-                    */
+					// get the exapanded stage
+					if(currentStage == 0){
+                        this.expandedStage = parseInt(tempstages[0].$key);
+					}
+					else if(currentStage == 1){
+					    this.expandedStage = parseInt(tempstages[tempstages.length-1].$key);
+					}
+					else if(currentStage == {}){
+                        this.expandedStage = parseInt(tempstages[0].$key);
+					}
+					else{
+                        this.expandedStage = parseInt(currentStage);
+					}
 
 					//left side
 					tempstages.forEach(function(stage){

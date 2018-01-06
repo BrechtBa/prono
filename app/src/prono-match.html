@@ -23,12 +23,12 @@
                 display: block;
                 width: 100%;
             }
-            .groupstage{
+            .horizontal{
                 @apply --layout-horizontal;
                 @apply --layout-center;
                 @apply --layout-center-justified;
             }
-            .knockoutstage{
+            .vertical{
                 @apply --layout-vertical;
                 @apply --layout-center;
                 @apply --layout-center-justified;
@@ -36,20 +36,27 @@
             .score{
                 width: 60px;
                 text-align: center;
+                @apply --layout-horizontal;
+                @apply --layout-center;
+                @apply --layout-center-justified;
             }
             .teamicon{
-                width: 30px;
-                height: 30px;
+                max-width: 30px;
+                max-height: 30px;
             }
-            .groupstage .teamname{
+            .horizontal .teamname{
                 @apply --layout-flex;
             }
-            .groupstage .teamname.left{
+            .horizontal .teamname.left{
                 text-align: left;
             }
-            .groupstage .teamname.right{
+            .horizontal .teamname.right{
                 text-align: right;
             }
+			.collapsed .score{
+			    width: 30px;
+			    min-height: 80px;
+			}
         </style>
 
         <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/matches/[[matchId]]" data="{{match}}"></firebase-document>
@@ -61,9 +68,9 @@
         </template>
 
 
-        <div class$="{{_stageClass(stage)}}" on-tap="editScore">
-            <div class="teamname left">
-                <team-name team="{{team1}}" default="{{match.defaultteam1}}"></team-name>
+        <div class$="{{_layoutClass(stage)}} {{_collapsedClass(collapsed)}}" on-tap="editScore">
+            <div class$="teamname left {{_hiddenClass(hideTeamName)}}">
+                <team-name team="{{team1}}" default="{{match.defaultteam1}}" abr="{{abrTeamName}}"></team-name>
             </div>
             <div class="teamicon">
                 <team-icon team="{{team1}}"></team-icon>
@@ -79,8 +86,8 @@
             <div  class="teamicon">
                 <team-icon team="{{team2}}"></team-icon>
             </div>
-            <div class="teamname right">
-                <team-name team="{{team2}}" default="{{match.defaultteam2}}"></team-name>
+            <div class$="teamname right {{_hiddenClass(hideTeamName)}}">
+                <team-name team="{{team2}}" default="{{match.defaultteam2}}" abr="{{abrTeamName}}"></team-name>
             </div>
         </div>
 
@@ -105,6 +112,18 @@
                     stage: {
                         type: String,
                     },
+                    collapsed: {
+                        type: Boolean,
+                        value: false,
+                    },
+                    abrTeamName: {
+                        type: Boolean,
+                        value: false,
+                    },
+                    hideTeamName: {
+                        type: Boolean,
+                        value: false,
+                    },
                     language: {
                         value: 'nl-BE',
                     },
@@ -119,19 +138,15 @@
                 };
             }
 
-            _formatScore(score){
-                if(score>-1){
-                    return score;
+            editScore(event){
+                if(!this.collapsed){
+                    console.log('show the edit score dialog')
                 }
             }
 
-            _disabledClass(currentStage,user){
-                return '';
-                if(currentStage==0 || currentStage==-1 || typeof user.id == 'undefined'){
-                    return '';
-                }
-                else{
-                    return 'disabled';
+            _formatScore(score){
+                if(score>-1){
+                    return score;
                 }
             }
 
@@ -139,12 +154,23 @@
                 return str != ''
             }
 
-            _stageClass(stage){
+            _layoutClass(stage){
                 if(stage == 'groupstage'){
-                    return 'groupstage'
+                    return 'horizontal'
                 }
                 else{
-                    return 'knockoutstage'
+                    return 'vertical'
+                }
+            }
+
+            _collapsedClass(collapsed){
+                if(collapsed){
+                    return 'collapsed';
+                }
+            }
+            _hiddenClass(bool){
+                if(bool){
+                    return 'hidden';
                 }
             }
         }

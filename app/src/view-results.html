@@ -17,21 +17,47 @@
                 display: block;
                 padding: 10px;
             }
+            h2 {
+                color: var(--app-primary-color);
+            }
         </style>
 
-        <prono-groupstage prono-group-id="[[pronoGroupId]]"></prono-groupstage>
-        <prono-knockoutstage prono-group-id="[[pronoGroupId]]"></prono-knockoutstage>
+        <h2>{{localize('groupstage')}}</h2>
+        <prono-groupstage prono-group-id="[[pronoGroupId]]" permission="[[permission]]"></prono-groupstage>
+
+        <h2>{{localize('knockoutstage')}}</h2>
+        <prono-knockoutstage prono-group-id="[[pronoGroupId]]" permission="[[permission]]"></prono-knockoutstage>
 
     </template>
 
     <script>
-        class ViewResults extends Polymer.Element {
+        class ViewResults extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.Element){
             static get is() { return 'view-results'; }
 
             static get properties() {
                 return {
                     pronoGroupId: {
                         type: String,
+                    },
+                    permission: {
+                        type: String,
+                    },
+                    language: {
+                        value: 'nl-BE',
+                    },
+                    resources: {
+                        value() {
+                            return {
+                                'en': {
+                                    'groupstage': 'Group stage',
+                                    'knockoutstage': 'Group stage',
+                                },
+                                'nl-BE': {
+                                    'groupstage': 'Groepsfase',
+                                    'knockoutstage': 'Eliminatie fase',
+                                }
+                            }
+                        }
                     },
                 };
             }

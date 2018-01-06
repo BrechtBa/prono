@@ -43,8 +43,7 @@
                 background-color: rgba(1,1,1,0.3);
                 border-radius: 2px;
             }
-            .group h1{
-                font-size: 16px;
+            .group h3{
                 margin-top: 0px;
             }
             prono-groupwinners{
@@ -61,7 +60,7 @@
             
             <template is="dom-repeat" items="{{groups}}" as="group">
                 <paper-material elevation="2" class="group vertical layout">
-                    <h1>{{localize('groupname', 'group', group.$key)}}</h1>
+                    <h3>{{localize('groupname', 'group', group.$key)}}</h3>
                     <div class="matches">    
                         <template is="dom-repeat" items="{{group.matches}}" as="match" sort="_sortMatches">
                             <prono-match prono-group-id="[[pronoGroupId]]" match-id="{{match}}" stage="groupstage"></prono-match>

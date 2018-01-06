@@ -1,0 +1,49 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/app-localize-behavior/app-localize-behavior.html">
+
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="prono-groupstage.html">
+<link rel="import" href="prono-knockoutstage.html">
+
+<dom-module id="view-prono">
+    <template>
+
+        <style include="iron-flex iron-flex-alignment"></style>
+        <style include="shared-styles"></style>
+        <style include="shared-styles">
+            :host {
+                display: block;
+                padding: 10px;
+            }
+        </style>
+
+        <prono-groupstage prono-group-id="[[pronoGroupId]]" prono-user-id="[[pronoUserId]]" permission="[[permission]]"></prono-groupstage>
+        <prono-knockoutstage prono-group-id="[[pronoGroupId]]" prono-user-id="[[pronoUserId]]" permission="[[permission]]"></prono-knockoutstage>
+
+    </template>
+
+    <script>
+        class ViewProno extends Polymer.Element {
+            static get is() { return 'view-prono'; }
+
+            static get properties() {
+                return {
+                    pronoGroupId: {
+                        type: String,
+                    },
+                    pronoUserId: {
+                        type: String,
+                    },
+                    permission: {
+                        type: String,
+                    },
+                };
+            }
+
+        }
+
+        window.customElements.define(ViewProno.is, ViewProno);
+    </script>
+</dom-module>
