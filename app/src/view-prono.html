@@ -17,15 +17,21 @@
                 display: block;
                 padding: 10px;
             }
+            h2 {
+                color: var(--app-primary-color);
+            }
         </style>
 
+        <h2>{{localize('groupstageprono')}}</h2>
         <prono-groupstage prono-group-id="[[pronoGroupId]]" prono-user-id="[[pronoUserId]]" permission="[[permission]]"></prono-groupstage>
+
+        <h2>{{localize('knockoutstageprono')}}</h2>
         <prono-knockoutstage prono-group-id="[[pronoGroupId]]" prono-user-id="[[pronoUserId]]" permission="[[permission]]"></prono-knockoutstage>
 
     </template>
 
     <script>
-        class ViewProno extends Polymer.Element {
+        class ViewProno extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.Element){
             static get is() { return 'view-prono'; }
 
             static get properties() {
@@ -38,6 +44,23 @@
                     },
                     permission: {
                         type: String,
+                    },
+                    language: {
+                        value: 'nl-BE',
+                    },
+                    resources: {
+                        value() {
+                            return {
+                                'en': {
+                                    'groupstageprono': 'Group stage bets',
+                                    'knockoutstageprono': 'Knockout stage bets',
+                                },
+                                'nl-BE': {
+                                    'groupstageprono': 'Groepsfase pronostiek',
+                                    'knockoutstageprono': 'Eliminatie fase pronostiek',
+                                }
+                            }
+                        }
                     },
                 };
             }

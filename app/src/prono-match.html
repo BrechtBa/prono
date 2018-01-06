@@ -38,9 +38,13 @@
             .score{
                 width: 60px;
                 text-align: center;
-                @apply --layout-horizontal;
+                @apply --layout-vertical;
                 @apply --layout-center;
                 @apply --layout-center-justified;
+            }
+            .score .penalty{
+                font-size: 12px;
+                margin-top: -5px;
             }
             .teamicon{
                 max-width: 30px;
@@ -54,6 +58,9 @@
             }
             .horizontal .teamname.right{
                 text-align: right;
+            }
+            .vertical .score{
+                min-height: 36px;
             }
 			.collapsed .score{
 			    min-height: 80px;
@@ -97,10 +104,13 @@
             </div>
             <div class="score">
                 <template is="dom-if" if="{{_hasValue(pronoUserId)}}">
-                    {{_formatScore(prono.score1)}} - {{_formatScore(pronogit .score2)}}
+                    <div class="regular">{{_formatScore(prono.score1)}} - {{_formatScore(prono.score2)}}</div>
                 </template>
                 <template is="dom-if" if="{{!_hasValue(pronoUserId)}}">
-                    {{_formatScore(match.score1)}} - {{_formatScore(match.score2)}}
+                    <div class="regular">{{_formatScore(match.score1)}} - {{_formatScore(match.score2)}}</div>
+                </template>
+                <template is="dom-if" if="{{_showPenalty(match.penalty1, match.penalty2, collapsed)}}">
+                    <div class="penalty">( {{_formatScore(match.penalty1)}} - {{_formatScore(match.penalty2)}} )</div>
                 </template>
             </div>
             <div  class="teamicon">
@@ -256,6 +266,7 @@
                     return score;
                 }
             }
+
             _deformatScore(score){
                 if(typeof score == 'undefined' || score == ''){
                     return -1;
@@ -263,6 +274,10 @@
                 else{
                     return parseInt(score);
                 }
+            }
+
+            _showPenalty(penalty1, penalty2, collapsed){
+                return (!collapsed && penalty1 > -1 && penalty2 >-1);
             }
 
             _hasValue(str){
