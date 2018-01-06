@@ -30,6 +30,7 @@
                 border-radius: 2px;
             }
             paper-material.group{
+                position: relative;
                 width: 100%;
                 max-width: 360px;
             }
@@ -55,11 +56,12 @@
         </style>
 
         <firebase-query id="query" app-name="prono" path="/[[pronoGroupId]]/competition/stages/groupstage" data="{{groups}}"></firebase-query>
+        <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/currentstage" data="{{currentStage}}"></firebase-document>
 
-        <div class$="{{_disabledClass()}} horizontal layout wrap center-justified">
+        <div class$="{{_disabledClass(currentStage, pronoUserId)}} horizontal layout wrap center-justified">
             
             <template is="dom-repeat" items="{{groups}}" as="group">
-                <paper-material elevation="2" class="group vertical layout">
+                <paper-material class="group vertical layout">
                     <h3>{{localize('groupname', 'group', group.$key)}}</h3>
                     <div class="matches">    
                         <template is="dom-repeat" items="{{group.matches}}" as="match" sort="_sortMatches">
@@ -111,15 +113,15 @@
                 return parseInt(a.date) - parseInt(b.date);
             }
 
-            _disabledClass(currentStage,user){
-                return '';
-                if(currentStage==0 || currentStage==-1 || typeof user.id == 'undefined'){
-                    return '';
-                }
-                else{
-                    return 'disabled';
-                }
+            _disabledClass(currentStage, pronoUserId){
+                if(currentStage==0 || currentStage==-1 || pronoUserId == ''){
+					return '';
+				}
+				else{
+					return 'disabled';
+				}
             }
+
 
         }
 
