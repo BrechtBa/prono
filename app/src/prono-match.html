@@ -97,7 +97,7 @@
             </div>
             <div class="score">
                 <template is="dom-if" if="{{_hasValue(pronoUserId)}}">
-                    {{_formatScore(pronoMatch.score1)}} - {{_formatScore(pronoMatch.score2)}}
+                    {{_formatScore(prono.score1)}} - {{_formatScore(pronogit .score2)}}
                 </template>
                 <template is="dom-if" if="{{!_hasValue(pronoUserId)}}">
                     {{_formatScore(match.score1)}} - {{_formatScore(match.score2)}}
@@ -207,8 +207,8 @@
             editScoreDialog(){
                 if(!this.collapsed){
                     if(this._hasValue(this.pronoUserId)){
-                        this.newScore1 = this._formatScore(this.pronoMatch.score1);
-                        this.newScore2 = this._formatScore(this.pronoMatch.score2);
+                        this.newScore1 = this._formatScore(this.prono.score1);
+                        this.newScore2 = this._formatScore(this.prono.score2);
                         this.$.editScoreDialog.open()
                     }
                     else if(this.permission > 3){
