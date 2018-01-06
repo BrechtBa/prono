@@ -65,6 +65,9 @@
 			.stage-4.right .spacer.after{
 			    height: 0px;
 			}
+			prono-match{
+			    height: 140px;
+			}
         </style>
 
         <firebase-query id="query" app-name="prono" path="/[[pronoGroupId]]/competition/stages" data="{{stages}}"></firebase-query>
@@ -81,7 +84,7 @@
 							</template>
 
 							<paper-material elevation="2" class="match vertical layout">
-                                <prono-match prono-group-id="{{pronoGroupId}}" match-id="{{match}}" stage="{{stage.$key}}" collapsed="{{_isCollapsed(stage, expandedStage)}}" abr-team-name="{{_isSmall()}}" hide-team-name="{{_hideTeamName(stage, expandedStage)}}"></prono-match>
+                                <prono-match prono-group-id="{{pronoGroupId}}" prono-user-id="{{pronoUserId}}" permission="[[permission]]" match-id="{{match}}" stage="{{stage.$key}}" collapsed="{{_isCollapsed(stage, expandedStage)}}" abr-team-name="{{_isSmall()}}" hide-team-name="{{_hideTeamName(stage, expandedStage)}}"></prono-match>
                             </paper-material>
 
 							<template is="dom-if" if="{{_addSpacerAfter(stage, index)}}">
@@ -109,7 +112,7 @@
                     },
                     pronoUserId: {
                         type: String,
-                        value: '-1'
+                        value: '',
                     },
                     permission: {
                         type: String,
@@ -174,8 +177,8 @@
                 return parseInt(a.date) - parseInt(b.date);
             }
 
-            _disabledClass(stage, currentStage, user){
-                if(currentStage==stage.$key || currentStage==-1 || typeof pronoUserId == '-1'){
+            _disabledClass(stage, currentStage, pronoUserId){
+                if(currentStage==stage.$key || currentStage==-1 || pronoUserId == ''){
 					return '';
 				}
 				else{

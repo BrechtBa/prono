@@ -3,8 +3,10 @@
 
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/iron-form/iron-form.html">
 
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/paper-material/paper-material.html">
 
 <link rel="import" href="../bower_components/polymerfire/firebase-document.html">
@@ -54,9 +56,26 @@
                 text-align: right;
             }
 			.collapsed .score{
-			    width: 30px;
 			    min-height: 80px;
+			    width:1px;
+                word-wrap: break-word;
 			}
+            .score-dialog .teamname{
+                min-width: 100px;
+                margin-left: 10px;
+                margin-right: 10px;
+            }
+            .score-dialog .score{
+                width: 200px;
+            }
+            .score-dialog .score paper-input{
+                margin-left: 10px;
+                margin-right: 10px;
+            }
+            .score-dialog .teamicon{
+                max-width: 50px;
+                max-height: 50px;
+            }
         </style>
 
         <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/matches/[[matchId]]" data="{{match}}"></firebase-document>
@@ -67,8 +86,9 @@
             <firebase-document app-name="prono" path="/[[pronoGroupId]]/userpronos/[[pronoUserId]]/matches/[[matchId]]" data="{{prono}}"></firebase-document>
         </template>
 
+        <firebase-document id="document" app-name="prono"></firebase-document>
 
-        <div class$="{{_layoutClass(stage)}} {{_collapsedClass(collapsed)}}" on-tap="editScore">
+        <div class$="{{_layoutClass(stage)}} {{_collapsedClass(collapsed)}}" on-tap="editScoreDialog">
             <div class$="teamname left {{_hiddenClass(hideTeamName)}}">
                 <team-name team="{{team1}}" default="{{match.defaultteam1}}" abr="{{abrTeamName}}"></team-name>
             </div>
@@ -91,6 +111,48 @@
             </div>
         </div>
 
+
+        <paper-dialog id="editScoreDialog" class="score-dialog">
+            <iron-form id="editScoreForm" on-iron-form-submit="editScore">
+                <form>
+                    <div class="vertical layout center center-justified">
+                        <div class="horizontal layout center center-justified">
+                            <div class="teamname left">
+                                <team-name team="{{team1}}" default="{{match.defaultteam1}}"></team-name>
+                            </div>
+                             -
+                            <div class="teamname right">
+                                <team-name team="{{team2}}" default="{{match.defaultteam1}}"></team-name>
+                            </div>
+                        </div>
+                        <div class="horizontal layout center center-justified">
+                            <div  class="teamicon">
+                                <team-icon team="{{team1}}"></team-icon>
+                            </div>
+                            <div class="score horizontal layout center center-justified">
+                                <paper-input label="score" value="{{newScore1}}" pattern="[0-9]*" auto-validate></paper-input>
+                                 -
+                                <paper-input label="score" value="{{newScore2}}" pattern="[0-9]*" auto-validate></paper-input>
+                            </div>
+                            <div  class="teamicon">
+                                <team-icon team="{{team2}}"></team-icon>
+                            </div>
+                        </div>
+                        <template is="dom-if" if="{{!_hasValue(pronoUserId)}}">
+                            <div class="score horizontal layout center center-justified">
+                                ( <paper-input label="penalty" value="{{newPenalty1}}" pattern="[0-9]*" auto-validate></paper-input>
+                                 -
+                                <paper-input label="penalty" value="{{newPenalty2}}" pattern="[0-9]*" auto-validate></paper-input> )
+                            </div>
+                        </template>
+                        <div class="buttons">
+                            <paper-button primary on-tap="editScoreFormSubmit" >save</paper-button>
+                            <paper-button secondary dialog-dismiss>cancel</paper-button>
+                        </div>
+                    </div>
+                </form>
+            </iron-form>
+        </paper-dialog>
     </template>
 
     <script>
@@ -108,6 +170,10 @@
                     pronoUserId: {
                         type: String,
                         value: '',
+                    },
+                    permission: {
+                        type: Number,
+                        value: 0,
                     },
                     stage: {
                         type: String,
@@ -138,15 +204,64 @@
                 };
             }
 
-            editScore(event){
+            editScoreDialog(){
                 if(!this.collapsed){
-                    console.log('show the edit score dialog')
+                    if(this._hasValue(this.pronoUserId)){
+                        this.newScore1 = this._formatScore(this.pronoMatch.score1);
+                        this.newScore2 = this._formatScore(this.pronoMatch.score2);
+                        this.$.editScoreDialog.open()
+                    }
+                    else if(this.permission > 3){
+                        this.newScore1 = this._formatScore(this.match.score1);
+                        this.newScore2 = this._formatScore(this.match.score2);
+                        this.newPenalty1 = this._formatScore(this.match.penalty1);
+                        this.newPenalty2 = this._formatScore(this.match.penalty2);
+                        this.$.editScoreDialog.open()
+                    }
+                }
+            }
+            editScoreFormSubmit(){
+                this.$.editScoreForm.submit();
+            }
+            editScore(){
+                this.$.editScoreDialog.close()
+                if(this._hasValue(this.pronoUserId)){
+                    this.$.document.path = '';
+                    this.$.document.path = '/'+this.pronoGroupId+'/userpronos/'+this.pronoUserId+'/matches/'+this.matchId+'/score1';
+                    this.$.document.data = this._deformatScore(this.newScore1);
+                    this.$.document.path = '';
+                    this.$.document.path = '/'+this.pronoGroupId+'/userpronos/'+this.pronoUserId+'/matches/'+this.matchId+'/score2';
+                    this.$.document.data = this._deformatScore(this.newScore2);
+                    this.$.document.path = '';
+                }
+                else if(this.permission > 3){
+                    this.$.document.path = '';
+                    this.$.document.path = '/'+this.pronoGroupId+'/competition/matches/'+this.matchId+'/score1';
+                    this.$.document.data = this._deformatScore(this.newScore1);
+                    this.$.document.path = '';
+                    this.$.document.path = '/'+this.pronoGroupId+'/competition/matches/'+this.matchId+'/score2';
+                    this.$.document.data = this._deformatScore(this.newScore2);
+                    this.$.document.path = '';
+                    this.$.document.path = '/'+this.pronoGroupId+'/competition/matches/'+this.matchId+'/penalty1';
+                    this.$.document.data = this._deformatScore(this.newPenalty1);
+                    this.$.document.path = '';
+                    this.$.document.path = '/'+this.pronoGroupId+'/competition/matches/'+this.matchId+'/penalty2';
+                    this.$.document.data = this._deformatScore(this.newPenalty2);
+                    this.$.document.path = '';
                 }
             }
 
             _formatScore(score){
                 if(score>-1){
                     return score;
+                }
+            }
+            _deformatScore(score){
+                if(typeof score == 'undefined' || score == ''){
+                    return -1;
+                }
+                else{
+                    return parseInt(score);
                 }
             }
 

@@ -63,7 +63,7 @@
                     <h3>{{localize('groupname', 'group', group.$key)}}</h3>
                     <div class="matches">    
                         <template is="dom-repeat" items="{{group.matches}}" as="match" sort="_sortMatches">
-                            <prono-match prono-group-id="[[pronoGroupId]]" match-id="{{match}}" stage="groupstage"></prono-match>
+                            <prono-match prono-group-id="[[pronoGroupId]]" match-id="{{match}}" stage="groupstage" permission="[[permission]]"></prono-match>
                         </template>
                     </div>
 
