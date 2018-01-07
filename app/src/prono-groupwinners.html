@@ -10,6 +10,7 @@
 <link rel="import" href="shared-styles.html">
 <link rel="import" href="team-name.html">
 <link rel="import" href="team-icon.html">
+<link rel="import" href="team-select.html">
 
 
 <dom-module id="prono-groupwinners">
@@ -31,7 +32,7 @@
 			.points{
 				width: 70px;
 			}
-			h1{
+			h4{
 				margin: 0;
 				font-size: 14px;
 			}
@@ -39,17 +40,54 @@
 
         <!--<firebase-query id="query" app-name="prono" path="/[[pronoGroupId]]/competition/stages/groupstage/points" data="{{points}}"></firebase-query>-->
 
-        <h1>{{localize('Ranking')}}</h1>
-        <div on-tap="editPoints">
-            <template is="dom-repeat" items="{{group.teams}}" as="team" sort="_sortByPoints">
-                <div class="horizontal layout center">
-                    <team-icon class="teamicon" prono-group-id="[[pronoGroupId]]" team-id="[[team]]"></team-icon>
-                    <team-name class="flex teamname" prono-group-id="[[pronoGroupId]]" team-id="[[team]]" default=""></team-name>
-                    <div class="points">{{_getRoundedPoints(group, team)}}</div>
-                </div>
-            </template>
-        </div>
+        <template is="dom-if" if="{{_hasValue(pronoUserId)}}">
+            <firebase-document app-name="prono" path="/[[pronoGroupId]]/userpronos/[[pronoUserId]]/groupwinners/[[group.$key]]" data="{{prono}}"></firebase-document>
+        </template>
+        <firebase-document id="document" app-name="prono"></firebase-document>
 
+
+        <template is="dom-if" if="{{!_hasValue(pronoUserId)}}">
+            <h4>{{localize('Ranking')}}</h4>
+            <div on-tap="editPoints">
+                <template is="dom-repeat" items="{{group.teams}}" as="team" sort="_sortByPoints">
+                    <div class="horizontal layout center">
+                        <team-icon class="teamicon" prono-group-id="[[pronoGroupId]]" team-id="[[team]]"></team-icon>
+                        <team-name class="flex teamname" prono-group-id="[[pronoGroupId]]" team-id="[[team]]" default=""></team-name>
+                        <div class="points">{{_getRoundedPoints(group, team)}}</div>
+                    </div>
+                </template>
+            </div>
+        </template>
+
+        <template is="dom-if" if="{{_hasValue(pronoUserId)}}">
+			<div on-tap="editWinnersDialog">
+				<div class="horizontal layout center">
+					<div class="flex">{{localize('winner')}}:</div>
+					<team-icon class="teamicon" prono-group-id="[[pronoGroupId]]" team-id="[[prono.1]]"></team-icon>
+					<team-name class="flex teamname" prono-group-id="[[pronoGroupId]]" team-id="[[prono.1]]"></team-name>
+				</div>
+				<div class="horizontal layout center">
+					<div class="flex">{{localize('runner up')}}:</div>
+					<team-icon class="teamicon" prono-group-id="[[pronoGroupId]]" team-id="[[prono.2]]"></team-icon>
+					<team-name class="flex teamname" prono-group-id="[[pronoGroupId]]" team-id="[[prono.2]]"></team-name>
+				</div>
+			</div>
+		</template>
+
+        <paper-dialog id="editWinnersDialog" class="winners-dialog">
+            <iron-form id="editWinnersForm" on-iron-form-submit="editWinners">
+                <form>
+                    <div class="vertical layout">
+                        <team-select label="{{localize('winner')}}" team="{{newWinner}}" prono-group-id="{{pronoGroupId}}" teams="{{group.teams}}" filter="{{_groupTeamFilter(group)}}"></team-select>
+                        <team-select label="{{localize('runner up')}}" team="{{newRunnerup}}" prono-group-id="{{pronoGroupId}}" teams="{{group.teams}}" filter="{{_groupTeamFilter(group)}}"></team-select>
+                        <div class="buttons">
+                            <paper-button primary on-tap="editWinnersFormSubmit" >save</paper-button>
+                            <paper-button secondary dialog-dismiss>cancel</paper-button>
+                        </div>
+                    </div>
+                </form>
+            </iron-form>
+        </paper-dialog>
 
     </template>
 
@@ -62,18 +100,61 @@
                     pronoGroupId: {
                         type: String,
                     },
+                    pronoUserId: {
+                        type: String,
+                        value: '',
+                    },
+                    group: {
+                        type: Object,
+                    },
+                    permission: {
+                        type: Number,
+                    },
                     language: {
                         value: 'nl-BE',
                     },
                     resources: {
                         value() {
                             return {
-                                'en': { 'ranking': 'Ranking' },
-                                'nl-BE': { 'ranking': 'Rangschikking' }
+                                'en': {
+                                    'ranking': 'Ranking',
+                                    'winner': 'Winner',
+                                    'runner up': 'Runner up',
+                                },
+                                'nl-BE': {
+                                    'ranking': 'Rangschikking',
+                                    'winner': 'Winnaar',
+                                    'runner up': 'Tweede',
+                                }
                             }
                         }
                     },
                 };
+            }
+
+            editWinnersDialog(){
+                this.newWinner = this.prono[1];
+                this.newRunnerup = this.prono[2];
+                this.$.editWinnersDialog.open();
+            }
+            editWinnersFormSubmit(){
+                this.$.editWinnersForm.submit();
+            }
+            editWinners(){
+                this.$.editWinnersDialog.close()
+                if(this._hasValue(this.pronoUserId)){
+                    this.$.document.path = '';
+                    if(typeof this.newWinner != 'undefined'){
+                        this.$.document.path = '/'+this.pronoGroupId+'/userpronos/'+this.pronoUserId+'/groupwinners/'+this.group.$key+'/1';
+                        this.$.document.data = this.newWinner;
+                    }
+                    this.$.document.path = '';
+                    if(typeof this.newRunnerup != 'undefined'){
+                        this.$.document.path = '/'+this.pronoGroupId+'/userpronos/'+this.pronoUserId+'/groupwinners/'+this.group.$key+'/2';
+                        this.$.document.data = this.newRunnerup;
+                    }
+                    this.$.document.path = '';
+                }
             }
 
             _sortByPoints(a, b){
@@ -112,6 +193,20 @@
                 return index+1;
             }
 
+            _hasValue(str){
+                return str != ''
+            }
+
+            _groupTeamFilter(group){
+                var filter = function(team){
+                    for(var i=0; i<group.teams.length; i++){
+                        if(group.teams[i] == team.$key){
+                            return true;
+                        }
+                    }
+                }
+                return filter;
+            }
         }
 
         window.customElements.define(PronoGroupwinners.is, PronoGroupwinners);
