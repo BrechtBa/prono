@@ -1,0 +1,156 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/app-localize-behavior/app-localize-behavior.html">
+
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+
+<link rel="import" href="../bower_components/polymerfire/firebase-query.html">
+
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="team-name.html">
+<link rel="import" href="team-icon.html">
+
+
+<dom-module id="prono-total-goals">
+    <template>
+        <style include="iron-flex iron-flex-alignment"></style>
+        <style include="shared-styles"></style>
+        <style>
+            :host{
+                display: block;
+                width: 100%;
+                margin-bottom: 40px;
+            }
+            .team{
+				width: 24%;
+				min-width: 140px;
+			}
+            .teamicon{
+				width: 30px;
+				height: 30px;
+			}
+			.teamname{
+				padding-left: 20px;
+			}
+			.selectable{
+				cursor: pointer;
+			}
+			.selected{
+				background-color: #dddddd;
+			}
+			.prono{
+			    position: relative;
+			}
+			h3{
+				margin-top: 0;
+            }
+            h2{
+                margin-left: auto;
+                margin-right: auto;
+            }
+        </style>
+
+        <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/currentstage" data="{{currentStage}}"></firebase-document>
+        <firebase-document app-name="prono" path="/[[pronoGroupId]]/userpronos/[[pronoUserId]]/totalgoals" data="{{prono}}"></firebase-document>
+        <firebase-document id="document" app-name="prono"></firebase-document>
+
+        <paper-material class$="{{_disabledClass(currentStage)}} prono selectable vertical layout" on-tap="editPronoDialog">
+            <h3>{{localize('Total goals')}}</h3>
+            <h2>{{_parseProno(prono)}}</h2>
+        </paper-material>
+
+        <paper-dialog id="editPronoDialog" class="prono-dialog">
+            <iron-form id="editPronoForm" on-iron-form-submit="editProno">
+                <form>
+                    <paper-input value="{{newProno}}" label="{{localize('Total goals')}}" auto-validate pattern="[0-9]*" error-message="invalid input"></paper-input>
+                </form>
+            </iron-form>
+
+            <div class="buttons">
+                <paper-button primary on-tap="editPronoFormSubmit" >save</paper-button>
+                <paper-button secondary dialog-dismiss>cancel</paper-button>
+            </div>
+        </paper-dialog>
+
+    </template>
+
+    <script>
+        class PronoTotalGoals extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.Element){
+            static get is() { return 'prono-total-goals'; }
+
+            static get properties() {
+                return {
+                    pronoGroupId: {
+                        type: String,
+                    },
+                    pronoUserId: {
+                        type: String,
+                        value: '',
+                    },
+                    permission: {
+                        type: Number,
+                    },
+                    language: {
+                        value: 'nl-BE',
+                    },
+                    resources: {
+                        value() {
+                            return {
+                                'en': {
+                                    'Total goals': 'Total goals',
+                                },
+                                'nl-BE': {
+                                    'Total goals': 'Totaal aantal goals',
+                                }
+                            }
+                        }
+                    },
+                };
+            }
+
+            editPronoDialog(event){
+                this.newProno = this.prono
+                this.$.editPronoDialog.open();
+            }
+            editPronoFormSubmit(){
+                this.$.editPronoForm.submit();
+            }
+            editProno(){
+                this.$.editPronoDialog.close()
+                if(this._hasValue(this.pronoUserId)){
+                    this.$.document.path = '';
+                    if(typeof this.newProno != 'undefined'){
+
+                        this.$.document.path = '/'+this.pronoGroupId+'/userpronos/'+this.pronoUserId+'/totalgoals';
+                        this.$.document.data = this.newProno;
+                        this.$.document.path = '';
+                    }
+                }
+            }
+            _parseProno(prono){
+                if(typeof prono == 'string'){
+                    return prono;
+                }
+                else{
+                    return '';
+                }
+            }
+            _hasValue(str){
+                return str != ''
+            }
+
+            _disabledClass(currentStage){
+                if(currentStage==0 || currentStage==-1){
+					return '';
+				}
+				else{
+					return 'disabled';
+				}
+            }
+        }
+        window.customElements.define(PronoTotalGoals.is, PronoTotalGoals);
+    </script>
+
+</dom-module>

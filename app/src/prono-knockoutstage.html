@@ -34,15 +34,8 @@
                 color: var(--primary-text-color);
                 border-radius: 2px;
             }
-            .disabled .match::after{
-                content: "";
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background-color: rgba(1,1,1,0.3);
-                border-radius: 2px;
+            .match{
+                position: relative;
             }
             .stage{
 				transition: width 0.5s;
@@ -78,21 +71,20 @@
         <div class="horizontal layout center-justified">
 			<div class="flex horizontal layout center">
 				<template is="dom-repeat" items="{{_getStages(stages, currentStage)}}" as="stage" filter="_notGroupstage">
-					<div class$="stage {{_stageClass(stage)}} {{_collapsedClass(stage, expandedStage)}} {{_disabledClass(stage, currentStage, pronoUserId)}} {{_leftRightClass(stages, index)}} vertical-layout" on-tap="_expandStage">
+					<div class$="stage {{_stageClass(stage)}} {{_collapsedClass(stage, expandedStage)}} {{_leftRightClass(stages, index)}} vertical-layout" on-tap="_expandStage">
 						<template is="dom-repeat" items="{{stage}}" as="match">
 
 							<template is="dom-if" if="{{_addSpacerBefore(stage, index)}}">
 								<div class="spacer before"></div>
 							</template>
 
-							<paper-material elevation="2" class="match vertical layout">
+							<paper-material elevation="2" class$="{{_disabledClass(stage, currentStage, pronoUserId)}} match vertical layout">
                                 <prono-match prono-group-id="{{pronoGroupId}}" prono-user-id="{{pronoUserId}}" permission="[[permission]]" match-id="{{match}}" stage="{{stage.$key}}" collapsed="{{_isCollapsed(stage, expandedStage)}}" abr-team-name="{{_isSmall()}}" hide-team-name="{{_hideTeamName(stage, expandedStage)}}"></prono-match>
                             </paper-material>
 
 							<template is="dom-if" if="{{_addSpacerAfter(stage, index)}}">
 								<div class="spacer after"></div>
 							</template>
-
 
 						</template>
 					</div>

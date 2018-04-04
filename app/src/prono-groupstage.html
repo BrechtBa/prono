@@ -35,17 +35,11 @@
                 width: 100%;
                 max-width: 360px;
             }
-            .disabled .group::after{
-                content: "";
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                background-color: rgba(1,1,1,0.3);
-                border-radius: 2px;
+            .group{
+                position: relative;
             }
             .group h3{
+                position: relative;
                 margin-top: 0px;
             }
             prono-groupwinners{
@@ -59,10 +53,10 @@
         <firebase-query id="query" app-name="prono" path="/[[pronoGroupId]]/competition/stages/groupstage" data="{{groups}}"></firebase-query>
         <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/currentstage" data="{{currentStage}}"></firebase-document>
 
-        <div class$="{{_disabledClass(currentStage, pronoUserId)}} horizontal layout wrap center-justified">
+        <div class="horizontal layout wrap center-justified">
             
             <template is="dom-repeat" items="{{groups}}" as="group">
-                <paper-material class="group vertical layout">
+                <paper-material class$="{{_disabledClass(currentStage, pronoUserId)}} group vertical layout">
                     <h3>{{localize('groupname', 'group', group.$key)}}</h3>
                     <div class="matches">    
                         <template is="dom-repeat" items="{{group.matches}}" as="match" sort="_sortMatches">

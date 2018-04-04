@@ -24,6 +24,9 @@
                 width: 100%;
                 margin-bottom: 40px;
             }
+            .teams{
+                position: relative;
+            }
         </style>
 
         <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/currentstage" data="{{currentStage}}"></firebase-document>
@@ -33,7 +36,7 @@
 			<div class="flex vertical layout">
 				<template is="dom-repeat" items="{{_getStages(stages)}}" as="stage">
 
-                    <prono-knockoutstage-teams-stage class$="{{_disabledClass(currentStage)}}" stage="[[stage]]" prono-group-id="[[pronoGroupId]]" prono-user-id="[[pronoUserId]]" permission="[[permission]]"></prono-knockoutstage-teams-stage>
+                    <prono-knockoutstage-teams-stage class$="{{_disabledClass(currentStage)}} teams" stage="[[stage]]" prono-group-id="[[pronoGroupId]]" prono-user-id="[[pronoUserId]]" permission="[[permission]]"></prono-knockoutstage-teams-stage>
 
 				</template>
 			</div>
