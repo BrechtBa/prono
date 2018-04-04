@@ -32,7 +32,8 @@
     "paper-item": "PolymerElements/paper-item#^2.0.0",
     "neon-animation": "PolymerElements/neon-animation#^2.0.2",
     "web-animations-js": "^2.3.1",
-    "datetime-picker": "fooloomanzoo/datetime-picker#^2.5.5"
+    "datetime-picker": "fooloomanzoo/datetime-picker#^2.5.5",
+    "paper-dialog-scrollable": "PolymerElements/paper-dialog-scrollable#^2.1.0"
   },
   "resolutions": {
     "polymer": "^2.0.0"

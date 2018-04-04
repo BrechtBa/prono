@@ -1,0 +1,110 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/app-localize-behavior/app-localize-behavior.html">
+
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+
+<link rel="import" href="../bower_components/polymerfire/firebase-query.html">
+
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="team-name.html">
+<link rel="import" href="team-icon.html">
+<link rel="import" href="prono-knockoutstage-teams-stage.html">
+
+
+<dom-module id="prono-knockoutstage-teams">
+    <template>
+        <style include="iron-flex iron-flex-alignment"></style>
+        <style include="shared-styles"></style>
+        <style>
+            :host{
+                display: block;
+                width: 100%;
+                margin-bottom: 40px;
+            }
+        </style>
+
+        <firebase-query app-name="prono" path="/[[pronoGroupId]]/competition/stages" data="{{stages}}"></firebase-query>
+
+        <div class="horizontal layout center-justified">
+			<div class="flex vertical layout">
+				<template is="dom-repeat" items="{{_getStages(stages)}}" as="stage">
+
+                    <prono-knockoutstage-teams-stage stage="[[stage]]" prono-group-id="[[pronoGroupId]]" prono-user-id="[[pronoUserId]]" permission="[[permission]]" current-stage="[[currentStage]]"></prono-knockoutstage-teams-stage>
+
+				</template>
+			</div>
+		</div>
+
+    </template>
+
+    <script>
+        class PronoKnockoutstageTeams extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.Element){
+            static get is() { return 'prono-knockoutstage-teams'; }
+
+            static get properties() {
+                return {
+                    pronoGroupId: {
+                        type: String,
+                    },
+                    pronoUserId: {
+                        type: String,
+                        value: '',
+                    },
+                    permission: {
+                        type: Number,
+                    },
+                    language: {
+                        value: 'nl-BE',
+                    },
+                    resources: {
+                        value() {
+                            return {
+                                'en': {
+                                    '1': 'Winner',
+                                    '2': 'Final',
+                                    '4': 'Semi final',
+                                    '8': 'Quarter final',
+                                    '16': 'Round of 16',
+                                    'selections remaining': 'selections remaining',
+                                },
+                                'nl-BE': {
+                                    '1': 'Winnaar',
+                                    '2': 'Finale',
+                                    '4': 'Halve finale',
+                                    '8': 'Kwartfinale',
+                                    '16': '8e finale',
+                                    'selections remaining': 'selecties over',
+                                }
+                            }
+                        }
+                    },
+                };
+            }
+
+            _getStages(stages){
+				// filter knockoutstages
+				var newStages = stages.filter(function(item){
+					return (item.$key != 'groupstage');
+				});
+				// sort
+				newStages.sort(function(a,b){
+					return b.$key - a.$key;
+				});
+				// remove the 1st stage after the group stage
+				if(newStages.length>0){
+					newStages.shift()
+				}
+				// add the winner
+				newStages.push({'$key': "1"});
+                return newStages;
+			}
+
+        }
+
+        window.customElements.define(PronoKnockoutstageTeams.is, PronoKnockoutstageTeams);
+    </script>
+
+</dom-module>

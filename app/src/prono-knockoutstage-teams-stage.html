@@ -1,0 +1,241 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/app-localize-behavior/app-localize-behavior.html">
+
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+
+<link rel="import" href="../bower_components/polymerfire/firebase-query.html">
+
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="team-name.html">
+<link rel="import" href="team-icon.html">
+
+
+<dom-module id="prono-knockoutstage-teams-stage">
+    <template>
+        <style include="iron-flex iron-flex-alignment"></style>
+        <style include="shared-styles"></style>
+        <style>
+            :host{
+                display: block;
+                width: 100%;
+                margin-bottom: 40px;
+            }
+            .team{
+				width: 24%;
+				min-width: 140px;
+			}
+            .teamicon{
+				width: 30px;
+				height: 30px;
+			}
+			.teamname{
+				padding-left: 20px;
+			}
+			.selectable{
+				cursor: pointer;
+			}
+			.selected{
+				background-color: #dddddd;
+			}
+			h3{
+				margin-top: 0;
+            }
+        </style>
+
+        <firebase-query app-name="prono" path="/[[pronoGroupId]]/competition/teams" data="{{teams}}"></firebase-query>
+        <firebase-query app-name="prono" path="/[[pronoGroupId]]/userpronos/[[pronoUserId]]/knockoutstageteams/[[stage.$key]]" data="{{prono}}"></firebase-query>
+        <firebase-document id="document" app-name="prono"></firebase-document>
+
+        <div class$="{{_disabledClass(currentStage)}} vertical-layout selectable">
+            <paper-material class$="stage {{_stageClass(stage.$key)}} vertical layout" on-tap="editTeamsDialog">
+                <h3>{{localize(stage.$key)}}</h3>
+                <div class="horizontal layout center-justified wrap">
+                    <template is="dom-repeat" items="{{prono}}" as="team">
+                        <div class="team horizontal layout center">
+                            <team-icon class="teamicon" prono-group-id="[[pronoGroupId]]" team-id="{{team.$val}}"></team-icon>
+                            <team-name class="teamname" prono-group-id="[[pronoGroupId]]" team-id="{{team.$val}}"></team-name>
+                        </div>
+                    </template>
+                </div>
+            </paper-material>
+        </div>
+
+
+        <paper-dialog id="editTeamsDialog" class="winners-dialog">
+            <div class="before-scrolling">{{selectionsRemaining}} {{localize('selections remaining')}}</div>
+            <paper-dialog-scrollable id="scrollable">
+                <iron-form id="editTeamsForm" on-iron-form-submit="editTeams">
+                    <form>
+                        <div class="vertical layout">
+                            <template is="dom-repeat" items="{{teams}}" as="team" sort="_sortTeams">
+                                <div class$="horizontal layout center {{_selectedClass(team.$key, newTeams)}} selectable" on-tap="_selectTeam">
+                                    <team-icon class="teamicon" prono-group-id="[[pronoGroupId]]" team-id="{{team.$key}}"></team-icon>
+                                    <team-name class="teamname" prono-group-id="[[pronoGroupId]]" team-id="{{team.$key}}"></team-name>
+                                </div>
+                            </template>
+
+                        </div>
+                    </form>
+                </iron-form>
+            </paper-dialog-scrollable>
+
+            <div class="buttons">
+                <paper-button primary on-tap="editTeamsFormSubmit" >save</paper-button>
+                <paper-button secondary dialog-dismiss>cancel</paper-button>
+            </div>
+        </paper-dialog>
+
+    </template>
+
+    <script>
+        class PronoKnockoutstageTeamsStage extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.Element){
+            static get is() { return 'prono-knockoutstage-teams-stage'; }
+
+            static get properties() {
+                return {
+                    pronoGroupId: {
+                        type: String,
+                    },
+                    pronoUserId: {
+                        type: String,
+                        value: '',
+                    },
+                    permission: {
+                        type: Number,
+                    },
+                    language: {
+                        value: 'nl-BE',
+                    },
+                    stage: {
+                        type: Number,
+                    },
+                    currentStage: {
+                        type: Number,
+                    },
+                    resources: {
+                        value() {
+                            return {
+                                'en': {
+                                    '1': 'Winner',
+                                    '2': 'Final',
+                                    '4': 'Semi final',
+                                    '8': 'Quarter final',
+                                    '16': 'Round of 16',
+                                    'selections remaining': 'selections remaining',
+                                },
+                                'nl-BE': {
+                                    '1': 'Winnaar',
+                                    '2': 'Finale',
+                                    '4': 'Halve finale',
+                                    '8': 'Kwartfinale',
+                                    '16': '8e finale',
+                                    'selections remaining': 'selecties over',
+                                }
+                            }
+                        }
+                    },
+                };
+            }
+
+            editTeamsDialog(event){
+                var newTeams = []
+                for(var i=0; i<this.prono.length; i++){
+                    newTeams.push(this.prono[i].$val);
+                }
+                this.newTeams = newTeams
+                if(typeof this.newTeams != 'undefined'){
+                    this.selectionsRemaining = parseInt(this.stage.$key) - this.newTeams.length;
+                }
+                else{
+                    this.selectionsRemaining = parseInt(this.stage.$key);
+                }
+                this.$.editTeamsDialog.open();
+            }
+            editTeamsFormSubmit(){
+                this.$.editTeamsForm.submit();
+            }
+            editTeams(){
+                this.$.editTeamsDialog.close()
+                if(this._hasValue(this.pronoUserId)){
+                    this.$.document.path = '';
+                    if(typeof this.newTeams != 'undefined'){
+                        this.$.document.path = '/'+this.pronoGroupId+'/userpronos/'+this.pronoUserId+'/knockoutstageteams/'+this.stage.$key;
+                        this.$.document.data = this.newTeams;
+                        this.$.document.path = '';
+                    }
+                }
+            }
+
+			_disabledClass(currentStage){
+                if(currentStage==0 || currentStage==-1){
+					return '';
+				}
+				else{
+					return 'disabled';
+				}
+            }
+
+            _selectedClass(teamId, newTeams){
+                if(typeof newTeams != 'undefined' ){
+                    if( newTeams.indexOf(teamId)>-1){
+                        return 'selected';
+                    }
+                    else{
+                        return '';
+                    }
+                }
+			}
+
+            _selectTeam(event){
+				var teamId = event.model.__data.team.$key;
+                if(typeof this.newTeams != 'undefined'){
+				    var newTeams = JSON.parse(JSON.stringify(this.newTeams));
+				}
+				else{
+				    var newTeams = []
+				}
+				var index = newTeams.indexOf(teamId);
+
+				if( index > -1 ){
+					// remove the team
+					newTeams.splice(index, 1);
+				}
+				else if(parseInt(this.stage.$key) - newTeams.length > 0){
+					// add the team
+					newTeams.push(teamId);
+				}
+				this.newTeams = newTeams;
+
+				this.selectionsRemaining = parseInt(this.stage.$key) - this.newTeams.length;
+			}
+
+            _stageClass(stage){
+                if(typeof stage != 'undefined'){
+				    return 'stage-'+stage.$key;
+                }
+			}
+
+			_sortTeams(a, b){
+			    if(a.name > b.name){
+			        return 1;
+			    }
+			    else if(a.name < b.name){
+			        return -1;
+			    }
+			    else{
+			        return 0;
+			    }
+			}
+
+			_hasValue(str){
+                return str != ''
+            }
+        }
+
+        window.customElements.define(PronoKnockoutstageTeamsStage.is, PronoKnockoutstageTeamsStage);
+    </script>
+
+</dom-module>

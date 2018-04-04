@@ -20,6 +20,7 @@
             :host{
                 display: block;
                 width: 100%;
+                margin-bottom: 40px;
             }
             paper-material{
                 position: relative;
@@ -71,7 +72,7 @@
 			}
         </style>
 
-        <firebase-query id="query" app-name="prono" path="/[[pronoGroupId]]/competition/stages" data="{{stages}}"></firebase-query>
+        <firebase-query app-name="prono" path="/[[pronoGroupId]]/competition/stages" data="{{stages}}"></firebase-query>
         <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/currentstage" data="{{currentStage}}"></firebase-document>
 
         <div class="horizontal layout center-justified">

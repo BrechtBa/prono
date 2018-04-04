@@ -5,6 +5,7 @@
 
 <link rel="import" href="shared-styles.html">
 <link rel="import" href="prono-groupstage.html">
+<link rel="import" href="prono-knockoutstage-teams.html">
 <link rel="import" href="prono-knockoutstage.html">
 
 <dom-module id="view-prono">
@@ -26,6 +27,7 @@
         <prono-groupstage prono-group-id="[[pronoGroupId]]" prono-user-id="[[pronoUserId]]" permission="[[permission]]"></prono-groupstage>
 
         <h2>{{localize('knockoutstageprono')}}</h2>
+        <prono-knockoutstage-teams prono-group-id="[[pronoGroupId]]" prono-user-id="[[pronoUserId]]" permission="[[permission]]"></prono-knockoutstage-teams>
         <prono-knockoutstage prono-group-id="[[pronoGroupId]]" prono-user-id="[[pronoUserId]]" permission="[[permission]]"></prono-knockoutstage>
 
     </template>
