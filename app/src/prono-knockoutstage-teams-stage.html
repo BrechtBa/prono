@@ -49,7 +49,8 @@
         <firebase-query app-name="prono" path="/[[pronoGroupId]]/userpronos/[[pronoUserId]]/knockoutstageteams/[[stage.$key]]" data="{{prono}}"></firebase-query>
         <firebase-document id="document" app-name="prono"></firebase-document>
 
-        <div class$="{{_disabledClass(currentStage)}} vertical-layout selectable">
+
+        <div class="vertical-layout selectable">
             <paper-material class$="stage {{_stageClass(stage.$key)}} vertical layout" on-tap="editTeamsDialog">
                 <h3>{{localize(stage.$key)}}</h3>
                 <div class="horizontal layout center-justified wrap">
@@ -112,9 +113,6 @@
                     stage: {
                         type: Number,
                     },
-                    currentStage: {
-                        type: Number,
-                    },
                     resources: {
                         value() {
                             return {
@@ -167,15 +165,6 @@
                         this.$.document.path = '';
                     }
                 }
-            }
-
-			_disabledClass(currentStage){
-                if(currentStage==0 || currentStage==-1){
-					return '';
-				}
-				else{
-					return 'disabled';
-				}
             }
 
             _selectedClass(teamId, newTeams){

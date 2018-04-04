@@ -26,13 +26,14 @@
             }
         </style>
 
+        <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/currentstage" data="{{currentStage}}"></firebase-document>
         <firebase-query app-name="prono" path="/[[pronoGroupId]]/competition/stages" data="{{stages}}"></firebase-query>
 
         <div class="horizontal layout center-justified">
 			<div class="flex vertical layout">
 				<template is="dom-repeat" items="{{_getStages(stages)}}" as="stage">
 
-                    <prono-knockoutstage-teams-stage stage="[[stage]]" prono-group-id="[[pronoGroupId]]" prono-user-id="[[pronoUserId]]" permission="[[permission]]" current-stage="[[currentStage]]"></prono-knockoutstage-teams-stage>
+                    <prono-knockoutstage-teams-stage class$="{{_disabledClass(currentStage)}}" stage="[[stage]]" prono-group-id="[[pronoGroupId]]" prono-user-id="[[pronoUserId]]" permission="[[permission]]"></prono-knockoutstage-teams-stage>
 
 				</template>
 			</div>
@@ -102,6 +103,14 @@
                 return newStages;
 			}
 
+			_disabledClass(currentStage){
+                if(currentStage==0 || currentStage==-1){
+					return '';
+				}
+				else{
+					return 'disabled';
+				}
+            }
         }
 
         window.customElements.define(PronoKnockoutstageTeams.is, PronoKnockoutstageTeams);
