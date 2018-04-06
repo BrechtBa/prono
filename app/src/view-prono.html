@@ -8,6 +8,7 @@
 <link rel="import" href="prono-knockoutstage-teams.html">
 <link rel="import" href="prono-knockoutstage.html">
 <link rel="import" href="prono-total-goals.html">
+<link rel="import" href="prono-team-result.html">
 
 <dom-module id="view-prono">
     <template>
@@ -30,6 +31,7 @@
         <h2>{{localize('knockoutstageprono')}}</h2>
         <prono-knockoutstage-teams prono-group-id="[[pronoGroupId]]" prono-user-id="[[pronoUserId]]" permission="[[permission]]"></prono-knockoutstage-teams>
         <prono-total-goals prono-group-id="[[pronoGroupId]]" prono-user-id="[[pronoUserId]]" permission="[[permission]]"></prono-total-goals>
+        <prono-team-result prono-group-id="[[pronoGroupId]]" prono-user-id="[[pronoUserId]]" permission="[[permission]]"></prono-team-result>
 
         <prono-knockoutstage prono-group-id="[[pronoGroupId]]" prono-user-id="[[pronoUserId]]" permission="[[permission]]"></prono-knockoutstage>
 
