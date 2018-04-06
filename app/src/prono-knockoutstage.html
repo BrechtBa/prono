@@ -40,6 +40,7 @@
             .stage{
 				transition: width 0.5s;
 				-webkit-transition: width 0.5s;
+				overflow-y: hidden;
 			}
 			.stage.expanded{
 				@apply(--layout-flex-5);
@@ -68,28 +69,26 @@
         <firebase-query app-name="prono" path="/[[pronoGroupId]]/competition/stages" data="{{stages}}"></firebase-query>
         <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/currentstage" data="{{currentStage}}"></firebase-document>
 
-        <div class="horizontal layout center-justified">
-			<div class="flex horizontal layout center">
-				<template is="dom-repeat" items="{{_getStages(stages, currentStage)}}" as="stage" filter="_notGroupstage">
-					<div class$="stage {{_stageClass(stage)}} {{_collapsedClass(stage, expandedStage)}} {{_leftRightClass(stages, index)}} vertical-layout" on-tap="_expandStage">
-						<template is="dom-repeat" items="{{stage}}" as="match">
+        <div class="horizontal layout center-justified center">
+            <template is="dom-repeat" items="{{_getStages(stages, currentStage)}}" as="stage" filter="_notGroupstage">
+                <div class$="stage {{_stageClass(stage)}} {{_collapsedClass(stage, expandedStage)}} {{_leftRightClass(stages, index)}} vertical-layout" on-tap="_expandStage">
+                    <template is="dom-repeat" items="{{stage}}" as="match">
 
-							<template is="dom-if" if="{{_addSpacerBefore(stage, index)}}">
-								<div class="spacer before"></div>
-							</template>
+                        <template is="dom-if" if="{{_addSpacerBefore(stage, index)}}">
+                            <div class="spacer before"></div>
+                        </template>
 
-							<paper-material elevation="2" class$="{{_disabledClass(stage, currentStage, pronoUserId)}} match vertical layout">
-                                <prono-match prono-group-id="{{pronoGroupId}}" prono-user-id="{{pronoUserId}}" permission="[[permission]]" match-id="{{match}}" stage="{{stage.$key}}" collapsed="{{_isCollapsed(stage, expandedStage)}}" abr-team-name="{{_isSmall()}}" hide-team-name="{{_hideTeamName(stage, expandedStage)}}"></prono-match>
-                            </paper-material>
+                        <paper-material elevation="2" class$="{{_disabledClass(stage, currentStage, pronoUserId)}} match vertical layout">
+                            <prono-match prono-group-id="{{pronoGroupId}}" prono-user-id="{{pronoUserId}}" permission="[[permission]]" match-id="{{match}}" stage="{{stage.$key}}" collapsed="{{_isCollapsed(stage, expandedStage)}}" abr-team-name="{{_isSmall()}}" hide-team-name="{{_hideTeamName(stage, expandedStage)}}"></prono-match>
+                        </paper-material>
 
-							<template is="dom-if" if="{{_addSpacerAfter(stage, index)}}">
-								<div class="spacer after"></div>
-							</template>
+                        <template is="dom-if" if="{{_addSpacerAfter(stage, index)}}">
+                            <div class="spacer after"></div>
+                        </template>
 
-						</template>
-					</div>
-				</template>
-			</div>
+                    </template>
+                </div>
+            </template>
 		</div>
 
 
@@ -138,7 +137,7 @@
 			}
 
             _hideTeamName(stage, expandedStage){
-				return (this._isCollapsed(stage, expandedStage) && this._isTiny());
+				return (this._isCollapsed(stage, expandedStage) && this._isSmall());
 			}
 
 			_collapsedClass(stage, expandedStage){
