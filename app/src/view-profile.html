@@ -11,7 +11,9 @@
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 
 <link rel="import" href="../bower_components/polymerfire/firebase-document.html">
-
+<link rel="import" href="../bower_components/polymerfire/firebase-storage-multiupload.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-storage-ref.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-storage-upload-task.html">
 
 <link rel="import" href="shared-styles.html">
 <link rel="import" href="profile-picture.html">
@@ -29,24 +31,41 @@
             .profile{
                 margin-bottom: 20px;
             }
-            .profile profile-picture{
-                --size: 120px;
-                --color: #ffffff;
+            .profile .column{
+                margin-left: 40px;
                 margin-right: 40px;
+            }
+            .profile profile-picture{
+                --size: 160px;
+                --color: #ffffff;
+                margin-bottom: 20px;
+                margin-top: 20px;
             }
 
         </style>
 
-        <firebase-document app-name="prono"  path="/[[pronoGroupId]]/users/[[user.uid]]" data="{{userProfile}}"></firebase-document>
+        <firebase-document app-name="prono" path="/[[pronoGroupId]]/users/[[user.uid]]" data="{{userProfile}}"></firebase-document>
+        <firebase-document app-name="prono" path="/[[pronoGroupId]]/users/[[user.uid]]/profilePicture" data="{{downloadUrl}}"></firebase-document>
+        <firebase-storage-multiupload app-name="prono" id="upload" path="/users/[[user.uid]]" upload-tasks="{{uploadTasks}}" force-unique></firebase-storage-multiupload>
+        <template is="dom-repeat" items="[[uploadTasks]]">
+            <firebase-storage-upload-task app-name="prono" task="[[item]]" bytes-transferred="{{bytesTransferred}}" total-bytes="{{totalBytes}}" state="{{state}}" download-url="{{downloadUrl}}" on-download-url-changed="{{downloadUrlChanged}}"></firebase-storage-upload-task>
+        </template>
+
+        <!--<firebase-storage-ref app-name="prono" id="storage" path="/users/[[user.uid]]/profile" on-upload-task-changed="uploadTaskChanged" upload-task="uploadTask"></firebase-storage-ref>-->
 
         <paper-material>
             <div class="profile horizontal layout wrap">
-                <profile-picture user="{{userProfile}}"></profile-picture>
-                <div class="vertical layout">
+                <div class="column vertical layout">
+                    <profile-picture user="{{userProfile}}"></profile-picture>
+                    <paper-button raised on-tap="openFileInput">Change picture</paper-button>
+                    <input type="file" id="fileInput" on-change="fileChanged" hidden>
+                </div>
+                <div class="column flex vertical layout">
                     <paper-input label="Name" value="{{userProfile.displayName}}"></paper-input>
+                    <paper-button raised on-tap="changePasswordDialog">Change password</paper-button>
                 </div>
             </div>
-            <paper-button raised on-tap="changePasswordDialog">Change password</paper-button>
+
         </paper-material>
 
     </template>
@@ -66,6 +85,26 @@
                         type: Object,
                     },
                 };
+            }
+
+            openFileInput(){
+				var elem = this.$.fileInput;
+				if (elem && document.createEvent){
+					var evt = document.createEvent("MouseEvents");
+					evt.initEvent("click", true, false);
+					elem.dispatchEvent(evt);
+				}
+			}
+
+			fileChanged(e){
+				var file = e.target.files[0];
+				console.log(file);
+				this.$.upload.upload([file]);
+			}
+
+            downloadUrlChanged(e, d){
+                console.log(e)
+                console.log(d)
             }
 
         }

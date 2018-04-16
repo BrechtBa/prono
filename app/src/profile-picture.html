@@ -12,6 +12,8 @@
 <link rel="import" href="../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 
+<link rel="import" href="../bower_components/polymerfire/firebase-document.html">
+
 <link rel="import" href="shared-styles.html">
 
 <dom-module id="profile-picture">
@@ -34,8 +36,11 @@
                 border-radius: 50%;
                 font-size: 30px;
                 text-align: center;
+            }
+            .outer-circle.default{
                 background-color: var(--background-color);
                 background-image: var(--background-image);
+                color: #fdfdfd;
             }
             .inner-circle{
                 position: absolute;
@@ -56,16 +61,29 @@
                 -webkit-transform: translateY(-50%) translateX(-50%);
                 color: var(--color);
             }
+            img{
+                width: 125%;
+                height: 125%;
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                -webkit-transform: translateY(-50%) translateX(-50%);
+                overflow: hidden;
+            }
 
         </style>
 
-
-        <div class="outer-circle">
-            <div class="inner-circle">
-                <iron-icon icon="social:person"></iron-icon>
+        <template is="dom-if" if="{{!isDefined(user.profilePicture)}}">
+            <div class="outer-circle default">
+                {{getFirstLetter(user.displayname)}}
+                <!--<div class="inner-circle">
+                    <iron-icon icon="social:person"></iron-icon>
+                </div>-->
             </div>
-        </div>
-
+        </template>
+        <template is="dom-if" if="{{isDefined(user.profilePicture)}}">
+            <div class="outer-circle image" style$="background: url({{user.profilePicture}}) no-repeat; background-position: center center; background-size: cover;"></div>
+        </template>
     </template>
 
     <script>
@@ -84,6 +102,16 @@
                         value: '80px',
                     },
                 };
+            }
+
+            getFirstLetter(name){
+                if(typeof name != 'undefined'){
+				    return name[0].toUpperCase();
+                }
+			}
+
+            isDefined(s){
+                return ((typeof s != 'undefined') && (s != {}));
             }
         }
 
