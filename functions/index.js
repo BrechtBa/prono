@@ -393,3 +393,11 @@ exports.matchChanged = functions.database.ref('/{pronoGroupId}/competition/match
     }
     return null;
 });
+exports.createUser = functions.auth.user().onCreate((user) => {
+    var pronoGroupId = 'pronogroupid1';
+    var email = user.email
+    var displayName = email.split('@')[0].replace('_', ' ')[0].toUpperCase() + email.split('@')[0].replace('_', ' ').slice(1)
+    admin.database().ref('/'+pronoGroupId+'/users/'+user.uid+'/permission').set(1);
+    admin.database().ref('/'+pronoGroupId+'/users/'+user.uid+'/displayName').set(displayName);
+    return null;
+});

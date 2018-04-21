@@ -96,7 +96,7 @@
                     <paper-input label="Email" value="{{registerEmail}}" required auto-validate error-message="required" pattern=".*@.*\..*" error-message="invalid email address"></paper-input>
                     <match-passwords-validator id="match-passwords-validator" password="[[registerPassword]]"></match-passwords-validator>
                     <paper-password-input label="Password" value="{{registerPassword}}" required></paper-password-input>
-                    <paper-password-input label="Confirm" auto-validate validator="match-passwords-validator" required error-message="Passwords need to match"></paper-password-input>
+                    <paper-password-input label="Confirm" value="{{registerPasswordRepeat}}" auto-validate validator="match-passwords-validator" required error-message="Passwords need to match"></paper-password-input>
 
                     <paper-checkbox name="terms" value="agreed" auto-validate required></paper-checkbox>{{localize('I agree to the')}} <a href="#" on-tap="termsAndConditionsDialog">{{localize('terms and conditions')}}</a>
 
@@ -220,6 +220,9 @@
                 console.log('registerFormSubmit')
                 this.$.registerForm.submit();
                 this.$.register.close();
+                this.registerEmail = '';
+                this.registerPassword = '';
+                this.registerPasswordRepeat = '';
             }
 
             authError(event){
