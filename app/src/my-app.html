@@ -151,11 +151,13 @@
                     <a name="prono" href="[[rootPath]]prono">Prono</a>
                     <a name="results" href="[[rootPath]]results">Results</a>
                     <hr>
-                    <a name="teams" href="[[rootPath]]teams">Teams</a>
-                    <a name="matches" href="[[rootPath]]matches">Matches</a>
-                    <a name="groupstage-config" href="[[rootPath]]groupstage-config">Groupstage</a>
-                    <a name="knockoutstage-config" href="[[rootPath]]knockoutstage-config">Knockout stage</a>
-                    <hr>
+                    <template is="dom-if" if="{{_manageCompetitionPermission(user.permission)}}">
+                        <a name="teams" href="[[rootPath]]teams">Teams</a>
+                        <a name="matches" href="[[rootPath]]matches">Matches</a>
+                        <a name="groupstage-config" href="[[rootPath]]groupstage-config">Groupstage</a>
+                        <a name="knockoutstage-config" href="[[rootPath]]knockoutstage-config">Knockout stage</a>
+                        <hr>
+                    </template>
                     <a name="signout" href="#" on-tap="signOut">Sign out</a>
                 </iron-selector>
             </app-drawer>
@@ -223,6 +225,18 @@
 
             signOut(){
                 this.$.login.signOut();
+            }
+
+            _manageCompetitionPermission(permission){
+                return permission > 2;
+            }
+
+            _manageUsersPermission(permission){
+                return permission > 5;
+            }
+
+            _manageGroupsPermission(permission){
+                return permission > 8;
             }
 
             _routePageChanged(page, signedIn) {
