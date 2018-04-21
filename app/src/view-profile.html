@@ -43,6 +43,7 @@
             }
 
         </style>
+        <firebase-auth id="auth" app-name="prono"></firebase-auth>
 
         <firebase-document app-name="prono" path="/[[pronoGroupId]]/users/[[user.uid]]" data="{{userProfile}}"></firebase-document>
         <firebase-document app-name="prono" path="/[[pronoGroupId]]/users/[[user.uid]]/profilePicture" data="{{downloadUrl}}"></firebase-document>
@@ -62,11 +63,18 @@
                 </div>
                 <div class="column flex vertical layout">
                     <paper-input label="Name" value="{{userProfile.displayName}}"></paper-input>
-                    <paper-button raised on-tap="changePasswordDialog">Change password</paper-button>
+                    <paper-button raised on-tap="resetPasswordDialog">Change password</paper-button>
                 </div>
             </div>
 
         </paper-material>
+
+        <paper-dialog id="resetPassword" class="white">
+            <paper-input label="email" value="{{resetPasswordEmail}}"></paper-input>
+            <div class="buttons">
+                <paper-button raised class="main" on-tap="resetPassword">Send password reset email</paper-button>
+            </div>
+        </paper-dialog>
 
     </template>
 
@@ -107,6 +115,14 @@
                 console.log(d)
             }
 
+            resetPasswordDialog(){
+                this.$.resetPassword.open();
+            }
+
+            resetPassword(){
+                this.$.auth.sendPasswordResetEmail(this.resetPasswordEmail);
+                this.$.resetPassword.close();
+            }
         }
 
         window.customElements.define(ViewProfile.is, ViewProfile);

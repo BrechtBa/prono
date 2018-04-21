@@ -111,7 +111,7 @@
 
 
         <paper-dialog id="resetPassword" class="white">
-            <paper-input label="email" value="{{resetEmail}}"></paper-input>
+            <paper-input label="email" value="{{resetPasswordEmail}}"></paper-input>
             <div class="buttons">
                 <paper-button raised class="main" on-tap="resetPassword">Send password reset mail</paper-button>
             </div>
@@ -232,6 +232,10 @@
 
             resetPasswordDialog(){
                 this.$.resetPassword.open();
+            }
+
+            resetPassword(){
+                this.$.auth.sendPasswordResetEmail(this.resetPasswordEmail)
             }
 
             _passwordValidator(){
