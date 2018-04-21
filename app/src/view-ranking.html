@@ -53,7 +53,7 @@
 
         <firebase-query id="query" app-name="prono" path="/[[pronoGroupId]]/users" data="{{users}}"></firebase-query>
 
-        <template is="dom-repeat" items="{{users}}" as="user" sort="_sortUsers">
+        <template is="dom-repeat" items="{{users}}" as="user" sort="_sortUsers" observe="points">
 			<paper-material elevation="2" class$="horizontal layout center {{_userClass(user.$key, pronoUserId)}}" on-tap="pointDetailsDialog">
 				<div class="ranking">{{_ranking(index)}}</div>
                 <profile-picture class="picture" user="{{user}}"></profile-picture>
@@ -124,7 +124,7 @@
 
             pointDetailsDialog(event){
                 var pointsDetail = []
-                for(key in event.model.__data.user.points){
+                for(var key in event.model.__data.user.points){
                     pointsDetail.push({$key: key, $val: event.model.__data.user.points[key]});
                 }
                 this.pointsDetail = pointsDetail;
