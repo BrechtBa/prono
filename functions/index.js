@@ -59,38 +59,45 @@ function setUserMatchesPoints(pronoGroupId, userId, matches, groupstageMatches){
         matches.forEach(function(match){
             var matchId = match.key
             if(groupstageMatches.indexOf(matchId) > -1){
-                scoreCorrect = rules.groupstage.score
-                resultCorrect = rules.groupstage.result
+                var scoreCorrect = rules.groupstage.score
+                var resultCorrect = rules.groupstage.result
             }
             else{
-                scoreCorrect = rules.knockoutstage.score
-                resultCorrect = rules.knockoutstage.result
+                var scoreCorrect = rules.knockoutstage.score
+                var resultCorrect = rules.knockoutstage.result
             }
 
-            pronoMatch = pronoSnapshot.child(matchId)
-            score1 = parseInt(match.child('score1').val())
-            score2 = parseInt(match.child('score2').val())
-            pronoScore1 = parseInt(pronoMatch.child('score1').val())
-            pronoScore2 = parseInt(pronoMatch.child('score2').val())
-
+            var pronoMatch = pronoSnapshot.child(matchId)
+            var score1 = parseInt(match.child('score1').val())
+            var score2 = parseInt(match.child('score2').val())
+            var pronoScore1 = parseInt(pronoMatch.child('score1').val())
+            var pronoScore2 = parseInt(pronoMatch.child('score2').val())
+            var add = 0
             if(score1 > -1  && score2 > -1 && pronoScore1 > -1  && pronoScore2 > -1){
                 if(score1 == pronoScore1 && score2 == pronoScore2){
                     // score correct
-                    groupstagePoints += scoreCorrect
+                    add += scoreCorrect
                 }
                 if(score1 > score2 && pronoScore1 > pronoScore2){
                     // team1 wins correct
-                    groupstagePoints += resultCorrect
+                    add += resultCorrect
                 }
                 else if(score1 < score2 && pronoScore1 < pronoScore2){
                     // team2 wins correct
-                    groupstagePoints += resultCorrect
+                    add += resultCorrect
                 }
                 else if(score1 == score2 && pronoScore1 == pronoScore2){
                     // draw correct
-                    groupstagePoints += resultCorrect
+                    add += resultCorrect
                 }
             }
+            if(groupstageMatches.indexOf(matchId) > -1){
+                groupstagePoints += add
+            }
+            else{
+                knockoutstagePoints += add
+            }
+
         });
 
         // write points to the database
@@ -103,10 +110,11 @@ function setUserMatchesPoints(pronoGroupId, userId, matches, groupstageMatches){
 function setUserTotalGoalsPoints(pronoGroupId, userId){
     admin.database().ref('/'+pronoGroupId+'/competition/totalgoals').once('value').then( snapshot => {
         admin.database().ref('/'+pronoGroupId+'/userpronos/'+userId+'/totalgoals').once('value').then(function(pronoSnapshot){
+            var points = 0
             if(pronoSnapshot.val() > 0 && snapshot.val() > 0){
                 points = Math.max(0, rules.totalgoals.correct - Math.abs(pronoSnapshot.val()-snapshot.val())*rules.totalgoals.error)
-                admin.database().ref('/'+pronoGroupId+'/users/'+userId+'/points/totalgoals').set(points);
             }
+            admin.database().ref('/'+pronoGroupId+'/users/'+userId+'/points/totalgoals').set(points);
         });
     });
 }
@@ -306,7 +314,7 @@ function getTeamResult(stageTeams, teamId){
 
 
 function getHomeTeamResult(pronoGroupId){
-    var stagePromise = admin.database().ref('/'+event.params.pronoGroupId+'/competition/hometeam').once('value').then(function(teamId){
+    var stagePromise = admin.database().ref('/'+pronoGroupId+'/competition/hometeam').once('value').then(function(teamId){
         return getTeamResult(pronoGroupId, teamId)
     })
 }
@@ -314,46 +322,50 @@ function getHomeTeamResult(pronoGroupId){
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Exports
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-exports.totalGoalsChanged = functions.database.ref('/{pronoGroupId}/competition/totalgoals').onWrite(event => {
-    admin.database().ref('/'+event.params.pronoGroupId+'/users').once('value').then( snapshot => {
+exports.totalGoalsChanged = functions.database.ref('/{pronoGroupId}/competition/totalgoals').onWrite((data, context) => {
+    var pronoGroupId = context.params.pronoGroupId;
+    admin.database().ref('/'+pronoGroupId+'/users').once('value').then( snapshot => {
         snapshot.forEach( user => {
-            setUserTotalGoalsPoints(event.params.pronoGroupId, user.key)
+            setUserTotalGoalsPoints(pronoGroupId, user.key)
         });
     });
     return null;
 });
-exports.teamPointsChanged = functions.database.ref('/{pronoGroupId}/competition/stages/groupstage/{groupId}/teams/{teamId}/points').onWrite(event => {
-    admin.database().ref('/'+event.params.pronoGroupId+'/users').once('value').then( snapshot => {
+exports.teamPointsChanged = functions.database.ref('/{pronoGroupId}/competition/stages/groupstage/{groupId}/teams/{teamId}/points').onWrite((data, context) => {
+    var pronoGroupId = context.params.pronoGroupId;
+    admin.database().ref('/'+pronoGroupId+'/users').once('value').then( snapshot => {
         snapshot.forEach( user => {
-            setUserGroupstageWinnersPoints(event.params.pronoGroupId, user.key)
+            setUserGroupstageWinnersPoints(pronoGroupId, user.key)
         });
     });
     return null;
 });
-exports.matchChanged = functions.database.ref('/{pronoGroupId}/competition/matches/{matchId}/{key}').onWrite(event => {
-    var key = event.params.key
+exports.matchChanged = functions.database.ref('/{pronoGroupId}/competition/matches/{matchId}/{key}').onWrite((data, context) => {
+    var key = context.params.key;
+    var pronoGroupId = context.params.pronoGroupId;
+    var matchId = context.params.matchId
     if(key == 'team1' || key == 'team2'){
-        admin.database().ref('/'+event.params.pronoGroupId+'/users').once('value').then(function(users){
-            getKnockoutstageTeams(event.params.pronoGroupId).then(function(stageTeams){
+        admin.database().ref('/'+pronoGroupId+'/users').once('value').then(function(users){
+            getKnockoutstageTeams(pronoGroupId).then(function(stageTeams){
                 users.forEach( user => {
-                    setUserKnockoutStageTeamsPoints(event.params.pronoGroupId, user.key, stageTeams)
+                    setUserKnockoutStageTeamsPoints(pronoGroupId, user.key, stageTeams)
                 });
-                admin.database().ref('/'+event.params.pronoGroupId+'/competition/hometeam').once('value').then(function(teamId){
+                admin.database().ref('/'+pronoGroupId+'/competition/hometeam').once('value').then(function(teamId){
                     var stage = getTeamResult(stageTeams, teamId.val())
                     users.forEach( user => {
-                        setUserHomeTeamResultPoints(event.params.pronoGroupId, user.key, stage)
+                        setUserHomeTeamResultPoints(pronoGroupId, user.key, stage)
                     });
                 });
             });
         });
     }
     if (key == 'score1' || key == 'score2'){
-        setTotalGoals(event.params.pronoGroupId);
-        admin.database().ref('/'+event.params.pronoGroupId+'/users').once('value').then(function(users){
-            admin.database().ref('/'+event.params.pronoGroupId+'/competition/matches/').once('value').then(function(matches){
-                getGroupstageMatches(event.params.pronoGroupId).then(function(groupstageMatches){
+        setTotalGoals(pronoGroupId);
+        admin.database().ref('/'+pronoGroupId+'/users').once('value').then(function(users){
+            admin.database().ref('/'+pronoGroupId+'/competition/matches/').once('value').then(function(matches){
+                getGroupstageMatches(pronoGroupId).then(function(groupstageMatches){
                     users.forEach(function(user){
-                        setUserMatchesPoints(event.params.pronoGroupId, user.key, matches, groupstageMatches);
+                        setUserMatchesPoints(pronoGroupId, user.key, matches, groupstageMatches);
                     });
                 });
             });
@@ -361,17 +373,17 @@ exports.matchChanged = functions.database.ref('/{pronoGroupId}/competition/match
     }
     if(key == 'score1' || key == 'score2' || key == 'penalty1' || key == 'penalty2'){
         // check if it is the final
-        admin.database().ref('/'+event.params.pronoGroupId+'/competition/stages/2/0').once('value').then( snapshot => {
-            if(snapshot.val() == event.params.matchId){
-                admin.database().ref('/'+event.params.pronoGroupId+'/users').once('value').then(function(users){
-                    getKnockoutstageTeams(event.params.pronoGroupId).then(function(stageTeams){
+        admin.database().ref('/'+pronoGroupId+'/competition/stages/2/0').once('value').then( snapshot => {
+            if(snapshot.val() == matchId){
+                admin.database().ref('/'+pronoGroupId+'/users').once('value').then(function(users){
+                    getKnockoutstageTeams(pronoGroupId).then(function(stageTeams){
                         users.forEach( user => {
-                            setUserKnockoutStageTeamsPoints(event.params.pronoGroupId, user.key, stageTeams)
+                            setUserKnockoutStageTeamsPoints(pronoGroupId, user.key, stageTeams)
                         });
-                        admin.database().ref('/'+event.params.pronoGroupId+'/competition/hometeam').once('value').then(function(teamId){
+                        admin.database().ref('/'+pronoGroupId+'/competition/hometeam').once('value').then(function(teamId){
                             var stage = getTeamResult(stageTeams, teamId.val())
                             users.forEach( user => {
-                                setUserHomeTeamResultPoints(event.params.pronoGroupId, user.key, stage)
+                                setUserHomeTeamResultPoints(pronoGroupId, user.key, stage)
                             });
                         });
                     });
