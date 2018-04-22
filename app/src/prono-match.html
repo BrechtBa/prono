@@ -4,6 +4,7 @@
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../bower_components/iron-form/iron-form.html">
+<link rel="import" href="../bower_components/iron-meta/iron-meta.html">
 
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
@@ -84,6 +85,9 @@
                 max-height: 50px;
             }
         </style>
+
+        <iron-meta key="user" value="{{user}}"></iron-meta>
+        <iron-meta key="pronoGroupId" value="{{pronoGroupId}}"></iron-meta>
 
         <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/matches/[[matchId]]" data="{{match}}"></firebase-document>
         <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/teams/[[match.team1]]" data="{{team1}}"></firebase-document>
@@ -166,24 +170,17 @@
     </template>
 
     <script>
-        class PronoMatch extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.Element){
+        class PronoMatch extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior, Prono.PermissionBehavior], Polymer.Element){
             static get is() { return 'prono-match'; }
 
             static get properties() {
                 return {
-                    pronoGroupId: {
-                        type: String,
-                    },
                     matchId: {
                         type: String,
                     },
                     pronoUserId: {
                         type: String,
                         value: '',
-                    },
-                    permission: {
-                        type: Number,
-                        value: 0,
                     },
                     stage: {
                         type: String,
@@ -221,7 +218,7 @@
                         this.newScore2 = this._formatScore(this.prono.score2);
                         this.$.editScoreDialog.open()
                     }
-                    else if(this.permission > 3){
+                    else if(this._manageCompetitionPermission(this.user.permission)){
                         this.newScore1 = this._formatScore(this.match.score1);
                         this.newScore2 = this._formatScore(this.match.score2);
                         this.newPenalty1 = this._formatScore(this.match.penalty1);
@@ -244,7 +241,7 @@
                     this.$.document.data = this._deformatScore(this.newScore2);
                     this.$.document.path = '';
                 }
-                else if(this.permission > 3){
+                else if(this._manageCompetitionPermission(this.user.permission)){
                     this.$.document.path = '';
                     this.$.document.path = '/'+this.pronoGroupId+'/competition/matches/'+this.matchId+'/score1';
                     this.$.document.data = this._deformatScore(this.newScore1);

@@ -4,6 +4,7 @@
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-meta/iron-meta.html">
 
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../bower_components/paper-material/paper-material.html">
@@ -14,6 +15,7 @@
 <link rel="import" href="../bower_components/polymerfire/firebase-document.html">
 
 <link rel="import" href="shared-styles.html">
+<link rel="import" href="permission-behavior.html">
 <link rel="import" href="team-icon.html">
 
 
@@ -30,53 +32,60 @@
 				width: 45px;
 				height: 45px;
 			}
+			.pointer {
+			    cursor: pointer;
+			}
         </style>
 
-        <firebase-query id="query" app-name="prono" path="/[[pronoGroupId]]/competition/teams" data="{{teams}}"></firebase-query>
-        <firebase-document id="document" app-name="prono" data="" ></firebase-document>
 
-        <template is="dom-repeat" items="{{teams}}" as="team">
+        <template is="dom-if" if="{{_manageCompetitionPermission(user.permission)}}">
+            <iron-meta key="pronoGroupId" value="{{pronoGroupId}}"></iron-meta>
 
-            <paper-material class="vertical layout">
-                <div class="horizontal layout" on-tap="_editItem">
-                    <div class="flex">
-                        <div class="name">{{team.name}}</div>
-                        <div class="abr">{{team.abr}}</div>
+            <firebase-query id="query" app-name="prono" path="/[[pronoGroupId]]/competition/teams" data="{{teams}}"></firebase-query>
+            <firebase-document id="document" app-name="prono" data=""></firebase-document>
+
+            <template is="dom-repeat" items="{{teams}}" as="team">
+
+                <paper-material class="vertical layout">
+                    <div class="pointer horizontal layout" on-tap="_editItem">
+                        <div class="flex">
+                            <div class="name">{{team.name}}</div>
+                            <div class="abr">{{team.abr}}</div>
+                        </div>
+                        <team-icon class="teamicon" team="[[team]]"></team-icon>
                     </div>
-                    <team-icon class="teamicon" team="[[team]]"></team-icon>
-                </div>
-                <template is="dom-if" if="{{_showEditItem(team, editItem)}}">
-                    <paper-input value="{{team.name}}" label="Name"></paper-input>
-                    <paper-input value="{{team.abr}}" label="Abbreviation"></paper-input>
-                    <paper-input value="{{team.iso_icon}}" label="ISO code"></paper-input>
-                    <paper-input value="{{team.icon}}" label="Icon url"></paper-input>
-                    <paper-button on-tap="_deleteItemDialog">delete</paper-button>
-                </template>
-            </paper-material>
+                    <template is="dom-if" if="{{_showEditItem(team, editItem)}}">
+                        <paper-input value="{{team.name}}" label="Name"></paper-input>
+                        <paper-input value="{{team.abr}}" label="Abbreviation"></paper-input>
+                        <paper-input value="{{team.iso_icon}}" label="ISO code"></paper-input>
+                        <paper-input value="{{team.icon}}" label="Icon url"></paper-input>
+                        <paper-button on-tap="_deleteItemDialog">delete</paper-button>
+                    </template>
+                </paper-material>
+            </template>
+            <paper-button raised on-tap="_addItem" class="floating-button"><iron-icon icon="add"></iron-icon></paper-button>
+
+
+            <paper-dialog id="deleteItem">
+                <p>Are you sure?</p>
+                <paper-button on-tap="_deleteItem">delete</paper-button>
+                <paper-button dialog-dismiss>cancel</paper-button>
+            </paper-dialog>
         </template>
-        <paper-button raised on-tap="_addItem" class="floating-button"><iron-icon icon="add"></iron-icon></paper-button>
-
-
-        <paper-dialog id="deleteItem">
-            <p>Are you sure?</p>
-            <paper-button on-tap="_deleteItem">delete</paper-button>
-            <paper-button dialog-dismiss>cancel</paper-button>
-        </paper-dialog>
-
     </template>
 
     <script>
-        class ViewTeams extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.Element){
+        class ViewTeams extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior, Prono.PermissionBehavior], Polymer.Element){
             static get is() { return 'view-teams'; }
 
             static get properties() {
                 return {
-                    pronoGroupId: {
-                        type: String,
-                    },
                     language: {
                         value: 'nl-BE',
                     },
+                    user: {
+                        type: Object,
+                    }
                 };
             }
 

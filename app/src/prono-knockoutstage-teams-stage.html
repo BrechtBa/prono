@@ -2,6 +2,7 @@
 <link rel="import" href="../bower_components/app-localize-behavior/app-localize-behavior.html">
 
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/iron-meta/iron-meta.html">
 
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
@@ -44,6 +45,8 @@
 				margin-top: 0;
             }
         </style>
+
+        <iron-meta key="pronoGroupId" value="{{pronoGroupId}}"></iron-meta>
 
         <firebase-query app-name="prono" path="/[[pronoGroupId]]/competition/teams" data="{{teams}}"></firebase-query>
         <firebase-query app-name="prono" path="/[[pronoGroupId]]/userpronos/[[pronoUserId]]/knockoutstageteams/[[stage.$key]]" data="{{prono}}"></firebase-query>
@@ -97,15 +100,9 @@
 
             static get properties() {
                 return {
-                    pronoGroupId: {
-                        type: String,
-                    },
                     pronoUserId: {
                         type: String,
                         value: '',
-                    },
-                    permission: {
-                        type: Number,
                     },
                     language: {
                         value: 'nl-BE',

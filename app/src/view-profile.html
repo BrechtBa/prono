@@ -2,6 +2,7 @@
 
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/iron-meta/iron-meta.html">
 
 <link rel="import" href="../bower_components/polymerfire/firebase-document.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-query.html">
@@ -43,26 +44,30 @@
             }
 
         </style>
+
+        <iron-meta key="pronoGroupId" value="{{pronoGroupId}}"></iron-meta>
+
         <firebase-auth id="auth" app-name="prono"></firebase-auth>
 
-        <firebase-document app-name="prono" path="/[[pronoGroupId]]/users/[[user.uid]]" data="{{userProfile}}"></firebase-document>
-        <firebase-document app-name="prono" path="/[[pronoGroupId]]/users/[[user.uid]]/profilePicture" data="{{downloadUrl}}"></firebase-document>
-        <firebase-storage-multiupload app-name="prono" id="upload" path="/users/[[user.uid]]" upload-tasks="{{uploadTasks}}" force-unique></firebase-storage-multiupload>
+        <firebase-document app-name="prono" path="/[[pronoGroupId]]/users/[[authUser.uid]]" data="{{user}}"></firebase-document>
+        <firebase-document app-name="prono" path="/[[pronoGroupId]]/users/[[authUser.uid]]/profilePicture" data="{{downloadUrl}}"></firebase-document>
+        <firebase-storage-multiupload app-name="prono" id="upload" path="/users/[[authUser.uid]]" upload-tasks="{{uploadTasks}}" force-unique></firebase-storage-multiupload>
         <template is="dom-repeat" items="[[uploadTasks]]">
             <firebase-storage-upload-task app-name="prono" task="[[item]]" bytes-transferred="{{bytesTransferred}}" total-bytes="{{totalBytes}}" state="{{state}}" download-url="{{downloadUrl}}" on-download-url-changed="{{downloadUrlChanged}}"></firebase-storage-upload-task>
         </template>
 
-        <!--<firebase-storage-ref app-name="prono" id="storage" path="/users/[[user.uid]]/profile" on-upload-task-changed="uploadTaskChanged" upload-task="uploadTask"></firebase-storage-ref>-->
-
         <paper-material>
             <div class="profile horizontal layout wrap">
                 <div class="column vertical layout">
-                    <profile-picture user="{{userProfile}}"></profile-picture>
+                    <profile-picture user="{{user}}"></profile-picture>
                     <paper-button raised on-tap="openFileInput">Change picture</paper-button>
                     <input type="file" id="fileInput" on-change="fileChanged" hidden>
                 </div>
                 <div class="column flex vertical layout">
-                    <paper-input label="Name" value="{{userProfile.displayName}}"></paper-input>
+                    <paper-input label="Name" value="{{user.displayName}}"></paper-input>
+                    <div class="">
+
+                    </div>
                     <paper-button raised on-tap="resetPasswordDialog">Change password</paper-button>
                 </div>
             </div>
@@ -86,10 +91,7 @@
 
             static get properties() {
                 return {
-                    pronoGroupId: {
-                        type: String,
-                    },
-                    user: {
+                    authUser: {
                         type: Object,
                     },
                 };

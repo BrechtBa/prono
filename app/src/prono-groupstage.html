@@ -2,6 +2,7 @@
 <link rel="import" href="../bower_components/app-localize-behavior/app-localize-behavior.html">
 
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/iron-meta/iron-meta.html">
 
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../bower_components/paper-material/paper-material.html">
@@ -50,6 +51,9 @@
             }
         </style>
 
+        <iron-meta key="user" value="{{user}}"></iron-meta>
+        <iron-meta key="pronoGroupId" value="{{pronoGroupId}}"></iron-meta>
+
         <firebase-query id="query" app-name="prono" path="/[[pronoGroupId]]/competition/stages/groupstage" data="{{groups}}"></firebase-query>
         <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/currentstage" data="{{currentStage}}"></firebase-document>
 
@@ -60,11 +64,11 @@
                     <h3>{{localize('groupname', 'group', group.$key)}}</h3>
                     <div class="matches">    
                         <template is="dom-repeat" items="{{group.matches}}" as="match" sort="_sortMatches">
-                            <prono-match prono-group-id="[[pronoGroupId]]" prono-user-id="{{pronoUserId}}" match-id="{{match}}" stage="groupstage" permission="[[permission]]"></prono-match>
+                            <prono-match prono-user-id="{{pronoUserId}}" match-id="{{match}}" stage="groupstage"></prono-match>
                         </template>
                     </div>
 
-                    <prono-groupwinners prono-group-id="[[pronoGroupId]]" prono-user-id="{{pronoUserId}}" group="{{group}}" permission="[[permission]]"></prono-groupwinners>
+                    <prono-groupwinners prono-user-id="{{pronoUserId}}" group="{{group}}"></prono-groupwinners>
 
                 </paper-material>
             </template>
@@ -80,15 +84,9 @@
 
             static get properties() {
                 return {
-                    pronoGroupId: {
-                        type: String,
-                    },
                     pronoUserId: {
                         type: String,
                         value: '',
-                    },
-                    permission: {
-                        type: String,
                     },
                     language: {
                         value: 'nl-BE',

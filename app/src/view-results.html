@@ -23,10 +23,10 @@
         </style>
 
         <h2>{{localize('groupstage')}}</h2>
-        <prono-groupstage prono-group-id="[[pronoGroupId]]" permission="[[permission]]"></prono-groupstage>
+        <prono-groupstage></prono-groupstage>
 
         <h2>{{localize('knockoutstage')}}</h2>
-        <prono-knockoutstage prono-group-id="[[pronoGroupId]]" permission="[[permission]]"></prono-knockoutstage>
+        <prono-knockoutstage></prono-knockoutstage>
 
     </template>
 
@@ -36,12 +36,6 @@
 
             static get properties() {
                 return {
-                    pronoGroupId: {
-                        type: String,
-                    },
-                    permission: {
-                        type: String,
-                    },
                     language: {
                         value: 'nl-BE',
                     },

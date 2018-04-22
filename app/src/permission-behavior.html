@@ -1,0 +1,19 @@
+
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<script>
+
+var Prono = {}
+Prono.PermissionBehavior = {
+    _manageCompetitionPermission(permission){
+        return permission > 2;
+    },
+
+    _manageUsersPermission(permission){
+        return permission > 5;
+    },
+
+    _manageGroupsPermission(permission){
+        return permission > 8;
+    },
+};
+</script>

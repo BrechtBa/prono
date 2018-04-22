@@ -3,6 +3,7 @@
 
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout.html">
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/iron-meta/iron-meta.html">
 
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../bower_components/paper-material/paper-material.html">
@@ -65,6 +66,8 @@
 			    height: 140px;
 			}
         </style>
+        <iron-meta key="user" value="{{user}}"></iron-meta>
+        <iron-meta key="pronoGroupId" value="{{pronoGroupId}}"></iron-meta>
 
         <firebase-query app-name="prono" path="/[[pronoGroupId]]/competition/stages" data="{{stages}}"></firebase-query>
         <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/currentstage" data="{{currentStage}}"></firebase-document>
@@ -100,9 +103,6 @@
 
             static get properties() {
                 return {
-                    pronoGroupId: {
-                        type: String,
-                    },
                     pronoUserId: {
                         type: String,
                         value: '',

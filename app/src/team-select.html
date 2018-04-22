@@ -1,5 +1,7 @@
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 
+<link rel="import" href="../bower_components/iron-meta/iron-meta.html">
+
 <link rel="import" href="../bower_components/paper-dropdown-menu/paper-dropdown-menu.html">
 <link rel="import" href="../bower_components/paper-listbox/paper-listbox.html">
 <link rel="import" href="../bower_components/paper-item/paper-item.html">
@@ -23,6 +25,8 @@
             }
 		</style>
 
+        <iron-meta key="pronoGroupId" value="{{pronoGroupId}}"></iron-meta>
+
         <firebase-query id="query" app-name="prono" path="/[[pronoGroupId]]/competition/teams" data="{{teams}}" order-by-key="name"></firebase-query>
 
         <paper-dropdown-menu label="[[label]]">
@@ -44,9 +48,6 @@
                     team: {
                         type: Object,
                         notify: true,
-                    },
-                    pronoGroupId: {
-                        type: String,
                     },
                     label: {
                         type: String,

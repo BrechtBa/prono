@@ -2,12 +2,14 @@
 <link rel="import" href="../bower_components/app-localize-behavior/app-localize-behavior.html">
 
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/iron-meta/iron-meta.html">
 
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 
 <link rel="import" href="../bower_components/polymerfire/firebase-query.html">
 
 <link rel="import" href="shared-styles.html">
+<link rel="import" href="permission-behavior.html">
 <link rel="import" href="team-name.html">
 <link rel="import" href="team-icon.html">
 <link rel="import" href="team-select.html">
@@ -32,13 +34,19 @@
 			.points{
 				width: 70px;
 			}
+			paper-input.points{
+				margin-left: 20px;
+			}
 			h4{
 				margin: 0;
 				font-size: 14px;
 			}
         </style>
 
-        <!--<firebase-query id="query" app-name="prono" path="/[[pronoGroupId]]/competition/stages/groupstage/points" data="{{points}}"></firebase-query>-->
+        <iron-meta key="user" value="{{user}}"></iron-meta>
+        <iron-meta key="pronoGroupId" value="{{pronoGroupId}}"></iron-meta>
+
+        <!--<firebase-document id="document" app-name="prono" path="/[[pronoGroupId]]/competition/stages/groupstage/[[group.$key]]/points" data="{{groupPoints}}"></firebase-document>-->
 
         <template is="dom-if" if="{{_hasValue(pronoUserId)}}">
             <firebase-document app-name="prono" path="/[[pronoGroupId]]/userpronos/[[pronoUserId]]/groupwinners/[[group.$key]]" data="{{prono}}"></firebase-document>
@@ -48,8 +56,8 @@
 
         <template is="dom-if" if="{{!_hasValue(pronoUserId)}}">
             <h4>{{localize('Ranking')}}</h4>
-            <div on-tap="editPoints">
-                <template is="dom-repeat" items="{{group.teams}}" as="team" sort="_sortByPoints">
+            <div on-tap="editPointsDialog">
+                <template is="dom-repeat" items="{{group.teams}}" as="team" sort="_sortByPoints" observe="team.points">
                     <div class="horizontal layout center">
                         <team-icon class="teamicon" prono-group-id="[[pronoGroupId]]" team-id="[[team]]"></team-icon>
                         <team-name class="flex teamname" prono-group-id="[[pronoGroupId]]" team-id="[[team]]" default=""></team-name>
@@ -74,7 +82,7 @@
 			</div>
 		</template>
 
-        <paper-dialog id="editWinnersDialog" class="winners-dialog">
+        <paper-dialog id="editWinnersDialog">
             <iron-form id="editWinnersForm" on-iron-form-submit="editWinners">
                 <form>
                     <div class="vertical layout">
@@ -89,17 +97,34 @@
             </iron-form>
         </paper-dialog>
 
+        <paper-dialog id="editPointsDialog">
+            <iron-form id="editPointsForm" on-iron-form-submit="editPoints">
+                <form>
+                    <div class="vertical layout">
+                        <template is="dom-repeat" items="{{newTeams}}" as="team">
+                            <div class="horizontal layout center">
+                                <team-icon class="teamicon" prono-group-id="[[pronoGroupId]]" team-id="[[team.team]]"></team-icon>
+                                <team-name class="flex teamname" prono-group-id="[[pronoGroupId]]" team-id="[[team.team]]" default=""></team-name>
+                                <paper-input class="points" label="Points" value="{{team.points}}"></paper-input>
+                            </div>
+                        </template>
+                        <div class="buttons">
+                            <paper-button primary on-tap="editPointsFormSubmit" >save</paper-button>
+                            <paper-button secondary dialog-dismiss>cancel</paper-button>
+                        </div>
+                    </div>
+                </form>
+            </iron-form>
+        </paper-dialog>
+
     </template>
 
     <script>
-        class PronoGroupwinners extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.Element){
+        class PronoGroupwinners extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior, Prono.PermissionBehavior], Polymer.Element){
             static get is() { return 'prono-groupwinners'; }
 
             static get properties() {
                 return {
-                    pronoGroupId: {
-                        type: String,
-                    },
                     pronoUserId: {
                         type: String,
                         value: '',
@@ -107,9 +132,7 @@
                     group: {
                         type: Object,
                     },
-                    permission: {
-                        type: Number,
-                    },
+
                     language: {
                         value: 'nl-BE',
                     },
@@ -155,6 +178,32 @@
                     }
                     this.$.document.path = '';
                 }
+            }
+
+            editPointsDialog(){
+                if(this._manageCompetitionPermission(this.user.permission)){
+                    var newTeams = [];
+                    for(var i=0; i<this.group.teams.length; i++){
+                        var team = this.group.teams[i]
+                        newTeams.push({'team': team, 'points': this._getPoints(this.group, team)})
+                    }
+                    this.newTeams = newTeams;
+                    this.$.editPointsDialog.open();
+                }
+            }
+            editPointsFormSubmit(){
+                this.$.editPointsForm.submit();
+            }
+            editPoints(){
+                 this.$.editPointsDialog.close();
+                 console.log(this.newTeams)
+                 for(var i=0; i<this.newTeams.length; i++){
+                     var team = this.newTeams[i];
+                     this.$.document.path = '';
+                     this.$.document.path = '/'+this.pronoGroupId+'/competition/stages/groupstage/'+this.group.$key+'/points/'+team.team;
+                     this.$.document.data = team.points;
+                 }
+                 this.$.document.path = '';
             }
 
             _sortByPoints(a, b){
