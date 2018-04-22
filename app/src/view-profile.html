@@ -64,11 +64,13 @@
                     <input type="file" id="fileInput" on-change="fileChanged" hidden>
                 </div>
                 <div class="column flex vertical layout">
-                    <paper-input label="Name" value="{{user.displayName}}"></paper-input>
-                    <div class="">
-
+                    <div class="flex vertical layout">
+                        <paper-input label="Name" value="{{user.displayName}}"></paper-input>
                     </div>
-                    <paper-button raised on-tap="resetPasswordDialog">Change password</paper-button>
+                    <div class="horizontal layout">
+                        <div class="flex"></div>
+                        <paper-button raised on-tap="resetPasswordDialog">Change password</paper-button>
+                    </div>
                 </div>
             </div>
 
