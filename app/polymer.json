@@ -2,10 +2,17 @@
   "entrypoint": "index.html",
   "shell": "src/my-app.html",
   "fragments": [
-    "src/my-view1.html",
-    "src/my-view2.html",
-    "src/my-view3.html",
-    "src/my-view404.html"
+    "src/view-auth.html",
+    "src/view-groupstage-config.html",
+    "src/view-knockoutstage-config.html",
+    "src/view-matches.html",
+    "src/view-profile.html",
+    "src/view-prono.html",
+    "src/view-ranking.html",
+    "src/view-results.html",
+    "src/view-rules.html",
+    "src/view-teams.html",
+    "src/view-view404.html"
   ],
   "sources": [
     "src/**/*",
@@ -13,7 +20,12 @@
   ],
   "extraDependencies": [
     "manifest.json",
-    "bower_components/webcomponentsjs/*.js"
+    "bower_components/webcomponentsjs/*.js",
+    "bower_components/web-animations-js/*.min.js",
+    "bower_components/neon-animation/web-animations.html",
+    "bower_components/intl/dist/Intl.min.js",
+    "bower_components/intl/locale-data/jsonp/en.js",
+    "bower_components/intl/locale-data/jsonp/nl-BE.js"
   ],
   "lint": {
     "rules": ["polymer-2"]

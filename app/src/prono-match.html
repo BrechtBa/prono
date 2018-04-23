@@ -101,7 +101,7 @@
 
         <div class$="{{_layoutClass(stage)}} {{_collapsedClass(collapsed)}}" on-tap="editScoreDialog">
             <div class$="teamname left {{_hiddenClass(hideTeamName)}}">
-                <team-name team="{{team1}}" default="{{match.defaultteam1}}" abr="{{abrTeamName}}"></team-name>
+                <team-name team="{{team1}}" def="{{match.defaultteam1}}" abr="{{abrTeamName}}"></team-name>
             </div>
             <div class="teamicon">
                 <team-icon team="{{team1}}"></team-icon>
@@ -121,7 +121,7 @@
                 <team-icon team="{{team2}}"></team-icon>
             </div>
             <div class$="teamname right {{_hiddenClass(hideTeamName)}}">
-                <team-name team="{{team2}}" default="{{match.defaultteam2}}" abr="{{abrTeamName}}"></team-name>
+                <team-name team="{{team2}}" def="{{match.defaultteam2}}" abr="{{abrTeamName}}"></team-name>
             </div>
         </div>
 
@@ -132,11 +132,11 @@
                     <div class="vertical layout center center-justified">
                         <div class="horizontal layout center center-justified">
                             <div class="teamname left">
-                                <team-name team="{{team1}}" default="{{match.defaultteam1}}"></team-name>
+                                <team-name team="{{team1}}" def="{{match.defaultteam1}}"></team-name>
                             </div>
                              -
                             <div class="teamname right">
-                                <team-name team="{{team2}}" default="{{match.defaultteam1}}"></team-name>
+                                <team-name team="{{team2}}" def="{{match.defaultteam1}}"></team-name>
                             </div>
                         </div>
                         <div class="horizontal layout center center-justified">

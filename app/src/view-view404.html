@@ -1,16 +1,7 @@
-<!--
-@license
-Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
 
 <link rel="import" href="../bower_components/polymer/polymer-element.html">
 
-<dom-module id="my-view404">
+<dom-module id="view-view404">
   <template>
     <style>
       :host {
@@ -20,12 +11,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
     </style>
 
-    Oops you hit a 404. <a href="[[rootPath]]">Head back to home.</a>
+    This is not the page you are looking for. <a href="[[rootPath]]">Head back to home.</a>
   </template>
 
   <script>
-    class MyView404 extends Polymer.Element {
-      static get is() { return 'my-view404'; }
+    class ViewView404 extends Polymer.Element {
+      static get is() { return 'view-view404'; }
       static get properties() {
         return {
           // This shouldn't be neccessary, but the Analyzer isn't picking up
@@ -35,6 +26,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
     }
 
-    window.customElements.define(MyView404.is, MyView404);
+    window.customElements.define(ViewView404.is, ViewView404);
   </script>
 </dom-module>
