@@ -1,0 +1,55 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="prono-rules.html">
+
+<dom-module id="view-rules">
+    <template>
+        <style include="iron-flex iron-flex-alignment"></style>
+        <style include="shared-styles"></style>
+        <style>
+            :host {
+                display: block;
+                padding: 10px;
+            }
+            paper-material{
+      			margin-bottom: 5px;
+				padding: 10px;
+				background: var(--background-secondary-color);
+				color: var(--text-secondary-color);
+    		}
+        </style>
+
+        	<paper-material elevation="2" class$="horizontal layout center {{_userClass(user.$key, pronoUserId)}}" on-tap="pointDetailsDialog">
+				<prono-rules></prono-rules>
+			</paper-material>
+
+
+
+    </template>
+
+    <script>
+        class ViewRules extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.Element){
+            static get is() { return 'view-rules'; }
+
+            static get properties() {
+                return {
+                    resources: {
+                        value() {
+                            return {
+                                'en': {
+                                    'rules': 'Rules',
+                                },
+                                'nl-BE': {
+                                    'rules': 'Regels',
+                                }
+                            }
+                        }
+                    },
+                }
+            }
+        }
+
+        window.customElements.define(ViewRules.is, ViewRules);
+    </script>
+</dom-module>
