@@ -100,7 +100,7 @@
                 margin: 14px 0;
                 font-size: 20px;
             }
-            @media (max-width: 639px) {
+            @media (max-width: 800px) {
                 [main-title] {
                     font-size: 26px;
                 }
@@ -137,7 +137,7 @@
         <iron-meta key="user" value="{{user}}"></iron-meta>
         <iron-meta key="pronoGroupId" value="{{pronoGroupId}}"></iron-meta>
 
-        <app-drawer-layout fullbleed narrow="{{narrow}}">
+        <app-drawer-layout fullbleed narrow="{{narrow}}" responsive-width="800px">
             <!-- Drawer content -->
             <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]">
                 <a href="profile" class="drawer-header">
