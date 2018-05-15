@@ -21,7 +21,7 @@ var rules = {
         "result" : 3,
         "score" : 4
     },
-    "groupstagewinners" : {
+    "groupwinners" : {
         "team" : 2,
         "winner" : 4
     },
@@ -37,7 +37,7 @@ var rules = {
         "result" : 6,
         "score" : 8
     },
-    "knockouttageteams" : {
+    "knockoutstageteams" : {
         "1" : 60,
         "2" : 42,
         "4" : 28,
@@ -120,32 +120,32 @@ function setUserTotalGoalsPoints(pronoGroupId, userId){
 }
 
 
-function setUserGroupstageWinnersPoints(pronoGroupId, userId){
+function setUserGroupWinnersPoints(pronoGroupId, userId){
     admin.database().ref('/'+pronoGroupId+'/competition/stages/groupstage').once('value').then( snapshot => {
-        admin.database().ref('/'+pronoGroupId+'/userpronos/'+userId+'/groupstagewinners').once('value').then(function(pronoSnapshot){
+        admin.database().ref('/'+pronoGroupId+'/userpronos/'+userId+'/groupwinners').once('value').then(function(pronoSnapshot){
             var points = 0
             snapshot.forEach(function(group){
                 var teams = []
-                group.child('teams').forEach(function(team){
-                    teams.push({id: team.key, points: team.child('points').val()})
+                group.child('points').forEach(function(points){
+                    teams.push({id: points.key, points: points.val()})
                 })
                 teams.sort(function(a, b){
                     return b.points-a.points
                 })
                 if(teams.length > 1 && teams[0].points > 0){
                     if(teams[0].id == pronoSnapshot.child(group.key).child('1').val() || teams[1].id == pronoSnapshot.child(group.key).child('1').val()){
-                        points += rules.groupstagewinners.team
+                        points += rules.groupwinners.team
                     }
                     if(teams[0].id == pronoSnapshot.child(group.key).child('2').val() || teams[1].id == pronoSnapshot.child(group.key).child('2').val()){
-                        points += rules.groupstagewinners.team
+                        points += rules.groupwinners.team
                     }
                     if(teams[0].id == pronoSnapshot.child(group.key).child('1').val()){
-                        points += rules.groupstagewinners.winner
+                        points += rules.groupwinners.winner
                     }
                 }
             });
 
-            admin.database().ref('/'+pronoGroupId+'/users/'+userId+'/points/groupstagewinners').set(points);
+            admin.database().ref('/'+pronoGroupId+'/users/'+userId+'/points/groupwinners').set(points);
         });
     });
 }
@@ -173,7 +173,7 @@ function setUserKnockoutStageTeamsPoints(pronoGroupId, userId, stageTeams){
             if(stageTeams[stage.key]){
                 stage.forEach(function(team){
                     if(stageTeams[stage.key].indexOf(team.val()) > -1){
-                        points += rules.knockouttageteams[stage.key]
+                        points += rules.knockoutstageteams[stage.key]
                     }
                 });
             }
@@ -331,11 +331,11 @@ exports.totalGoalsChanged = functions.database.ref('/{pronoGroupId}/competition/
     });
     return null;
 });
-exports.teamPointsChanged = functions.database.ref('/{pronoGroupId}/competition/stages/groupstage/{groupId}/teams/{teamId}/points').onWrite((data, context) => {
+exports.teamPointsChanged = functions.database.ref('/{pronoGroupId}/competition/stages/groupstage/{groupId}/points/{teamId}/').onWrite((data, context) => {
     var pronoGroupId = context.params.pronoGroupId;
     admin.database().ref('/'+pronoGroupId+'/users').once('value').then( snapshot => {
         snapshot.forEach( user => {
-            setUserGroupstageWinnersPoints(pronoGroupId, user.key)
+            setUserGroupWinnersPoints(pronoGroupId, user.key)
         });
     });
     return null;
@@ -395,9 +395,15 @@ exports.matchChanged = functions.database.ref('/{pronoGroupId}/competition/match
 });
 exports.createUser = functions.auth.user().onCreate((user) => {
     var pronoGroupId = 'pronogroupid1';
-    var email = user.email
-    var displayName = email.split('@')[0].replace('_', ' ')[0].toUpperCase() + email.split('@')[0].replace('_', ' ').slice(1)
+    var email = user.email;
+    var displayName = email.split('@')[0][0].toUpperCase() + email.split('@')[0].replace('_', ' ').replace('.', ' ').slice(1);
     admin.database().ref('/'+pronoGroupId+'/users/'+user.uid+'/permission').set(1);
     admin.database().ref('/'+pronoGroupId+'/users/'+user.uid+'/displayName').set(displayName);
+    var points = {};
+    for(var key in rules) {
+        points[key] = 0;
+    }
+    admin.database().ref('/'+pronoGroupId+'/users/'+user.uid+'/points').set(points);
+
     return null;
 });
