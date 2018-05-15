@@ -196,7 +196,6 @@
             }
             editPoints(){
                  this.$.editPointsDialog.close();
-                 console.log(this.newTeams)
                  for(var i=0; i<this.newTeams.length; i++){
                      var team = this.newTeams[i];
                      this.$.document.path = '';
@@ -208,9 +207,8 @@
 
             _sortByPoints(a, b){
                 try{
-                    pa = this._getPoints(this.group, a)
-                    pb = this._getPoints(this.group, b)
-
+                    var pa = this._getPoints(this.group, a)
+                    var pb = this._getPoints(this.group, b)
                     return pb-pa;
                 }
                 catch(e){
