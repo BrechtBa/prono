@@ -34,7 +34,7 @@
                 height: var(--size);
                 line-height: var(--size);
                 border-radius: 50%;
-                font-size: 30px;
+                font-size: var(--size);
                 text-align: center;
             }
             .outer-circle.default{
@@ -75,10 +75,10 @@
 
         <template is="dom-if" if="{{!isDefined(user.profilePicture)}}">
             <div class="outer-circle default">
-                {{getFirstLetter(user.displayname)}}
-                <!--<div class="inner-circle">
+                <!--{{getFirstLetter(user.displayName)}}-->
+                <div class="inner-circle">
                     <iron-icon icon="social:person"></iron-icon>
-                </div>-->
+                </div>
             </div>
         </template>
         <template is="dom-if" if="{{isDefined(user.profilePicture)}}">
