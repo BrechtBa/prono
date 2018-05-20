@@ -1,0 +1,81 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/app-localize-behavior/app-localize-behavior.html">
+
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-meta/iron-meta.html">
+
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
+<link rel="import" href="../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-document.html">
+
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="permission-behavior.html">
+<link rel="import" href="team-icon.html">
+
+
+<dom-module id="prono-user">
+    <template>
+        <style include="iron-flex iron-flex-alignment"></style>
+        <style include="shared-styles"></style>
+        <style>
+            :host {
+                display: block;
+            }
+            paper-material{
+      			margin-bottom: 5px;
+				cursor: pointer;
+				padding: 10px;
+				background: var(--background-secondary-color);
+				color: var(--text-secondary-color);
+    		}
+			profile-picture{
+			    margin-right: 15px;
+                --size: 50px;
+			}
+			.name{
+				padding: 10px;
+                font-size: 18px;
+			}
+        </style>
+
+
+        <iron-meta key="pronoGroupId" value="{{pronoGroupId}}"></iron-meta>
+        <firebase-document id="document" app-name="prono" path="/[[pronoGroupId]]/users/[[userId]]" data="{{user}}"></firebase-document>
+
+
+        <paper-material class="horizontal layout">
+            <profile-picture class="picture" user="{{user}}"></profile-picture>
+            <div class="flex name">{{user.displayName}}</div>
+            <paper-checkbox checked="{{user.paid}}">Paid</paper-checkbox>
+        </paper-material>
+
+    </template>
+
+    <script>
+        class PronoUser extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior, Prono.PermissionBehavior], Polymer.Element){
+            static get is() { return 'prono-user'; }
+
+            static get properties() {
+                return {
+                    language: {
+                        value: 'nl-BE',
+                    },
+                    userId: {
+                        type: String,
+                    }
+                };
+            }
+
+        }
+
+        window.customElements.define(PronoUser.is, PronoUser);
+
+    </script>
+
+</dom-module>

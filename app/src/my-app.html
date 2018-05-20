@@ -30,6 +30,7 @@
 <link rel="lazy-import" href="view-prono.html">
 <link rel="lazy-import" href="view-rules.html">
 <link rel="lazy-import" href="view-profile.html">
+<link rel="lazy-import" href="view-users.html">
 <link rel="lazy-import" href="view-teams.html">
 <link rel="lazy-import" href="view-matches.html">
 <link rel="lazy-import" href="view-groupstage-config.html">
@@ -156,6 +157,7 @@
                     <a name="results" href="[[rootPath]]rules">{{localize('rules')}}</a>
                     <hr>
                     <template is="dom-if" if="{{_manageCompetitionPermission(user.permission)}}">
+                        <a name="users" href="[[rootPath]]users">Users</a>
                         <a name="teams" href="[[rootPath]]teams">Teams</a>
                         <a name="matches" href="[[rootPath]]matches">Matches</a>
                         <a name="groupstage-config" href="[[rootPath]]groupstage-config">Groupstage</a>
@@ -188,6 +190,7 @@
                     <view-profile name="profile" auth-user="{{authUser}}"></view-profile>
                     <my-view404 name="view404"></my-view404>
 
+                    <view-users name="users" user="{{user}}"></view-users>
                     <view-teams name="teams" user="{{user}}"></view-teams>
                     <view-matches name="matches" user="{{user}}"></view-matches>
                     <view-groupstage-config name="groupstage-config" user="{{user}}"></view-groupstage-config>

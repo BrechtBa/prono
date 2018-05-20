@@ -1,0 +1,94 @@
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../bower_components/app-localize-behavior/app-localize-behavior.html">
+
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-meta/iron-meta.html">
+
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-material/paper-material.html">
+
+<link rel="import" href="../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-document.html">
+
+<link rel="import" href="shared-styles.html">
+<link rel="import" href="permission-behavior.html">
+<link rel="import" href="prono-user.html">
+
+
+<dom-module id="view-users">
+    <template>
+        <style include="iron-flex iron-flex-alignment"></style>
+        <style include="shared-styles"></style>
+        <style>
+            :host {
+                display: block;
+                padding: 10px;
+            }
+            .settings {
+                margin-bottom: 30px;
+            }
+        </style>
+
+
+        <template is="dom-if" if="{{_manageCompetitionPermission(user.permission)}}">
+            <iron-meta key="pronoGroupId" value="{{pronoGroupId}}"></iron-meta>
+
+            <firebase-query id="query" app-name="prono" path="/[[pronoGroupId]]/users" data="{{users}}"></firebase-query>
+            <firebase-document id="document" app-name="prono" data=""></firebase-document>
+            <firebase-document app-name="prono" path="/[[pronoGroupId]]/settings/showpaymentmessage" data="{{showpaymentmessage}}"></firebase-document>
+
+            <paper-material class="settings">
+                <h3>Settings</h3>
+                <paper-checkbox checked="{{showpaymentmessage}}">Show payment message</paper-checkbox>
+            </paper-material>
+
+            <template is="dom-repeat" items="{{users}}" as="user">
+                <prono-user user-id="{{user.$key}}"></prono-user>
+            </template>
+
+            <paper-dialog id="deleteItem">
+                <p>Are you sure?</p>
+                <paper-button on-tap="_deleteItem">delete</paper-button>
+                <paper-button dialog-dismiss>cancel</paper-button>
+            </paper-dialog>
+        </template>
+    </template>
+
+    <script>
+        class ViewUsers extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior, Prono.PermissionBehavior], Polymer.Element){
+            static get is() { return 'view-users'; }
+
+            static get properties() {
+                return {
+                    language: {
+                        value: 'nl-BE',
+                    },
+                    user: {
+                        type: Object,
+                    }
+                };
+            }
+
+            _deleteItemDialog(){
+                this.$.deleteItem.open()
+            }
+
+            _deleteItem(){
+                this.$.deleteItem.close();
+                console.log('delete item ', this.editItem)
+                this.$.document.path = '/'+this.pronoGroupId+'/competition/users/'+this.editItem
+                this.$.document.data = null;
+                this.$.document.path = '';
+            }
+
+        }
+
+        window.customElements.define(ViewUsers.is, ViewUsers);
+
+    </script>
+
+</dom-module>
