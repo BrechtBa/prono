@@ -16,10 +16,9 @@
 
 <link rel="import" href="shared-styles.html">
 <link rel="import" href="permission-behavior.html">
-<link rel="import" href="prono-user.html">
 
 
-<dom-module id="view-users">
+<dom-module id="view-settings">
     <template>
         <style include="iron-flex iron-flex-alignment"></style>
         <style include="shared-styles"></style>
@@ -37,24 +36,18 @@
         <template is="dom-if" if="{{_manageCompetitionPermission(user.permission)}}">
             <iron-meta key="pronoGroupId" value="{{pronoGroupId}}"></iron-meta>
 
-            <firebase-query id="query" app-name="prono" path="/[[pronoGroupId]]/users" data="{{users}}"></firebase-query>
-            <firebase-document id="document" app-name="prono" data=""></firebase-document>
+            <firebase-document app-name="prono" path="/[[pronoGroupId]]/settings/showpaymentmessage" data="{{showpaymentmessage}}"></firebase-document>
 
-            <template is="dom-repeat" items="{{users}}" as="user">
-                <prono-user user-id="{{user.$key}}"></prono-user>
-            </template>
-
-            <paper-dialog id="deleteItem">
-                <p>Are you sure?</p>
-                <paper-button on-tap="_deleteItem">delete</paper-button>
-                <paper-button dialog-dismiss>cancel</paper-button>
-            </paper-dialog>
+            <paper-material class="settings">
+                <h3>Settings</h3>
+                <paper-checkbox checked="{{showpaymentmessage}}">Show payment message</paper-checkbox>
+            </paper-material>
         </template>
     </template>
 
     <script>
-        class ViewUsers extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior, Prono.PermissionBehavior], Polymer.Element){
-            static get is() { return 'view-users'; }
+        class ViewSettings extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior, Prono.PermissionBehavior], Polymer.Element){
+            static get is() { return 'view-settings'; }
 
             static get properties() {
                 return {
@@ -67,21 +60,9 @@
                 };
             }
 
-            _deleteItemDialog(){
-                this.$.deleteItem.open()
-            }
-
-            _deleteItem(){
-                this.$.deleteItem.close();
-                console.log('delete item ', this.editItem)
-                this.$.document.path = '/'+this.pronoGroupId+'/competition/users/'+this.editItem
-                this.$.document.data = null;
-                this.$.document.path = '';
-            }
-
         }
 
-        window.customElements.define(ViewUsers.is, ViewUsers);
+        window.customElements.define(ViewSettings.is, ViewSettings);
 
     </script>
 
