@@ -62,6 +62,9 @@
             .hidden {
                 display: none;
             }
+            .hidden-button{
+                display: none;
+            }
         </style>
 
         <firebase-auth id="auth" app-name="prono" user="{{user}}" signed-in="{{signedIn}}" on-error="authError"></firebase-auth>
@@ -81,6 +84,7 @@
                                 <iron-icon icon="account-circle"></iron-icon><span>Sign in</span>
                             </paper-button>
                         </div>
+                        <input type="submit" class="hidden-button"> </input>
                     </form>
                 </iron-form>
                 <p>{{localize('No account?')}} <a href="#" on-tap="registerDialog">register</a></p>
@@ -92,7 +96,7 @@
             <h2>{{localize('Register')}}</h2>
 
             <iron-form id="registerForm" on-keyup="registerFormChanged" on-change="registerFormChanged" on-iron-form-submit="register">
-                <form>
+                <form action="">
                     <div class="container">
                         <paper-input-error id="registerError">{{localize('email exists')}}</paper-input-error>
                     </div>
@@ -105,7 +109,7 @@
 
                     <div class="buttons">
                         <paper-button id="registerButton" raised class="main" on-tap="registerFormSubmit" disabled>Register</paper-button>
-                        <button type="submit" class="hidden">Register</button>
+                        <input type="submit" class="hidden-button"> </input>
                     </div>
                 </form>
             </iron-form>
