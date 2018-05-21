@@ -7,12 +7,15 @@
 <link rel="import" href="../bower_components/iron-meta/iron-meta.html">
 
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/paper-material/paper-material.html">
 
 <link rel="import" href="../bower_components/polymerfire/firebase-query.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-document.html">
+
+<link rel="import" href="../bower_components/datetime-picker/datetime-input.html">
 
 <link rel="import" href="shared-styles.html">
 <link rel="import" href="permission-behavior.html">
@@ -37,11 +40,21 @@
             <iron-meta key="pronoGroupId" value="{{pronoGroupId}}"></iron-meta>
 
             <firebase-document app-name="prono" path="/[[pronoGroupId]]/settings/showpaymentmessage" data="{{showpaymentmessage}}"></firebase-document>
+            <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/currentstage" data="{{currentstage}}"></firebase-document>
+            <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/nextstagestart" data="{{nextstagestart}}"></firebase-document>
 
             <paper-material class="settings">
-                <h3>Settings</h3>
+                <h3>Competition settings</h3>
+                <paper-input value="{{currentstage}}" label="Current stage" allowed-pattern="[0-9]*"></paper-input>
+                <!--<paper-input value="[[nextstagestart]]" label="Next stage start" allowed-pattern="[0-9]*" disabled></paper-input>-->
+                <datetime-input value="{{nextstagestart}}" locale="fr"></datetime-input>
+            </paper-material>
+
+            <paper-material class="settings">
+                <h3>Display settings</h3>
                 <paper-checkbox checked="{{showpaymentmessage}}">Show payment message</paper-checkbox>
             </paper-material>
+
         </template>
     </template>
 

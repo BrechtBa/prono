@@ -14,7 +14,7 @@
 <link rel="import" href="../bower_components/polymerfire/firebase-query.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-document.html">
 
-<link rel="import" href="../bower_components/datetime-picker/datetime-picker.html">
+<link rel="import" href="../bower_components/datetime-picker/datetime-input.html">
 
 <link rel="import" href="shared-styles.html">
 <link rel="import" href="permission-behavior.html">
@@ -73,8 +73,7 @@
 
                     <template is="dom-if" if="{{_showEditItem(match, editItem)}}">
                         <paper-input value="{{match.number}}" label="Number"></paper-input>
-                        <!--<datetime-picker value="{{match.date}}" position="bottom" _hide-seconds></datetime-picker>-->
-                        <paper-input value="{{match.date}}" label="Date"></paper-input>
+                        <datetime-input value="{{match.date}}" locale="fr"></datetime-input>
                         <paper-input value="{{match.defaultteam1}}" label="Default team 1"></paper-input>
                         <paper-input value="{{match.defaultteam2}}" label="Default team 2"></paper-input>
                         <team-select team="{{match.team1}}" label="Team 1"></team-select>

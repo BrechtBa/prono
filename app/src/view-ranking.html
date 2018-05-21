@@ -62,7 +62,7 @@
                     {{localize("has not paid")}}
                 </template>
                 </div>
-				<div class="points">{{_totalPoints(user)}}</div>
+				<div class="points">{{_roundedTotalPoints(user)}}</div>
 			</paper-material>
 		</template>
 
@@ -156,13 +156,16 @@
 			_totalPoints(user){
 			    var total = 0
 			    if(!user.paid){
-			        return 0;
+			        return -0.1;
 			    }
 			    for(var key in user.points){
 			        total += user.points[key];
 			    }
 			    return total;
 			}
+            _roundedTotalPoints(user){
+                return Math.round(this._totalPoints(user));
+            }
 
             _showPaymentMessage(showpaymentmessage, user){
                 return (showpaymentmessage & !user.paid);
