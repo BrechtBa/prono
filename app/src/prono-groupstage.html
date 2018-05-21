@@ -52,6 +52,9 @@
             .message {
                 color: var(--app-primary-color);
                 font-weight: 600;
+                text-align: right;
+                margin-top: -30px;
+                margin-right: 50px;
             }
         </style>
 
@@ -62,7 +65,7 @@
         <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/currentstage" data="{{currentStage}}"></firebase-document>
         <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/nextstagestart" data="{{nextstagestart}}"></firebase-document>
 
-        <template is="dom-if" if="{{_showCompletedMessage(currentStage, nextstagestart)}}">
+        <template is="dom-if" if="{{_showCompletedMessage(currentStage, nextstagestart, pronoUserId)}}">
             <div class="message">{{message}}</div>
         </template>
 
@@ -72,12 +75,12 @@
                 <paper-material class$="{{_disabledClass(currentStage, pronoUserId)}} group vertical layout">
                     <h3>{{localize('groupname', 'group', group.$key)}}</h3>
                     <div class="matches">    
-                        <template is="dom-repeat" items="{{group.matches}}" as="match" sort="_sortMatches">
-                            <prono-match prono-user-id="{{pronoUserId}}" match-id="{{match}}" stage="groupstage"></prono-match>
+                        <template id="matches" is="dom-repeat" items="{{group.matches}}" as="match" sort="_sortMatches">
+                            <prono-match id="match[[match]]" prono-user-id="{{pronoUserId}}" match-id="{{match}}" stage="groupstage"></prono-match>
                         </template>
                     </div>
 
-                    <prono-groupwinners prono-user-id="{{pronoUserId}}" group="{{group}}"></prono-groupwinners>
+                    <prono-groupwinners id="groupwinners[[group.$key]]" prono-user-id="{{pronoUserId}}" group="{{group}}"></prono-groupwinners>
 
                 </paper-material>
             </template>
@@ -113,18 +116,23 @@
 
             ready(){
                 super.ready();
+
                 var that = this;
                 setInterval(function(){
-                    var now = new Date()
-                    var next = new Date(that.nextstagestart)
+                    if(that.complete()){
+                        that.message = 'Dit deel is volledig!'
+                    }
+                    else{
+                        var now = new Date()
+                        var next = new Date(that.nextstagestart)
 
-                    var dt = next-now
-                    var days = Math.floor(dt/24/3600/1000)
-                    var hours = Math.floor( (dt - days*24*3600*1000)/3600/1000 )
-                    var minutes = Math.floor( (dt - days*24*3600*1000 - hours*3600*1000)/60/1000 )
-                    var seconds = Math.floor( (dt - days*24*3600*1000 - hours*3600*1000 - minutes*60*1000)/1000 )
-                    that.message = 'Je hebt nog '+days+' dagen '+hours+' uur en '+minutes+' minuten om dit deel in te vullen.';
-
+                        var dt = next-now
+                        var days = Math.floor(dt/24/3600/1000)
+                        var hours = Math.floor( (dt - days*24*3600*1000)/3600/1000 )
+                        var minutes = Math.floor( (dt - days*24*3600*1000 - hours*3600*1000)/60/1000 )
+                        var seconds = Math.floor( (dt - days*24*3600*1000 - hours*3600*1000 - minutes*60*1000)/1000 )
+                        that.message = 'Je hebt nog '+days+' dagen '+hours+' uur en '+minutes+' minuten om dit deel in te vullen.';
+                    }
                 }, 1*1000);
             }
 
@@ -132,10 +140,34 @@
                 return parseInt(a.date) - parseInt(b.date);
             }
 
-            _showCompletedMessage(currentstage, nextstagestart){
+            complete(){
+                var complete = true
+                for(var i=0;i<this.groups.length;i++){
+                    var group = this.groups[i];
+                    for(var j=0;j<group.matches.length;j++){
+                        var match = group.matches[j];
+                        var el = Polymer.dom(this.root).querySelector('#match'+match)
+                        try{
+                            complete = complete && el.complete()
+                        }
+                        catch(e){
+                        }
+                    }
+                    var el = Polymer.dom(this.root).querySelector('#groupwinners'+group.$key)
+                    try{
+                        complete = complete && el.complete()
+                    }
+                    catch(e){
+                    }
+
+                }
+                return complete;
+            }
+
+            _showCompletedMessage(currentStage, nextstagestart, pronoUserId){
                 var now = new Date()
                 var next = new Date(nextstagestart)
-                if(currentstage==0 && now < next){
+                if(pronoUserId !== '' && currentStage==0 && now < next){   //&& now > next-7*24*3600*1000
                     return true;
                 }
                 else{

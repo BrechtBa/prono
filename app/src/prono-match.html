@@ -258,6 +258,10 @@
                 }
             }
 
+            complete(){
+                return (typeof this.prono.score1 != 'undefined' && typeof this.prono.score2 != 'undefined' && this.prono.score1 > -1 && this.prono.score2 > -1)
+            }
+
             _formatScore(score){
                 if(score>-1){
                     return score;

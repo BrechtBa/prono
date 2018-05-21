@@ -205,6 +205,10 @@
                  this.$.document.path = '';
             }
 
+            complete(){
+                return (this.prono.length == 3 && this.prono[1] != -1 && this.prono[2] != -1)
+            }
+
             _sortByPoints(a, b){
                 try{
                     var pa = this._getPoints(this.group, a)
