@@ -49,6 +49,10 @@
             prono-groupranking{
                 margin-top: 20px;
             }
+            .message {
+                color: var(--app-primary-color);
+                font-weight: 600;
+            }
         </style>
 
         <iron-meta key="user" value="{{user}}"></iron-meta>
@@ -56,6 +60,11 @@
 
         <firebase-query id="query" app-name="prono" path="/[[pronoGroupId]]/competition/stages/groupstage" data="{{groups}}"></firebase-query>
         <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/currentstage" data="{{currentStage}}"></firebase-document>
+        <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/nextstagestart" data="{{nextstagestart}}"></firebase-document>
+
+        <template is="dom-if" if="{{_showCompletedMessage(currentStage, nextstagestart)}}">
+            <div class="message">{{message}}</div>
+        </template>
 
         <div class="horizontal layout wrap center-justified">
             
@@ -102,8 +111,36 @@
                 };
             }
 
+            ready(){
+                super.ready();
+                var that = this;
+                setInterval(function(){
+                    var now = new Date()
+                    var next = new Date(that.nextstagestart)
+
+                    var dt = next-now
+                    var days = Math.floor(dt/24/3600/1000)
+                    var hours = Math.floor( (dt - days*24*3600*1000)/3600/1000 )
+                    var minutes = Math.floor( (dt - days*24*3600*1000 - hours*3600*1000)/60/1000 )
+                    var seconds = Math.floor( (dt - days*24*3600*1000 - hours*3600*1000 - minutes*60*1000)/1000 )
+                    that.message = 'Je hebt nog '+days+' dagen '+hours+' uur en '+minutes+' minuten om dit deel in te vullen.';
+
+                }, 1*1000);
+            }
+
             _sortMatches(a, b) {
                 return parseInt(a.date) - parseInt(b.date);
+            }
+
+            _showCompletedMessage(currentstage, nextstagestart){
+                var now = new Date()
+                var next = new Date(nextstagestart)
+                if(currentstage==0 && now < next){
+                    return true;
+                }
+                else{
+                    return false;
+                }
             }
 
             _disabledClass(currentStage, pronoUserId){
