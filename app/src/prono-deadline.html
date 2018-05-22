@@ -1,0 +1,105 @@
+
+<link rel="import" href="../bower_components/polymer/polymer-element.html">
+
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/iron-icons/social-icons.html">
+<link rel="import" href="../bower_components/iron-icon/iron-icon.html">
+
+<link rel="import" href="../bower_components/polymerfire/firebase-document.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-query.html">
+
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-material/paper-material.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+
+<link rel="import" href="../bower_components/polymerfire/firebase-document.html">
+
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="prono-deadline">
+    <template>
+
+        <style include="iron-flex iron-flex-alignment"></style>
+        <style include="shared-styles">
+            :host {
+                display: block;
+            }
+            .message {
+                color: var(--app-primary-color);
+                font-weight: 600;
+                text-align: right;
+                margin-top: -10px;
+                margin-right: 50px;
+            }
+        </style>
+
+        <iron-meta key="pronoGroupId" value="{{pronoGroupId}}"></iron-meta>
+        <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/currentstage" data="{{currentStage}}"></firebase-document>
+        <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/deadline/[[stage]]" data="{{deadline}}"></firebase-document>
+
+        <template is="dom-if" if="{{_showMessage(stage, currentStage, deadline, pronoUserId)}}">
+            <div class="message">{{message}}</div>
+        </template>
+
+    </template>
+
+    <script>
+        class PronoDeadline extends Polymer.Element {
+            static get is() {
+                return 'prono-deadline';
+            }
+
+            static get properties() {
+                return {
+                    deadline: {
+                        type: Object,
+                    },
+                    stage: {
+                        type: String,
+                    },
+                    pronoUserId: {
+                        type: String,
+                    },
+                    complete: {
+                        type: Function
+                    }
+                };
+            }
+
+            ready(){
+                super.ready();
+
+                var that = this;
+                setInterval(function(){
+                    if(that.complete()){
+                        that.message = 'Dit deel is volledig!'
+                    }
+                    else{
+                        var now = new Date()
+                        var next = new Date(that.deadline)
+
+                        var dt = next-now
+                        var days = Math.floor(dt/24/3600/1000)
+                        var hours = Math.floor( (dt - days*24*3600*1000)/3600/1000 )
+                        var minutes = Math.floor( (dt - days*24*3600*1000 - hours*3600*1000)/60/1000 )
+                        var seconds = Math.floor( (dt - days*24*3600*1000 - hours*3600*1000 - minutes*60*1000)/1000 )
+                        that.message = 'Je hebt nog '+days+' dagen '+hours+' uur en '+minutes+' minuten om dit deel in te vullen.';
+                    }
+                }, 2*1000);
+            }
+
+            _showMessage(stage, currentStage, deadline, pronoUserId){
+                var now = new Date()
+                var next = new Date(deadline)
+                if(pronoUserId !== '' && currentStage==stage && now < next){   //&& now > next-7*24*3600*1000
+                    return true;
+                }
+                else{
+                    return false;
+                }
+            }
+        }
+
+        window.customElements.define(PronoDeadline.is, PronoDeadline);
+    </script>
+</dom-module>

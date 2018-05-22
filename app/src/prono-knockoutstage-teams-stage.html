@@ -12,6 +12,7 @@
 <link rel="import" href="shared-styles.html">
 <link rel="import" href="team-name.html">
 <link rel="import" href="team-icon.html">
+<link rel="import" href="prono-deadline.html">
 
 
 <dom-module id="prono-knockoutstage-teams-stage">
@@ -51,7 +52,6 @@
         <firebase-query app-name="prono" path="/[[pronoGroupId]]/competition/teams" data="{{teams}}"></firebase-query>
         <firebase-query app-name="prono" path="/[[pronoGroupId]]/userpronos/[[pronoUserId]]/knockoutstageteams/[[stage.$key]]" data="{{prono}}"></firebase-query>
         <firebase-document id="document" app-name="prono"></firebase-document>
-
 
         <div class="vertical-layout selectable">
             <paper-material class$="stage {{_stageClass(stage.$key)}} vertical layout" on-tap="editTeamsDialog">
@@ -163,6 +163,16 @@
                     }
                 }
             }
+
+            complete(){
+                var count = 0
+                for(var i=0; i < this.prono.length; i++){
+                    if(this.prono[i].val != -1){
+                        count += 1;
+                    }
+                }
+                return (count == parseInt(this.stage.$key));
+           }
 
             _selectedClass(teamId, newTeams){
                 if(typeof newTeams != 'undefined' ){

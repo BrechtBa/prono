@@ -12,6 +12,7 @@
 <link rel="import" href="shared-styles.html">
 <link rel="import" href="prono-match.html">
 <link rel="import" href="prono-groupwinners.html">
+<link rel="import" href="prono-deadline.html">
 
 <dom-module id="prono-groupstage">
     <template>
@@ -53,7 +54,7 @@
                 color: var(--app-primary-color);
                 font-weight: 600;
                 text-align: right;
-                margin-top: -30px;
+                margin-top: -10px;
                 margin-right: 50px;
             }
         </style>
@@ -63,11 +64,8 @@
 
         <firebase-query id="query" app-name="prono" path="/[[pronoGroupId]]/competition/stages/groupstage" data="{{groups}}"></firebase-query>
         <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/currentstage" data="{{currentStage}}"></firebase-document>
-        <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/nextstagestart" data="{{nextstagestart}}"></firebase-document>
 
-        <template is="dom-if" if="{{_showCompletedMessage(currentStage, nextstagestart, pronoUserId)}}">
-            <div class="message">{{message}}</div>
-        </template>
+        <prono-deadline stage="groupstage" prono-user-id="{{pronoUserId}}" complete="{{complete()}}"></prono-deadline>
 
         <div class="horizontal layout wrap center-justified">
             
@@ -114,69 +112,40 @@
                 };
             }
 
-            ready(){
-                super.ready();
-
-                var that = this;
-                setInterval(function(){
-                    if(that.complete()){
-                        that.message = 'Dit deel is volledig!'
-                    }
-                    else{
-                        var now = new Date()
-                        var next = new Date(that.nextstagestart)
-
-                        var dt = next-now
-                        var days = Math.floor(dt/24/3600/1000)
-                        var hours = Math.floor( (dt - days*24*3600*1000)/3600/1000 )
-                        var minutes = Math.floor( (dt - days*24*3600*1000 - hours*3600*1000)/60/1000 )
-                        var seconds = Math.floor( (dt - days*24*3600*1000 - hours*3600*1000 - minutes*60*1000)/1000 )
-                        that.message = 'Je hebt nog '+days+' dagen '+hours+' uur en '+minutes+' minuten om dit deel in te vullen.';
-                    }
-                }, 1*1000);
-            }
-
             _sortMatches(a, b) {
                 return parseInt(a.date) - parseInt(b.date);
             }
 
             complete(){
-                var complete = true
-                for(var i=0;i<this.groups.length;i++){
-                    var group = this.groups[i];
-                    for(var j=0;j<group.matches.length;j++){
-                        var match = group.matches[j];
-                        var el = Polymer.dom(this.root).querySelector('#match'+match)
+                var that = this;
+                var f = function(){
+                    var complete = true
+                    for(var i=0;i<that.groups.length;i++){
+                        var group = that.groups[i];
+                        for(var j=0;j<group.matches.length;j++){
+                            var match = group.matches[j];
+                            var el = Polymer.dom(that.root).querySelector('#match'+match)
+                            try{
+                                complete = complete && el.complete()
+                            }
+                            catch(e){
+                            }
+                        }
+                        var el = Polymer.dom(that.root).querySelector('#groupwinners'+group.$key)
                         try{
                             complete = complete && el.complete()
                         }
                         catch(e){
                         }
-                    }
-                    var el = Polymer.dom(this.root).querySelector('#groupwinners'+group.$key)
-                    try{
-                        complete = complete && el.complete()
-                    }
-                    catch(e){
-                    }
 
+                    }
+                    return complete;
                 }
-                return complete;
-            }
-
-            _showCompletedMessage(currentStage, nextstagestart, pronoUserId){
-                var now = new Date()
-                var next = new Date(nextstagestart)
-                if(pronoUserId !== '' && currentStage==0 && now < next){   //&& now > next-7*24*3600*1000
-                    return true;
-                }
-                else{
-                    return false;
-                }
+                return f;
             }
 
             _disabledClass(currentStage, pronoUserId){
-                if(currentStage==0 || currentStage==-1 || pronoUserId == ''){
+                if(currentStage=='groupstage' || currentStage==-1 || pronoUserId == ''){
 					return '';
 				}
 				else{

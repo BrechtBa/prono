@@ -28,11 +28,14 @@
         <h2>{{localize('groupstageprono')}}</h2>
         <prono-groupstage prono-user-id="[[pronoUserId]]"></prono-groupstage>
 
-        <h2>{{localize('knockoutstageprono')}}</h2>
+        <h2>{{localize('knockoutstageteams')}}</h2>
         <prono-knockoutstage-teams prono-user-id="[[pronoUserId]]"></prono-knockoutstage-teams>
+
+        <h2>{{localize('varia')}}</h2>
         <prono-total-goals prono-user-id="[[pronoUserId]]"></prono-total-goals>
         <prono-team-result prono-user-id="[[pronoUserId]]"></prono-team-result>
 
+        <h2>{{localize('knockoutstageprono')}}</h2>
         <prono-knockoutstage prono-user-id="[[pronoUserId]]"></prono-knockoutstage>
 
     </template>
@@ -54,11 +57,15 @@
                             return {
                                 'en': {
                                     'groupstageprono': 'Group stage bets',
+                                    'knockoutstageteams': 'Teams in each knockout stage',
                                     'knockoutstageprono': 'Knockout stage bets',
+                                    'varia': 'Extra points',
                                 },
                                 'nl-BE': {
                                     'groupstageprono': 'Groepsfase pronostiek',
+                                    'knockoutstageteams': 'Teams in elke eliminatie fase',
                                     'knockoutstageprono': 'Eliminatie fase pronostiek',
+                                    'varia': 'Extra punten',
                                 }
                             }
                         }

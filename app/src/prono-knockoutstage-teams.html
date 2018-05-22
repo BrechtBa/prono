@@ -13,6 +13,7 @@
 <link rel="import" href="team-name.html">
 <link rel="import" href="team-icon.html">
 <link rel="import" href="prono-knockoutstage-teams-stage.html">
+<link rel="import" href="prono-deadline.html">
 
 
 <dom-module id="prono-knockoutstage-teams">
@@ -27,18 +28,27 @@
             .teams{
                 position: relative;
             }
+            .message {
+                color: var(--app-primary-color);
+                font-weight: 600;
+                text-align: right;
+                margin-top: -10px;
+                margin-right: 50px;
+            }
         </style>
 
         <iron-meta key="pronoGroupId" value="{{pronoGroupId}}"></iron-meta>
 
-        <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/currentstage" data="{{currentStage}}"></firebase-document>
         <firebase-query app-name="prono" path="/[[pronoGroupId]]/competition/stages" data="{{stages}}"></firebase-query>
+        <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/currentstage" data="{{currentStage}}"></firebase-document>
+
+        <prono-deadline stage="groupstage" prono-user-id="{{pronoUserId}}" complete="{{complete()}}"></prono-deadline>
 
         <div class="horizontal layout center-justified">
 			<div class="flex vertical layout">
-				<template is="dom-repeat" items="{{_getStages(stages)}}" as="stage">
+				<template id="stages"  is="dom-repeat" items="{{_getStages(stages)}}" as="stage">
 
-                    <prono-knockoutstage-teams-stage class$="{{_disabledClass(currentStage)}} teams" stage="[[stage]]" prono-user-id="[[pronoUserId]]"></prono-knockoutstage-teams-stage>
+                    <prono-knockoutstage-teams-stage id="stage[[stage.$key]]" class$="{{_disabledClass(currentStage)}} teams" stage="[[stage]]" prono-user-id="[[pronoUserId]]"></prono-knockoutstage-teams-stage>
 
 				</template>
 			</div>
@@ -84,6 +94,36 @@
                 };
             }
 
+            complete(){
+                var that = this;
+                var f = function(){
+                    var complete = true
+                    var stages = that._getStages(that.stages)
+                    for(var i=0;i<stages.length;i++){
+                        var stage = stages[i];
+                        var el = Polymer.dom(that.root).querySelector('#stage'+stage.$key)
+                        try{
+                            complete = complete && el.complete()
+                        }
+                        catch(e){
+                        }
+                    }
+                    return complete;
+                }
+                return f;
+            }
+
+            _showCompletedMessage(currentStage, deadline, pronoUserId){
+                var now = new Date()
+                var next = new Date(deadline)
+                if(pronoUserId !== '' && currentStage==0 && now < next){   //&& now > next-7*24*3600*1000
+                    return true;
+                }
+                else{
+                    return false;
+                }
+            }
+
             _getStages(stages){
 				// filter knockoutstages
 				var newStages = stages.filter(function(item){
@@ -103,13 +143,14 @@
 			}
 
 			_disabledClass(currentStage){
-                if(currentStage==0 || currentStage==-1){
+                if(currentStage=='groupstage' || currentStage==-1){
 					return '';
 				}
 				else{
 					return 'disabled';
 				}
             }
+
         }
 
         window.customElements.define(PronoKnockoutstageTeams.is, PronoKnockoutstageTeams);

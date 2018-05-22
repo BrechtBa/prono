@@ -17,6 +17,7 @@
 <link rel="import" href="shared-styles.html">
 <link rel="import" href="team-name.html">
 <link rel="import" href="team-icon.html">
+<link rel="import" href="prono-deadline.html">
 
 
 <dom-module id="prono-team-result">
@@ -66,6 +67,8 @@
         <firebase-document app-name="prono" path="/[[pronoGroupId]]/userpronos/[[pronoUserId]]/hometeamresult" data="{{prono}}"></firebase-document>
 
         <firebase-document id="document" app-name="prono"></firebase-document>
+
+        <prono-deadline stage="groupstage" prono-user-id="{{pronoUserId}}" complete="{{complete()}}"></prono-deadline>
 
         <paper-material class$="{{_disabledClass(currentStage)}} prono selectable vertical layout" on-tap="editPronoDialog">
             <h3>{{localize('Team result')}}</h3>
@@ -169,6 +172,16 @@
                     }
                 }
             }
+
+            complete(){
+                var that = this;
+                var f = function(){
+                    return (that.prono != '' && that.prono != -1);
+                }
+                return f
+            }
+
+
             _parseResult(prono){
 				prono = String(prono)
 				var description = '';
@@ -217,7 +230,7 @@
             }
 
             _disabledClass(currentStage){
-                if(currentStage==0 || currentStage==-1){
+                if(currentStage=='groupstage' || currentStage==-1){
 					return '';
 				}
 				else{
