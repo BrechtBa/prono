@@ -33,6 +33,9 @@
             .settings {
                 margin-bottom: 30px;
             }
+            .stage{
+                min-width: 100px;
+            }
         </style>
 
 
@@ -41,13 +44,24 @@
 
             <firebase-document app-name="prono" path="/[[pronoGroupId]]/settings/showpaymentmessage" data="{{showpaymentmessage}}"></firebase-document>
             <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/currentstage" data="{{currentstage}}"></firebase-document>
-            <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/nextstagestart" data="{{nextstagestart}}"></firebase-document>
+            <firebase-document app-name="prono" path="/[[pronoGroupId]]/deadlines/groupstage" data="{{deadlineGroupstage}}"></firebase-document>
+            <firebase-document app-name="prono" path="/[[pronoGroupId]]/deadlines/16" data="{{deadlineSixteen}}"></firebase-document>
+            <firebase-document app-name="prono" path="/[[pronoGroupId]]/deadlines/8" data="{{deadlineEight}}"></firebase-document>
+            <firebase-document app-name="prono" path="/[[pronoGroupId]]/deadlines/4" data="{{deadlineFour}}"></firebase-document>
+            <firebase-document app-name="prono" path="/[[pronoGroupId]]/deadlines/2" data="{{deadlineTwo}}"></firebase-document>
 
             <paper-material class="settings">
                 <h3>Competition settings</h3>
-                <paper-input value="{{currentstage}}" label="Current stage" allowed-pattern="[0-9]*"></paper-input>
+                <paper-input value="{{currentstage}}" label="Current stage"></paper-input>
+
+                <h3>Deadlines</h3>
                 <!--<paper-input value="[[nextstagestart]]" label="Next stage start" allowed-pattern="[0-9]*" disabled></paper-input>-->
-                <datetime-input value="{{nextstagestart}}" locale="fr"></datetime-input>
+                <div class="horizontal layout"><div class="stage">Groupstage:</div><datetime-input value="{{deadlineGroupstage}}" locale="fr"></datetime-input></div>
+                <div class="horizontal layout"><div class="stage">Round of 16:</div><datetime-input value="{{deadlineSixteen}}" locale="fr"></datetime-input></div>
+                <div class="horizontal layout"><div class="stage">Quarter-final:</div><datetime-input value="{{deadlineEight}}" locale="fr"></datetime-input></div>
+                <div class="horizontal layout"><div class="stage">Semi-final:</div><datetime-input value="{{deadlineFour}}" locale="fr"></datetime-input></div>
+                <div class="horizontal layout"><div class="stage">Final:</div><datetime-input value="{{deadlineTwo}}" locale="fr"></datetime-input></div>
+
             </paper-material>
 
             <paper-material class="settings">

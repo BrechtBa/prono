@@ -35,7 +35,7 @@
 
         <iron-meta key="pronoGroupId" value="{{pronoGroupId}}"></iron-meta>
         <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/currentstage" data="{{currentStage}}"></firebase-document>
-        <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/deadline/[[stage]]" data="{{deadline}}"></firebase-document>
+        <firebase-document app-name="prono" path="/[[pronoGroupId]]/deadlines/[[stage]]" data="{{deadline}}"></firebase-document>
 
         <template is="dom-if" if="{{_showMessage(stage, currentStage, deadline, pronoUserId)}}">
             <div class="message">{{message}}</div>
