@@ -16,6 +16,8 @@
 <link rel="import" href="../bower_components/polymerfire/firebase-storage-ref.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-storage-upload-task.html">
 
+<link rel="import" href="../bower_components/cpol-image/cpol-image.html">
+
 <link rel="import" href="shared-styles.html">
 <link rel="import" href="profile-picture.html">
 
@@ -46,6 +48,8 @@
         </style>
 
         <iron-meta key="pronoGroupId" value="{{pronoGroupId}}"></iron-meta>
+        <cpol-image id="resizer" output-data="{{resizedProfilePicture}}" loading="{{loadingProfilePicture}}" max-width="400" on-output-data-changed="_resizedProfilePictureChanged"></cpol-image>
+
 
         <firebase-auth id="auth" app-name="prono"></firebase-auth>
 
@@ -60,7 +64,7 @@
             <div class="profile horizontal layout wrap">
                 <div class="column vertical layout">
                     <profile-picture user="{{user}}"></profile-picture>
-                    <paper-button raised on-tap="openFileInput">Change picture</paper-button>
+                    <paper-button raised on-tap="openFileInput" disabled="{{loadingProfilePicture}}">Change picture</paper-button>
                     <input type="file" id="fileInput" on-change="fileChanged" hidden>
                 </div>
                 <div class="column flex vertical layout">
@@ -110,10 +114,15 @@
 			}
 
 			fileChanged(e){
-				var file = e.target.files[0];
-				console.log(file);
-				this.$.upload.upload([file]);
+				var profilePicture = e.target.files[0];
+				this.$.resizer.processImageFile(e.target.files);
 			}
+
+            _resizedProfilePictureChanged(e){
+                if(e.detail.value != ""){
+                    this.$.upload.upload([e.detail.value]);
+                }
+            }
 
             downloadUrlChanged(e, d){
                 console.log(e)
