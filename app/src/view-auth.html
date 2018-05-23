@@ -7,7 +7,6 @@
 <link rel="import" href="../bower_components/iron-form/iron-form.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/paper-password-input/paper-password-input.html">
-<link rel="import" href="../bower_components/paper-password-input/paper-password-input.html">
 <link rel="import" href="../bower_components/paper-password-input/min-length-validator.html">
 <link rel="import" href="../bower_components/paper-password-input/match-passwords-validator.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
@@ -15,6 +14,7 @@
 <link rel="import" href="../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 
@@ -65,6 +65,15 @@
             .hidden-button{
                 display: none;
             }
+            paper-dialog.toast{
+                padding: 15px;
+                background-color: #323232;
+                color: #f1f1f1;
+                position: fixed;
+                bottom: 20px;
+                right: 20px;
+                min-width: 250px;
+            }
         </style>
 
         <firebase-auth id="auth" app-name="prono" user="{{user}}" signed-in="{{signedIn}}" on-error="authError"></firebase-auth>
@@ -92,9 +101,12 @@
             </paper-material>
         </div>
 
+        <paper-dialog id="toast" class="toast">
+            {{toastMessage}}
+        </paper-dialog>
+
         <paper-dialog id="register">
             <h2>{{localize('Register')}}</h2>
-
             <iron-form id="registerForm" on-keyup="registerFormChanged" on-change="registerFormChanged" on-iron-form-submit="register">
                 <form action="">
                     <div class="container">
@@ -102,7 +114,8 @@
                     </div>
                     <paper-input label="Email" value="{{registerEmail}}" required auto-validate error-message="required" pattern=".*@.*\..*" error-message="invalid email address"></paper-input>
                     <match-passwords-validator id="match-passwords-validator" password="[[registerPassword]]"></match-passwords-validator>
-                    <paper-password-input label="Password" value="{{registerPassword}}" required></paper-password-input>
+                    <min-length-validator id="min-length-validator" min-length="6"></min-length-validator>
+                    <paper-password-input label="Password" value="{{registerPassword}}" validator="min-length-validator" required></paper-password-input>
                     <paper-password-input label="Confirm" value="{{registerPasswordRepeat}}" auto-validate validator="match-passwords-validator" required error-message="Passwords need to match"></paper-password-input>
 
                     <paper-checkbox name="terms" value="agreed" auto-validate required></paper-checkbox>{{localize('I agree to the')}} <a href="#" on-tap="termsAndConditionsDialog">{{localize('terms and conditions')}}</a>
@@ -113,7 +126,6 @@
                     </div>
                 </form>
             </iron-form>
-
         </paper-dialog>
 
 
@@ -168,6 +180,10 @@
                                     'password': 'password',
                                     'Terms': 'Terms',
                                     'Rules': 'Rules',
+                                    'auth/wrong-password': 'Wrong password',
+                                    'auth/user-not-found': 'User not found',
+                                    'auth/email-already-in-use': 'Email address is already in use',
+                                    'auth/weak-pasword': 'Weak password, use at least 6 characters',
                                 },
                                 'nl-BE': {
                                     'Register': 'Registreren',
@@ -180,6 +196,10 @@
                                     'password': 'wachtwoord',
                                     'Terms': 'Gebruiksvoorwaarden',
                                     'Rules': 'Regels',
+                                    'auth/wrong-password': 'Verkeerd wachtwoord',
+                                    'auth/user-not-found': 'User bestaat niet',
+                                    'auth/email-already-in-use': 'Email adres is reeds in gebruik',
+                                    'auth/weak-pasword': 'Zwak wachtwoord, gebruik minstens 6 karakters',
                                 }
                             }
                         }
@@ -199,10 +219,11 @@
 
             signOut() {
                 this.$.auth.signOut()
+                this.email = '';
+                this.password = '';
             }
 
             register(event){
-                console.log('register')
                 this.$.auth.createUserWithEmailAndPassword(this.registerEmail, this.registerPassword);
             }
 
@@ -214,7 +235,6 @@
                 console.log('signInFormSubmit')
                 this.$.signInForm.submit();
             }
-
 
             registerDialog(){
                 this.$.register.open();
@@ -234,9 +254,13 @@
             }
 
             authError(event){
-                console.log(event)
+                this.toastMessage = this.localize(event.detail.code)
+                this.$.toast.open()
+                var that = this;
+                setTimeout(function(){
+                    that.$.toast.close()
+                }, 3000);
             }
-
 
             termsAndConditionsDialog(){
                 this.$.termsAndConditions.open()

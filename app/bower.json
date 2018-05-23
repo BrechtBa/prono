@@ -34,7 +34,8 @@
     "web-animations-js": "^2.3.1",
     "datetime-picker": "fooloomanzoo/datetime-picker#^2.5.5",
     "paper-dialog-scrollable": "PolymerElements/paper-dialog-scrollable#^2.1.0",
-    "cpol-image": "3mp3ri0r/cpol-image#^1.0.0"
+    "cpol-image": "3mp3ri0r/cpol-image#^1.0.0",
+    "paper-toast": "PolymerElements/paper-toast#^2.1.1"
   },
   "resolutions": {
     "polymer": "^2.0.0"

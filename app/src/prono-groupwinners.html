@@ -88,13 +88,13 @@
                     <div class="vertical layout">
                         <team-select label="{{localize('winner')}}" team="{{newWinner}}" prono-group-id="{{pronoGroupId}}" teams="{{group.teams}}" filter="{{_groupTeamFilter(group)}}"></team-select>
                         <team-select label="{{localize('runner up')}}" team="{{newRunnerup}}" prono-group-id="{{pronoGroupId}}" teams="{{group.teams}}" filter="{{_groupTeamFilter(group)}}"></team-select>
-                        <div class="buttons">
-                            <paper-button primary on-tap="editWinnersFormSubmit" >save</paper-button>
-                            <paper-button secondary dialog-dismiss>cancel</paper-button>
-                        </div>
                     </div>
                 </form>
             </iron-form>
+            <div class="buttons">
+                <paper-button primary on-tap="editWinnersFormSubmit" >save</paper-button>
+                <paper-button secondary dialog-dismiss>cancel</paper-button>
+            </div>
         </paper-dialog>
 
         <paper-dialog id="editPointsDialog">
@@ -108,13 +108,13 @@
                                 <paper-input class="points" label="Points" value="{{team.points}}"></paper-input>
                             </div>
                         </template>
-                        <div class="buttons">
-                            <paper-button primary on-tap="editPointsFormSubmit" >save</paper-button>
-                            <paper-button secondary dialog-dismiss>cancel</paper-button>
-                        </div>
                     </div>
                 </form>
             </iron-form>
+            <div class="buttons">
+                <paper-button primary on-tap="editPointsFormSubmit" >save</paper-button>
+                <paper-button secondary dialog-dismiss>cancel</paper-button>
+            </div>
         </paper-dialog>
 
     </template>
