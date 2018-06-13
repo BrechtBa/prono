@@ -10,6 +10,7 @@
 <link rel="import" href="../bower_components/paper-material/paper-material.html">
 <link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
 
 <link rel="import" href="../bower_components/polymerfire/firebase-query.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-document.html">
@@ -42,18 +43,49 @@
 				padding: 10px;
                 font-size: 18px;
 			}
+			paper-icon-button{
+			    color: var(--text-secondary-color);
+			    margin-right: 50px;
+			}
+			paper-checkbox{
+			    margin-top: 10px;
+			}
+			div.prono {
+			    margin-bottom: 20px;
+			}
+			div.prono h2 {
+			    color: var(--text-primary-color);
+			}
         </style>
 
 
         <iron-meta key="pronoGroupId" value="{{pronoGroupId}}"></iron-meta>
         <firebase-document id="document" app-name="prono" path="/[[pronoGroupId]]/users/[[userId]]" data="{{user}}"></firebase-document>
 
-
         <paper-material class="horizontal layout">
             <profile-picture class="picture" user="{{user}}"></profile-picture>
             <div class="flex name">{{user.displayName}}</div>
+            <paper-icon-button icon="create" on-tap="editProno"></paper-icon-button>
             <paper-checkbox checked="{{user.paid}}">Paid</paper-checkbox>
         </paper-material>
+
+        <template is="dom-if" if="{{showProno}}">
+            <div class="prono">
+                <h2>Groupstage prono</h2>
+                <prono-groupstage prono-user-id="[[userId]]"></prono-groupstage>
+
+                <h2>Knockoutstage teams</h2>
+                <prono-knockoutstage-teams prono-user-id="[[userId]]"></prono-knockoutstage-teams>
+
+                <h2>Varia</h2>
+                <prono-total-goals prono-user-id="[[userId]]"></prono-total-goals>
+                <prono-team-result prono-user-id="[[userId]]"></prono-team-result>
+
+                <h2>Knockoutstage prono</h2>
+                <prono-knockoutstage prono-user-id="[[userId]]"></prono-knockoutstage>
+                <paper-button on-tap="hideProno">close</paper-button>
+            </div>
+        </template>
 
     </template>
 
@@ -70,6 +102,15 @@
                         type: String,
                     }
                 };
+            }
+
+            editProno(e){
+                this.showProno = true;
+                this.fire("edit-prono", {'user': this.user});
+            }
+
+            hideProno(e){
+                this.showProno = false;
             }
 
         }

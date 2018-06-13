@@ -18,6 +18,11 @@
 <link rel="import" href="permission-behavior.html">
 <link rel="import" href="prono-user.html">
 
+<link rel="import" href="prono-groupstage.html">
+<link rel="import" href="prono-knockoutstage-teams.html">
+<link rel="import" href="prono-total-goals.html">
+<link rel="import" href="prono-team-result.html">
+<link rel="import" href="prono-knockoutstage.html">
 
 <dom-module id="view-users">
     <template>
@@ -33,27 +38,25 @@
             }
         </style>
 
+        <iron-meta key="pronoGroupId" value="{{pronoGroupId}}"></iron-meta>
 
-        <template is="dom-if" if="{{_manageCompetitionPermission(user.permission)}}">
-            <iron-meta key="pronoGroupId" value="{{pronoGroupId}}"></iron-meta>
+        <firebase-query id="query" app-name="prono" path="/[[pronoGroupId]]/users" data="{{users}}"></firebase-query>
+        <firebase-document id="document" app-name="prono" data=""></firebase-document>
 
-            <firebase-query id="query" app-name="prono" path="/[[pronoGroupId]]/users" data="{{users}}"></firebase-query>
-            <firebase-document id="document" app-name="prono" data=""></firebase-document>
-
-            <template is="dom-repeat" items="{{users}}" as="user">
-                <prono-user user-id="{{user.$key}}"></prono-user>
-            </template>
-
-            <paper-dialog id="deleteItem">
-                <p>Are you sure?</p>
-                <paper-button on-tap="_deleteItem">delete</paper-button>
-                <paper-button dialog-dismiss>cancel</paper-button>
-            </paper-dialog>
+        <template is="dom-repeat" items="{{users}}" as="user">
+            <prono-user user-id="{{user.$key}}" on-edit-prono="editUserProno"></prono-user>
         </template>
+
+        <paper-dialog id="deleteItem">
+            <p>Are you sure?</p>
+            <paper-button on-tap="_deleteItem">delete</paper-button>
+            <paper-button dialog-dismiss>cancel</paper-button>
+        </paper-dialog>
+
     </template>
 
     <script>
-        class ViewUsers extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior, Prono.PermissionBehavior], Polymer.Element){
+        class ViewUsers extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.Element){
             static get is() { return 'view-users'; }
 
             static get properties() {
@@ -73,10 +76,16 @@
 
             _deleteItem(){
                 this.$.deleteItem.close();
-                console.log('delete item ', this.editItem)
+                /*console.log('delete item ', this.editItem)
                 this.$.document.path = '/'+this.pronoGroupId+'/competition/users/'+this.editItem
                 this.$.document.data = null;
-                this.$.document.path = '';
+                this.$.document.path = '';*/
+            }
+
+            editUserProno(e){
+                this.pronoUserName = e.model.__data.user.displayName
+                this.pronoUserId = e.model.__data.user.$key;
+                //this.showUserProno = true;
             }
 
         }
