@@ -111,7 +111,7 @@
             }
 
             editPronoDialog(event){
-                this.newProno = this.prono
+                this.newProno = this._parseProno(this.prono)
                 this.$.editPronoDialog.open();
             }
             editPronoFormSubmit(){
@@ -133,7 +133,7 @@
             complete(){
                 var that = this;
                 var f = function(){
-                    return (that.prono != '' && that.prono != -1);
+                    return (that.prono != '' && that.prono > -1);
                 }
                 return f
             }

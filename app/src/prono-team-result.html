@@ -176,7 +176,7 @@
             complete(){
                 var that = this;
                 var f = function(){
-                    return (that.prono != '' && that.prono != -1);
+                    return (that.prono > -1 && that.prono != '');
                 }
                 return f
             }
