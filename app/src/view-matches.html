@@ -43,13 +43,14 @@
 
         </style>
 
+
+        <firebase-document id="document" app-name="prono" data=""></firebase-document>
+
         <template is="dom-if" if="{{_manageCompetitionPermission(user.permission)}}">
             <iron-meta key="pronoGroupId" value="{{pronoGroupId}}"></iron-meta>
 
             <firebase-query id="query" app-name="prono" path="/[[pronoGroupId]]/competition/matches" data="{{matches}}" order-by-key="number"></firebase-query>
             <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/teams" data="{{teams}}"></firebase-document>
-
-            <firebase-document id="document" app-name="prono" data="" ></firebase-document>
 
             <template is="dom-repeat" items="{{matches}}" as="match">
 
