@@ -17,9 +17,8 @@
 <link rel="import" href="../bower_components/datetime-picker/datetime-input.html">
 
 <link rel="import" href="shared-styles.html">
-<link rel="import" href="permission-behavior.html">
 <link rel="import" href="team-select.html">
-
+<link rel="import" href="datetime-picker-dialog.html">
 
 <dom-module id="view-matches">
     <template>
@@ -46,58 +45,56 @@
 
         <firebase-document id="document" app-name="prono" data=""></firebase-document>
 
-        <template is="dom-if" if="{{_manageCompetitionPermission(user.permission)}}">
-            <iron-meta key="pronoGroupId" value="{{pronoGroupId}}"></iron-meta>
+        <iron-meta key="pronoGroupId" value="{{pronoGroupId}}"></iron-meta>
 
-            <firebase-query id="query" app-name="prono" path="/[[pronoGroupId]]/competition/matches" data="{{matches}}" order-by-key="number"></firebase-query>
-            <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/teams" data="{{teams}}"></firebase-document>
+        <firebase-query id="query" app-name="prono" path="/[[pronoGroupId]]/competition/matches" data="{{matches}}" order-by-key="number"></firebase-query>
+        <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/teams" data="{{teams}}"></firebase-document>
 
-            <template is="dom-repeat" items="{{matches}}" as="match">
+        <template is="dom-repeat" items="{{matches}}" as="match">
 
-                <paper-material class="vertical layout">
-                    <div class="vertical layout" on-tap="_editItem">
-                        <div class="horizontal layout">
-                            <div class="flex">{{match.number}}</div>
-                            <div class="date flex">{{_formatDate(match.date)}}</div>
+            <paper-material class="vertical layout">
+                <div class="vertical layout" on-tap="_editItem">
+                    <div class="horizontal layout">
+                        <div class="flex">{{match.number}}</div>
+                        <div class="date flex">{{_formatDate(match.date)}}</div>
+                    </div>
+                    <div class="teams horizontal layout">
+                        <div class="team flex">
+                            <div>{{match.defaultteam1}}</div>
+                            <div>{{_getTeamName(match.team1,teams)}}</div>
                         </div>
-                        <div class="teams horizontal layout">
-                            <div class="team flex">
-                                <div>{{match.defaultteam1}}</div>
-                                <div>{{_getTeamName(match.team1,teams)}}</div>
-                            </div>
-                            <div class="team flex">
-                                <div>{{match.defaultteam2}}</div>
-                                <div>{{_getTeamName(match.team2,teams)}}</div>
-                            </div>
+                        <div class="team flex">
+                            <div>{{match.defaultteam2}}</div>
+                            <div>{{_getTeamName(match.team2,teams)}}</div>
                         </div>
                     </div>
+                </div>
 
-                    <template is="dom-if" if="{{_showEditItem(match, editItem)}}">
-                        <paper-input value="{{match.number}}" label="Number"></paper-input>
-                        <datetime-input value="{{match.date}}" locale="fr"></datetime-input>
-                        <paper-input value="{{match.defaultteam1}}" label="Default team 1"></paper-input>
-                        <paper-input value="{{match.defaultteam2}}" label="Default team 2"></paper-input>
-                        <paper-input value="{{match.score1}}" label="Score team 1"></paper-input>
-                        <paper-input value="{{match.score2}}" label="Score team 2"></paper-input>
-                        <team-select team="{{match.team1}}" label="Team 1"></team-select>
-                        <team-select team="{{match.team2}}" label="Team 2"></team-select>
-                        <paper-button on-tap="_deleteItemDialog">delete</paper-button>
-                    </template>
-                </paper-material>
-            </template>
-            <paper-button raised on-tap="_addItem" class="floating-button"><iron-icon icon="add"></iron-icon></paper-button>
-
-
-            <paper-dialog id="deleteItem">
-                <p>Are you sure?</p>
-                <paper-button on-tap="_deleteItem">delete</paper-button>
-                <paper-button dialog-dismiss>cancel</paper-button>
-            </paper-dialog>
+                <template is="dom-if" if="{{_showEditItem(match, editItem)}}">
+                    <paper-input value="{{match.number}}" label="Number"></paper-input>
+                    <datetime-picker-dialog value="{{match.date}}"></datetime-picker-dialog>
+                    <paper-input value="{{match.defaultteam1}}" label="Default team 1"></paper-input>
+                    <paper-input value="{{match.defaultteam2}}" label="Default team 2"></paper-input>
+                    <paper-input value="{{match.score1}}" label="Score team 1"></paper-input>
+                    <paper-input value="{{match.score2}}" label="Score team 2"></paper-input>
+                    <team-select team="{{match.team1}}" label="Team 1"></team-select>
+                    <team-select team="{{match.team2}}" label="Team 2"></team-select>
+                    <paper-button on-tap="_deleteItemDialog">delete</paper-button>
+                </template>
+            </paper-material>
         </template>
+        <paper-button raised on-tap="_addItem" class="floating-button"><iron-icon icon="add"></iron-icon></paper-button>
+
+
+        <paper-dialog id="deleteItem">
+            <p>Are you sure?</p>
+            <paper-button on-tap="_deleteItem">delete</paper-button>
+            <paper-button dialog-dismiss>cancel</paper-button>
+        </paper-dialog>
     </template>
 
     <script>
-        class ViewMatches extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior, Prono.PermissionBehavior], Polymer.Element){
+        class ViewMatches extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.Element){
             static get is() { return 'view-matches'; }
 
             static get properties() {
