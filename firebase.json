@@ -11,10 +11,27 @@
     ],
     "rewrites": [
       {
+        "source": "/__/auth/action",
+        "destination": "/__/auth/action"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
-    ]
+    ],
+    "headers": [{
+      "source" : "*.html",
+      "headers" : [ {
+        "key" : "Cache-Control",
+        "value" : "max-age=0"
+      } ]
+    }, {
+      "source" : "service-worker.js",
+      "headers" : [ {
+        "key" : "Cache-Control",
+        "value" : "max-age=0"
+      } ]
+    }]
   },
   "storage": {
     "rules": "storage.rules"

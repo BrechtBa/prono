@@ -111,8 +111,10 @@
             }
 
             editPronoDialog(event){
-                this.newProno = this._parseProno(this.prono)
-                this.$.editPronoDialog.open();
+                if(!this._disabled(this.currentstage)){
+                    this.newProno = this._parseProno(this.prono)
+                    this.$.editPronoDialog.open();
+                }
             }
             editPronoFormSubmit(){
                 this.$.editPronoForm.submit();
@@ -148,6 +150,11 @@
             }
             _hasValue(str){
                 return str != ''
+            }
+
+            _disabled(currentStage){
+                return !(currentStage=='groupstage' || currentStage==-1)
+
             }
 
             _disabledClass(currentStage){

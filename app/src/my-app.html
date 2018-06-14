@@ -127,6 +127,11 @@
                 height: 1.2em;
                 margin-bottom: 8px;
             }
+            .version{
+                position: absolute;
+                bottom: 120px;
+                left: 10px;
+            }
         </style>
 
         <app-location route="{{route}}" url-space-regex="^[[rootPath]]"></app-location>
@@ -168,6 +173,8 @@
                     </template>
                     <a name="signout" href="#" on-tap="signOut">Sign out</a>
                 </iron-selector>
+
+                <div class="version">v1.1</div>
             </app-drawer>
 
              <!-- Main content -->
