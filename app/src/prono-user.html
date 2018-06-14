@@ -81,6 +81,7 @@
             <firebase-document app-name="prono" path="/[[pronoGroupId]]/userpronos/{{userId}}/enable/groupstage" data="{{forceEnabledGroupstage}}"></firebase-document>
             <firebase-document app-name="prono" path="/[[pronoGroupId]]/userpronos/{{userId}}/enable/totalgoals" data="{{forceEnabledTotalgoals}}"></firebase-document>
             <firebase-document app-name="prono" path="/[[pronoGroupId]]/userpronos/{{userId}}/enable/teamresult" data="{{forceEnabledTeamresult}}"></firebase-document>
+            <firebase-document app-name="prono" path="/[[pronoGroupId]]/userpronos/{{userId}}/enable/knockoutstageteams" data="{{forceEnabledKnockoutstageteams}}"></firebase-document>
 
 
             <div class="prono">
@@ -89,6 +90,7 @@
                 <prono-groupstage prono-user-id="[[userId]]"></prono-groupstage>
 
                 <h2>Knockoutstage teams</h2>
+                <paper-checkbox checked="{{forceEnabledKnockoutstageteams}}">Force enabled</paper-checkbox>
                 <prono-knockoutstage-teams prono-user-id="[[userId]]"></prono-knockoutstage-teams>
 
                 <h2>Varia</h2>

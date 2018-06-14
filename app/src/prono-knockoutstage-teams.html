@@ -35,6 +35,7 @@
 
         <firebase-query app-name="prono" path="/[[pronoGroupId]]/competition/stages" data="{{stages}}"></firebase-query>
         <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/currentstage" data="{{currentStage}}"></firebase-document>
+        <firebase-document app-name="prono" path="/[[pronoGroupId]]/userpronos/{{pronoUserId}}/enable/knockoutstageteams" data="{{forceEnabled}}"></firebase-document>
 
         <prono-deadline stage="groupstage" prono-user-id="{{pronoUserId}}" complete="{{complete()}}"></prono-deadline>
 
@@ -42,7 +43,7 @@
 			<div class="flex vertical layout">
 				<template id="stages"  is="dom-repeat" items="{{_getStages(stages)}}" as="stage">
 
-                    <prono-knockoutstage-teams-stage id="stage[[stage.$key]]" class$="{{_disabledClass(currentStage)}} teams" stage="[[stage]]" prono-user-id="[[pronoUserId]]"></prono-knockoutstage-teams-stage>
+                    <prono-knockoutstage-teams-stage id="stage[[stage.$key]]" class$="{{_disabledClass(forceEnabled, currentStage)}} teams" stage="[[stage]]" prono-user-id="[[pronoUserId]]"></prono-knockoutstage-teams-stage>
 
 				</template>
 			</div>
@@ -136,8 +137,12 @@
                 return newStages;
 			}
 
-			_disabledClass(currentStage){
-                if(currentStage=='groupstage' || currentStage==-1){
+            _enabled(forceEnabled, currentStage){
+                return (forceEnabled === true) || (currentStage=='groupstage' || currentStage==-1);
+            }
+
+			_disabledClass(forceEnabled, currentStage){
+                if(this._enabled(forceEnabled, currentStage)){
 					return '';
 				}
 				else{
