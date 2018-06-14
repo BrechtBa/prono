@@ -26,7 +26,6 @@
             }
             paper-material{
                 margin: 5px;
-                cursor: pointer;
                 padding: 10px;
                 background: var(--background-secondary-color);
                 color: var(--primary-text-color);
@@ -64,13 +63,14 @@
 
         <firebase-query id="query" app-name="prono" path="/[[pronoGroupId]]/competition/stages/groupstage" data="{{groups}}"></firebase-query>
         <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/currentstage" data="{{currentStage}}"></firebase-document>
+        <firebase-document app-name="prono" path="/[[pronoGroupId]]/userpronos/{{pronoUserId}}/enable/groupstage" data="{{forceEnabled}}"></firebase-document>
 
         <prono-deadline stage="groupstage" prono-user-id="{{pronoUserId}}" complete="{{complete()}}"></prono-deadline>
 
         <div class="horizontal layout wrap center-justified">
             
             <template is="dom-repeat" items="{{groups}}" as="group">
-                <paper-material class$="{{_disabledClass(currentStage, pronoUserId)}} group vertical layout">
+                <paper-material class$="{{_disabledClass(forceEnabled, currentStage, pronoUserId)}} group vertical layout">
                     <h3>{{localize('groupname', 'group', group.$key)}}</h3>
                     <div class="matches">    
                         <template id="matches" is="dom-repeat" items="{{group.matches}}" as="match" sort="_sortMatches">
@@ -144,12 +144,16 @@
                 return f;
             }
 
-            _disabledClass(currentStage, pronoUserId){
-                if(currentStage=='groupstage' || currentStage==-1 || pronoUserId == ''){
+            _enabled(forceEnabled, currentStage, pronoUserId){
+                return (forceEnabled === true) || (currentStage=='groupstage' || currentStage==-1 || pronoUserId == '');
+            }
+
+            _disabledClass(forceEnabled, currentStage, pronoUserId){
+                if(this._enabled(forceEnabled, currentStage, pronoUserId)){
 					return '';
 				}
 				else{
-					return 'disabled';
+				    return 'disabled';
 				}
             }
 

@@ -36,6 +36,7 @@
         <iron-meta key="pronoGroupId" value="{{pronoGroupId}}"></iron-meta>
         <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/currentstage" data="{{currentStage}}"></firebase-document>
         <firebase-document app-name="prono" path="/[[pronoGroupId]]/deadlines/[[stage]]" data="{{deadline}}"></firebase-document>
+        <firebase-document app-name="prono" path="/[[pronoGroupId]]/userpronos/{{pronoUserId}}/complete/[[stage]]" data="[[isComplete]]"></firebase-document>
 
         <template is="dom-if" if="{{_showMessage(stage, currentStage, deadline, pronoUserId)}}">
             <div class="message">{{message}}</div>
@@ -72,7 +73,8 @@
                 var that = this;
                 setInterval(function(){
                     if(that.complete()){
-                        that.message = 'Dit deel is volledig!'
+                        that.message = 'Dit deel is volledig!';
+                        that.isComplete = true;
                     }
                     else{
                         var now = new Date()
@@ -84,6 +86,7 @@
                         var minutes = Math.floor( (dt - days*24*3600*1000 - hours*3600*1000)/60/1000 )
                         var seconds = Math.floor( (dt - days*24*3600*1000 - hours*3600*1000 - minutes*60*1000)/1000 )
                         that.message = 'Je hebt nog '+days+' dagen '+hours+' uur en '+minutes+' minuten om dit deel in te vullen.';
+                        that.isComplete = false;
                     }
                 }, 2*1000);
             }

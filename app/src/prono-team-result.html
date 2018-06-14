@@ -65,20 +65,23 @@
         <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/hometeam" data="{{team}}"></firebase-document>
         <firebase-query app-name="prono" path="/[[pronoGroupId]]/competition/stages" data="{{stages}}"></firebase-query>
         <firebase-document app-name="prono" path="/[[pronoGroupId]]/userpronos/[[pronoUserId]]/hometeamresult" data="{{prono}}"></firebase-document>
+        <firebase-document app-name="prono" path="/[[pronoGroupId]]/userpronos/{{pronoUserId}}/enable/teamresult" data="{{forceEnabled}}"></firebase-document>
 
         <firebase-document id="document" app-name="prono"></firebase-document>
 
         <prono-deadline stage="groupstage" prono-user-id="{{pronoUserId}}" complete="{{complete()}}"></prono-deadline>
 
-        <paper-material class$="{{_disabledClass(currentStage)}} prono selectable vertical layout" on-tap="editPronoDialog">
-            <h3>{{localize('Team result')}}</h3>
-            <div class="horizontal layout center wrap">
-                <div class="team horizontal layout center">
-                    <team-icon class="teamicon" prono-group-id="[[pronoGroupId]]" team-id="{{team}}"></team-icon>
-                    <team-name class="teamname" prono-group-id="[[pronoGroupId]]" team-id="{{team}}"></team-name>
-                </div>
-                <div>
-                    <h3 class="result">{{_parseResult(prono)}}</h3>
+        <paper-material class$="{{_disabledClass(forceEnabled, currentStage)}} prono vertical layout">
+            <div class="selectable" on-tap="editPronoDialog">
+                <h3>{{localize('Team result')}}</h3>
+                <div class="horizontal layout center wrap">
+                    <div class="team horizontal layout center">
+                        <team-icon class="teamicon" prono-group-id="[[pronoGroupId]]" team-id="{{team}}"></team-icon>
+                        <team-name class="teamname" prono-group-id="[[pronoGroupId]]" team-id="{{team}}"></team-name>
+                    </div>
+                    <div>
+                        <h3 class="result">{{_parseResult(prono)}}</h3>
+                    </div>
                 </div>
             </div>
         </paper-material>
@@ -155,10 +158,8 @@
             }
 
             editPronoDialog(event){
-                if(!this._disabled(this.currentstage)){
-                    this.newProno = this.prono
-                    this.$.editPronoDialog.open();
-                }
+                this.newProno = this.prono
+                this.$.editPronoDialog.open();
             }
             editPronoFormSubmit(){
                 this.$.editPronoForm.submit();
@@ -231,16 +232,16 @@
                 return str != ''
             }
 
-            _disabled(currentStage){
-                return !(currentStage=="groupstage" || currentStage==-1)
+            _enabled(forceEnabled, currentStage){
+                return (forceEnabled === true) || (currentStage=='groupstage' || currentStage==-1);
             }
 
-            _disabledClass(currentStage){
-                if(currentStage=="groupstage" || currentStage==-1){
-					return '';
+            _disabledClass(forceEnabled, currentStage){
+                if(this._enabled(forceEnabled, currentStage)){
+                    return '';
 				}
 				else{
-					return 'disabled';
+				    return 'disabled';
 				}
             }
         }
