@@ -41,14 +41,19 @@
             .stage{
 				transition: width 0.5s;
 				-webkit-transition: width 0.5s;
-				overflow-y: hidden;
+				//overflow-y: hidden;
+				-ms-overflow-style: none;  // IE 10+
+                overflow: -moz-scrollbars-none;  // Firefox
 			}
+            .stage::-webkit-scrollbar {
+                display: none;  // Safari and Chrome
+            }
 			.stage.expanded{
 				@apply(--layout-flex-5);
 			}
 			.stage.collapsed{
 				@apply(--layout-flex-2);
-				overflow-x: hidden;
+				//overflow-x: hidden;
 			}
 			.spacer{
 				height: 80px;
