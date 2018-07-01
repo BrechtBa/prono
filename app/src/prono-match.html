@@ -131,7 +131,7 @@
             <iron-form id="editScoreForm" on-iron-form-submit="editScore">
                 <form>
                     <div class="vertical layout center center-justified">
-                        <div class="horizontal layout center center-justified">
+                        <div class="horizontal layout center center-justified" on-tap="editTeamsDialog">
                             <div class="teamname left">
                                 <team-name team="{{team1}}" def="{{match.defaultteam1}}"></team-name>
                             </div>
@@ -165,6 +165,26 @@
             </iron-form>
             <div class="buttons">
                 <paper-button primary on-tap="editScoreFormSubmit" >save</paper-button>
+                <paper-button secondary dialog-dismiss>cancel</paper-button>
+            </div>
+        </paper-dialog>
+
+        <paper-dialog id="editTeamsDialog" class="team-dialog">
+            <div class="vertical layout center center-justified">
+                <div class="horizontal layout center center-justified" on-tap="editTeamsDialog">
+                    <div class="teamname left">
+                        <div>{{match.defaultteam1}}</div>
+                        <team-select team="{{newTeam1}}" label="Team 1"></team-select>
+                    </div>
+                     -
+                    <div class="teamname right">
+                        <div>{{match.defaultteam2}}</div>
+                        <team-select team="{{newTeam2}}" label="Team 2"></team-select>
+                    </div>
+                </div>
+            </div>
+            <div class="buttons">
+                <paper-button primary on-tap="editTeams" >save</paper-button>
                 <paper-button secondary dialog-dismiss>cancel</paper-button>
             </div>
         </paper-dialog>
@@ -259,6 +279,30 @@
                 }
             }
 
+            editTeamsDialog(){
+                if(!this.collapsed){
+                    if(!this._hasValue(this.pronoUserId) && this._manageCompetitionPermission(this.user.permission)){
+                        this.newTeam1 = this.match.team1;
+                        this.newTeam2 = this.match.team2;
+                        this.$.editScoreDialog.close()
+                        this.$.editTeamsDialog.open();
+                    }
+                }
+            }
+
+            editTeams(){
+                this.$.editTeamsDialog.close();
+                if(this._manageCompetitionPermission(this.user.permission)){
+                    this.$.document.path = '';
+                    this.$.document.path = '/'+this.pronoGroupId+'/competition/matches/'+this.matchId+'/team1';
+                    this.$.document.data = this._deformatTeam(this.newTeam1);
+                    this.$.document.path = '';
+                    this.$.document.path = '/'+this.pronoGroupId+'/competition/matches/'+this.matchId+'/team2';
+                    this.$.document.data = this._deformatTeam(this.newTeam2);
+                    this.$.document.path = '';
+                }
+            }
+
             complete(){
                 return (typeof this.prono.score1 != 'undefined' && typeof this.prono.score2 != 'undefined' && this.prono.score1 > -1 && this.prono.score2 > -1)
             }
@@ -275,6 +319,15 @@
                 }
                 else{
                     return parseInt(score);
+                }
+            }
+
+            _deformatTeam(team){
+                if(typeof team == 'undefined' || team === ''){
+                    return "-1";
+                }
+                else{
+                    return team;
                 }
             }
 
