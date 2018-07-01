@@ -76,6 +76,7 @@
 
         <firebase-query app-name="prono" path="/[[pronoGroupId]]/competition/stages" data="{{stages}}"></firebase-query>
         <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/currentstage" data="{{currentStage}}"></firebase-document>
+        <firebase-document app-name="prono" path="/[[pronoGroupId]]/userpronos/{{pronoUserId}}/enable/knockoutstage" data="{{forceEnabled}}"></firebase-document>
 
         <div class="horizontal layout center-justified center">
             <template is="dom-repeat" items="{{_getStages(stages, currentStage)}}" as="stage" filter="_notGroupstage">
@@ -86,7 +87,7 @@
                             <div class="spacer before"></div>
                         </template>
 
-                        <paper-material elevation="2" class$="{{_disabledClass(stage, currentStage, pronoUserId)}} match vertical layout">
+                        <paper-material elevation="2" class$="{{_disabledClass(forceEnabled, stage, currentStage, pronoUserId)}} match vertical layout">
                             <prono-match prono-group-id="{{pronoGroupId}}" prono-user-id="{{pronoUserId}}" permission="[[permission]]" match-id="{{match}}" stage="{{stage.$key}}" collapsed="{{_isCollapsed(stage, expandedStage)}}" abr-team-name="{{_isSmall()}}" hide-team-name="{{_hideTeamName(stage, expandedStage)}}"></prono-match>
                         </paper-material>
 
@@ -175,12 +176,16 @@
                 return parseInt(a.date) - parseInt(b.date);
             }
 
-            _disabledClass(stage, currentStage, pronoUserId){
-                if(currentStage==stage.$key || currentStage==-1 || pronoUserId == ''){
+            _enabled(forceEnabled, stage, currentStage, pronoUserId){
+                return (forceEnabled === true) || (currentStage==stage.$key || currentStage==-1 || pronoUserId == '');
+            }
+
+            _disabledClass(forceEnabled, stage, currentStage, pronoUserId){
+                if(this._enabled(forceEnabled, stage, currentStage, pronoUserId)){
 					return '';
 				}
 				else{
-					return 'disabled';
+				    return 'disabled';
 				}
             }
 
