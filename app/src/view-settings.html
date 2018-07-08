@@ -17,6 +17,8 @@
 
 <link rel="import" href="shared-styles.html">
 <link rel="import" href="datetime-picker-dialog.html">
+<link rel="import" href="prono-team-result.html">
+
 
 <dom-module id="view-settings">
     <template>
@@ -31,14 +33,15 @@
                 margin-bottom: 30px;
             }
             .stage{
-                min-width: 100px;
+                min-width: 120px;
             }
         </style>
 
+        <iron-meta key="user" value="{{user}}"></iron-meta>
         <iron-meta key="pronoGroupId" value="{{pronoGroupId}}"></iron-meta>
 
         <firebase-document app-name="prono" path="/[[pronoGroupId]]/settings/showpaymentmessage" data="{{showpaymentmessage}}"></firebase-document>
-        <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/currentstage" data="{{currentstage}}"></firebase-document>
+        <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/currentstage" data="{{currentStage}}"></firebase-document>
         <firebase-document app-name="prono" path="/[[pronoGroupId]]/deadlines/groupstage" data="{{deadlineGroupstage}}"></firebase-document>
         <firebase-document app-name="prono" path="/[[pronoGroupId]]/deadlines/16" data="{{deadlineSixteen}}"></firebase-document>
         <firebase-document app-name="prono" path="/[[pronoGroupId]]/deadlines/8" data="{{deadlineEight}}"></firebase-document>
@@ -47,7 +50,32 @@
 
         <paper-material class="settings">
             <h3>Competition settings</h3>
-            <paper-input value="{{currentstage}}" label="Current stage"></paper-input>
+            <div class="horizontal layout selectable" on-tap="currentStageDialog">
+                <div class="stage">Current stage: </div>
+                <div>{{_parseCurrentStage(currentStage)}}</div>
+            </div>
+
+            <paper-dialog id="currentStageDialog">
+                <iron-form id="editCurrentStageForm">
+                    <form>
+                        <paper-dropdown-menu label="Current stage">
+                            <paper-listbox slot="dropdown-content" attr-for-selected="value" selected="{{newCurrentStage}}">
+                                <paper-item value="groupstage">{{_parseCurrentStage('groupstage')}}</paper-item>
+                                <paper-item value="16">{{_parseCurrentStage('16')}}</paper-item>
+                                <paper-item value="8">{{_parseCurrentStage('8')}}</paper-item>
+                                <paper-item value="4">{{_parseCurrentStage('4')}}</paper-item>
+                                <paper-item value="2">{{_parseCurrentStage('2')}}</paper-item>
+                                <paper-item value="1">{{_parseCurrentStage('1')}}</paper-item>
+                            </paper-listbox>
+                        </paper-dropdown-menu>
+                    </form>
+                </iron-form>
+
+                <div class="buttons">
+                    <paper-button primary on-tap="editCurrentStage" >save</paper-button>
+                    <paper-button secondary dialog-dismiss>cancel</paper-button>
+                </div>
+            </paper-dialog>
 
             <h3>Deadlines</h3>
             <!--<paper-input value="[[nextstagestart]]" label="Next stage start" allowed-pattern="[0-9]*" disabled></paper-input>-->
@@ -57,6 +85,8 @@
             <div class="horizontal layout"><div class="stage">Semi-final:</div><datetime-picker-dialog value="{{deadlineFour}}"></datetime-picker-dialog></div>
             <div class="horizontal layout"><div class="stage">Final:</div><datetime-picker-dialog value="{{deadlineTwo}}"></datetime-picker-dialog></div>
         </paper-material>
+
+        <prono-team-result class="settings"></prono-team-result>
 
         <paper-material class="settings">
             <h3>Display settings</h3>
@@ -78,6 +108,38 @@
                         type: Object,
                     }
                 };
+            }
+
+            currentStageDialog(){
+                this.newCurrentStage = this.currentStage;
+                this.$.currentStageDialog.open()
+            }
+
+            editCurrentStage(){
+                this.$.currentStageDialog.close()
+                this.currentStage = this.newCurrentStage
+            }
+
+            _parseCurrentStage(currentStage){
+                if(currentStage == 'groupstage'){
+                    return 'Groupstage';
+                }
+                else if(currentStage == 16){
+                    return 'Round of 16';
+                }
+                else if(currentStage == 8){
+                    return 'Quarter-final';
+                }
+                else if(currentStage == 4){
+                    return 'Semi-final';
+                }
+                else if(currentStage == 2){
+                    return 'Final';
+                }
+                else if(currentStage == 1){
+                    return 'Finished';
+                }
+
             }
 
         }

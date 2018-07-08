@@ -3,6 +3,7 @@
 
 <link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
 <link rel="import" href="../bower_components/iron-meta/iron-meta.html">
+<link rel="import" href="../bower_components/iron-form/iron-form.html">
 
 <link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
 <link rel="import" href="../bower_components/paper-dialog-scrollable/paper-dialog-scrollable.html">
@@ -15,6 +16,7 @@
 <link rel="import" href="../bower_components/polymerfire/firebase-document.html">
 
 <link rel="import" href="shared-styles.html">
+<link rel="import" href="permission-behavior.html">
 <link rel="import" href="team-name.html">
 <link rel="import" href="team-icon.html">
 <link rel="import" href="prono-deadline.html">
@@ -59,19 +61,24 @@
             }
         </style>
 
+        <iron-meta key="user" value="{{user}}"></iron-meta>
         <iron-meta key="pronoGroupId" value="{{pronoGroupId}}"></iron-meta>
 
         <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/currentstage" data="{{currentStage}}"></firebase-document>
         <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/hometeam" data="{{team}}"></firebase-document>
+        <firebase-document app-name="prono" path="/[[pronoGroupId]]/competition/hometeamresult" data="{{result}}"></firebase-document>
         <firebase-query app-name="prono" path="/[[pronoGroupId]]/competition/stages" data="{{stages}}"></firebase-query>
-        <firebase-document app-name="prono" path="/[[pronoGroupId]]/userpronos/[[pronoUserId]]/hometeamresult" data="{{prono}}"></firebase-document>
-        <firebase-document app-name="prono" path="/[[pronoGroupId]]/userpronos/{{pronoUserId}}/enable/teamresult" data="{{forceEnabled}}"></firebase-document>
+
+        <template is="dom-if" if="{{_hasValue(pronoUserId)}}">
+            <firebase-document app-name="prono" path="/[[pronoGroupId]]/userpronos/[[pronoUserId]]/hometeamresult" data="{{prono}}"></firebase-document>
+            <firebase-document app-name="prono" path="/[[pronoGroupId]]/userpronos/[[pronoUserId]]/enable/teamresult" data="{{forceEnabled}}"></firebase-document>
+        </template>
 
         <firebase-document id="document" app-name="prono"></firebase-document>
 
         <prono-deadline stage="groupstage" prono-user-id="{{pronoUserId}}" complete="{{complete()}}"></prono-deadline>
 
-        <paper-material class$="{{_disabledClass(forceEnabled, currentStage)}} prono vertical layout">
+        <paper-material class$="{{_disabledClass(forceEnabled, currentStage, pronoUserId)}} prono vertical layout">
             <div class="selectable" on-tap="editPronoDialog">
                 <h3>{{localize('Team result')}}</h3>
                 <div class="horizontal layout center wrap">
@@ -80,7 +87,14 @@
                         <team-name class="teamname" prono-group-id="[[pronoGroupId]]" team-id="{{team}}"></team-name>
                     </div>
                     <div>
-                        <h3 class="result">{{_parseResult(prono)}}</h3>
+                        <h3 class="result">
+                            <template is="dom-if" if="{{_hasValue(pronoUserId)}}">
+                                {{_parseResult(prono)}}
+                            </template>
+                            <template is="dom-if" if="{{!_hasValue(pronoUserId)}}">
+                                {{_parseResult(result)}}
+                            </template>
+                        </h3>
                     </div>
                 </div>
             </div>
@@ -113,7 +127,7 @@
     </template>
 
     <script>
-        class PronoTeamResult extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior], Polymer.Element){
+        class PronoTeamResult extends Polymer.mixinBehaviors([Polymer.AppLocalizeBehavior, Prono.PermissionBehavior], Polymer.Element){
             static get is() { return 'prono-team-result'; }
 
             static get properties() {
@@ -158,18 +172,34 @@
             }
 
             editPronoDialog(event){
-                this.newProno = this.prono
+                if(this._hasValue(this.pronoUserId)){
+                    this.newProno = this.prono;
+                }
+                else{ //if(this._manageCompetitionPermission(this.user.permission)){
+                    this.newProno = this.result;
+                }
                 this.$.editPronoDialog.open();
             }
+
             editPronoFormSubmit(){
                 this.$.editPronoForm.submit();
             }
+
             editProno(){
                 this.$.editPronoDialog.close()
                 if(this._hasValue(this.pronoUserId)){
                     this.$.document.path = '';
                     if(typeof this.newProno != 'undefined'){
                         this.$.document.path = '/'+this.pronoGroupId+'/userpronos/'+this.pronoUserId+'/hometeamresult';
+                        this.$.document.data = this.newProno;
+                        this.$.document.path = '';
+                    }
+                }
+                else{ // if(this._manageCompetitionPermission(this.user.permission)){
+                    console.log(this.newProno)
+                    this.$.document.path = '';
+                    if(typeof this.newProno != 'undefined'){
+                        this.$.document.path = '/'+this.pronoGroupId+'/competition/hometeamresult';
                         this.$.document.data = this.newProno;
                         this.$.document.path = '';
                     }
@@ -232,12 +262,12 @@
                 return str != ''
             }
 
-            _enabled(forceEnabled, currentStage){
-                return (forceEnabled === true) || (currentStage=='groupstage' || currentStage==-1);
+            _enabled(forceEnabled, currentStage, pronoUserId){
+                return (forceEnabled === true) || (currentStage=='groupstage' || currentStage==-1 || pronoUserId == '');
             }
 
-            _disabledClass(forceEnabled, currentStage){
-                if(this._enabled(forceEnabled, currentStage)){
+            _disabledClass(forceEnabled, currentStage, pronoUserId){
+                if(this._enabled(forceEnabled, currentStage, pronoUserId)){
                     return '';
 				}
 				else{

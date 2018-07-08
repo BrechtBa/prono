@@ -59,7 +59,7 @@
                 <profile-picture class="picture" user="{{user}}"></profile-picture>
 				<div class="flex name">{{user.displayName}}
                 <template is="dom-if" if="{{_showPaymentMessage(showpaymentmessage, user)}}">
-                    {{localize("has not paid")}}
+                    {{localize(" has not paid")}}
                 </template>
                 </div>
 				<div class="points">{{_roundedTotalPoints(user, user.points)}}</div>
