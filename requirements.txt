@@ -1,6 +1,0 @@
-django
-djangorestframework
-djangorestframework-jwt
-django-filter
-django-cors-headers
-mock
