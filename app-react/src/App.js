@@ -1,5 +1,12 @@
+import React, { Component, createContext } from "react";
+
+import { ThemeProvider } from '@material-ui/core/styles';
+import { unstable_createMuiStrictModeTheme as createMuiTheme } from '@material-ui/core';
+
 import PronoLayout from './Layout.js';
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles';
+import UserProvider from "./UserProvider.js";
+import APIContext from "./APIProvider.js";
+import { api } from "./firebase.js";
 
 
 const redTheme = createMuiTheme({
@@ -23,7 +30,7 @@ const redTheme = createMuiTheme({
     },
     text: {
       primary: "#333333",
-      secondary: "#333333",
+      secondary: "#444444",
       disabled: "#555555",
       hint: "#333333",
     },
@@ -42,18 +49,14 @@ const redTheme = createMuiTheme({
 
 function App() {
 
-  const isAuthenticated = true;
-  const user = {
-    displayName: 'BB',
-    permissions: {
-      admin: true
-    }
-  };
-
   return (
     <div className="App" style={{height: '100%'}}>
       <ThemeProvider theme={redTheme}>
-        <PronoLayout isAuthenticated={isAuthenticated} user={user}/>
+        <UserProvider>
+          <APIContext.Provider value={api}>
+            <PronoLayout/>
+          </APIContext.Provider>
+        </UserProvider>
       </ThemeProvider>
     </div>
   );

@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
+import { UserContext } from "./UserProvider.js";
+
 import { BrowserRouter, Switch, Route, Link } from "react-router-dom";
 
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
@@ -13,11 +15,14 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
-
+import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
-
 import MenuIcon from '@material-ui/icons/Menu';
 
+
+import ViewRanking from './ViewRanking.js';
+import ViewResults from './ViewResults.js';
+import ViewLogin from './ViewLogin.js';
 
 const drawerWidth = 320;
 
@@ -71,7 +76,9 @@ function User(props) {
   const classes = useStyles();
   return (
     <div className={classes.user}>
-      <Avatar alt={user.displayName} src={user.avatar} className={classes.large} />
+      <Avatar alt={user.displayName} src={user.profilePicture} className={classes.large} />
+      <div>{user.displayName}</div>
+      <div>{user.email}</div>
     </div>
   );
 }
@@ -81,8 +88,6 @@ function Navigation(props) {
 
   const isAdmin = props.isAdmin;
   const onNavigation = props.onNavigation;
-
-  console.log(isAdmin)
 
   const links = [{
     title: 'Rangschikking',
@@ -156,8 +161,8 @@ function Version() {
 }
 
 function PronoLayout(props) {
-  const isAuthenticated = props.isAuthenticated;
-  const user = props.user;
+
+  const user = useContext(UserContext);
 
   const classes = useStyles();
   const [navigationOpen, setNavigationOpen] = useState(false);
@@ -171,7 +176,7 @@ function PronoLayout(props) {
     }
   }
 
-  if(isAuthenticated){
+  if(user !== null){
     return (
       <BrowserRouter>
         <div className={classes.root}>
@@ -199,15 +204,11 @@ function PronoLayout(props) {
           <main className={classes.content}>
             <Toolbar />
             <Switch>
-              <Route path="/ranking">
-                Ranking
-              </Route>
+              <Route path="/ranking"> <ViewRanking/> </Route>
               <Route path="/prono">
                 Prono
               </Route>
-              <Route path="/results">
-                Results
-              </Route>
+              <Route path="/results"> <ViewResults/> </Route>
               <Route path="/rules">
                 Rules
               </Route>
@@ -244,7 +245,11 @@ function PronoLayout(props) {
     );
   }
   else {
-    return null
+    return (
+      <div className={classes.root}>
+        <ViewLogin />
+      </div>
+    )
   }
 
 }
