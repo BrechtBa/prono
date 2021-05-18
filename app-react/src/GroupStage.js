@@ -107,7 +107,7 @@ export function GroupStage(props) {
   const api = useContext(APIContext);
 
   const saveMatch = (match, score1, score2, penalty1, penalty2) => {
-    api.updateMatch(match.key, {score1: score1, score2: score2, penalty1: penalty1, penalty2: penalty2})
+    api.updateMatch(match, {score1: score1, score2: score2, penalty1: penalty1, penalty2: penalty2})
   }
 
   const classes = useStyles();
@@ -149,12 +149,12 @@ export function GroupStage(props) {
 
 export function GroupstageProno(props) {
   const groups = props.groups;
+  const user = props.user;
 
   const api = useContext(APIContext);
-  const user = useContext(UserContext);
 
   const saveMatch = (match, score1, score2, penalty1, penalty2) => {
-    //api.updateMatchProno(user.key match.key, {score1: score1, score2: score2})
+    api.updateMatchProno(user, match, {score1: score1, score2: score2})
   }
 
   const classes = useStyles();

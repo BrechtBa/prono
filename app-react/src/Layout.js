@@ -21,6 +21,7 @@ import MenuIcon from '@material-ui/icons/Menu';
 
 
 import ViewRanking from './ViewRanking.js';
+import ViewProno from './ViewProno.js';
 import ViewResults from './ViewResults.js';
 import ViewLogin from './ViewLogin.js';
 
@@ -205,9 +206,7 @@ function PronoLayout(props) {
             <Toolbar />
             <Switch>
               <Route path="/ranking"> <ViewRanking/> </Route>
-              <Route path="/prono">
-                Prono
-              </Route>
+              <Route path="/prono"> <ViewProno/> </Route>
               <Route path="/results"> <ViewResults/> </Route>
               <Route path="/rules">
                 Rules

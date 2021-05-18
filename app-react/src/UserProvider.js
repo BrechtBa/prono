@@ -14,7 +14,7 @@ function UserProvider(props){
 
         const unsubscribe = db.ref(`pronogroupid1/users/${userAuth.uid}`).on("value", snapshot => {
           setUser({
-            id: userAuth.uid,
+            key: userAuth.uid,
             email: userAuth.email,
             displayName: snapshot.val().displayName,
             profilePicture:  snapshot.val().profilePicture,

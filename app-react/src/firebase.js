@@ -124,10 +124,46 @@ class FirebaseAPI {
     });
   }
 
-  updateMatch(key, update) {
+  onUserPronoMatchesChanged(user, callback) {
+
+    if (user !== undefined){
+      return this.db.ref(`${this.root}/userpronos/${user.key}/matches`).on("value", snapshot => {
+        let matches = {};
+        if (snapshot !== undefined){
+          snapshot.forEach((snap) => {
+            const val = snap.val()
+            matches[snap.key] = {
+              key: snap.key,
+              score1: val.score1,
+              score2: val.score2,
+            };
+          });
+        }
+        callback(matches);
+      });
+    }
+    else {
+      return () => null
+    }
+  }
+
+  updateMatch(match, update) {
     var updates = {};
     for (const [path, value] of Object.entries(update)) {
-      updates[`${this.root}/competition/matches/${key}/${path}`] = value
+      updates[`${this.root}/competition/matches/${match.key}/${path}`] = value
+    }
+    console.log(updates)
+    return this.db.ref().update(updates)
+  }
+
+  _get_iso_icon(iso_code){
+    return `images/flags/${iso_code}.png`
+  }
+
+  updateMatchProno(user, match, update) {
+    var updates = {};
+    for (const [path, value] of Object.entries(update)) {
+      updates[`${this.root}/userpronos/${user.key}/matches/${match.key}/${path}`] = value
     }
     console.log(updates)
     return this.db.ref().update(updates)

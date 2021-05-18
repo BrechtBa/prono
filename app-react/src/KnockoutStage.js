@@ -138,7 +138,7 @@ const getMatchColumns = (knockoutstages) => {
   });
 
   const matchColumns = matchColumnsLeft.concat(matchColumnsRight);
-  console.log(matchColumns, matchColumnsLeft, matchColumnsRight)
+  console.log(matchColumns)
   return matchColumns
 }
 
@@ -161,7 +161,7 @@ export function KnockoutStage(props) {
   const api = useContext(APIContext);
 
   const saveMatch = (match, score1, score2, penalty1, penalty2) => {
-    api.updateMatch(match.key, {score1: score1, score2: score2, penalty1: penalty1, penalty2: penalty2})
+    api.updateMatch(match, {score1: score1, score2: score2, penalty1: penalty1, penalty2: penalty2})
   }
 
   const classes = useStyles();
@@ -173,11 +173,61 @@ export function KnockoutStage(props) {
          onClick={() => setOpenStage(column.stage)}>
 
           {column.matches.map((match, matchIndex) => (
-            <div>
+            <div key={match.key}>
               {(column.key == 'R4' && matchIndex == 0)  && (<div style={{height: '80px'}}></div>)}
 
               <Paper style={{padding: '5px', height: '175px', overflowX: 'hidden'}}>
                 <Match match={match} showPenaltyEdit={true} onSave={saveMatch}/>
+              </Paper>
+
+              {(column.key == 'L4' && matchIndex == 0)  && (<div style={{height: '80px'}}></div>)}
+            </div>
+          ))}
+
+        </div>
+      ))}
+    </div>
+  );
+};
+
+
+
+export function KnockoutStageProno(props) {
+  const user = props.user;
+  const stages = props.stages;
+  const columns = getMatchColumns(stages);
+
+  const [openStage, setOpenStage] = useState('16')
+
+  const getStageGrow = (stage, openStage) => {
+    if(stage == openStage){
+      return 4;
+    }
+    else{
+      return 1
+    }
+  }
+
+  const api = useContext(APIContext);
+
+  const saveMatch = (match, score1, score2, penalty1, penalty2) => {
+    api.updateMatchProno(user, match, {score1: score1, score2: score2, penalty1: penalty1, penalty2: penalty2})
+  }
+
+  const classes = useStyles();
+
+  return (
+    <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center'}}>
+      {columns.map( (column) => (
+        <div key={column.key} style={{display: 'flex', flexDirection: 'column', justifyContent: 'space-around', height: '750px', marginRight: '5px', marginLeft: '5px', flexGrow: getStageGrow(column.stage, openStage)}}
+         onClick={() => setOpenStage(column.stage)}>
+
+          {column.matches.map((match, matchIndex) => (
+            <div key={match.key}>
+              {(column.key == 'R4' && matchIndex == 0)  && (<div style={{height: '80px'}}></div>)}
+
+              <Paper style={{padding: '5px', height: '175px', overflowX: 'hidden'}}>
+                <Match match={match} showPenaltyEdit={false} onSave={saveMatch}/>
               </Paper>
 
               {(column.key == 'L4' && matchIndex == 0)  && (<div style={{height: '80px'}}></div>)}
