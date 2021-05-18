@@ -66,8 +66,8 @@ function ViewLogin() {
         {error !== null && <div className={classes.error}>{error}</div>}
         <form style={{display: 'flex', flexDirection: 'column'}}>
           <div> </div>
-          <TextField required label="Email" value={email} onChange={(event) => onEmailChangeHandler(event)}/>
-          <TextField required label="Password" type="password" value={password} onChange={(event) => onPasswordChangeHandler(event)}/>
+          <TextField label="Email" value={email} onChange={(event) => onEmailChangeHandler(event)}/>
+          <TextField label="Password" type="password" value={password} onChange={(event) => onPasswordChangeHandler(event)}/>
 
           <div>
             <Button id="signInButton" onClick={(event) => {signInWithEmailAndPasswordHandler(event, email, password)}}>
@@ -105,18 +105,15 @@ function Register(props) {
   };
 
   const onEmailChangeHandler = (event) => {
-      const {name, value} = event.currentTarget;
-      setEmail(value);
+      setEmail(event.currentTarget.value);
   };
 
   const onPasswordChangeHandler = (event) => {
-      const {name, value} = event.currentTarget;
-      setPassword(value);
+      setPassword(event.currentTarget.value);
   };
 
   const onPasswordRepeatChangeHandler = (event) => {
-      const {name, value} = event.currentTarget;
-      setPasswordRepeat(value);
+      setPasswordRepeat(event.currentTarget.value);
   };
 
   const classes = useStyles();

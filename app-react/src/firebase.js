@@ -63,6 +63,24 @@ class FirebaseAPI {
     });
   }
 
+  onKnockoutstageChanged(callback) {
+    return this.db.ref(`${this.root}/competition/stages`).on("value", snapshot => {
+      let knockoutstage = [];
+      if (snapshot !== undefined){
+        snapshot.forEach((snap) => {
+          const val = snap.val()
+          if(snap.key !== 'groupstage'){
+            knockoutstage.push({
+              key: snap.key,
+              matches: val,
+            });
+          }
+        });
+      }
+      callback(knockoutstage.sort((a, b) => parseInt(b.key) - parseInt(a.key)));
+    });
+  }
+
   onMatchesChanged(callback) {
     return this.db.ref(`${this.root}/competition/matches`).on("value", snapshot => {
       let matches = {};
@@ -104,6 +122,15 @@ class FirebaseAPI {
       }
       callback(teams);
     });
+  }
+
+  updateMatch(key, update) {
+    var updates = {};
+    for (const [path, value] of Object.entries(update)) {
+      updates[`${this.root}/competition/matches/${key}/${path}`] = value
+    }
+    console.log(updates)
+    return this.db.ref().update(updates)
   }
 
   _get_iso_icon(iso_code){
