@@ -6,6 +6,7 @@ import { GroupstageProno } from './GroupStage.js';
 import { KnockoutStageProno } from './KnockoutStage.js';
 import { KnockoutStageTeamsProno } from './KnockoutStageTeams.js';
 import { TotalGoalsProno } from './TotalGoals.js'
+import { TeamResultProno } from './TeamResult.js'
 
 
 const getFullGroupstage = (groupstage, matches, teams, matchesProno, groupWinnersProno) => {
@@ -154,6 +155,8 @@ function ViewProno(props) {
   const [groupWinnersProno, setGroupWinnersProno] = useState({});
   const [stageTeamsProno, setStageTeamsProno] = useState({});
   const [totalGoalsProno, setTotalGoalsProno] = useState(-1);
+  const [teamResultProno, setTeamResultProno] = useState('-1');
+
 
   useEffect(() => {
     return api.onTeamsChanged(val => {
@@ -211,6 +214,13 @@ function ViewProno(props) {
     });
   }, [api, pronoUser]);
 
+  useEffect(() => {
+    return api.onUserPronoHomeTeamResultChanged(pronoUser, val => {
+      setTeamResultProno(val);
+      console.log('loaded prono team result', val)
+    });
+  }, [api, pronoUser]);
+
 
   const groups = getFullGroupstage(groupstage, matches, teams, matchesProno, groupWinnersProno);
   console.log(groups)
@@ -232,6 +242,8 @@ function ViewProno(props) {
 
       <h2 style={{color: '#ffffff'}}>Extra punten</h2>
       <TotalGoalsProno goals={totalGoalsProno} user={pronoUser} />
+
+      <TeamResultProno stage={teamResultProno} user={pronoUser} team={{abbreviation: "BEL", icon: "images/flags/BE.png", name: "België"}}/>
 
       <h2 style={{color: '#ffffff'}}>Knockout fase</h2>
       <KnockoutStageProno stages={stages} user={pronoUser}/>

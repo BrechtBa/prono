@@ -40,12 +40,13 @@ export function TotalGoalsProno(props) {
   }
 
   return (
-    <div style={{width: '100%'}}>
+    <div style={{width: '100%', marginBottom: '10px'}}>
       <Paper style={{padding: '10px'}} onClick={() => setDialogOpen(true)}>
         <h3 style={{marginTop: '0px'}}>Totaal aantal goals</h3>
-        <div style={{height: '40px', fontSize: '30px', fontWeight: 600}}>
+        <div style={{height: '40px', fontSize: '30px', fontWeight: 600, marginLeft: '20px'}}>
           {goals >= 0 ? goals  : ''}
         </div>
+        <Disabled disabled={false}/>
       </Paper>
 
 
@@ -53,7 +54,7 @@ export function TotalGoalsProno(props) {
         <form>
           <div style={{display: 'flex', flexDirection: 'column', padding: '20px'}}>
             <div>
-              <TextField style={{width: '80px', marginLeft: '10px', marginRight: '10px'}} inputProps={{min: 0, style: {textAlign: 'center'}}} value={dialogGoals} onChange={(event) => setDialogGoals(event.currentTarget.value)} error={!validateGoals(goals)}/>
+              <TextField style={{ marginLeft: '10px', marginRight: '10px'}} inputProps={{min: 0, style: {textAlign: 'center'}}} label="Totaal aantal goals" value={dialogGoals} onChange={(event) => setDialogGoals(event.currentTarget.value)} error={!validateGoals(goals)}/>
             </div>
 
             <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', marginTop: '20px'}}>

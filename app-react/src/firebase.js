@@ -193,7 +193,6 @@ class FirebaseAPI {
   }
 
   onUserPronoTotalGoalsChanged(user, callback) {
-
     if (user !== undefined){
       return this.db.ref(`${this.root}/userpronos/${user.key}/totalgoals`).on("value", snapshot => {
         let goals = -1
@@ -201,6 +200,21 @@ class FirebaseAPI {
           goals = snapshot.val()
         }
         callback(goals);
+      });
+    }
+    else {
+      return () => {}
+    }
+  }
+
+  onUserPronoHomeTeamResultChanged(user, callback) {
+    if (user !== undefined){
+      return this.db.ref(`${this.root}/userpronos/${user.key}/hometeamresult`).on("value", snapshot => {
+        let stage = '-1'
+        if (snapshot !== undefined){
+          stage = snapshot.val()
+        }
+        callback(stage);
       });
     }
     else {
@@ -238,6 +252,10 @@ class FirebaseAPI {
 
   updateTotalGoalsProno(user, goals) {
     return this.db.ref(`${this.root}/userpronos/${user.key}/totalgoals`).set(goals)
+  }
+
+  updateTeamResultProno(user, stage) {
+    return this.db.ref(`${this.root}/userpronos/${user.key}/hometeamresult`).set(stage)
   }
 
   _get_iso_icon(iso_code){
