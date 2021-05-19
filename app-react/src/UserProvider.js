@@ -1,4 +1,4 @@
-import React, { Component, createContext, useState, useEffect } from "react";
+import React, { createContext, useState, useEffect } from "react";
 import { auth, db } from "./firebase.js";
 
 export const UserContext = createContext(null);
@@ -24,11 +24,12 @@ function UserProvider(props){
             }
           })
         })
-
-      } else {
-        setUser(null);
+        return () => { unsubscribe() }
       }
-      return () => { unsubscribe() }
+      else {
+        setUser(null);
+        return () => {}
+      }
     });
     return () => { unsubscribe() }
   }, []);

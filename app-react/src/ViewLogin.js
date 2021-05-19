@@ -23,13 +23,11 @@ function ViewLogin() {
   const [error, setError] = useState(null);
 
   const onEmailChangeHandler = (event) => {
-      const {name, value} = event.currentTarget;
-      setEmail(value);
+      setEmail(event.currentTarget.value);
   };
 
   const onPasswordChangeHandler = (event) => {
-      const {name, value} = event.currentTarget;
-      setPassword(value);
+      setPassword(event.currentTarget.value);
   };
 
   const signInWithEmailAndPasswordHandler = (event, email, password) => {
@@ -40,13 +38,13 @@ function ViewLogin() {
     });
   };
 
-  const signOut = () => {
-    auth.signOut().then(function() {
-      // Sign-out successful.
-    }).catch(function(error) {
-      // An error happened.
-    });
-  }
+//  const signOut = () => {
+//    auth.signOut().then(function() {
+//      // Sign-out successful.
+//    }).catch(function(error) {
+//      // An error happened.
+//    });
+//  }
 
   const openRegisterDialog = () => {
 
@@ -76,67 +74,67 @@ function ViewLogin() {
           </div>
         </form>
 
-        <p>Nog geen account? <a href="#" onClick={openRegisterDialog}>register</a></p>
-        <p>Wachtwoord vergeten? <a href="#" onClick={openResetPasswordDialog}>reset wachtwoord</a></p>
+        <p>Nog geen account? <Button onClick={openRegisterDialog}>register</Button></p>
+        <p>Wachtwoord vergeten? <Button onClick={openResetPasswordDialog}>reset wachtwoord</Button></p>
       </Paper>
     </div>
   );
 };
 
-
-function Register(props) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordRepeat, setPasswordRepeat] = useState("");
-  const [error, setError] = useState(null);
-
-  const createUserWithEmailAndPasswordHandler = async (event, email, password) => {
-    event.preventDefault();
-    try {
-      const {user} = await auth.createUserWithEmailAndPassword(email, password);
-    }
-    catch(error){
-      setError('Error Signing up with email and password');
-    }
-
-    setEmail("");
-    setPassword("");
-    setPasswordRepeat("");
-  };
-
-  const onEmailChangeHandler = (event) => {
-      setEmail(event.currentTarget.value);
-  };
-
-  const onPasswordChangeHandler = (event) => {
-      setPassword(event.currentTarget.value);
-  };
-
-  const onPasswordRepeatChangeHandler = (event) => {
-      setPasswordRepeat(event.currentTarget.value);
-  };
-
-  const classes = useStyles();
-
-  return (
-    <div>
-      <h1 style={{marginTop: 0}}>Register</h1>
-      {error !== null && <div className={classes.error}>{error}</div>}
-
-      <form style={{display: 'flex', flexDirection: 'column'}}>
-          <div> </div>
-          <TextField required label="Email" value={email} onChange={(event) => onEmailChangeHandler(event)}/>
-          <TextField required label="Password" type="password" value={password} onChange={(event) => onPasswordChangeHandler(event)}/>
-          <TextField required label="Herhaal password" type="password" value={passwordRepeat} onChange={(event) => onPasswordRepeatChangeHandler(event)}/>
-          <div>
-            <Button onClick={(event) => {createUserWithEmailAndPasswordHandler(event, email, password)}}>
-              <span>Sign in</span>
-            </Button>
-          </div>
-        </form>
-
-    </div>
-  );
-};
+//
+//function Register(props) {
+//  const [email, setEmail] = useState("");
+//  const [password, setPassword] = useState("");
+//  const [passwordRepeat, setPasswordRepeat] = useState("");
+//  const [error, setError] = useState(null);
+//
+//  const createUserWithEmailAndPasswordHandler = async (event, email, password) => {
+//    event.preventDefault();
+//    try {
+//      const {user} = await auth.createUserWithEmailAndPassword(email, password);
+//    }
+//    catch(error){
+//      setError('Error Signing up with email and password');
+//    }
+//
+//    setEmail("");
+//    setPassword("");
+//    setPasswordRepeat("");
+//  };
+//
+//  const onEmailChangeHandler = (event) => {
+//      setEmail(event.currentTarget.value);
+//  };
+//
+//  const onPasswordChangeHandler = (event) => {
+//      setPassword(event.currentTarget.value);
+//  };
+//
+//  const onPasswordRepeatChangeHandler = (event) => {
+//      setPasswordRepeat(event.currentTarget.value);
+//  };
+//
+//  const classes = useStyles();
+//
+//  return (
+//    <div>
+//      <h1 style={{marginTop: 0}}>Register</h1>
+//      {error !== null && <div className={classes.error}>{error}</div>}
+//
+//      <form style={{display: 'flex', flexDirection: 'column'}}>
+//          <div> </div>
+//          <TextField required label="Email" value={email} onChange={(event) => onEmailChangeHandler(event)}/>
+//          <TextField required label="Password" type="password" value={password} onChange={(event) => onPasswordChangeHandler(event)}/>
+//          <TextField required label="Herhaal password" type="password" value={passwordRepeat} onChange={(event) => onPasswordRepeatChangeHandler(event)}/>
+//          <div>
+//            <Button onClick={(event) => {createUserWithEmailAndPasswordHandler(event, email, password)}}>
+//              <span>Sign in</span>
+//            </Button>
+//          </div>
+//        </form>
+//
+//    </div>
+//  );
+//};
 
 export default ViewLogin;

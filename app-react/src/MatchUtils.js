@@ -1,12 +1,9 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 
-import Paper from '@material-ui/core/Paper';
 import Dialog from '@material-ui/core/Dialog';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
-
-import APIContext from './APIProvider.js';
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -100,7 +97,7 @@ export function TeamIcon(props) {
 
   if (team !== null){
     return (
-      <img src={team.icon} style={{width: '100%'}}/>
+      <img src={team.icon} style={{width: '100%'}} alt={team.name}/>
     )
   }
   else{

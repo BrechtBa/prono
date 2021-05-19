@@ -3,8 +3,8 @@ import React, { useState, useEffect, useContext } from 'react';
 import APIContext from './APIProvider.js';
 import { UserContext } from "./UserProvider.js";
 import { GroupstageProno } from './GroupStage.js';
-import { KnockoutStageProno, KnockoutStageTeamsProno } from './KnockoutStage.js';
-
+import { KnockoutStageProno } from './KnockoutStage.js';
+import { KnockoutStageTeamsProno } from './KnockoutStageTeams.js';
 
 
 const getFullGroupstage = (groupstage, matches, teams, matchesProno) => {
@@ -134,7 +134,7 @@ function ViewProno(props) {
   const [groupstage, setGroupstage] = useState([]);
   const [knockoutstages, setKnockoutstages] = useState([]);
 
-  const [pronoUser, setPronoUser] = useState(user);
+  const [pronoUser] = useState(user);
   const [matchesProno, setMatchesProno] = useState({});
   const [stageTeamsProno, setStageTeamsProno] = useState({});
 

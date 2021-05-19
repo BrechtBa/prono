@@ -1,15 +1,10 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 
 import Paper from '@material-ui/core/Paper';
-import Dialog from '@material-ui/core/Dialog';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
 
 import APIContext from './APIProvider.js';
-import { Disabled, TeamName, TeamIcon, EditScoreDialog } from './MatchUtils.js';
+import { TeamName, TeamIcon, EditScoreDialog } from './MatchUtils.js';
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -138,14 +133,11 @@ const getMatchColumns = (knockoutstages) => {
     }
   });
 
-  const matchColumnsRight = knockoutstages.slice(0, knockoutstages.length-1).reverse().map((stage) => {
-    if(stage.matches.length > 1){
-      const col = {
-        key: `R${stage.key}`,
-        stage: stage.key,
-        matches: stage.matches.slice(stage.matches.length/2, stage.matches.length)
-      }
-      return col;
+  const matchColumnsRight = knockoutstages.slice(0, knockoutstages.length-1).reverse().filter((stage) => stage.matches.length > 1).map((stage) => {
+    return {
+      key: `R${stage.key}`,
+      stage: stage.key,
+      matches: stage.matches.slice(stage.matches.length/2, stage.matches.length)
     }
   });
 
@@ -162,7 +154,7 @@ export function KnockoutStage(props) {
   const [openStage, setOpenStage] = useState('16')
 
   const getStageGrow = (stage, openStage) => {
-    if(stage == openStage){
+    if(stage === openStage){
       return 4;
     }
     else{
@@ -176,8 +168,6 @@ export function KnockoutStage(props) {
     api.updateMatch(match, {score1: score1, score2: score2, penalty1: penalty1, penalty2: penalty2})
   }
 
-  const classes = useStyles();
-
   return (
     <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', width: '100%'}}>
       {columns.map( (column) => (
@@ -186,13 +176,13 @@ export function KnockoutStage(props) {
 
           {column.matches.map((match, matchIndex) => (
             <div key={match.key}>
-              {(column.key == 'R4' && matchIndex == 0)  && (<div style={{height: '80px'}}></div>)}
+              {(column.key === 'R4' && matchIndex === 0)  && (<div style={{height: '80px'}}></div>)}
 
               <Paper style={{padding: '5px', height: '175px', overflowX: 'hidden'}}>
                 <Match match={match} showPenaltyEdit={true} onSave={saveMatch}/>
               </Paper>
 
-              {(column.key == 'L4' && matchIndex == 0)  && (<div style={{height: '80px'}}></div>)}
+              {(column.key === 'L4' && matchIndex === 0)  && (<div style={{height: '80px'}}></div>)}
             </div>
           ))}
 
@@ -211,7 +201,7 @@ export function KnockoutStageProno(props) {
   const [openStage, setOpenStage] = useState('16')
 
   const getStageGrow = (stage, openStage) => {
-    if(stage == openStage){
+    if(stage === openStage){
       return 4;
     }
     else{
@@ -225,8 +215,6 @@ export function KnockoutStageProno(props) {
     api.updateMatchProno(user, match, {score1: score1, score2: score2, penalty1: penalty1, penalty2: penalty2})
   }
 
-  const classes = useStyles();
-
   return (
     <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', width: '100%'}}>
       {columns.map( (column) => (
@@ -235,13 +223,13 @@ export function KnockoutStageProno(props) {
 
           {column.matches.map((match, matchIndex) => (
             <div key={match.key}>
-              {(column.key == 'R4' && matchIndex == 0)  && (<div style={{height: '80px'}}></div>)}
+              {(column.key === 'R4' && matchIndex === 0)  && (<div style={{height: '80px'}}></div>)}
 
               <Paper style={{padding: '5px', height: '175px', overflowX: 'hidden'}}>
                 <Match match={match} showPenaltyEdit={false} onSave={saveMatch}/>
               </Paper>
 
-              {(column.key == 'L4' && matchIndex == 0)  && (<div style={{height: '80px'}}></div>)}
+              {(column.key === 'L4' && matchIndex === 0)  && (<div style={{height: '80px'}}></div>)}
             </div>
           ))}
 
@@ -250,181 +238,3 @@ export function KnockoutStageProno(props) {
     </div>
   );
 };
-
-
-function StageTeamPronoSelectDialog(props){
-  const numberOfTeams = props.numberOfTeams;
-  const teams = props.teams;
-  const oldSelectedTeams = props.selectedTeams;
-  const open = props.open;
-  const setOpen = props.setOpen;
-  const onSave = props.onSave
-
-  const oldSelectedTeamsKeys = oldSelectedTeams.map((team) => {
-    return team.key;
-  })
-
-  const [selectedTeams, setSelectedTeams] = useState([]);
-
-  useEffect(() => {
-    const oldSelectedTeamsKeys = oldSelectedTeams.map((team) => {
-      return team.key;
-    })
-
-    let tempSelectedTeams = [];
-    if(teams !== undefined){
-
-      tempSelectedTeams = Object.keys(teams).map(function(key) {
-        if(oldSelectedTeamsKeys.indexOf(key) >=0 ){
-          return {team: teams[key], selected: true};
-        }
-        else{
-          return {team: teams[key], selected: false};
-        }
-      });
-    }
-    setSelectedTeams(tempSelectedTeams)
-
-  }, [teams, oldSelectedTeams]);
-
-  const getRemainingTeams = (numberOfTeams, tempSelectedTeams) => {
-    return numberOfTeams - tempSelectedTeams.filter((team) => {
-      return team.selected
-    }).length
-  }
-
-  const getStyle = (selected) => {
-    if(selected){
-      return {backgroundColor: '#cccccc', width: '180px'}
-    }
-    else{
-      return {width: '180px'}
-    }
-  }
-
-  const toggleTeam = (team) => {
-
-      const tempSelectedTeams = selectedTeams.map((val) => {
-        let temp_val = JSON.parse(JSON.stringify(val))
-        if(val.team.key == team.team.key){
-
-          if(temp_val.selected || getRemainingTeams(numberOfTeams, selectedTeams) > 0){
-            temp_val.selected = !temp_val.selected
-          }
-        }
-        return temp_val
-      });
-      console.log(tempSelectedTeams)
-      setSelectedTeams(tempSelectedTeams)
-  }
-
-  const handleSave = () => {
-    const selectedTeamsList = selectedTeams.filter((team) => {return team.selected}).map((team) => {return team.team});
-    onSave(selectedTeamsList)
-    setOpen(false)
-  }
-
-  const classes = useStyles();
-
-  return (
-    <Dialog onClose={() => setOpen(false)} open={open} style={{padding: '10px'}}>
-      <form>
-        <div style={{padding: '20px'}}>
-          <div>
-            Nog {getRemainingTeams(numberOfTeams, selectedTeams)} teams.
-          </div>
-          <List style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center'}}>
-            {selectedTeams.map((team) => (
-              <ListItem key={team.team.key} button style={getStyle(team.selected)} onClick={() => toggleTeam(team)}>
-                <div className={classes.teamIcon}>
-                  <TeamIcon team={team.team} />
-                </div>
-                <div style={{marginLeft: '10px'}}>
-                  <TeamName team={team.team} def={''}/>
-                </div>
-              </ListItem>
-            ))}
-          </List>
-          <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', marginTop: '20px'}}>
-            <Button onClick={() => handleSave()}>save</Button>
-            <Button onClick={() => setOpen(false)}>cancel</Button>
-          </div>
-        </div>
-      </form>
-    </Dialog>
-  );
-}
-
-function KnockoutStageTeamsPronoStage(props) {
-  const user = props.user;
-  const pronoStage = props.pronoStage;
-  const selectedTeams = props.selectedTeams;
-  const teams = props.teams;
-
-  const [editTeamsDialogOpen, setEditTeamsDialogOpen] = useState(false)
-
-  const handleSave = (selectedTeams) => {
-    console.log(selectedTeams)
-  }
-
-  const api = useContext(APIContext);
-
-  const saveStageTeams = (selectedTeams) => {
-    api.updateStageTeamsProno(user, pronoStage, selectedTeams)
-  }
-
-
-  const classes = useStyles();
-
-  return (
-    <div>
-      <Paper key={pronoStage.stage} style={{padding: '10px', marginBottom: '10px'}} onClick={() => setEditTeamsDialogOpen(true)}>
-        <h3 style={{marginTop: '0px'}}>{pronoStage.displayName}</h3>
-        <div style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center'}}>
-          {selectedTeams.map((team) => (
-            <div key={team.key} style={{display: 'flex', flexDirection: 'row', alignItems: 'center', margin: '10px'}}>
-              <div className={classes.teamIcon}>
-                <TeamIcon team={team} />
-              </div>
-              <div style={{marginLeft: '10px'}}>
-                <TeamName team={team} def={''}/>
-              </div>
-            </div>
-          ))}
-        </div>
-      </Paper>
-      <StageTeamPronoSelectDialog open={editTeamsDialogOpen} setOpen={setEditTeamsDialogOpen} teams={teams} selectedTeams={selectedTeams} numberOfTeams={pronoStage.numberOfTeams} onSave={saveStageTeams} />
-    </div>
-  );
-}
-
-
-export function KnockoutStageTeamsProno(props) {
-  const user = props.user;
-  const teams = props.teams;
-  const stageTeams = props.stageTeams;
-
-  const pronoStages = [
-    {key: '8', displayName: 'Kwartfinale', numberOfTeams: 8},
-    {key: '4', displayName: 'Halve finale', numberOfTeams: 4},
-    {key: '2', displayName: 'Finale', numberOfTeams: 2},
-    {key: '1', displayName: 'Winnaar', numberOfTeams: 1},
-  ]
-
-  const getSelectedTeams = (stageTeams, stage) => {
-    if(stageTeams[stage] !== undefined && stageTeams[stage].teams !== undefined){
-      return stageTeams[stage].teams;
-    }
-    else{
-      return []
-    }
-  }
-
-  return (
-    <div>
-      {pronoStages.map((pronoStage) => (
-        <KnockoutStageTeamsPronoStage user={user} pronoStage={pronoStage} selectedTeams={getSelectedTeams(stageTeams, pronoStage.key)} teams={teams} />
-      ))}
-    </div>
-  );
-}

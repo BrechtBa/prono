@@ -2,12 +2,8 @@ import React, { useState, useContext } from 'react';
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 
 import Paper from '@material-ui/core/Paper';
-import Dialog from '@material-ui/core/Dialog';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
 
 import APIContext from './APIProvider.js';
-import UserContext from './UserProvider.js';
 import { Disabled, TeamName, TeamIcon, EditScoreDialog } from './MatchUtils.js';
 
 
@@ -59,7 +55,6 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export function Match(props) {
   const match = props.match;
-  const collapsed = props.collapsed;
   const onSave = props.onSave
 
   const [editScoreDialogOpen, setEditScoreDialogOpen] = useState(false)

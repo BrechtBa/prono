@@ -1,5 +1,3 @@
-import React, { Component, createContext } from "react";
-
 import { ThemeProvider } from '@material-ui/core/styles';
 import { unstable_createMuiStrictModeTheme as createMuiTheme } from '@material-ui/core';
 
