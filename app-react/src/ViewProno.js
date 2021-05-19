@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
 
-
 import APIContext from './APIProvider.js';
 import { UserContext } from "./UserProvider.js";
 import { GroupstageProno } from './GroupStage.js';
-import { KnockoutStageProno } from './KnockoutStage.js';
+import { KnockoutStageProno, KnockoutStageTeamsProno } from './KnockoutStage.js';
 
 
 
@@ -12,7 +11,7 @@ const getFullGroupstage = (groupstage, matches, teams, matchesProno) => {
 
   const groups = groupstage.map((group) => {
     let full_group = JSON.parse(JSON.stringify(group));
-    let full_matches = []
+
     if(group.matches !== undefined){
       full_group.matches = group.matches.map((match_key) => {
         let full_match = JSON.parse(JSON.stringify(matches[match_key]));
@@ -70,7 +69,7 @@ const getFullKnockoutStages = (knockoutstages, matches, teams, matchesProno) => 
 
   const stages = knockoutstages.map((stage) => {
     let full_stage = JSON.parse(JSON.stringify(stage));
-    const full_matches = stage.matches.map((match_key) => {
+    full_stage.matches = stage.matches.map((match_key) => {
       let full_match = JSON.parse(JSON.stringify(matches[match_key]));
 
       if(matchesProno[match_key] !== undefined && matchesProno[match_key].score1 !== undefined){
@@ -100,19 +99,29 @@ const getFullKnockoutStages = (knockoutstages, matches, teams, matchesProno) => 
       }
       return full_match;
     })
-    full_stage.matches = full_matches;
     return full_stage;
   })
   return stages;
 
 }
 
-function KnockoutStageTeamsProno(props) {
-  const user = props.user;
 
-  return (
+const getFullStageTeams = (teams, stageTeamsProno) => {
+  const fullStageTeamsProno = JSON.parse(JSON.stringify(stageTeamsProno));
 
-  );
+  Object.keys(stageTeamsProno).forEach(function(key) {
+    if(stageTeamsProno[key].teams !== undefined){
+      fullStageTeamsProno[key].teams = stageTeamsProno[key].teams.filter((team_key) => {
+        return teams[team_key] !== undefined;
+      }).map((team_key) => {
+        return teams[team_key]
+      });
+    }
+    else{
+      fullStageTeamsProno[key].teams = []
+    }
+  });
+  return fullStageTeamsProno;
 }
 
 
@@ -124,8 +133,11 @@ function ViewProno(props) {
   const [matches, setMatches] = useState({});
   const [groupstage, setGroupstage] = useState([]);
   const [knockoutstages, setKnockoutstages] = useState([]);
-  const [matchesProno, setMatchesProno] = useState({});
+
   const [pronoUser, setPronoUser] = useState(user);
+  const [matchesProno, setMatchesProno] = useState({});
+  const [stageTeamsProno, setStageTeamsProno] = useState({});
+
 
   useEffect(() => {
     return api.onTeamsChanged(val => {
@@ -156,9 +168,16 @@ function ViewProno(props) {
   }, [api]);
 
   useEffect(() => {
-    return api.onUserPronoMatchesChanged(user, val => {
+    return api.onUserPronoMatchesChanged(pronoUser, val => {
       setMatchesProno(val);
       console.log('loaded prono matches', val)
+    });
+  }, [api, pronoUser]);
+
+  useEffect(() => {
+    return api.onUserPronoStageTeamsChanged(pronoUser, val => {
+      setStageTeamsProno(val);
+      console.log('loaded prono stage teams', val)
     });
   }, [api, pronoUser]);
 
@@ -169,11 +188,19 @@ function ViewProno(props) {
   const stages = getFullKnockoutStages(knockoutstages, matches, teams, matchesProno);
   console.log(stages)
 
+  const stageTeams = getFullStageTeams(teams, stageTeamsProno);
+  console.log(stageTeams)
+
   return (
     <div>
       <h2 style={{color: '#ffffff'}}>Groepsfase</h2>
       <div style={{color: '#ffffff'}}>Je hebt nog 10 dagen voor dit deel</div>
-      <GroupstageProno groups={groups} user={pronoUser}/>
+      <GroupstageProno groups={groups} user={pronoUser} />
+
+      <h2 style={{color: '#ffffff'}}>Teams in elke eliminatie fase</h2>
+      <KnockoutStageTeamsProno stageTeams={stageTeams} teams={teams} user={pronoUser} />
+
+      <h2 style={{color: '#ffffff'}}>Extra punten</h2>
 
       <h2 style={{color: '#ffffff'}}>Knockout fase</h2>
       <KnockoutStageProno stages={stages} user={pronoUser}/>

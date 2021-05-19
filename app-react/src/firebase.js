@@ -143,10 +143,31 @@ class FirebaseAPI {
       });
     }
     else {
-      return () => null
+      return () => {}
     }
   }
 
+  onUserPronoStageTeamsChanged(user, callback) {
+
+    if (user !== undefined){
+      return this.db.ref(`${this.root}/userpronos/${user.key}/knockoutstageteams`).on("value", snapshot => {
+        let stageTeams = {};
+        if (snapshot !== undefined){
+          snapshot.forEach((snap) => {
+            const val = snap.val()
+            stageTeams[snap.key] = {
+              key: snap.key,
+              teams: val,
+            };
+          });
+        }
+        callback(stageTeams);
+      });
+    }
+    else {
+      return () => {}
+    }
+  }
   updateMatch(match, update) {
     var updates = {};
     for (const [path, value] of Object.entries(update)) {
@@ -154,10 +175,6 @@ class FirebaseAPI {
     }
     console.log(updates)
     return this.db.ref().update(updates)
-  }
-
-  _get_iso_icon(iso_code){
-    return `images/flags/${iso_code}.png`
   }
 
   updateMatchProno(user, match, update) {
@@ -169,8 +186,15 @@ class FirebaseAPI {
     return this.db.ref().update(updates)
   }
 
+  updateStageTeamsProno(user, stage, teams) {
+    const teamKeys = teams.map((team) => {return team.key;})
+    return this.db.ref(`${this.root}/userpronos/${user.key}/knockoutstageteams/${stage.key}`).set(teamKeys)
+  }
+
   _get_iso_icon(iso_code){
     return `images/flags/${iso_code}.png`
   }
+
+
 }
 export const api = new FirebaseAPI(db)
