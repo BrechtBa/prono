@@ -5,6 +5,7 @@ import { UserContext } from "./UserProvider.js";
 import { GroupstageProno } from './GroupStage.js';
 import { KnockoutStageProno } from './KnockoutStage.js';
 import { KnockoutStageTeamsProno } from './KnockoutStageTeams.js';
+import { TotalGoalsProno } from './TotalGoals.js'
 
 
 const getFullGroupstage = (groupstage, matches, teams, matchesProno, groupWinnersProno) => {
@@ -152,7 +153,7 @@ function ViewProno(props) {
   const [matchesProno, setMatchesProno] = useState({});
   const [groupWinnersProno, setGroupWinnersProno] = useState({});
   const [stageTeamsProno, setStageTeamsProno] = useState({});
-
+  const [totalGoalsProno, setTotalGoalsProno] = useState(-1);
 
   useEffect(() => {
     return api.onTeamsChanged(val => {
@@ -203,6 +204,12 @@ function ViewProno(props) {
     });
   }, [api, pronoUser]);
 
+  useEffect(() => {
+    return api.onUserPronoTotalGoalsChanged(pronoUser, val => {
+      setTotalGoalsProno(val);
+      console.log('loaded prono total goals', val)
+    });
+  }, [api, pronoUser]);
 
 
   const groups = getFullGroupstage(groupstage, matches, teams, matchesProno, groupWinnersProno);
@@ -224,6 +231,7 @@ function ViewProno(props) {
       <KnockoutStageTeamsProno stageTeams={stageTeams} teams={teams} user={pronoUser} />
 
       <h2 style={{color: '#ffffff'}}>Extra punten</h2>
+      <TotalGoalsProno goals={totalGoalsProno} user={pronoUser} />
 
       <h2 style={{color: '#ffffff'}}>Knockout fase</h2>
       <KnockoutStageProno stages={stages} user={pronoUser}/>

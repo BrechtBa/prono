@@ -142,7 +142,7 @@ function KnockoutStageTeamsPronoStage(props) {
         <h3 style={{marginTop: '0px'}}>{pronoStage.displayName}</h3>
         <div style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center'}}>
           {selectedTeams.map((team) => (
-            <div key={team.key} style={{display: 'flex', flexDirection: 'row', alignItems: 'center', margin: '10px'}}>
+            <div key={team.key} style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', margin: '10px', flexGrow: 1, width: '125px'}}>
               <div className={classes.teamIcon}>
                 <TeamIcon team={team} />
               </div>

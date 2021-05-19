@@ -192,6 +192,22 @@ class FirebaseAPI {
     }
   }
 
+  onUserPronoTotalGoalsChanged(user, callback) {
+
+    if (user !== undefined){
+      return this.db.ref(`${this.root}/userpronos/${user.key}/totalgoals`).on("value", snapshot => {
+        let goals = -1
+        if (snapshot !== undefined){
+          goals = snapshot.val()
+        }
+        callback(goals);
+      });
+    }
+    else {
+      return () => {}
+    }
+  }
+
   updateMatch(match, update) {
     var updates = {};
     for (const [path, value] of Object.entries(update)) {
@@ -218,6 +234,10 @@ class FirebaseAPI {
   updateStageTeamsProno(user, stage, teams) {
     const teamKeys = teams.map((team) => {return team.key;})
     return this.db.ref(`${this.root}/userpronos/${user.key}/knockoutstageteams/${stage.key}`).set(teamKeys)
+  }
+
+  updateTotalGoalsProno(user, goals) {
+    return this.db.ref(`${this.root}/userpronos/${user.key}/totalgoals`).set(goals)
   }
 
   _get_iso_icon(iso_code){
