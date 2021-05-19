@@ -28,13 +28,13 @@ function StageTeamPronoSelectDialog(props){
   const setOpen = props.setOpen;
   const onSave = props.onSave
 
-  const oldSelectedTeamsKeys = oldSelectedTeams.map((team) => {
-    return team.key;
-  })
-
   const [selectedTeams, setSelectedTeams] = useState([]);
 
   useEffect(() => {
+
+    const oldSelectedTeamsKeys = oldSelectedTeams.map((team) => {
+      return team.key;
+    })
     let tempSelectedTeams = [];
     if(teams !== undefined){
 
@@ -49,7 +49,7 @@ function StageTeamPronoSelectDialog(props){
     }
     setSelectedTeams(tempSelectedTeams)
 
-  }, [teams, oldSelectedTeamsKeys]);
+  }, [teams, oldSelectedTeams]);
 
   const getRemainingTeams = (numberOfTeams, tempSelectedTeams) => {
     return numberOfTeams - tempSelectedTeams.filter((team) => {

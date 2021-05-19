@@ -168,6 +168,30 @@ class FirebaseAPI {
       return () => {}
     }
   }
+
+  onUserPronoGroupWinnersChanged(user, callback) {
+
+    if (user !== undefined){
+      return this.db.ref(`${this.root}/userpronos/${user.key}/groupwinners`).on("value", snapshot => {
+        let groupWinners = {};
+        if (snapshot !== undefined){
+          snapshot.forEach((snap) => {
+            const val = snap.val()
+            groupWinners[snap.key] = {
+              key: snap.key,
+              1: val['1'],
+              2: val['2'],
+            };
+          });
+        }
+        callback(groupWinners);
+      });
+    }
+    else {
+      return () => {}
+    }
+  }
+
   updateMatch(match, update) {
     var updates = {};
     for (const [path, value] of Object.entries(update)) {
@@ -184,6 +208,11 @@ class FirebaseAPI {
     }
     console.log(updates)
     return this.db.ref().update(updates)
+  }
+
+  updateGroupWinnersProno(user, group, groupwinners) {
+    const obj = {1: groupwinners[1].key, 2: groupwinners[2].key}
+    return this.db.ref(`${this.root}/userpronos/${user.key}/groupwinners/${group.key}`).set(obj)
   }
 
   updateStageTeamsProno(user, stage, teams) {

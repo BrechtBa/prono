@@ -7,7 +7,7 @@ import { KnockoutStageProno } from './KnockoutStage.js';
 import { KnockoutStageTeamsProno } from './KnockoutStageTeams.js';
 
 
-const getFullGroupstage = (groupstage, matches, teams, matchesProno) => {
+const getFullGroupstage = (groupstage, matches, teams, matchesProno, groupWinnersProno) => {
 
   const groups = groupstage.map((group) => {
     let full_group = JSON.parse(JSON.stringify(group));
@@ -58,6 +58,20 @@ const getFullGroupstage = (groupstage, matches, teams, matchesProno) => {
     else{
       full_group.teams = []
     }
+
+    full_group.winners = {
+      1: {key: -1},
+      2: {key: -1}
+    }
+    if(groupWinnersProno[group.key] !== undefined){
+      if(teams[groupWinnersProno[group.key][1]] !== undefined){
+          full_group.winners[1] = JSON.parse(JSON.stringify(teams[groupWinnersProno[group.key][1]]));
+      }
+      if(teams[groupWinnersProno[group.key][2]] !== undefined){
+          full_group.winners[2] = JSON.parse(JSON.stringify(teams[groupWinnersProno[group.key][2]]));
+      }
+    }
+
     return full_group;
   });
 
@@ -136,6 +150,7 @@ function ViewProno(props) {
 
   const [pronoUser] = useState(user);
   const [matchesProno, setMatchesProno] = useState({});
+  const [groupWinnersProno, setGroupWinnersProno] = useState({});
   const [stageTeamsProno, setStageTeamsProno] = useState({});
 
 
@@ -181,8 +196,16 @@ function ViewProno(props) {
     });
   }, [api, pronoUser]);
 
+  useEffect(() => {
+    return api.onUserPronoGroupWinnersChanged(pronoUser, val => {
+      setGroupWinnersProno(val);
+      console.log('loaded prono groupwinners', val)
+    });
+  }, [api, pronoUser]);
 
-  const groups = getFullGroupstage(groupstage, matches, teams, matchesProno);
+
+
+  const groups = getFullGroupstage(groupstage, matches, teams, matchesProno, groupWinnersProno);
   console.log(groups)
 
   const stages = getFullKnockoutStages(knockoutstages, matches, teams, matchesProno);
