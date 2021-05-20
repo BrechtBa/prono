@@ -54,9 +54,14 @@ function User(props){
   }
 
   const getRankingUserPointsDetail = (user) => {
-    return pointDetailKeys.map((val) => {
-      return {key: val.key, displayName: val.displayName, points: user.points[val.key] || 0}
-    });
+    if(user.points !== undefined){
+      return pointDetailKeys.map((val) => {
+        return {key: val.key, displayName: val.displayName, points: user.points[val.key] || 0}
+      });
+    }
+    else{
+      return [];
+    }
   }
 
   return (

@@ -27,11 +27,11 @@ export function TeamResultProno(props) {
   const team = props.team;
   const stage = props.stage;
 
-  const [dialogStage, setDialogStage] = useState(-1)
+  const [dialogStage, setDialogStage] = useState('-1')
   const [dialogOpen, setDialogOpen] = useState(false)
 
   useEffect(() => {
-    setDialogStage(stage)
+    setDialogStage(stage || '-1')
   }, [user, stage]);
 
   const api = useContext(APIContext);

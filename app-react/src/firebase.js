@@ -34,6 +34,7 @@ class FirebaseAPI {
             key: snap.key,
             displayName: val.displayName,
             paid: val.paid,
+            active: val.active || true,
             permission: val.permission,
             points: val.points,
             profilePicture: val.profilePicture,

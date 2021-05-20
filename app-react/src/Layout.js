@@ -18,6 +18,7 @@ import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
 
+import { signOut } from "./UserProvider.js";
 
 import ViewRanking from './ViewRanking.js';
 import ViewProno from './ViewProno.js';
@@ -198,6 +199,12 @@ function PronoLayout(props) {
            open={navigationOpen} onClose={toggleNavigation(false)} onOpen={toggleNavigation(true)}>
             <User user={user}/>
             <Navigation isAdmin={user.permissions.admin} onNavigation={toggleNavigation}/>
+
+            <ListItem button>
+              <ListItemText primary={"Sign out"} onClick={() => signOut(() => {})}/>
+            </ListItem>
+
+            <Divider/>
             <Version/>
           </SwipeableDrawer>
 
@@ -231,9 +238,7 @@ function PronoLayout(props) {
                 Users
               </Route>
 
-              <Route path="/">
-                Ranking
-              </Route>
+              <Route path="/"> <ViewRanking/> </Route>
 
             </Switch>
           </main>
