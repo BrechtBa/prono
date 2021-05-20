@@ -76,7 +76,7 @@ function User(props) {
   const classes = useStyles();
   return (
     <div className={classes.user}>
-      <Avatar alt={user.displayName} src={user.profilePicture} className={classes.large} />
+      <Avatar alt={user.displayName} src={user.profilePicture} />
       <div>{user.displayName}</div>
       <div>{user.email}</div>
     </div>

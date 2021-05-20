@@ -64,10 +64,10 @@ export function TeamResultProno(props) {
           <div style={{width: '30px', height: '30px', marginRight: '10px'}}>
             <TeamIcon team={team}/>
           </div>
-          <div style={{marginRight: '50px'}}>
+          <div style={{marginRight: '30px'}}>
             <TeamName team={team} def='BEL'/>
           </div>
-          <div style={{height: '40px', fontSize: '22px', fontWeight: 600, marginLeft: '20px'}}>
+          <div style={{height: '40px', fontSize: '18px', fontWeight: 600}}>
             {getStageName(stage)}
           </div>
         </div>

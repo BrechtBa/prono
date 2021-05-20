@@ -10,6 +10,7 @@ function UserProvider(props){
   useEffect(() => {
 
     const unsubscribe = auth.onAuthStateChanged(async userAuth => {
+      console.log(userAuth)
       if (userAuth) {
 
         const unsubscribe = db.ref(`pronogroupid1/users/${userAuth.uid}`).on("value", snapshot => {
@@ -18,6 +19,8 @@ function UserProvider(props){
             email: userAuth.email,
             displayName: snapshot.val().displayName,
             profilePicture:  snapshot.val().profilePicture,
+            paid: snapshot.val().paid,
+            active: true,
             points: snapshot.val().points,
             permissions: {
               admin: snapshot.val().permission >=9
