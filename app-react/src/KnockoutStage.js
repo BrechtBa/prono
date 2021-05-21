@@ -4,7 +4,7 @@ import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 
 import APIContext from './APIProvider.js';
-import { TeamName, TeamIcon, EditScoreDialog } from './MatchUtils.js';
+import { TeamName, TeamIcon, EditScoreDialog, Disabled } from './MatchUtils.js';
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -195,6 +195,7 @@ export function KnockoutStage(props) {
 
 export function KnockoutStageProno(props) {
   const user = props.user;
+  const currentStage = props.currentStage;
   const stages = props.stages;
   const columns = getMatchColumns(stages);
 
@@ -225,8 +226,9 @@ export function KnockoutStageProno(props) {
             <div key={match.key}>
               {(column.key === 'R4' && matchIndex === 0)  && (<div style={{height: '80px'}}></div>)}
 
-              <Paper style={{padding: '5px', height: '175px', overflowX: 'hidden'}}>
+              <Paper style={{padding: '5px', height: '175px', overflowX: 'hidden', position: 'relative'}}>
                 <Match match={match} showPenaltyEdit={false} onSave={saveMatch}/>
+                <Disabled disabled={currentStage !== column.stage}/>
               </Paper>
 
               {(column.key === 'L4' && matchIndex === 0)  && (<div style={{height: '80px'}}></div>)}

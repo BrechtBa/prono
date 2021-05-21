@@ -25,6 +25,7 @@ const stageResultText = [
 export function TeamResultProno(props) {
   const user = props.user;
   const team = props.team;
+  const currentStage = props.currentStage;
   const stage = props.stage;
 
   const [dialogStage, setDialogStage] = useState('-1')
@@ -58,22 +59,23 @@ export function TeamResultProno(props) {
 
   return (
     <div style={{width: '100%', marginBottom: '10px'}}>
-      <Paper style={{padding: '10px'}} onClick={() => setDialogOpen(true)}>
-        <h3 style={{marginTop: '0px'}}>Team resultaat</h3>
-        <div style={{display: 'flex', alignItems: 'center'}}>
-          <div style={{width: '30px', height: '30px', marginRight: '10px'}}>
-            <TeamIcon team={team}/>
-          </div>
-          <div style={{marginRight: '30px'}}>
-            <TeamName team={team} def='BEL'/>
-          </div>
-          <div style={{height: '40px', fontSize: '18px', fontWeight: 600}}>
-            {getStageName(stage)}
+      <Paper style={{padding: '10px', position: 'relative'}}>
+        <div onClick={() => setDialogOpen(true)}>
+          <h3 style={{marginTop: '0px'}}>Team resultaat</h3>
+          <div style={{display: 'flex', alignItems: 'center'}}>
+            <div style={{width: '30px', height: '30px', marginRight: '10px'}}>
+              <TeamIcon team={team}/>
+            </div>
+            <div style={{marginRight: '30px'}}>
+              <TeamName team={team} def='BEL'/>
+            </div>
+            <div style={{height: '40px', fontSize: '18px', fontWeight: 600}}>
+              {getStageName(stage)}
+            </div>
           </div>
         </div>
-        <Disabled disabled={false}/>
+        <Disabled disabled={currentStage !== 'groupstage'}/>
       </Paper>
-
 
       <Dialog onClose={() => setDialogOpen(false)} open={dialogOpen}>
         <form>

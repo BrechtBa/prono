@@ -8,7 +8,7 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 
 import APIContext from './APIProvider.js';
-import { TeamName, TeamIcon } from './MatchUtils.js';
+import { TeamName, TeamIcon, Disabled } from './MatchUtils.js';
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -121,6 +121,7 @@ function StageTeamPronoSelectDialog(props){
 
 function KnockoutStageTeamsPronoStage(props) {
   const user = props.user;
+  const currentStage = props.currentStage;
   const pronoStage = props.pronoStage;
   const selectedTeams = props.selectedTeams;
   const teams = props.teams;
@@ -138,22 +139,27 @@ function KnockoutStageTeamsPronoStage(props) {
 
   return (
     <div>
-      <Paper key={pronoStage.stage} style={{padding: '10px', marginBottom: '10px'}} onClick={() => setEditTeamsDialogOpen(true)}>
-        <h3 style={{marginTop: '0px'}}>{pronoStage.displayName}</h3>
-        <div style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center'}}>
-          {selectedTeams.map((team) => (
-            <div key={team.key} style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', margin: '10px', flexGrow: 1, width: '125px'}}>
-              <div className={classes.teamIcon}>
-                <TeamIcon team={team} />
+      <Paper key={pronoStage.stage} style={{padding: '10px', marginBottom: '10px', position: 'relative'}}>
+        <div onClick={() => setEditTeamsDialogOpen(true)}>
+          <h3 style={{marginTop: '0px'}}>{pronoStage.displayName}</h3>
+          <div style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center'}}>
+            {selectedTeams.map((team) => (
+              <div key={team.key} style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', margin: '10px', flexGrow: 1, width: '125px'}}>
+                <div className={classes.teamIcon}>
+                  <TeamIcon team={team} />
+                </div>
+                <div style={{marginLeft: '10px'}}>
+                  <TeamName team={team} def={''}/>
+                </div>
               </div>
-              <div style={{marginLeft: '10px'}}>
-                <TeamName team={team} def={''}/>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
+        <Disabled disabled={currentStage !== 'groupstage'}/>
       </Paper>
-      <StageTeamPronoSelectDialog open={editTeamsDialogOpen} setOpen={setEditTeamsDialogOpen} teams={teams} selectedTeams={selectedTeams} numberOfTeams={pronoStage.numberOfTeams} onSave={saveStageTeams} />
+
+      <StageTeamPronoSelectDialog open={editTeamsDialogOpen} setOpen={setEditTeamsDialogOpen} teams={teams} selectedTeams={selectedTeams}
+        numberOfTeams={pronoStage.numberOfTeams} onSave={saveStageTeams} />
     </div>
   );
 }
@@ -161,6 +167,7 @@ function KnockoutStageTeamsPronoStage(props) {
 
 export function KnockoutStageTeamsProno(props) {
   const user = props.user;
+  const currentStage = props.currentStage;
   const teams = props.teams;
   const stageTeams = props.stageTeams;
 
@@ -183,7 +190,8 @@ export function KnockoutStageTeamsProno(props) {
   return (
     <div>
       {pronoStages.map((pronoStage) => (
-        <KnockoutStageTeamsPronoStage key={pronoStage.key} user={user} pronoStage={pronoStage} selectedTeams={getSelectedTeams(stageTeams, pronoStage.key)} teams={teams} />
+        <KnockoutStageTeamsPronoStage key={pronoStage.key} user={user} pronoStage={pronoStage}
+          selectedTeams={getSelectedTeams(stageTeams, pronoStage.key)} teams={teams} currentStage={currentStage}/>
       ))}
     </div>
   );

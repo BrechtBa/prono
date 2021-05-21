@@ -15,7 +15,6 @@ import { Disabled, TeamName, TeamIcon, EditScoreDialog } from './MatchUtils.js';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     group: {
-      position: 'relative',
       width: '100%',
       maxWidth: '400px',
       padding: '10px',
@@ -238,8 +237,10 @@ function GroupwinnersDialog(props) {
 
 
 function GroupstagePronoGroup(props) {
+  const currentStage = props.currentStage;
   const group = props.group;
   const user = props.user;
+
 
   const [groupwinnersDialogOpen, setGroupwinnersDialogOpen] = useState(false)
 
@@ -257,7 +258,7 @@ function GroupstagePronoGroup(props) {
 
   return (
     <div style={{position: 'relative',  width: '100%', maxWidth: '400px', margin: '5px'}}>
-      <Paper className={classes.group}>
+      <Paper className={classes.group} style={{position: 'relative'}}>
         <h3 style={{marginTop: 0}}>Groep {group.name}</h3>
 
         <div>
@@ -291,7 +292,7 @@ function GroupstagePronoGroup(props) {
           </div>
         </div>
 
-        <Disabled disabled={false}/>
+        <Disabled disabled={currentStage !== 'groupstage'}/>
       </Paper>
       <GroupwinnersDialog open={groupwinnersDialogOpen} group={group} setOpen={setGroupwinnersDialogOpen} onSave={saveGroupwinners}/>
     </div>
@@ -301,11 +302,12 @@ function GroupstagePronoGroup(props) {
 export function GroupstageProno(props) {
   const groups = props.groups;
   const user = props.user;
+  const currentStage = props.currentStage;
 
   return (
     <div style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center'}}>
       {groups.map((group) => (
-        <GroupstagePronoGroup key={group.key} group={group} user={user} />
+        <GroupstagePronoGroup key={group.key} group={group} user={user} currentStage={currentStage}/>
       ))}
     </div>
   );

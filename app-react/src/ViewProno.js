@@ -151,12 +151,16 @@ function ViewProno(props) {
   const [knockoutstages, setKnockoutstages] = useState([]);
 
   const [pronoUser] = useState(user);
+  const [currentStage, setCurrentStage] = useState('finished');
+
   const [matchesProno, setMatchesProno] = useState({});
   const [groupWinnersProno, setGroupWinnersProno] = useState({});
   const [stageTeamsProno, setStageTeamsProno] = useState({});
   const [totalGoalsProno, setTotalGoalsProno] = useState(-1);
   const [teamResultProno, setTeamResultProno] = useState('-1');
 
+
+  console.log(currentStage)
 
   useEffect(() => {
     return api.onTeamsChanged(val => {
@@ -183,6 +187,13 @@ function ViewProno(props) {
     return api.onKnockoutstageChanged(val => {
       setKnockoutstages(val);
       console.log('loaded knockoutstages', val)
+    });
+  }, [api]);
+
+  useEffect(() => {
+    return api.onCurrentStageChanged(val => {
+      setCurrentStage(val);
+      console.log('loaded current stage', val)
     });
   }, [api]);
 
@@ -221,32 +232,26 @@ function ViewProno(props) {
     });
   }, [api, pronoUser]);
 
-
   const groups = getFullGroupstage(groupstage, matches, teams, matchesProno, groupWinnersProno);
-  console.log(groups)
-
   const stages = getFullKnockoutStages(knockoutstages, matches, teams, matchesProno);
-  console.log(stages)
-
   const stageTeams = getFullStageTeams(teams, stageTeamsProno);
-  console.log(stageTeams)
 
   return (
     <div>
       <h2 style={{color: '#ffffff'}}>Groepsfase</h2>
       <div style={{color: '#ffffff'}}>Je hebt nog 10 dagen voor dit deel</div>
-      <GroupstageProno groups={groups} user={pronoUser} />
+      <GroupstageProno groups={groups} user={pronoUser} currentStage={currentStage} />
 
       <h2 style={{color: '#ffffff'}}>Teams in elke eliminatie fase</h2>
-      <KnockoutStageTeamsProno stageTeams={stageTeams} teams={teams} user={pronoUser} />
+      <KnockoutStageTeamsProno stageTeams={stageTeams} teams={teams} user={pronoUser} currentStage={currentStage}/>
 
       <h2 style={{color: '#ffffff'}}>Extra punten</h2>
-      <TotalGoalsProno goals={totalGoalsProno} user={pronoUser} />
+      <TotalGoalsProno goals={totalGoalsProno} user={pronoUser} currentStage={currentStage}/>
 
-      <TeamResultProno stage={teamResultProno} user={pronoUser} team={{abbreviation: "BEL", icon: "images/flags/BE.png", name: "België"}}/>
+      <TeamResultProno stage={teamResultProno} user={pronoUser} team={{abbreviation: "BEL", icon: "images/flags/BE.png", name: "België"}} currentStage={currentStage}/>
 
       <h2 style={{color: '#ffffff'}}>Knockout fase</h2>
-      <KnockoutStageProno stages={stages} user={pronoUser}/>
+      <KnockoutStageProno stages={stages} user={pronoUser} currentStage={currentStage}/>
 
     </div>
   );

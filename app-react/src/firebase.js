@@ -45,6 +45,14 @@ class FirebaseAPI {
     });
   }
 
+  onCurrentStageChanged(callback) {
+    return this.db.ref(`${this.root}/competition/currentstage`).on("value", snapshot => {
+      if(snapshot !== undefined){
+        callback(snapshot.val());
+      }
+    });
+  }
+
   onGroupstageChanged(callback) {
     return this.db.ref(`${this.root}/competition/stages/groupstage`).on("value", snapshot => {
       let groupstage = [];

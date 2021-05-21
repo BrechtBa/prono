@@ -11,6 +11,7 @@ import { Disabled } from './MatchUtils.js';
 
 export function TotalGoalsProno(props) {
   const user = props.user;
+  const currentStage = props.currentStage;
   const goals = props.goals;
 
   const [dialogGoals, setDialogGoals] = useState('')
@@ -41,12 +42,14 @@ export function TotalGoalsProno(props) {
 
   return (
     <div style={{width: '100%', marginBottom: '10px'}}>
-      <Paper style={{padding: '10px'}} onClick={() => setDialogOpen(true)}>
-        <h3 style={{marginTop: '0px'}}>Totaal aantal goals</h3>
-        <div style={{height: '40px', fontSize: '30px', fontWeight: 600, marginLeft: '20px'}}>
-          {goals >= 0 ? goals  : ''}
+      <Paper style={{padding: '10px', position: 'relative'}}>
+        <div onClick={() => setDialogOpen(true)}>
+          <h3 style={{marginTop: '0px'}}>Totaal aantal goals</h3>
+          <div style={{height: '40px', fontSize: '30px', fontWeight: 600, marginLeft: '20px'}}>
+            {goals >= 0 ? goals  : ''}
+          </div>
         </div>
-        <Disabled disabled={false}/>
+        <Disabled disabled={currentStage !== 'groupstage'}/>
       </Paper>
 
 
