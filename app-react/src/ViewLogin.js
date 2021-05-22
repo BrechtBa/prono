@@ -121,7 +121,7 @@ function ResetPassword(props){
 
   return (
     <div>
-      <h1 style={{marginTop: 0}}>Wachtwoord resetten</h1>
+      <h1 style={{marginTop: 0}}>Reset Wachtwoord</h1>
       {error !== null && <div className={classes.error}>{error}</div>}
 
       <form style={{display: 'flex', flexDirection: 'column'}}>
