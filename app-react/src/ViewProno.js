@@ -239,7 +239,6 @@ function ViewProno(props) {
   return (
     <div>
       <h2 style={{color: '#ffffff'}}>Groepsfase</h2>
-      <div style={{color: '#ffffff'}}>Je hebt nog 10 dagen voor dit deel</div>
       <GroupstageProno groups={groups} user={pronoUser} currentStage={currentStage} />
 
       <h2 style={{color: '#ffffff'}}>Teams in elke eliminatie fase</h2>
