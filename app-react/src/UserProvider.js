@@ -61,7 +61,8 @@ function UserProvider(props){
             active: true,
             points: val.points || {},
             permissions: {
-              admin: (val.permission || 1) >=9
+              admin: (val.permission || 1) >=9,
+              editor: (val.permission || 1) >=5,
             }
           })
         })

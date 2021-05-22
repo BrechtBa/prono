@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 
 
 import APIContext from './APIProvider.js';
+import { UserContext } from "./UserProvider.js";
 import { GroupStage } from './GroupStage.js';
 import { KnockoutStage } from './KnockoutStage.js';
 
@@ -80,6 +81,7 @@ const getFullKnockoutStages = (knockoutstages, matches, teams) => {
 function ViewResults(props) {
 
   const api = useContext(APIContext);
+  const user = useContext(UserContext);
   const [teams, setTeams] = useState({});
   const [matches, setMatches] = useState({});
   const [groupstage, setGroupstage] = useState([]);
@@ -123,10 +125,10 @@ function ViewResults(props) {
   return (
     <div>
       <h2 style={{color: '#ffffff'}}>Groepsfase</h2>
-      <GroupStage groups={groups}/>
+      <GroupStage groups={groups} editable={user.permissions.editor || false}/>
 
       <h2 style={{color: '#ffffff'}}>Knockout fase</h2>
-      <KnockoutStage stages={stages}/>
+      <KnockoutStage stages={stages} editable={user.permissions.editor || false}/>
 
     </div>
   );

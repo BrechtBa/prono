@@ -201,7 +201,7 @@ function PronoLayout(props) {
             <Navigation isAdmin={user.permissions.admin} onNavigation={toggleNavigation}/>
 
             <ListItem button>
-              <ListItemText primary={"Sign out"} onClick={() => signOut(() => {})}/>
+              <ListItemText primary={"Sign out"} onClick={() => signOut(() => {setNavigationOpen(false)})}/>
             </ListItem>
 
             <Divider/>

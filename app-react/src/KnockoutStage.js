@@ -61,6 +61,7 @@ function Match(props) {
   const showPenaltyEdit = props.showPenaltyEdit;
   const collapsed = props.collapsed;
   const onSave = props.onSave
+  const editable = props.editable;
 
   const [editScoreDialogOpen, setEditScoreDialogOpen] = useState(false)
 
@@ -81,7 +82,7 @@ function Match(props) {
 
   return (
     <div style={{height: '100%'}}>
-      <div className={classes.match} onClick={() => setEditScoreDialogOpen(true)}>
+      <div className={classes.match} onClick={() => editable && setEditScoreDialogOpen(true)}>
         <div className={classes.team1}>
           <TeamName team={match.team1} def={match.defaultteam1} />
         </div>
@@ -150,6 +151,7 @@ const getMatchColumns = (knockoutstages) => {
 export function KnockoutStage(props) {
   const stages = props.stages;
   const columns = getMatchColumns(stages);
+  const editable = props.editable;
 
   const [openStage, setOpenStage] = useState('16')
 
@@ -179,7 +181,7 @@ export function KnockoutStage(props) {
               {(column.key === 'R4' && matchIndex === 0)  && (<div style={{height: '80px'}}></div>)}
 
               <Paper style={{padding: '5px', height: '175px', overflowX: 'hidden'}}>
-                <Match match={match} showPenaltyEdit={true} onSave={saveMatch}/>
+                <Match match={match} showPenaltyEdit={true} onSave={saveMatch} editable={editable}/>
               </Paper>
 
               {(column.key === 'L4' && matchIndex === 0)  && (<div style={{height: '80px'}}></div>)}
@@ -227,7 +229,7 @@ export function KnockoutStageProno(props) {
               {(column.key === 'R4' && matchIndex === 0)  && (<div style={{height: '80px'}}></div>)}
 
               <Paper style={{padding: '5px', height: '175px', overflowX: 'hidden', position: 'relative'}}>
-                <Match match={match} showPenaltyEdit={false} onSave={saveMatch}/>
+                <Match match={match} showPenaltyEdit={false} onSave={saveMatch} editable={currentStage === column.stage}/>
                 <Disabled disabled={currentStage !== column.stage}/>
               </Paper>
 

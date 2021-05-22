@@ -236,8 +236,15 @@ class FirebaseAPI {
     for (const [path, value] of Object.entries(update)) {
       updates[`${this.root}/competition/matches/${match.key}/${path}`] = value
     }
-    console.log(updates)
     return this.db.ref().update(updates)
+  }
+
+  updateGroupPoints(group, teams) {
+    let points = {}
+    teams.forEach((team) => {
+      points[team.key] = parseFloat(team.points);
+    });
+    return this.db.ref(`${this.root}/competition/stages/groupstage/${group.key}/points`).set(points)
   }
 
   updateMatchProno(user, match, update) {
@@ -245,7 +252,6 @@ class FirebaseAPI {
     for (const [path, value] of Object.entries(update)) {
       updates[`${this.root}/userpronos/${user.key}/matches/${match.key}/${path}`] = value
     }
-    console.log(updates)
     return this.db.ref().update(updates)
   }
 
