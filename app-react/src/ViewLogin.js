@@ -5,6 +5,7 @@ import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
+import Checkbox from '@material-ui/core/Checkbox';
 
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "./UserProvider.js";
 
@@ -18,16 +19,50 @@ const useStyles = makeStyles((theme: Theme) =>
     message: {
       marginBottom: '10px',
     },
+    paragraph: {
+      marginBottom: '10px',
+    },
+    link: {
+      textDecoration: 'underline',
+      color: '#0000ff',
+      cursor: 'pointer'
+    }
   })
 );
 
 
+function Terms(){
+  const classes = useStyles();
+  return (
+    <div>
+      <div className={classes.paragraph}>
+        Prono gebruikt cookies enkel voor functionele doeleinden.
+        Er zullen gegevens op je toestel worden opgeslagen.
+      </div>
+      <div className={classes.paragraph}>
+        Er zullen gegevens die jij deelt worden opgeslagen in een database.
+        Deze gegevens worden als vertrouwelijk behandeld en worden enkel gebruikt voor de werking van Prono.
+        Gegevens die jij deelt zullen nooit aan anderen worden doorgegeven of verkocht.
+      </div>
+      <div className={classes.paragraph}>
+        Indien de Prono server gehackt wordt zijn wij niet verantwoordelijk voor de verspreiding van de gegevens.
+        We zullen echter ons best doen om dit te voorkomen.
+      </div>
+    </div>
+  );
+}
+
+
 function Register(props) {
+  const close = props.close;
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordRepeat, setPasswordRepeat] = useState("");
+  const [termsChecked, setTermsChecked] = useState(false);
   const [error, setError] = useState(null);
 
+  const [termsDialogOpen, setTermsDialogOpen] = useState(false);
 
   const onEmailChangeHandler = (event) => {
       setEmail(event.currentTarget.value);
@@ -42,31 +77,36 @@ function Register(props) {
   };
 
   const register = () => {
-    if(password === passwordRepeat){
-      createUserWithEmailAndPassword(email, password, () => {
-        setEmail('');
+    if(termsChecked){
+      if(password === passwordRepeat){
+        createUserWithEmailAndPassword(email, password, () => {
+          setEmail('');
+          setPassword('');
+          setPasswordRepeat('');
+        }, (error) => {
+          console.log(error)
+          if(error.code === 'auth/invalid-email'){
+            setError("Ongeldig email adres!");
+          }
+          else if(error.code === 'auth/email-already-in-use'){
+            setError("Email adres is al in gebruik!");
+          }
+          else if(error.code === 'auth/weak-password'){
+            setError("Wachtwoord moet minstens 6 tekens bevatten");
+          }
+          else{
+            setError("error!");
+          }
+        })
+      }
+      else{
+        setError("Het wachtwoord was niet gelijk!");
         setPassword('');
         setPasswordRepeat('');
-      }, (error) => {
-        console.log(error)
-        if(error.code === 'auth/invalid-email'){
-          setError("Ongeldig email adres!");
-        }
-        else if(error.code === 'auth/email-already-in-use'){
-          setError("Email adres is al in gebruik!");
-        }
-        else if(error.code === 'auth/weak-password'){
-          setError("Wachtwoord moet minstens 6 tekens bevatten");
-        }
-        else{
-          setError("error!");
-        }
-      })
+      }
     }
     else{
-      setError("Het wachtwoord was niet gelijk!");
-      setPassword('');
-      setPasswordRepeat('');
+      setError("Je moet de algemene voorwaarden aanvaarden om te kunnen registreren!");
     }
   }
 
@@ -78,26 +118,42 @@ function Register(props) {
       {error !== null && <div className={classes.error}>{error}</div>}
 
       <form style={{display: 'flex', flexDirection: 'column'}}>
-          <div> </div>
-          <TextField label="Email" value={email} onChange={(event) => onEmailChangeHandler(event)} style={{marginBottom: '10px'}}/>
-          <TextField label="Password" type="password" value={password} onChange={(event) => onPasswordChangeHandler(event)} style={{marginBottom: '10px'}}/>
-          <TextField label="Herhaal password" type="password" value={passwordRepeat} onChange={(event) => onPasswordRepeatChangeHandler(event)}/>
-          <div style={{marginTop: '20px', marginBottom: '10px'}}>
-            <Button onClick={() => register()}>
-              <span>Registreer</span>
-            </Button>
-          </div>
-        </form>
+        <div> </div>
+        <TextField label="Email" value={email} onChange={(event) => onEmailChangeHandler(event)} style={{marginBottom: '10px'}}/>
+        <TextField label="Password" type="password" value={password} onChange={(event) => onPasswordChangeHandler(event)} style={{marginBottom: '10px'}}/>
+        <TextField label="Herhaal password" type="password" value={passwordRepeat} onChange={(event) => onPasswordRepeatChangeHandler(event)} style={{marginBottom: '10px'}}/>
+
+        <div>
+          <Checkbox value={termsChecked} onChange={e => setTermsChecked(!termsChecked)}/> Ik ga akkoord met de <span className={classes.link} onClick={(e) => setTermsDialogOpen(true)}>algemene voorwaarden.</span>
+        </div>
+
+        <div style={{marginTop: '20px', marginBottom: '10px'}}>
+          <Button onClick={() => register()}>
+            <span>Registreer</span>
+          </Button>
+          <Button onClick={() => close()}>Cancel</Button>
+        </div>
+      </form>
+
+      <Dialog onClose={() => setTermsDialogOpen(false)} open={termsDialogOpen}>
+        <div style={{padding: '20px', minWidth: '150px', maxWidth: '100%'}}>
+          <Terms />
+        </div>
+        <Button onClick={(e) => setTermsDialogOpen(false)}>Sluiten</Button>
+
+      </Dialog>
 
     </div>
   );
 };
 
 
+
 function ResetPassword(props){
   const [email, setEmail] = useState('');
   const [error, setError] = useState(null);
   const [message, setMessage] = useState(null);
+  const close = props.close;
 
   const reset = () => {
     sendPasswordResetEmail(email, () => {
@@ -131,6 +187,7 @@ function ResetPassword(props){
           <Button onClick={() => reset()}>
             <span>Stuur reset link</span>
           </Button>
+          <Button onClick={() => close()}>Cancel</Button>
         </div>
       </form>
 
@@ -200,16 +257,17 @@ function ViewLogin() {
       </Paper>
 
       <Dialog onClose={() => setRegisterDialogOpen(false)} open={registerDialogOpen}>
-        <div style={{padding: '20px', width: '360px'}}>
-          <Register />
+        <div style={{padding: '20px', minWidth: '320px', maxWidth: '100%'}}>
+          <Register close={() => setRegisterDialogOpen(false)}/>
         </div>
       </Dialog>
 
       <Dialog onClose={() => setResetDialogOpen(false)} open={resetDialogOpen}>
-        <div style={{padding: '20px', width: '360px'}}>
-          <ResetPassword />
+        <div style={{padding: '20px', minWidth: '320px', maxWidth: '100%'}}>
+          <ResetPassword close={() => setResetDialogOpen(false)}/>
         </div>
       </Dialog>
+
     </div>
   );
 };

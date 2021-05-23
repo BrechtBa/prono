@@ -37,7 +37,7 @@ function Rules(props) {
   const classes = useStyles();
 
   return (
-    <div className={classes.root}>
+    <div>
       <h3>Voor de start van het toernooi</h3>
       <div className={classes.paragraph}>
         <div>Er worden score's opgegeven voor alle matchen van de groepsfase.</div>
@@ -153,8 +153,12 @@ function ViewRules(){
     });
   }, [api]);
 
+  const classes = useStyles();
+
   return (
-    <Rules rules={rules} groupstage={groupstage} knockoutstages={knockoutstages}/>
+    <div className={classes.root}>
+      <Rules rules={rules} groupstage={groupstage} knockoutstages={knockoutstages}/>
+    </div>
   );
 
 }
