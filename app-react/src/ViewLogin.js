@@ -219,7 +219,7 @@ function ViewLogin() {
     signInWithEmailAndPassword(email, password, () => {}, (error) => {
       console.log("Error signing in with password and email", error);
       if(error.code === 'auth/invalid-email'){
-        setError("Ongeldig email adres!");
+        setError(`Ongeldig email adres! "${email}"`);
       }
       else if(error.code === 'auth/user-not-found'){
         setError("Onbekend email adres!");

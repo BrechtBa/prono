@@ -1,6 +1,7 @@
 import firebase from "firebase/app";
 import "firebase/auth";
 import "firebase/database";
+import 'firebase/storage';
 
 const firebaseConfig = {
   apiKey: "AIzaSyCa8aBURSPVw6ayEYpZBdlhiA0DCv1LH5A",
@@ -16,6 +17,7 @@ firebase.initializeApp(firebaseConfig);
 
 export const auth = firebase.auth();
 export const db = firebase.database();
+export const storage = firebase.storage();
 
 
 class FirebaseAPI {
@@ -279,6 +281,22 @@ class FirebaseAPI {
 
   updateTeamResultProno(user, stage) {
     return this.db.ref(`${this.root}/userpronos/${user.key}/hometeamresult`).set(stage)
+  }
+
+  updateDisplayName(user, displayName) {
+    return this.db.ref(`${this.root}/users/${user.key}/displayName`).set(displayName)
+  }
+
+  updateProfilePicture(user, image) {
+    console.log(image);
+    var ref = storage.ref(`users/${user.key}/profilePicture`);
+    var uploadTask = ref.putString(image, 'data_url');
+    uploadTask.on('state_changed',
+      (snapshot) => {}, (error) => {}, () => {
+        uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+          return this.db.ref(`${this.root}/users/${user.key}/profilePicture`).set(downloadURL)
+        });
+    });
   }
 
   _get_iso_icon(iso_code){

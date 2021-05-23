@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { UserContext } from "./UserProvider.js";
 
-import { BrowserRouter, Switch, Route, Link } from "react-router-dom";
+import { Switch, Route, Link, useHistory } from "react-router-dom";
 
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
@@ -25,8 +25,10 @@ import ViewProno from './ViewProno.js';
 import ViewResults from './ViewResults.js';
 import ViewRules from './ViewRules.js';
 import ViewLogin from './ViewLogin.js';
+import ViewProfile from './ViewProfile.js';
+import Version from './Version.js';
 
-const drawerWidth = 320;
+const drawerWidth = 280;
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -53,6 +55,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
     user: {
       backgroundColor: theme.palette.background.default,
+      color: theme.palette.text.headers
     },
 
     navigationItem: {
@@ -62,7 +65,7 @@ const useStyles = makeStyles((theme: Theme) =>
     },
 
     version: {
-      marginLeft: '5px',
+      marginLeft: '10px',
       marginTop: '30px'
     },
   }),
@@ -72,15 +75,19 @@ const useStyles = makeStyles((theme: Theme) =>
 
 
 function User(props) {
-
   const user = props.user
 
   const classes = useStyles();
+
   return (
     <div className={classes.user}>
-      <Avatar alt={user.displayName} src={user.profilePicture} />
-      <div>{user.displayName}</div>
-      <div>{user.email}</div>
+      <div style={{display: 'flex', justifyContent:'center', paddingTop: '10px'}}>
+        <Avatar alt={user.displayName} src={user.profilePicture} style={{width: '120px', height: '120px'}}/>
+      </div>
+      <div style={{padding: '10px'}}>
+        <div>{user.displayName}</div>
+        <div>{user.email}</div>
+      </div>
     </div>
   );
 }
@@ -154,18 +161,11 @@ function Navigation(props) {
 }
 
 
-function Version() {
-  const classes = useStyles();
-
-  return (
-    <div className={classes.version}>v2.0</div>
-   )
-}
-
 function PronoLayout(props) {
 
   const user = useContext(UserContext);
 
+  const history = useHistory();
   const classes = useStyles();
   const [navigationOpen, setNavigationOpen] = useState(false);
 
@@ -178,9 +178,13 @@ function PronoLayout(props) {
     }
   }
 
+  const showProfilePage = (history) => {
+    setNavigationOpen(false);
+    history.push('/profile');
+  }
+
   if(user !== null){
     return (
-      <BrowserRouter>
         <div className={classes.root}>
           <CssBaseline />
           <AppBar position="fixed" className={classes.appBar}>
@@ -198,7 +202,9 @@ function PronoLayout(props) {
 
           <SwipeableDrawer anchor="left" className={classes.drawer} classes={{paper: classes.drawerPaper}}
            open={navigationOpen} onClose={toggleNavigation(false)} onOpen={toggleNavigation(true)}>
-            <User user={user}/>
+            <div onClick={(e) => showProfilePage(history)}>
+              <User user={user}/>
+            </div>
             <Navigation isAdmin={user.permissions.admin} onNavigation={toggleNavigation}/>
 
             <ListItem button>
@@ -206,7 +212,9 @@ function PronoLayout(props) {
             </ListItem>
 
             <Divider/>
-            <Version/>
+            <div className={classes.version}>
+              <Version/>
+            </div>
           </SwipeableDrawer>
 
           <main className={classes.content}>
@@ -216,7 +224,7 @@ function PronoLayout(props) {
               <Route path="/prono"> <ViewProno/> </Route>
               <Route path="/results"> <ViewResults/> </Route>
               <Route path="/rules">  <ViewRules/> </Route>
-
+              <Route path="/profile">  <ViewProfile/> </Route>
 
               <Route path="/users">
                 Users
@@ -241,9 +249,7 @@ function PronoLayout(props) {
 
             </Switch>
           </main>
-
         </div>
-      </BrowserRouter>
     );
   }
   else {

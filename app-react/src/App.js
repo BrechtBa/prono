@@ -1,3 +1,5 @@
+import { BrowserRouter } from "react-router-dom";
+
 import { ThemeProvider } from '@material-ui/core/styles';
 import { unstable_createMuiStrictModeTheme as createMuiTheme } from '@material-ui/core';
 
@@ -53,10 +55,13 @@ function App() {
       <ThemeProvider theme={redTheme}>
         <UserProvider>
           <APIContext.Provider value={api}>
-            <PronoLayout/>
+            <BrowserRouter>
+              <PronoLayout/>
+            </BrowserRouter>
           </APIContext.Provider>
         </UserProvider>
       </ThemeProvider>
+
     </div>
   );
 
