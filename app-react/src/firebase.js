@@ -24,6 +24,14 @@ class FirebaseAPI {
     this.root = 'pronogroupid1';
   }
 
+  onRulesChanged(callback) {
+    return this.db.ref(`${this.root}/rules`).on("value", snapshot => {
+      if (snapshot !== undefined){
+        callback(snapshot.val());
+      }
+    });
+  }
+
   onUsersChanged(callback) {
     return this.db.ref(`${this.root}/users`).on("value", snapshot => {
       let users = [];

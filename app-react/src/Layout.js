@@ -23,6 +23,7 @@ import { signOut } from "./UserProvider.js";
 import ViewRanking from './ViewRanking.js';
 import ViewProno from './ViewProno.js';
 import ViewResults from './ViewResults.js';
+import ViewRules from './ViewRules.js';
 import ViewLogin from './ViewLogin.js';
 
 const drawerWidth = 320;
@@ -214,9 +215,7 @@ function PronoLayout(props) {
               <Route path="/ranking"> <ViewRanking/> </Route>
               <Route path="/prono"> <ViewProno/> </Route>
               <Route path="/results"> <ViewResults/> </Route>
-              <Route path="/rules">
-                Rules
-              </Route>
+              <Route path="/rules">  <ViewRules/> </Route>
 
 
               <Route path="/users">

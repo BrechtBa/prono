@@ -31,6 +31,7 @@ const redTheme = createMuiTheme({
       secondary: "#444444",
       disabled: "#555555",
       hint: "#333333",
+      headers: "#ffffff",
     },
   },
 
