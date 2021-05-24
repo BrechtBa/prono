@@ -56,7 +56,8 @@ const useStyles = makeStyles((theme: Theme) =>
 
     user: {
       backgroundColor: theme.palette.background.default,
-      color: theme.palette.text.headers
+      color: theme.palette.text.headers,
+      cursor: 'pointer',
     },
 
     navigationItem: {

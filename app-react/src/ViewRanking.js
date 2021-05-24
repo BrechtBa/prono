@@ -66,6 +66,7 @@ function User(props){
 
   return (
     <div style={{marginBottom: '5px'}}>
+
       <Paper style={{padding: '10px', marginLeft: (rankingUser.key === user.key ? '10px' : 0)}} onClick={() => setDialogOpen(true)}>
         <div style={{display: 'flex', alignItems: 'center'}}>
           <div style={{width: '30px', fontWeight: 600}}>{ranking}</div>
@@ -74,6 +75,7 @@ function User(props){
           <div>{getPoints(rankingUser)}</div>
          </div>
       </Paper>
+
       <Dialog onClose={() => setDialogOpen(false)} open={dialogOpen}>
         {user.paid ? (
           <div style={{display: 'flex', flexDirection: 'column', padding: '20px'}}>
@@ -95,6 +97,7 @@ function User(props){
           </div>
         )}
       </Dialog>
+
     </div>
   )
 
@@ -114,14 +117,35 @@ function ViewRanking(props) {
     });
   }, [api]);
 
+  const getRankedUsers = (users) => {
+    let sortedUsers = JSON.parse(JSON.stringify(users.sort((a, b) => getPoints(b) - getPoints(a))))
+    var rank = 1;
+    var skip = 1;
+    var points = -1;
+    sortedUsers.forEach((user) => {
+      const userPoints = getPoints(user);
+      if(userPoints < points){
+        rank += skip;
+        skip = 1;
+      }
+      else if(userPoints === points){
+        skip += 1;
+      }
+      points = userPoints;
+      user.rank = rank;
+    })
+    return sortedUsers;
+  }
+
+
   const classes = useStyles();
 
   return (
     <div className={classes.root}>
       <h2 style={{color: '#ffffff'}}>Rangschikking</h2>
 
-      {users.sort((a, b) => getPoints(b) - getPoints(a)).map((user, index) => (
-        <User key={user.key} user={user} ranking={index+1}/>
+      {getRankedUsers(users).map((user) => (
+        <User key={user.key} user={user} ranking={user.rank}/>
       ))}
 
     </div>
