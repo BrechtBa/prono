@@ -190,7 +190,7 @@ function GroupStageGroup(props) {
         </div>
 
         <div style={{marginTop: '10px'}} onClick={() => editable && setGroupPointsDialogOpen(true)}>
-          {group.teams.map((team) => (
+          {group.teams.sort((a, b) => b.points-a.points).map((team) => (
             <div key={team.key} style={{display: 'flex', flexDirection: 'row', alignItems: 'center', width: '100%'}}>
               <div className={classes.teamIcon}>
                 <TeamIcon team={team} />
