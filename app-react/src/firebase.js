@@ -44,8 +44,8 @@ class FirebaseAPI {
             key: snap.key,
             displayName: val.displayName,
             paid: val.paid,
-            active: val.active || true,
-            permission: val.permission,
+            active: val.active === undefined ? true : val.active,
+            permissions: val.permissions || {},
             points: val.points,
             profilePicture: val.profilePicture,
           });
@@ -297,9 +297,17 @@ class FirebaseAPI {
   updateDisplayName(user, displayName) {
     return this.db.ref(`${this.root}/users/${user.key}/displayName`).set(displayName)
   }
+  updatePaid(user, paid) {
+    return this.db.ref(`${this.root}/users/${user.key}/paid`).set(paid)
+  }
+  updateActive(user, active) {
+    return this.db.ref(`${this.root}/users/${user.key}/active`).set(active)
+  }
+  updatePermissionEditor(user, editor) {
+    return this.db.ref(`${this.root}/users/${user.key}/permissions/editor`).set(editor)
+  }
 
   updateProfilePicture(user, image) {
-    console.log(image);
     var ref = storage.ref(`users/${user.key}/profilePicture`);
     var uploadTask = ref.putString(image, 'data_url');
     uploadTask.on('state_changed',

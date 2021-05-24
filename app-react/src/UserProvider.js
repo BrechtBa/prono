@@ -47,7 +47,8 @@ function UserProvider(props){
               profilePicture: '',
               paid: false,
               active: true,
-              points: {}
+              points: {},
+              permissions: {}
             }
             db.ref(`pronogroupid1/users/${userAuth.uid}`).set(val)
           }
@@ -60,10 +61,7 @@ function UserProvider(props){
             paid: val.paid || false,
             active: true,
             points: val.points || {},
-            permissions: {
-              admin: (val.permission || 1) >=9,
-              editor: (val.permission || 1) >=5,
-            }
+            permissions: val.permissions || {}
           })
         })
         return () => { unsubscribe() }

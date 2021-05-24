@@ -118,7 +118,7 @@ function ViewRanking(props) {
   }, [api]);
 
   const getRankedUsers = (users) => {
-    let sortedUsers = JSON.parse(JSON.stringify(users.sort((a, b) => getPoints(b) - getPoints(a))))
+    let sortedUsers = JSON.parse(JSON.stringify(users.filter(user => user.active).sort((a, b) => getPoints(b) - getPoints(a))))
     var rank = 1;
     var skip = 1;
     var points = -1;
