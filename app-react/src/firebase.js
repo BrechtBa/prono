@@ -241,6 +241,17 @@ class FirebaseAPI {
     }
   }
 
+  onHomeTeamResultChanged(callback) {
+    return this.db.ref(`${this.root}/competition/hometeamresult`).on("value", snapshot => {
+      let stage = '-1'
+      if (snapshot !== undefined){
+        stage = snapshot.val()
+      }
+      callback(stage);
+    });
+  }
+
+
   updateMatch(match, update) {
     var updates = {};
     for (const [path, value] of Object.entries(update)) {
@@ -297,6 +308,14 @@ class FirebaseAPI {
           return this.db.ref(`${this.root}/users/${user.key}/profilePicture`).set(downloadURL)
         });
     });
+  }
+
+  updateCurrentStage(currentStage) {
+    return this.db.ref(`${this.root}/competition/currentstage`).set(currentStage);
+  }
+
+  updateHomeTeamResult(result) {
+    return this.db.ref(`${this.root}/competition/hometeamresult`).set(result);
   }
 
   _get_iso_icon(iso_code){

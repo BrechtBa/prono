@@ -228,7 +228,7 @@ export function KnockoutStageProno(props) {
             <div key={match.key}>
               {(column.key === 'R4' && matchIndex === 0)  && (<div style={{height: '80px'}}></div>)}
 
-              <Paper style={{padding: '5px', height: '175px', overflowX: 'hidden', position: 'relative'}}>
+              <Paper style={{padding: '5px', height: '150px', overflowX: 'hidden', position: 'relative'}}>
                 <Match match={match} showPenaltyEdit={false} onSave={saveMatch} editable={currentStage === column.stage}/>
                 <Disabled disabled={currentStage !== column.stage}/>
               </Paper>

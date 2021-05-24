@@ -26,6 +26,7 @@ import ViewResults from './ViewResults.js';
 import ViewRules from './ViewRules.js';
 import ViewLogin from './ViewLogin.js';
 import ViewProfile from './ViewProfile.js';
+import ViewSettings from './ViewSettings.js';
 import Version from './Version.js';
 
 const drawerWidth = 280;
@@ -229,9 +230,7 @@ function PronoLayout(props) {
               <Route path="/users">
                 Users
               </Route>
-              <Route path="/settings">
-                Users
-              </Route>
+              <Route path="/settings"> <ViewSettings /> </Route>
               <Route path="/teams">
                 Users
               </Route>
