@@ -58,10 +58,12 @@ const useStyles = makeStyles((theme: Theme) =>
 
 function Match(props) {
   const match = props.match;
-  const showPenaltyEdit = props.showPenaltyEdit;
+  const editPenalties = props.showPenaltyEdit;
   const collapsed = props.collapsed;
   const onSave = props.onSave
   const editable = props.editable;
+  const editTeams = props.editTeams;
+  const teams = props.teams;
 
   const [editScoreDialogOpen, setEditScoreDialogOpen] = useState(false)
 
@@ -104,7 +106,8 @@ function Match(props) {
         </div>
       </div>
 
-      <EditScoreDialog match={match} open={editScoreDialogOpen} setOpen={setEditScoreDialogOpen} onSave={onSave} showPenaltyEdit={showPenaltyEdit}/>
+      <EditScoreDialog match={match} open={editScoreDialogOpen} setOpen={setEditScoreDialogOpen} onSave={onSave} editPenalties={editPenalties}
+        editTeams={editTeams} teams={teams}/>
     </div>
   )
 
@@ -152,6 +155,8 @@ export function KnockoutStage(props) {
   const stages = props.stages;
   const columns = getMatchColumns(stages);
   const editable = props.editable;
+  const editTeams = true;
+  const teams = props.teams;
 
   const [openStage, setOpenStage] = useState('16')
 
@@ -166,8 +171,8 @@ export function KnockoutStage(props) {
 
   const api = useContext(APIContext);
 
-  const saveMatch = (match, score1, score2, penalty1, penalty2) => {
-    api.updateMatch(match, {score1: score1, score2: score2, penalty1: penalty1, penalty2: penalty2})
+  const saveMatch = (match, score1, score2, penalty1, penalty2, team1, team2) => {
+    api.updateMatch(match, {score1: score1, score2: score2, penalty1: penalty1, penalty2: penalty2, team1: team1.key, team2: team2.key})
   }
 
   return (
@@ -181,7 +186,7 @@ export function KnockoutStage(props) {
               {(column.key === 'R4' && matchIndex === 0)  && (<div style={{height: '80px'}}></div>)}
 
               <Paper style={{padding: '5px', height: '175px', overflowX: 'hidden'}}>
-                <Match match={match} showPenaltyEdit={true} onSave={saveMatch} editable={editable}/>
+                <Match match={match} showPenaltyEdit={true} onSave={saveMatch} editable={editable} editTeams={editTeams} teams={teams}/>
               </Paper>
 
               {(column.key === 'L4' && matchIndex === 0)  && (<div style={{height: '80px'}}></div>)}
@@ -229,7 +234,8 @@ export function KnockoutStageProno(props) {
               {(column.key === 'R4' && matchIndex === 0)  && (<div style={{height: '80px'}}></div>)}
 
               <Paper style={{padding: '5px', height: '150px', overflowX: 'hidden', position: 'relative'}}>
-                <Match match={match} showPenaltyEdit={false} onSave={saveMatch} editable={currentStage === column.stage}/>
+                <Match match={match} showPenaltyEdit={false} onSave={saveMatch} editable={currentStage === column.stage}
+                  editTeams={false} teams={[]}/>
                 <Disabled disabled={currentStage !== column.stage}/>
               </Paper>
 

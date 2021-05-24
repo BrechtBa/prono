@@ -2,15 +2,12 @@ import React, { useState, useEffect, useContext } from 'react';
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 
 import Paper from '@material-ui/core/Paper';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
 import Dialog from '@material-ui/core/Dialog';
 import Button from '@material-ui/core/Button';
-import InputLabel from '@material-ui/core/InputLabel';
 import TextField from '@material-ui/core/TextField';
 
 import APIContext from './APIProvider.js';
-import { Disabled, TeamName, TeamIcon, EditScoreDialog } from './MatchUtils.js';
+import { Disabled, TeamName, TeamIcon, TeamSelect, EditScoreDialog } from './MatchUtils.js';
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -62,6 +59,7 @@ export function Match(props) {
   const match = props.match;
   const onSave = props.onSave;
   const editable = props.editable;
+  const editTeams = props.editTeams;
 
   const [editScoreDialogOpen, setEditScoreDialogOpen] = useState(false)
 
@@ -96,7 +94,8 @@ export function Match(props) {
         </div>
       </div>
 
-      <EditScoreDialog match={match} open={editScoreDialogOpen} setOpen={setEditScoreDialogOpen} onSave={onSave} showPenaltyEdit={false}/>
+      <EditScoreDialog match={match} open={editScoreDialogOpen} setOpen={setEditScoreDialogOpen} onSave={onSave} editPenalties={false}
+        editTeams={editTeams} teams={[]}/>
     </div>
   )
 }
@@ -164,6 +163,7 @@ function GroupPointsDialog(props) {
 function GroupStageGroup(props) {
   const group = props.group;
   const editable = props.editable;
+  const editTeams = props.editTeams;
 
   const [groupPointsDialogOpen, setGroupPointsDialogOpen] = useState(false)
 
@@ -185,7 +185,7 @@ function GroupStageGroup(props) {
 
         <div>
           {group.matches.map((match) => (
-           <Match key={match.key} match={match} onSave={saveMatch} editable={editable}/>
+           <Match key={match.key} match={match} onSave={saveMatch} editable={editable} editTeams={editTeams}/>
           ))}
         </div>
 
@@ -213,64 +213,16 @@ function GroupStageGroup(props) {
 export function GroupStage(props) {
   const groups = props.groups;
   const editable = props.editable;
+  const editTeams = false;
 
   return (
     <div style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center'}}>
       {groups.map((group) => (
-        <GroupStageGroup key={group.key} group={group} editable={editable}/>
+        <GroupStageGroup key={group.key} group={group} editable={editable} editTeams={editTeams}/>
       ))}
     </div>
   );
 };
-
-
-function TeamSelect(props){
-  const label = props.label;
-  const teams = props.teams;
-  const selected = props.selected;
-  const onSelect = props.onChange
-
-  const handleChange = (e) => {
-    const key = e.target.value;
-    if (key !== -1){
-      const teamsKeys = teams.map((team) => team.key)
-      const ind = teamsKeys.indexOf(key)
-      if(ind >= 0){
-        onSelect(teams[ind]);
-      }
-      else{
-        onSelect({key: -1})
-      }
-    }
-    else{
-      onSelect({key: -1})
-    }
-  }
-
-  const classes = useStyles();
-
-  return (
-    <div style={{width: '100%', marginBottom: '20px'}}>
-      <InputLabel id="select-label">{label}</InputLabel>
-      <Select value={selected.key} onChange={handleChange} labelId="select-label" style={{width: '100%'}}>
-        <MenuItem value={-1}></MenuItem>
-
-        {teams.map((team) => (
-          <MenuItem key={team.key} value={team.key}>
-            <div style={{display: 'flex', alignItems: 'center'}}>
-              <div className={classes.teamIcon}>
-                <TeamIcon team={team}/>
-              </div>
-              <div style={{marginLeft: '20px'}}>
-                <TeamName team={team} def=""/>
-              </div>
-            </div>
-          </MenuItem>
-        ))}
-      </Select>
-    </div>
-  );
-}
 
 
 function GroupwinnersDialog(props) {
@@ -342,7 +294,7 @@ function GroupstagePronoGroup(props) {
 
         <div>
           {group.matches.map((match) => (
-           <Match key={match.key} match={match} onSave={saveMatch} showPenaltyEdit={false} editable={currentStage === 'groupstage'}/>
+           <Match key={match.key} match={match} onSave={saveMatch} showPenaltyEdit={false} editable={currentStage === 'groupstage'} editTeams={false}/>
           ))}
         </div>
 
