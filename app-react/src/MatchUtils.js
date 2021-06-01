@@ -28,7 +28,6 @@ const useStyles = makeStyles((theme: Theme) =>
       flexDirection: 'col',
       justifyContent: 'center'
     },
-
     team1: {
       display: 'flex',
       flexGrow: 4,
@@ -43,7 +42,6 @@ const useStyles = makeStyles((theme: Theme) =>
       width: '110px',
       textAlign: 'right'
     },
-
     teamIcon: {
       maxWidth: '30px', maxHeight: '30px'
     },
@@ -56,8 +54,10 @@ const useStyles = makeStyles((theme: Theme) =>
     scoreRegular: {
     },
     scorePenalty: {
+    },
+    header: {
+      color: theme.palette.text.headers
     }
-
   })
 );
 
@@ -195,7 +195,7 @@ export function EditScoreDialog(props){
   }
 
   const handleSave = () => {
-    onSave(match, deformatScore(score1), deformatScore(score2), deformatScore(penalty1), deformatScore(penalty2), team1, team2)
+    onSave(match, deformatScore(score1), deformatScore(score2), deformatScore(penalty1), deformatScore(penalty2), team1.key, team2.key)
     setOpen(false)
   }
 
@@ -263,5 +263,54 @@ export function EditScoreDialog(props){
       </form>
     </Dialog>
   )
+}
 
+export function DeadlineMessage(props){
+  const deadline = props.deadline;
+  const complete = props.complete;
+  const active = props.active;
+
+  const calculateTimeLeft = () => {
+    const difference = deadline - new Date();
+    const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((difference / 1000 / 60) % 60);
+    if(days > 0){
+      return `${days} dagen ${hours} uur ${minutes} minuten`;
+    }
+    else if(hours > 0){
+      return `${hours} uur ${minutes} minuten`;
+    }
+    else if(minutes > 1){
+      return `${minutes} minuten`;
+    }
+    else if(minutes > 0){
+      return `${minutes} minuut`;
+    }
+    else{
+      return '0';
+    }
+  }
+
+  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft())
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setTimeLeft(calculateTimeLeft());
+    }, 1000);
+    return () => clearTimeout(timer);
+  });
+
+  const classes = useStyles();
+
+  return (
+    <div className={classes.header} style={{textAlign: 'right'}}>
+      {active && timeLeft !== '0'  && complete && (
+        <div>Dit deel is compleet.</div>
+      )}
+      {active && timeLeft !== '0' && !complete  && (
+        <div>Je hebt nog {timeLeft} om dit deel in te vullen.</div>
+      )}
+    </div>
+  )
 }

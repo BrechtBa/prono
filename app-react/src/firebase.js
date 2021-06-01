@@ -251,6 +251,22 @@ class FirebaseAPI {
     });
   }
 
+  onDeadlinesChanged(callback) {
+    return this.db.ref(`${this.root}/deadlines`).on("value", snapshot => {
+      let deadlines = {
+        'groupstage': Date.now()-100000,
+        '16': Date.now()-100000,
+        '8': Date.now()-100000,
+        '4': Date.now()-100000,
+        '2': Date.now()-100000,
+      }
+      if (snapshot !== undefined){
+        const val = snapshot.val()
+        deadlines['groupstage'] = new Date(val['groupstage'])
+      }
+      callback(deadlines);
+    });
+  }
 
   updateMatch(match, update) {
     var updates = {};

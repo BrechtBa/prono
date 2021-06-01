@@ -125,7 +125,7 @@ function ViewResults(props) {
   return (
     <div>
       <h2 style={{color: '#ffffff'}}>Groepsfase</h2>
-      <GroupStage groups={groups} editable={user.permissions.editor || false}/>
+      <GroupStage groups={groups} editable={user.permissions.editor || false} />
 
       <h2 style={{color: '#ffffff'}}>Knockout fase</h2>
       <KnockoutStage stages={stages} editable={user.permissions.editor || false} teams={user.permissions.editor ? Object.keys(teams).map(key => teams[key]) : [] }/>

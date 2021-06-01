@@ -60,6 +60,7 @@ export function Match(props) {
   const onSave = props.onSave;
   const editable = props.editable;
   const editTeams = props.editTeams;
+  const teams = props.teams;
 
   const [editScoreDialogOpen, setEditScoreDialogOpen] = useState(false)
 
@@ -95,7 +96,7 @@ export function Match(props) {
       </div>
 
       <EditScoreDialog match={match} open={editScoreDialogOpen} setOpen={setEditScoreDialogOpen} onSave={onSave} editPenalties={false}
-        editTeams={editTeams} teams={[]}/>
+        editTeams={editTeams} teams={teams}/>
     </div>
   )
 }
@@ -169,8 +170,8 @@ function GroupStageGroup(props) {
 
   const api = useContext(APIContext);
 
-  const saveMatch = (match, score1, score2, penalty1, penalty2) => {
-    api.updateMatch(match, {score1: score1, score2: score2, penalty1: penalty1, penalty2: penalty2})
+  const saveMatch = (match, score1, score2, penalty1, penalty2, team1, team2) => {
+    api.updateMatch(match, {score1: score1, score2: score2, penalty1: penalty1, penalty2: penalty2, team1: team1, team2: team2})
   }
   const saveGroupPoints = (teams) => {
     api.updateGroupPoints(group, teams)
@@ -185,7 +186,7 @@ function GroupStageGroup(props) {
 
         <div>
           {group.matches.map((match) => (
-           <Match key={match.key} match={match} onSave={saveMatch} editable={editable} editTeams={editTeams}/>
+           <Match key={match.key} match={match} onSave={saveMatch} editable={editable} editTeams={editTeams} teams={group.teams}/>
           ))}
         </div>
 
@@ -213,7 +214,7 @@ function GroupStageGroup(props) {
 export function GroupStage(props) {
   const groups = props.groups;
   const editable = props.editable;
-  const editTeams = false;
+  const editTeams = props.editable;
 
   return (
     <div style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center'}}>

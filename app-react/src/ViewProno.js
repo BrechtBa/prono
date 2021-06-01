@@ -7,6 +7,7 @@ import { KnockoutStageProno } from './KnockoutStage.js';
 import { KnockoutStageTeamsProno } from './KnockoutStageTeams.js';
 import { TotalGoalsProno } from './TotalGoals.js'
 import { TeamResultProno } from './TeamResult.js'
+import { DeadlineMessage } from './MatchUtils.js'
 
 
 const getFullGroupstage = (groupstage, matches, teams, matchesProno, groupWinnersProno) => {
@@ -149,6 +150,7 @@ function ViewProno(props) {
   const [matches, setMatches] = useState({});
   const [groupstage, setGroupstage] = useState([]);
   const [knockoutstages, setKnockoutstages] = useState([]);
+  const [deadlines, setDeadlines] = useState({});
 
   const [pronoUser] = useState(user);
   const [currentStage, setCurrentStage] = useState('finished');
@@ -232,21 +234,34 @@ function ViewProno(props) {
     });
   }, [api, pronoUser]);
 
+  useEffect(() => {
+    return api.onDeadlinesChanged(val => {
+      setDeadlines(val);
+      console.log('loaded deadlines', val)
+    });
+  }, [api]);
+
   const groups = getFullGroupstage(groupstage, matches, teams, matchesProno, groupWinnersProno);
   const stages = getFullKnockoutStages(knockoutstages, matches, teams, matchesProno);
   const stageTeams = getFullStageTeams(teams, stageTeamsProno);
 
+  const groupstageComplete = false;
+
   return (
     <div>
       <h2 style={{color: '#ffffff'}}>Groepsfase</h2>
+      <DeadlineMessage deadline={deadlines['groupstage']} complete={groupstageComplete} active={currentStage === 'groupstage'}/>
       <GroupstageProno groups={groups} user={pronoUser} currentStage={currentStage} />
 
       <h2 style={{color: '#ffffff'}}>Teams in elke eliminatie fase</h2>
+      <DeadlineMessage deadline={deadlines['groupstage']} complete={groupstageComplete} active={currentStage === 'groupstage'}/>
       <KnockoutStageTeamsProno stageTeams={stageTeams} teams={teams} user={pronoUser} currentStage={currentStage}/>
 
       <h2 style={{color: '#ffffff'}}>Extra punten</h2>
+      <DeadlineMessage deadline={deadlines['groupstage']} complete={groupstageComplete} active={currentStage === 'groupstage'}/>
       <TotalGoalsProno goals={totalGoalsProno} user={pronoUser} currentStage={currentStage}/>
 
+      <DeadlineMessage deadline={deadlines['groupstage']} complete={groupstageComplete} active={currentStage === 'groupstage'}/>
       <TeamResultProno stage={teamResultProno} user={pronoUser} team={{abbreviation: "BEL", icon: "images/flags/BE.png", name: "België"}} currentStage={currentStage}/>
 
       <h2 style={{color: '#ffffff'}}>Knockout fase</h2>
