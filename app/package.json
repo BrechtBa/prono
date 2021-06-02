@@ -1,18 +1,44 @@
 {
-  "name": "prono",
-  "license": "BSD-3-Clause",
-  "devDependencies": {
-    "eslint": "^3.19.0",
-    "eslint-config-google": "^0.7.0",
-    "eslint-plugin-html": "^2.0.0"
+  "name": "app-react",
+  "version": "0.1.0",
+  "private": true,
+  "homepage": ".",
+  "dependencies": {
+    "@material-ui/core": "^4.11.4",
+    "@material-ui/icons": "^4.11.2",
+    "@testing-library/jest-dom": "^5.12.0",
+    "@testing-library/react": "^11.2.7",
+    "@testing-library/user-event": "^12.8.3",
+    "firebase": "^8.6.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-image-file-resizer": "^0.4.4",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "4.0.3",
+    "web-vitals": "^1.1.2"
   },
   "scripts": {
-    "lint": "npm run lint:javascript && polymer lint",
-    "lint:javascript": "eslint . --ext js,html --ignore-path .gitignore",
-    "test": "polymer test",
-    "test:integration": "polymer build # test that psk builds without error with the CLI"
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
   },
-  "dependencies": {
-    "npm": "^6.0.1"
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }

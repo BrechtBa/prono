@@ -7,8 +7,8 @@ Website/app to make predictions on soccer tournaments among friends for fun.
 
 A firebase account.
 
-* polymer-cli
-* firebase-cli
+* firebase-cli  `npm install -g firebase-tools`
+
 
 # Deploying
 
@@ -19,11 +19,11 @@ cd ~/tmp
 git clone https://github.com/BrechtBa/prono.git
 ```
 
-Build the app with the polymer build tool:
+Build the app:
 
 ```
 cd app
-polymer build
+npm run-script build
 ```
 
 Deploy to firebase:
