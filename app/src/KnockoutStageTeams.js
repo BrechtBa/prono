@@ -164,6 +164,12 @@ function KnockoutStageTeamsPronoStage(props) {
   );
 }
 
+export const pronoStages = [
+  {key: '8', displayName: 'Kwartfinale', numberOfTeams: 8},
+  {key: '4', displayName: 'Halve finale', numberOfTeams: 4},
+  {key: '2', displayName: 'Finale', numberOfTeams: 2},
+  {key: '1', displayName: 'Winnaar', numberOfTeams: 1},
+]
 
 export function KnockoutStageTeamsProno(props) {
   const user = props.user;
@@ -171,12 +177,7 @@ export function KnockoutStageTeamsProno(props) {
   const teams = props.teams;
   const stageTeams = props.stageTeams;
 
-  const pronoStages = [
-    {key: '8', displayName: 'Kwartfinale', numberOfTeams: 8},
-    {key: '4', displayName: 'Halve finale', numberOfTeams: 4},
-    {key: '2', displayName: 'Finale', numberOfTeams: 2},
-    {key: '1', displayName: 'Winnaar', numberOfTeams: 1},
-  ]
+
 
   const getSelectedTeams = (stageTeams, stage) => {
     if(stageTeams[stage] !== undefined && stageTeams[stage].teams !== undefined){

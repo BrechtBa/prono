@@ -27,15 +27,17 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
       flexGrow: 4,
       justifyContent: 'flex-start',
-      width: '110px',
+      width: '90px',
       textAlign: 'left',
+      overflow: 'hidden'
     },
     team2: {
       display: 'flex',
       flexGrow: 4,
       justifyContent: 'flex-end',
-      width: '110px',
-      textAlign: 'right'
+      width: '90px',
+      textAlign: 'right',
+      overflow: 'hidden'
     },
     teamIcon: {
       maxWidth: '30px', maxHeight: '30px'
@@ -273,9 +275,7 @@ function GroupstagePronoGroup(props) {
   const group = props.group;
   const user = props.user;
 
-
   const [groupwinnersDialogOpen, setGroupwinnersDialogOpen] = useState(false)
-
 
   const api = useContext(APIContext);
 

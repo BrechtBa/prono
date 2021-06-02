@@ -4,7 +4,7 @@ import APIContext from './APIProvider.js';
 import { UserContext } from "./UserProvider.js";
 import { GroupstageProno } from './GroupStage.js';
 import { KnockoutStageProno } from './KnockoutStage.js';
-import { KnockoutStageTeamsProno } from './KnockoutStageTeams.js';
+import { KnockoutStageTeamsProno, pronoStages } from './KnockoutStageTeams.js';
 import { TotalGoalsProno } from './TotalGoals.js'
 import { TeamResultProno } from './TeamResult.js'
 import { DeadlineMessage } from './MatchUtils.js'
@@ -245,23 +245,62 @@ function ViewProno(props) {
   const stages = getFullKnockoutStages(knockoutstages, matches, teams, matchesProno);
   const stageTeams = getFullStageTeams(teams, stageTeamsProno);
 
-  const groupstageComplete = false;
+  const groupstageComplete = (groups) => {
+    let complete = true;
+    groups.forEach((group) => {
+      group.matches.forEach((match) => {
+        if(match.score1 < 0 || match.score2 < 0){
+          complete = false;
+          return false
+        }
+      });
+      if(group.winners === undefined || group.winners[1] === undefined || group.winners[1].key === undefined || group.winners[1].key === -1){
+        complete = false;
+        return false
+      }
+      if(group.winners === undefined || group.winners[2] === undefined || group.winners[2].key === undefined || group.winners[2].key === -1){
+        complete = false;
+        return false
+      }
+    });
+    return complete;
+  }
+
+  const stageTeamsComplete = (stageTeams) => {
+    let complete = true;
+    console.log(stageTeams)
+    pronoStages.forEach((stage) => {
+      if(stageTeams[stage.key] === undefined || stageTeams[stage.key].teams === undefined || stageTeams[stage.key].teams.length < parseInt(stage.key)){
+        complete = false;
+        return false;
+      }
+    });
+    return complete;
+  }
+
+  const totalGoalsComplete = (totalGoalsProno) => {
+    return totalGoalsProno !== undefined && totalGoalsProno >= 0;
+  }
+
+  const teamResultPronoComplete = (teamResultProno) => {
+    return teamResultProno !== undefined && teamResultProno >= 0;
+  }
 
   return (
     <div>
       <h2 style={{color: '#ffffff'}}>Groepsfase</h2>
-      <DeadlineMessage deadline={deadlines['groupstage']} complete={groupstageComplete} active={currentStage === 'groupstage'}/>
+      <DeadlineMessage deadline={deadlines['groupstage']} complete={groupstageComplete(groups)} active={currentStage === 'groupstage'}/>
       <GroupstageProno groups={groups} user={pronoUser} currentStage={currentStage} />
 
       <h2 style={{color: '#ffffff'}}>Teams in elke eliminatie fase</h2>
-      <DeadlineMessage deadline={deadlines['groupstage']} complete={groupstageComplete} active={currentStage === 'groupstage'}/>
+      <DeadlineMessage deadline={deadlines['groupstage']} complete={stageTeamsComplete(stageTeams)} active={currentStage === 'groupstage'}/>
       <KnockoutStageTeamsProno stageTeams={stageTeams} teams={teams} user={pronoUser} currentStage={currentStage}/>
 
       <h2 style={{color: '#ffffff'}}>Extra punten</h2>
-      <DeadlineMessage deadline={deadlines['groupstage']} complete={groupstageComplete} active={currentStage === 'groupstage'}/>
+      <DeadlineMessage deadline={deadlines['groupstage']} complete={totalGoalsComplete(totalGoalsProno)} active={currentStage === 'groupstage'}/>
       <TotalGoalsProno goals={totalGoalsProno} user={pronoUser} currentStage={currentStage}/>
 
-      <DeadlineMessage deadline={deadlines['groupstage']} complete={groupstageComplete} active={currentStage === 'groupstage'}/>
+      <DeadlineMessage deadline={deadlines['groupstage']} complete={teamResultPronoComplete(teamResultProno)} active={currentStage === 'groupstage'}/>
       <TeamResultProno stage={teamResultProno} user={pronoUser} team={{abbreviation: "BEL", icon: "images/flags/BE.png", name: "België"}} currentStage={currentStage}/>
 
       <h2 style={{color: '#ffffff'}}>Knockout fase</h2>

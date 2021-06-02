@@ -23,11 +23,19 @@ Build the app:
 
 ```
 cd app
-npm run-script build
+npm run build
+```
+
+Login to firebase and set the active project to your project:
+
+```
+cd ..
+firebase login
+firebase use --add 
 ```
 
 Deploy to firebase:
+
 ```
-cd ..
 firebase deploy
 ```
