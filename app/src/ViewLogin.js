@@ -79,7 +79,7 @@ function Register(props) {
   const register = () => {
     if(termsChecked){
       if(password === passwordRepeat){
-        createUserWithEmailAndPassword(email, password, () => {
+        createUserWithEmailAndPassword(email.trim(), password, () => {
           setEmail('');
           setPassword('');
           setPasswordRepeat('');
@@ -156,7 +156,7 @@ function ResetPassword(props){
   const close = props.close;
 
   const reset = () => {
-    sendPasswordResetEmail(email, () => {
+    sendPasswordResetEmail(email.trim(), () => {
       setError(null)
       setMessage('Email verstuurd, controleer je email voor een reset link.')
     }, (error) => {
@@ -216,7 +216,7 @@ function ViewLogin() {
 
   const signInWithEmailAndPasswordHandler = (event, email, password) => {
     event.preventDefault();
-    signInWithEmailAndPassword(email, password, () => {}, (error) => {
+    signInWithEmailAndPassword(email.trim(), password, () => {}, (error) => {
       console.log("Error signing in with password and email", error);
       if(error.code === 'auth/invalid-email'){
         setError(`Ongeldig email adres! "${email}"`);
