@@ -4,8 +4,12 @@ import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Avatar from '@material-ui/core/Avatar';
 import Checkbox from '@material-ui/core/Checkbox';
+import Dialog from '@material-ui/core/Dialog';
+import Button from '@material-ui/core/Button';
 
 import APIContext from './APIProvider.js';
+import ViewProno from './ViewProno.js'
+
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -19,6 +23,7 @@ function User(props){
   const user = props.user;
 
   const api = useContext(APIContext);
+  const [pronoDialogOpen, setPronoDialogOpen] = useState(false);
 
   const getFirstLetter = (user) => {
     if(user.displayName !== undefined){
@@ -37,9 +42,13 @@ function User(props){
           <div><Checkbox checked={user.active} onChange={(e) => api.updateActive(user, !user.active)}/> Active</div>
           <div><Checkbox checked={user.paid} onChange={(e) => api.updatePaid(user, !user.paid)}/> Paid</div>
           <div><Checkbox checked={user.permissions.editor} onChange={(e) => api.updatePermissionEditor(user, !user.permissions.editor)}/> Editor</div>
+          <div><Button onClick={() => setPronoDialogOpen(true)}>Edit prono</Button></div>
         </div>
       </Paper>
 
+      <Dialog onClose={() => setPronoDialogOpen(false)} open={pronoDialogOpen} PaperProps={{style: {backgroundColor: '#DD0000'}}}>
+        <ViewProno user={user}/>
+      </Dialog>
     </div>
   )
 

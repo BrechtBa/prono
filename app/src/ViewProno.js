@@ -152,7 +152,7 @@ function ViewProno(props) {
   const [knockoutstages, setKnockoutstages] = useState([]);
   const [deadlines, setDeadlines] = useState({});
 
-  const [pronoUser] = useState(user);
+  const pronoUser = props.user || user;
   const [currentStage, setCurrentStage] = useState('finished');
 
   const [matchesProno, setMatchesProno] = useState({});
