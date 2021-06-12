@@ -44,6 +44,7 @@ class FirebaseAPI {
             key: snap.key,
             displayName: val.displayName,
             paid: val.paid,
+            showPoints: val.showPoints,
             active: val.active === undefined ? true : val.active,
             permissions: val.permissions || {},
             points: val.points,
@@ -318,6 +319,9 @@ class FirebaseAPI {
   }
   updateActive(user, active) {
     return this.db.ref(`${this.root}/users/${user.key}/active`).set(active)
+  }
+  updateShowPoints(user, showPoints) {
+    return this.db.ref(`${this.root}/users/${user.key}/showPoints`).set(showPoints)
   }
   updatePermissionEditor(user, editor) {
     return this.db.ref(`${this.root}/users/${user.key}/permissions/editor`).set(editor)

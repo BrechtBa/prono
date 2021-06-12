@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 
 const getPoints = (user) => {
-  if(user.paid && user.points !== undefined){
+  if(user.showPoints && user.points !== undefined){
     return Object.keys(user.points).map((key) => user.points[key]).reduce((a, b) => a + b, 0)
   }
   else{

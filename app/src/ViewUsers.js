@@ -41,6 +41,7 @@ function User(props){
           <div style={{width: '150px'}}>{user.displayName}</div>
           <div><Checkbox checked={user.active} onChange={(e) => api.updateActive(user, !user.active)}/> Active</div>
           <div><Checkbox checked={user.paid} onChange={(e) => api.updatePaid(user, !user.paid)}/> Paid</div>
+          <div><Checkbox checked={user.showPoints} onChange={(e) => api.updateShowPoints(user, !user.showPoints)}/> Show points</div>
           <div><Checkbox checked={user.permissions.editor} onChange={(e) => api.updatePermissionEditor(user, !user.permissions.editor)}/> Editor</div>
           <div><Button onClick={() => setPronoDialogOpen(true)}>Edit prono</Button></div>
         </div>
@@ -60,6 +61,7 @@ function ViewUsers(props) {
   const api = useContext(APIContext);
 
   const [users, setUsers] = useState([]);
+  const [filterActive, setFilterActive] = useState(true);
 
   useEffect(() => {
     api.onUsersChanged(users => {
@@ -73,10 +75,12 @@ function ViewUsers(props) {
     <div className={classes.root}>
       <h2 style={{color: '#ffffff'}}>Users</h2>
 
-      {users.map((user) => (
-        <User key={user.key} user={user} ranking={user.rank}/>
-      ))}
-
+      <div><Checkbox checked={filterActive} onChange={(e) => setFilterActive(!filterActive)}/> hide inactive</div>
+      <div>
+        {users.filter((user) => !filterActive || user.active).map((user) => (
+          <User key={user.key} user={user} ranking={user.rank}/>
+        ))}
+      </div>
     </div>
   );
 

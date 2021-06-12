@@ -46,6 +46,7 @@ function UserProvider(props){
               displayName: makeDisplayName(userAuth.email),
               profilePicture: '',
               paid: false,
+              showPoints: false,
               active: true,
               points: {},
               permissions: {}
@@ -59,6 +60,7 @@ function UserProvider(props){
             displayName: val.displayName || makeDisplayName(userAuth.email),
             profilePicture: val.profilePicture || '',
             paid: val.paid || false,
+            showPoints: val.showPoints || false,
             active: true,
             points: val.points || {},
             permissions: val.permissions || {}
