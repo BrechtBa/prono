@@ -172,7 +172,8 @@ export function KnockoutStage(props) {
   const api = useContext(APIContext);
 
   const saveMatch = (match, score1, score2, penalty1, penalty2, team1, team2) => {
-    api.updateMatch(match, {score1: score1, score2: score2, penalty1: penalty1, penalty2: penalty2, team1: team1.key, team2: team2.key})
+    console.log(team1)
+    api.updateMatch(match, {score1: score1, score2: score2, penalty1: penalty1, penalty2: penalty2, team1: team1, team2: team2})
   }
 
   return (
