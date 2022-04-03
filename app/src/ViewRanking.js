@@ -134,6 +134,7 @@ function ViewRanking(props) {
       points = userPoints;
       user.rank = rank;
     })
+
     return sortedUsers;
   }
 

@@ -24,10 +24,11 @@ class FirebaseAPI {
   constructor(db) {
     this.db = db;
     this.root = 'pronogroupid1';
+    this.prono = 'ek2021'
   }
 
   onRulesChanged(callback) {
-    return this.db.ref(`${this.root}/rules`).on("value", snapshot => {
+    return this.db.ref(`${this.root}/pronos/${this.prono}/rules`).on("value", snapshot => {
       if (snapshot !== undefined){
         callback(snapshot.val());
       }
@@ -35,29 +36,48 @@ class FirebaseAPI {
   }
 
   onUsersChanged(callback) {
-    return this.db.ref(`${this.root}/users`).on("value", snapshot => {
-      let users = [];
-      if (snapshot !== undefined){
-        snapshot.forEach((snap) => {
-          const val = snap.val()
-          users.push({
-            key: snap.key,
-            displayName: val.displayName,
-            paid: val.paid,
-            showPoints: val.showPoints,
-            active: val.active === undefined ? true : val.active,
-            permissions: val.permissions || {},
-            points: val.points,
-            profilePicture: val.profilePicture,
+    return this.db.ref(`${this.root}/pronos/${this.prono}/userpoints`).on("value", snapshot => {
+
+      const closing = this.db.ref(`${this.root}/users`).on("value", profileSnapshot => {
+
+        let users = [];
+        let userProfiles = {};
+
+        if (profileSnapshot !== undefined){
+          profileSnapshot.forEach((snap) => {
+            const val = snap.val()
+            userProfiles[snap.key] = {
+              displayName: val.displayName,
+              permissions: val.permissions || {},
+              profilePicture: val.profilePicture,
+            }
           });
-        });
-      }
-      callback(users);
+
+          if (snapshot !== undefined){
+            snapshot.forEach((snap) => {
+              const val = snap.val()
+              users.push({
+                key: snap.key,
+                paid: val.paid,
+                showPoints: val.showPoints,
+                active: val.active === undefined ? true : val.active,
+                points: val.points,
+                displayName: userProfiles[snap.key] === undefined ? '' : userProfiles[snap.key].displayName,
+                permissions: userProfiles[snap.key] === undefined ? {} : userProfiles[snap.key].permissions,
+                profilePicture: userProfiles[snap.key] === undefined ? undefined : userProfiles[snap.key].profilePicture,
+              });
+            });
+          }
+        }
+        callback(users);
+      });
+      return () => { closing() };
     });
   }
 
+
   onCurrentStageChanged(callback) {
-    return this.db.ref(`${this.root}/competition/currentstage`).on("value", snapshot => {
+    return this.db.ref(`${this.root}/pronos/${this.prono}/competition/currentstage`).on("value", snapshot => {
       if(snapshot !== undefined){
         callback(snapshot.val());
       }
@@ -65,7 +85,7 @@ class FirebaseAPI {
   }
 
   onGroupstageChanged(callback) {
-    return this.db.ref(`${this.root}/competition/stages/groupstage`).on("value", snapshot => {
+    return this.db.ref(`${this.root}/pronos/${this.prono}/competition/stages/groupstage`).on("value", snapshot => {
       let groupstage = [];
       if (snapshot !== undefined){
         snapshot.forEach((snap) => {
@@ -84,7 +104,7 @@ class FirebaseAPI {
   }
 
   onKnockoutstageChanged(callback) {
-    return this.db.ref(`${this.root}/competition/stages`).on("value", snapshot => {
+    return this.db.ref(`${this.root}/pronos/${this.prono}/competition/stages`).on("value", snapshot => {
       let knockoutstage = [];
       if (snapshot !== undefined){
         snapshot.forEach((snap) => {
@@ -102,7 +122,7 @@ class FirebaseAPI {
   }
 
   onMatchesChanged(callback) {
-    return this.db.ref(`${this.root}/competition/matches`).on("value", snapshot => {
+    return this.db.ref(`${this.root}/pronos/${this.prono}/competition/matches`).on("value", snapshot => {
       let matches = {};
       if (snapshot !== undefined){
         snapshot.forEach((snap) => {
@@ -127,7 +147,7 @@ class FirebaseAPI {
   }
 
   onTeamsChanged(callback) {
-    return this.db.ref(`${this.root}/competition/teams`).on("value", snapshot => {
+    return this.db.ref(`${this.root}/pronos/${this.prono}/competition/teams`).on("value", snapshot => {
       let teams = {};
       if (snapshot !== undefined){
         snapshot.forEach((snap) => {
@@ -147,7 +167,7 @@ class FirebaseAPI {
   onUserPronoMatchesChanged(user, callback) {
 
     if (user !== undefined){
-      return this.db.ref(`${this.root}/userpronos/${user.key}/matches`).on("value", snapshot => {
+      return this.db.ref(`${this.root}/pronos/${this.prono}/userpronos/${user.key}/matches`).on("value", snapshot => {
         let matches = {};
         if (snapshot !== undefined){
           snapshot.forEach((snap) => {
@@ -170,7 +190,7 @@ class FirebaseAPI {
   onUserPronoStageTeamsChanged(user, callback) {
 
     if (user !== undefined){
-      return this.db.ref(`${this.root}/userpronos/${user.key}/knockoutstageteams`).on("value", snapshot => {
+      return this.db.ref(`${this.root}/pronos/${this.prono}/userpronos/${user.key}/knockoutstageteams`).on("value", snapshot => {
         let stageTeams = {};
         if (snapshot !== undefined){
           snapshot.forEach((snap) => {
@@ -192,7 +212,7 @@ class FirebaseAPI {
   onUserPronoGroupWinnersChanged(user, callback) {
 
     if (user !== undefined){
-      return this.db.ref(`${this.root}/userpronos/${user.key}/groupwinners`).on("value", snapshot => {
+      return this.db.ref(`${this.root}/pronos/${this.prono}/userpronos/${user.key}/groupwinners`).on("value", snapshot => {
         let groupWinners = {};
         if (snapshot !== undefined){
           snapshot.forEach((snap) => {
@@ -214,7 +234,7 @@ class FirebaseAPI {
 
   onUserPronoTotalGoalsChanged(user, callback) {
     if (user !== undefined){
-      return this.db.ref(`${this.root}/userpronos/${user.key}/totalgoals`).on("value", snapshot => {
+      return this.db.ref(`${this.root}/pronos/${this.prono}/userpronos/${user.key}/totalgoals`).on("value", snapshot => {
         let goals = -1
         if (snapshot !== undefined){
           goals = snapshot.val()
@@ -229,7 +249,7 @@ class FirebaseAPI {
 
   onUserPronoHomeTeamResultChanged(user, callback) {
     if (user !== undefined){
-      return this.db.ref(`${this.root}/userpronos/${user.key}/hometeamresult`).on("value", snapshot => {
+      return this.db.ref(`${this.root}/pronos/${this.prono}/userpronos/${user.key}/hometeamresult`).on("value", snapshot => {
         let stage = '-1'
         if (snapshot !== undefined){
           stage = snapshot.val()
@@ -243,7 +263,7 @@ class FirebaseAPI {
   }
 
   onHomeTeamResultChanged(callback) {
-    return this.db.ref(`${this.root}/competition/hometeamresult`).on("value", snapshot => {
+    return this.db.ref(`${this.root}/pronos/${this.prono}/competition/hometeamresult`).on("value", snapshot => {
       let stage = '-1'
       if (snapshot !== undefined){
         stage = snapshot.val()
@@ -253,7 +273,7 @@ class FirebaseAPI {
   }
 
   onDeadlinesChanged(callback) {
-    return this.db.ref(`${this.root}/deadlines`).on("value", snapshot => {
+    return this.db.ref(`${this.root}/pronos/${this.prono}/deadlines`).on("value", snapshot => {
       let deadlines = {
         'groupstage': Date.now()-100000,
         '16': Date.now()-100000,
@@ -272,7 +292,7 @@ class FirebaseAPI {
   updateMatch(match, update) {
     var updates = {};
     for (const [path, value] of Object.entries(update)) {
-      updates[`${this.root}/competition/matches/${match.key}/${path}`] = value
+      updates[`${this.root}/pronos/${this.prono}/competition/matches/${match.key}/${path}`] = value
     }
     return this.db.ref().update(updates)
   }
@@ -282,40 +302,40 @@ class FirebaseAPI {
     teams.forEach((team) => {
       points[team.key] = parseFloat(team.points);
     });
-    return this.db.ref(`${this.root}/competition/stages/groupstage/${group.key}/points`).set(points)
+    return this.db.ref(`${this.root}/pronos/${this.prono}/competition/stages/groupstage/${group.key}/points`).set(points)
   }
 
   updateMatchProno(user, match, update) {
     var updates = {};
     for (const [path, value] of Object.entries(update)) {
-      updates[`${this.root}/userpronos/${user.key}/matches/${match.key}/${path}`] = value
+      updates[`${this.root}/pronos/${this.prono}/userpronos/${user.key}/matches/${match.key}/${path}`] = value
     }
     return this.db.ref().update(updates)
   }
 
   updateGroupWinnersProno(user, group, groupwinners) {
     const obj = {1: groupwinners[1].key, 2: groupwinners[2].key}
-    return this.db.ref(`${this.root}/userpronos/${user.key}/groupwinners/${group.key}`).set(obj)
+    return this.db.ref(`${this.root}/pronos/${this.prono}/userpronos/${user.key}/groupwinners/${group.key}`).set(obj)
   }
 
   updateStageTeamsProno(user, stage, teams) {
     const teamKeys = teams.map((team) => {return team.key;})
-    return this.db.ref(`${this.root}/userpronos/${user.key}/knockoutstageteams/${stage.key}`).set(teamKeys)
+    return this.db.ref(`${this.root}/pronos/${this.prono}/userpronos/${user.key}/knockoutstageteams/${stage.key}`).set(teamKeys)
   }
 
   updateTotalGoalsProno(user, goals) {
-    return this.db.ref(`${this.root}/userpronos/${user.key}/totalgoals`).set(goals)
+    return this.db.ref(`${this.root}/pronos/${this.prono}/userpronos/${user.key}/totalgoals`).set(goals)
   }
 
   updateTeamResultProno(user, stage) {
-    return this.db.ref(`${this.root}/userpronos/${user.key}/hometeamresult`).set(stage)
+    return this.db.ref(`${this.root}/pronos/${this.prono}/userpronos/${user.key}/hometeamresult`).set(stage)
   }
 
   updateDisplayName(user, displayName) {
     return this.db.ref(`${this.root}/users/${user.key}/displayName`).set(displayName)
   }
   updatePaid(user, paid) {
-    return this.db.ref(`${this.root}/users/${user.key}/paid`).set(paid)
+    return this.db.ref(`${this.root}/pronos/${this.prono}/users/${user.key}/paid`).set(paid)
   }
   updateActive(user, active) {
     return this.db.ref(`${this.root}/users/${user.key}/active`).set(active)
@@ -339,11 +359,11 @@ class FirebaseAPI {
   }
 
   updateCurrentStage(currentStage) {
-    return this.db.ref(`${this.root}/competition/currentstage`).set(currentStage);
+    return this.db.ref(`${this.root}/pronos/${this.prono}/competition/currentstage`).set(currentStage);
   }
 
   updateHomeTeamResult(result) {
-    return this.db.ref(`${this.root}/competition/hometeamresult`).set(result);
+    return this.db.ref(`${this.root}/pronos/${this.prono}/competition/hometeamresult`).set(result);
   }
 
   _get_iso_icon(iso_code){

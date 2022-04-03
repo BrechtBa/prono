@@ -31,6 +31,9 @@ const makeDisplayName = (email) => {
 
 
 function UserProvider(props){
+  const root = 'pronogroupid1'
+  const prono = 'ek2021'
+
   const [user, setUser] = useState(null)
 
   useEffect(() => {
@@ -38,33 +41,41 @@ function UserProvider(props){
     const unsubscribe = auth.onAuthStateChanged(async userAuth => {
 
       if (userAuth) {
-        const unsubscribe = db.ref(`pronogroupid1/users/${userAuth.uid}`).on("value", snapshot => {
+        const unsubscribe = db.ref(`${root}/users/${userAuth.uid}`).on("value", snapshot => {
 
-          let val = snapshot.val()
-          if(val === null){
-            val = {
+          let userprofile = snapshot.val()
+          if(userprofile === null){
+            userprofile = {
               displayName: makeDisplayName(userAuth.email),
               profilePicture: '',
-              paid: false,
-              showPoints: false,
-              active: true,
-              points: {},
               permissions: {}
             }
-            db.ref(`pronogroupid1/users/${userAuth.uid}`).set(val)
+            db.ref(`${root}/users/${userAuth.uid}`).set(userprofile)
           }
+          const unsubscribe = db.ref(`${root}/pronos/${prono}/userpoints/${userAuth.uid}`).on("value", snapshot => {
+            let userpoints = snapshot.val()
+            if(userpoints === null){
+              userpoints = {
+                active: true,
+                paid: false,
+                showPoints: true,
+                points: {}
+              }
+              db.ref(`${root}/pronos/${prono}/userpoints/${userAuth.uid}`).set(userprofile)
+            }
 
-          setUser({
-            key: userAuth.uid,
-            email: userAuth.email,
-            displayName: val.displayName || makeDisplayName(userAuth.email),
-            profilePicture: val.profilePicture || '',
-            paid: val.paid || false,
-            showPoints: val.showPoints || false,
-            active: true,
-            points: val.points || {},
-            permissions: val.permissions || {}
+            setUser({
+              key: userAuth.uid,
+              email: userAuth.email,
+              displayName: userprofile.displayName || makeDisplayName(userAuth.email),
+              profilePicture: userprofile.profilePicture || '',
+              permissions: userprofile.permissions || {},
+              active: userpoints.active || true,
+              paid: userpoints.paid || false,
+              showPoints: userpoints.showPoints || true
+            })
           })
+          return () => { unsubscribe() }
         })
         return () => { unsubscribe() }
       }
