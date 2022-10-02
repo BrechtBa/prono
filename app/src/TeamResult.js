@@ -8,6 +8,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import Button from '@material-ui/core/Button';
 
 import APIContext from './APIProvider.js';
+import PronoContext from './PronoProvider.js';
 
 import { Disabled, TeamName, TeamIcon } from './MatchUtils.js';
 
@@ -36,13 +37,14 @@ export function TeamResultProno(props) {
   }, [user, stage]);
 
   const api = useContext(APIContext);
+  const prono = useContext(PronoContext);
 
   const handleChange = (e) => {
     setDialogStage(e.target.value);
   }
 
   const saveTeamResult = () => {
-    api.updateTeamResultProno(user, dialogStage)
+    api.updateTeamResultProno(prono, user, dialogStage)
     setDialogOpen(false)
   }
 

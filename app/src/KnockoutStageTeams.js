@@ -8,6 +8,8 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 
 import APIContext from './APIProvider.js';
+import PronoContext from './PronoProvider.js';
+
 import { TeamName, TeamIcon, Disabled } from './MatchUtils.js';
 
 
@@ -129,9 +131,10 @@ function KnockoutStageTeamsPronoStage(props) {
   const [editTeamsDialogOpen, setEditTeamsDialogOpen] = useState(false)
 
   const api = useContext(APIContext);
+  const prono = useContext(PronoContext);
 
   const saveStageTeams = (selectedTeams) => {
-    api.updateStageTeamsProno(user, pronoStage, selectedTeams)
+    api.updateStageTeamsProno(prono, user, pronoStage, selectedTeams)
   }
 
 

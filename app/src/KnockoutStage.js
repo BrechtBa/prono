@@ -4,6 +4,8 @@ import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 
 import APIContext from './APIProvider.js';
+import PronoContext from './PronoProvider.js';
+
 import { TeamName, TeamIcon, EditScoreDialog, Disabled } from './MatchUtils.js';
 
 
@@ -170,10 +172,11 @@ export function KnockoutStage(props) {
   }
 
   const api = useContext(APIContext);
+  const prono = useContext(PronoContext);
 
   const saveMatch = (match, score1, score2, penalty1, penalty2, team1, team2) => {
     console.log(team1)
-    api.updateMatch(match, {score1: score1, score2: score2, penalty1: penalty1, penalty2: penalty2, team1: team1, team2: team2})
+    api.updateMatch(prono, match, {score1: score1, score2: score2, penalty1: penalty1, penalty2: penalty2, team1: team1, team2: team2})
   }
 
   return (
@@ -219,9 +222,10 @@ export function KnockoutStageProno(props) {
   }
 
   const api = useContext(APIContext);
+  const prono = useContext(PronoContext);
 
   const saveMatch = (match, score1, score2, penalty1, penalty2) => {
-    api.updateMatchProno(user, match, {score1: score1, score2: score2, penalty1: penalty1, penalty2: penalty2})
+    api.updateMatchProno(prono, user, match, {score1: score1, score2: score2, penalty1: penalty1, penalty2: penalty2})
   }
 
   return (

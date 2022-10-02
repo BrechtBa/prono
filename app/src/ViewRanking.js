@@ -8,7 +8,7 @@ import Divider from '@material-ui/core/Divider';
 
 import { UserContext } from "./UserProvider.js";
 import APIContext from './APIProvider.js';
-
+import PronoContext from './PronoProvider.js';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -107,15 +107,16 @@ function User(props){
 function ViewRanking(props) {
 
   const api = useContext(APIContext);
+  const prono = useContext(PronoContext);
 
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    api.onUsersChanged(users => {
+    api.onUsersChanged(prono, users => {
       setUsers(users);
       console.log(users)
     });
-  }, [api]);
+  }, [api, prono]);
 
   const getRankedUsers = (users) => {
     let sortedUsers = JSON.parse(JSON.stringify(users.filter(user => user.active).sort((a, b) => getPoints(b) - getPoints(a))))

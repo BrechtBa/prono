@@ -7,6 +7,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 
 import APIContext from './APIProvider.js';
+import PronoContext from './PronoProvider.js';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -25,26 +26,26 @@ function ViewSettings(){
   const [homeTeamResult, setHomeTeamResult] = useState('-1')
 
   const api = useContext(APIContext);
-
+  const prono = useContext(PronoContext);
 
   useEffect(() => {
-    return api.onCurrentStageChanged(val => {
+    return api.onCurrentStageChanged(prono, val => {
       setCurrentStage(val);
     });
-  }, [api]);
+  }, [api, prono]);
 
   const handleCurrentStageChange = (e) =>{
-    api.updateCurrentStage(e.target.value)
+    api.updateCurrentStage(prono, e.target.value)
   }
 
  useEffect(() => {
-    return api.onHomeTeamResultChanged(val => {
+    return api.onHomeTeamResultChanged(prono, val => {
       setHomeTeamResult(val);
     });
-  }, [api]);
+  }, [api, prono]);
 
   const handleHomeTeamResultChange = (e) =>{
-    api.updateHomeTeamResult(e.target.value)
+    api.updateHomeTeamResult(prono, e.target.value)
   }
 
   const classes = useStyles();

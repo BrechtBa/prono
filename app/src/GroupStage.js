@@ -7,6 +7,7 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 
 import APIContext from './APIProvider.js';
+import PronoContext from './PronoProvider.js';
 import { Disabled, TeamName, TeamIcon, TeamSelect, EditScoreDialog } from './MatchUtils.js';
 
 
@@ -171,12 +172,13 @@ function GroupStageGroup(props) {
   const [groupPointsDialogOpen, setGroupPointsDialogOpen] = useState(false)
 
   const api = useContext(APIContext);
+  const prono = useContext(PronoContext);
 
   const saveMatch = (match, score1, score2, penalty1, penalty2, team1, team2) => {
-    api.updateMatch(match, {score1: score1, score2: score2, penalty1: penalty1, penalty2: penalty2, team1: team1, team2: team2})
+    api.updateMatch(prono, match, {score1: score1, score2: score2, penalty1: penalty1, penalty2: penalty2, team1: team1, team2: team2})
   }
   const saveGroupPoints = (teams) => {
-    api.updateGroupPoints(group, teams)
+    api.updateGroupPoints(prono, group, teams)
   }
 
   const classes = useStyles();
@@ -278,12 +280,13 @@ function GroupstagePronoGroup(props) {
   const [groupwinnersDialogOpen, setGroupwinnersDialogOpen] = useState(false)
 
   const api = useContext(APIContext);
+  const prono = useContext(PronoContext);
 
   const saveMatch = (match, score1, score2, penalty1, penalty2) => {
-    api.updateMatchProno(user, match, {score1: score1, score2: score2})
+    api.updateMatchProno(prono, user, match, {score1: score1, score2: score2})
   }
   const saveGroupwinners = (groupwinners) => {
-    api.updateGroupWinnersProno(user, group, groupwinners)
+    api.updateGroupWinnersProno(prono, user, group, groupwinners)
   }
 
   const classes = useStyles();

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 
 import APIContext from './APIProvider.js';
+import PronoContext from './PronoProvider.js';
 
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -121,9 +122,10 @@ function ViewRules(){
   const [knockoutstages, setKnockoutstages] = useState([]);
 
   const api = useContext(APIContext);
+  const prono = useContext(PronoContext);
 
   useEffect(() => {
-    return api.onRulesChanged(val => {
+    return api.onRulesChanged(prono, val => {
       const rules = {
         groupstage: val.groupstage || {},
         groupstageWinners: val.groupstagewinners || {},
@@ -137,21 +139,21 @@ function ViewRules(){
       setRules(rules);
       console.log('loaded rules', rules)
     });
-  }, [api]);
+  }, [api, prono]);
 
   useEffect(() => {
-    return api.onGroupstageChanged(val => {
+    return api.onGroupstageChanged(prono, val => {
       setGroupstage(val);
       console.log('loaded groupstage', val)
     });
-  }, [api]);
+  }, [api, prono]);
 
   useEffect(() => {
-    return api.onKnockoutstageChanged(val => {
+    return api.onKnockoutstageChanged(prono, val => {
       setKnockoutstages(val);
       console.log('loaded knockoutstages', val)
     });
-  }, [api]);
+  }, [api, prono]);
 
   const classes = useStyles();
 

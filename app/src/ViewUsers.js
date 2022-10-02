@@ -8,6 +8,7 @@ import Dialog from '@material-ui/core/Dialog';
 import Button from '@material-ui/core/Button';
 
 import APIContext from './APIProvider.js';
+import PronoContext from './PronoProvider.js';
 import ViewProno from './ViewProno.js'
 
 
@@ -23,6 +24,8 @@ function User(props){
   const user = props.user;
 
   const api = useContext(APIContext);
+  const prono = useContext(PronoContext);
+
   const [pronoDialogOpen, setPronoDialogOpen] = useState(false);
 
   const getFirstLetter = (user) => {
@@ -42,9 +45,9 @@ function User(props){
             <div style={{width: '150px'}}>{user.displayName}</div>
           </div>
           <div style={{display: 'flex', alignItems: 'center', marginRight: '10px', marginBottom: '5px'}}>
-            <div><Checkbox checked={user.active} onChange={(e) => api.updateActive(user, !user.active)}/> Active</div>
-            <div><Checkbox checked={user.paid} onChange={(e) => api.updatePaid(user, !user.paid)}/> Paid</div>
-            <div><Checkbox checked={user.showPoints} onChange={(e) => api.updateShowPoints(user, !user.showPoints)}/> Points</div>
+            <div><Checkbox checked={user.active} onChange={(e) => api.updateActive(prono, user, !user.active)}/> Active</div>
+            <div><Checkbox checked={user.paid} onChange={(e) => api.updatePaid(prono, user, !user.paid)}/> Paid</div>
+            <div><Checkbox checked={user.showPoints} onChange={(e) => api.updateShowPoints(prono, user, !user.showPoints)}/> Points</div>
             <div><Checkbox checked={user.permissions.editor} onChange={(e) => api.updatePermissionEditor(user, !user.permissions.editor)}/> Editor</div>
           </div>
           <div style={{display: 'flex', alignItems: 'center', marginRight: '10px', marginBottom: '5px'}}>
@@ -65,15 +68,16 @@ function User(props){
 function ViewUsers(props) {
 
   const api = useContext(APIContext);
+  const prono = useContext(PronoContext);
 
   const [users, setUsers] = useState([]);
   const [filterActive, setFilterActive] = useState(true);
 
   useEffect(() => {
-    api.onUsersChanged(users => {
+    api.onUsersChanged(prono, users => {
       setUsers(users);
     });
-  }, [api]);
+  }, [api, prono]);
 
   const classes = useStyles();
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 
 import APIContext from './APIProvider.js';
+import PronoContext from './PronoProvider.js';
 import { UserContext } from "./UserProvider.js";
 import { GroupstageProno } from './GroupStage.js';
 import { KnockoutStageProno } from './KnockoutStage.js';
@@ -145,6 +146,7 @@ const getFullStageTeams = (teams, stageTeamsProno) => {
 function ViewProno(props) {
   const user = useContext(UserContext);
   const api = useContext(APIContext);
+  const prono = useContext(PronoContext);
 
   const [teams, setTeams] = useState({});
   const [matches, setMatches] = useState({});
@@ -165,81 +167,81 @@ function ViewProno(props) {
   console.log(currentStage)
 
   useEffect(() => {
-    return api.onTeamsChanged(val => {
+    return api.onTeamsChanged(prono, val => {
       setTeams(val);
       console.log('loaded teams', val)
     });
-  }, [api]);
+  }, [api, prono]);
 
   useEffect(() => {
-    return api.onMatchesChanged(val => {
+    return api.onMatchesChanged(prono, val => {
       setMatches(val);
       console.log('loaded matches', val)
     });
-  }, [api]);
+  }, [api, prono]);
 
   useEffect(() => {
-    return api.onGroupstageChanged(val => {
+    return api.onGroupstageChanged(prono, val => {
       setGroupstage(val);
       console.log('loaded groupstage', val)
     });
-  }, [api]);
+  }, [api, prono]);
 
   useEffect(() => {
-    return api.onKnockoutstageChanged(val => {
+    return api.onKnockoutstageChanged(prono, val => {
       setKnockoutstages(val);
       console.log('loaded knockoutstages', val)
     });
-  }, [api]);
+  }, [api, prono]);
 
   useEffect(() => {
-    return api.onCurrentStageChanged(val => {
+    return api.onCurrentStageChanged(prono, val => {
       setCurrentStage(val);
       console.log('loaded current stage', val)
     });
-  }, [api]);
+  }, [api, prono]);
 
   useEffect(() => {
-    return api.onUserPronoMatchesChanged(pronoUser, val => {
+    return api.onUserPronoMatchesChanged(prono, pronoUser, val => {
       setMatchesProno(val);
       console.log('loaded prono matches', val)
     });
-  }, [api, pronoUser]);
+  }, [api, prono, pronoUser]);
 
   useEffect(() => {
-    return api.onUserPronoStageTeamsChanged(pronoUser, val => {
+    return api.onUserPronoStageTeamsChanged(prono, pronoUser, val => {
       setStageTeamsProno(val);
       console.log('loaded prono stage teams', val)
     });
-  }, [api, pronoUser]);
+  }, [api, prono, pronoUser]);
 
   useEffect(() => {
-    return api.onUserPronoGroupWinnersChanged(pronoUser, val => {
+    return api.onUserPronoGroupWinnersChanged(prono, pronoUser, val => {
       setGroupWinnersProno(val);
       console.log('loaded prono groupwinners', val)
     });
-  }, [api, pronoUser]);
+  }, [api, prono, pronoUser]);
 
   useEffect(() => {
-    return api.onUserPronoTotalGoalsChanged(pronoUser, val => {
+    return api.onUserPronoTotalGoalsChanged(prono, pronoUser, val => {
       setTotalGoalsProno(val);
       console.log('loaded prono total goals', val)
     });
-  }, [api, pronoUser]);
+  }, [api, prono, pronoUser]);
 
   useEffect(() => {
-    return api.onUserPronoHomeTeamResultChanged(pronoUser, val => {
+    return api.onUserPronoHomeTeamResultChanged(prono, pronoUser, val => {
       setTeamResultProno(val);
       console.log('loaded prono team result', val)
     });
-  }, [api, pronoUser]);
+  }, [api, prono, pronoUser]);
 
   useEffect(() => {
-    return api.onDeadlinesChanged(val => {
+    return api.onDeadlinesChanged(prono, val => {
       setDeadlines(val);
       console.log('loaded deadlines', val)
     });
-  }, [api]);
+  }, [api, prono]);
 
   const groups = getFullGroupstage(groupstage, matches, teams, matchesProno, groupWinnersProno);
   const stages = getFullKnockoutStages(knockoutstages, matches, teams, matchesProno);

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 
 
 import APIContext from './APIProvider.js';
+import PronoContext from './PronoProvider.js';
 import { UserContext } from "./UserProvider.js";
 import { GroupStage } from './GroupStage.js';
 import { KnockoutStage } from './KnockoutStage.js';
@@ -82,38 +83,40 @@ function ViewResults(props) {
 
   const api = useContext(APIContext);
   const user = useContext(UserContext);
+  const prono = useContext(PronoContext);
+
   const [teams, setTeams] = useState({});
   const [matches, setMatches] = useState({});
   const [groupstage, setGroupstage] = useState([]);
   const [knockoutstages, setKnockoutstages] = useState([]);
 
   useEffect(() => {
-    return api.onTeamsChanged(val => {
+    return api.onTeamsChanged(prono, val => {
       setTeams(val);
       console.log('loaded teams', val)
     });
-  }, [api]);
+  }, [api, prono]);
 
   useEffect(() => {
-    return api.onMatchesChanged(val => {
+    return api.onMatchesChanged(prono, val => {
       setMatches(val);
       console.log('loaded matches', val)
     });
-  }, [api]);
+  }, [api, prono]);
 
   useEffect(() => {
-    return api.onGroupstageChanged(val => {
+    return api.onGroupstageChanged(prono, val => {
       setGroupstage(val);
       console.log('loaded groupstage', val)
     });
-  }, [api]);
+  }, [api, prono]);
 
   useEffect(() => {
-    return api.onKnockoutstageChanged(val => {
+    return api.onKnockoutstageChanged(prono, val => {
       setKnockoutstages(val);
       console.log('loaded knockoutstages', val)
     });
-  }, [api]);
+  }, [api, prono]);
 
 
   const groups = getFullGroupstage(groupstage, matches, teams);

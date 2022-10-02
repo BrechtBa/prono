@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { UserContext } from "./UserProvider.js";
-
+import PronoContext from './PronoProvider.js';
 import { Switch, Route, Link, useHistory } from "react-router-dom";
 
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
@@ -172,6 +172,7 @@ function PronoLayout(props) {
   const history = useHistory();
   const classes = useStyles();
   const [navigationOpen, setNavigationOpen] = useState(false);
+  const [prono, setProno] = useState('ek2021');
 
   const toggleNavigation = (open) => (event) => {
     if(open === undefined){
@@ -191,64 +192,67 @@ function PronoLayout(props) {
     return (
         <div className={classes.root}>
           <CssBaseline />
-          <AppBar position="fixed" className={classes.appBar}>
-            <Toolbar style={{display: "flex", paddingRight: "12px"}}>
+          <PronoContext.Provider value={prono}>
 
-                <IconButton edge="start" color="inherit" aria-label="open drawer" onClick={toggleNavigation()}>
-                  <MenuIcon/>
-                </IconButton>
+            <AppBar position="fixed" className={classes.appBar}>
+              <Toolbar style={{display: "flex", paddingRight: "12px"}}>
 
-              <Typography variant="h6" style={{flexGrow: 1}}  noWrap>
-                  Prono
-              </Typography>
-            </Toolbar>
-          </AppBar>
+                  <IconButton edge="start" color="inherit" aria-label="open drawer" onClick={toggleNavigation()}>
+                    <MenuIcon/>
+                  </IconButton>
 
-          <SwipeableDrawer anchor="left" className={classes.drawer} classes={{paper: classes.drawerPaper}}
-           open={navigationOpen} onClose={toggleNavigation(false)} onOpen={toggleNavigation(true)}>
-            <div onClick={(e) => showProfilePage(history)}>
-              <User user={user}/>
-            </div>
-            <Navigation isAdmin={user.permissions.admin} onNavigation={toggleNavigation}/>
+                <Typography variant="h6" style={{flexGrow: 1}}  noWrap>
+                    Prono
+                </Typography>
+              </Toolbar>
+            </AppBar>
 
-            <ListItem button>
-              <ListItemText primary={"Sign out"} onClick={() => signOut(() => {setNavigationOpen(false)})}/>
-            </ListItem>
+            <SwipeableDrawer anchor="left" className={classes.drawer} classes={{paper: classes.drawerPaper}}
+             open={navigationOpen} onClose={toggleNavigation(false)} onOpen={toggleNavigation(true)}>
+              <div onClick={(e) => showProfilePage(history)}>
+                <User user={user}/>
+              </div>
+              <Navigation isAdmin={user.permissions.admin} onNavigation={toggleNavigation}/>
 
-            <Divider/>
-            <div className={classes.version}>
-              <Version/>
-            </div>
-          </SwipeableDrawer>
+              <ListItem button>
+                <ListItemText primary={"Sign out"} onClick={() => signOut(() => {setNavigationOpen(false)})}/>
+              </ListItem>
 
-          <main className={classes.content}>
-            <Toolbar />
-            <Switch>
-              <Route path="/ranking"> <ViewRanking/> </Route>
-              <Route path="/prono"> <ViewProno/> </Route>
-              <Route path="/results"> <ViewResults/> </Route>
-              <Route path="/rules">  <ViewRules/> </Route>
-              <Route path="/profile">  <ViewProfile/> </Route>
+              <Divider/>
+              <div className={classes.version}>
+                <Version/>
+              </div>
+            </SwipeableDrawer>
 
-              <Route path="/users"> <ViewUsers /> </Route>
-              <Route path="/settings"> <ViewSettings /> </Route>
-              <Route path="/teams">
-                Users
-              </Route>
-              <Route path="/matches">
-                Users
-              </Route>
-              <Route path="/hroupstage">
-                hroupstage
-              </Route>
-              <Route path="/knockoutstage">
-                Users
-              </Route>
+            <main className={classes.content}>
+              <Toolbar />
+              <Switch>
+                <Route path="/ranking"> <ViewRanking/> </Route>
+                <Route path="/prono"> <ViewProno/> </Route>
+                <Route path="/results"> <ViewResults/> </Route>
+                <Route path="/rules">  <ViewRules/> </Route>
+                <Route path="/profile">  <ViewProfile/> </Route>
 
-              <Route path="/"> <ViewRanking/> </Route>
+                <Route path="/users"> <ViewUsers /> </Route>
+                <Route path="/settings"> <ViewSettings /> </Route>
+                <Route path="/teams">
+                  Users
+                </Route>
+                <Route path="/matches">
+                  Users
+                </Route>
+                <Route path="/hroupstage">
+                  hroupstage
+                </Route>
+                <Route path="/knockoutstage">
+                  Users
+                </Route>
 
-            </Switch>
-          </main>
+                <Route path="/"> <ViewRanking/> </Route>
+
+              </Switch>
+            </main>
+          </PronoContext.Provider>
         </div>
     );
   }
