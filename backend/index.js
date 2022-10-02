@@ -50,8 +50,8 @@ const db = admin.database();
 //});
 
 
-function setUserMatchesPoints(pronoGroupId, userId, matches, groupstageMatches){
-    db.ref('/'+pronoGroupId+'/userpronos/'+userId+'/matches').once('value', (pronoSnapshot) => {
+function setUserMatchesPoints(pronoGroupId, pronoId, userId, matches, groupstageMatches){
+    db.ref('/'+pronoGroupId+'/pronos/'+pronoId+'/userpronos/'+userId+'/matches').once('value', (pronoSnapshot) => {
 
         var groupstagePoints = 0
         var knockoutstagePoints = 0
@@ -102,31 +102,31 @@ function setUserMatchesPoints(pronoGroupId, userId, matches, groupstageMatches){
         });
 
         // write points to the database
-        db.ref('/'+pronoGroupId+'/users/'+userId+'/points/groupstage').set(groupstagePoints);
-        db.ref('/'+pronoGroupId+'/users/'+userId+'/points/knockoutstage').set(knockoutstagePoints);
+        db.ref('/'+pronoGroupId+'/pronos/'+pronoId+'/userpoints/'+userId+'/points/groupstage').set(groupstagePoints);
+        db.ref('/'+pronoGroupId+'/pronos/'+pronoId+'/userpoints/'+userId+'/points/knockoutstage').set(knockoutstagePoints);
         console.log("set groupstage points for user "+userId);
         console.log("set knockoutstage points for user "+userId);
     });
 }
 
 
-function setUserTotalGoalsPoints(pronoGroupId, userId){
-    db.ref('/'+pronoGroupId+'/competition/totalgoals').once('value').then( snapshot => {
-        db.ref('/'+pronoGroupId+'/userpronos/'+userId+'/totalgoals').once('value').then(function(pronoSnapshot){
+function setUserTotalGoalsPoints(pronoGroupId, pronoId, userId){
+    db.ref('/'+pronoGroupId+'/pronos/'+pronoId+'/competition/totalgoals').once('value').then( snapshot => {
+        db.ref('/'+pronoGroupId+'/pronos/'+pronoId+'/userpronos/'+userId+'/totalgoals').once('value').then(function(pronoSnapshot){
             var points = 0
             if(pronoSnapshot.val() > 0 && snapshot.val() > 0){
                 points = Math.max(0, rules.totalgoals.correct - Math.abs(pronoSnapshot.val()-snapshot.val())*rules.totalgoals.error)
             }
-            db.ref('/'+pronoGroupId+'/users/'+userId+'/points/totalgoals').set(points);
+            db.ref('/'+pronoGroupId+'/pronos/'+pronoId+'/userpoints/'+userId+'/points/totalgoals').set(points);
             console.log("set totalgoals points for user "+userId);
         });
     });
 }
 
 
-function setUserGroupWinnersPoints(pronoGroupId, userId){
-    db.ref('/'+pronoGroupId+'/competition/stages/groupstage').once('value').then( snapshot => {
-        db.ref('/'+pronoGroupId+'/userpronos/'+userId+'/groupwinners').once('value').then(function(pronoSnapshot){
+function setUserGroupWinnersPoints(pronoGroupId, pronoId, userId){
+    db.ref('/'+pronoGroupId+'/pronos/'+pronoId+'/competition/stages/groupstage').once('value').then( snapshot => {
+        db.ref('/'+pronoGroupId+'/pronos/'+pronoId+'/userpronos/'+userId+'/groupwinners').once('value').then(function(pronoSnapshot){
             var points = 0;
             snapshot.forEach(function(group){
                 var teams = [];
@@ -149,14 +149,14 @@ function setUserGroupWinnersPoints(pronoGroupId, userId){
                 }
             });
 
-            db.ref('/'+pronoGroupId+'/users/'+userId+'/points/groupwinners').set(points);
+            db.ref('/'+pronoGroupId+'/pronos/'+pronoId+'/userpoints/'+userId+'/points/groupwinners').set(points);
             console.log("set groupwinners points for user "+userId);
         });
     });
 }
 
 
-function setUserKnockoutStageTeamsPoints(pronoGroupId, userId, stageTeams){
+function setUserKnockoutStageTeamsPoints(pronoGroupId, pronoId, userId, stageTeams){
     // remove the largest stage
     var largest = 0
     for(var key in stageTeams){
@@ -172,7 +172,7 @@ function setUserKnockoutStageTeamsPoints(pronoGroupId, userId, stageTeams){
     }
     var stageTeams = tempstageteams;
 
-    db.ref('/'+pronoGroupId+'/userpronos/'+userId+'/knockoutstageteams').once('value').then(function(pronoSnapshot){
+    db.ref('/'+pronoGroupId+'/pronos/'+pronoId+'/userpronos/'+userId+'/knockoutstageteams').once('value').then(function(pronoSnapshot){
         var points = 0;
         pronoSnapshot.forEach(function(stage){
             if(stageTeams[stage.key]){
@@ -183,20 +183,20 @@ function setUserKnockoutStageTeamsPoints(pronoGroupId, userId, stageTeams){
                 });
             }
         });
-        db.ref('/'+pronoGroupId+'/users/'+userId+'/points/knockoutstageteams').set(points);
+        db.ref('/'+pronoGroupId+'/pronos/'+pronoId+'/userpoints/'+userId+'/points/knockoutstageteams').set(points);
         console.log("set knockoutstageteams points for user "+userId);
         return null;
     });
 }
 
 
-function setUserHomeTeamResultPoints(pronoGroupId, userId, stage){
-    db.ref('/'+pronoGroupId+'/userpronos/'+userId+'/hometeamresult').once('value').then(function(pronoSnapshot){
+function setUserHomeTeamResultPoints(pronoGroupId, pronoId, userId, stage){
+    db.ref('/'+pronoGroupId+'/pronos/'+pronoId+'/userpronos/'+userId+'/hometeamresult').once('value').then(function(pronoSnapshot){
         var points = 0
         if(stage == pronoSnapshot.val() && (stage > 0 || stage == 'groupstage')){
             points = rules.hometeamresult[stage]
         }
-        db.ref('/'+pronoGroupId+'/users/'+userId+'/points/hometeamresult').set(points);
+        db.ref('/'+pronoGroupId+'/pronos/'+pronoId+'/userpoints/'+userId+'/points/hometeamresult').set(points);
         console.log("set hometeamresult points for user "+userId);
     });
 }
@@ -206,7 +206,7 @@ function setUserHomeTeamResultPoints(pronoGroupId, userId, stage){
 // Helpers
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function getMatches(pronoGroupId){
-    matchesPromise = db.ref('/'+pronoGroupId+'/competition/matches').once('value').then( snapshot => {
+    matchesPromise = db.ref('/'+pronoGroupId+'/pronos/'+pronoId+'/competition/matches').once('value').then( snapshot => {
         return snapshot;
     });
     return matchesPromise;
@@ -214,7 +214,7 @@ function getMatches(pronoGroupId){
 
 
 function getGroupstageMatches(pronoGroupId){
-    matchesPromise = db.ref('/'+pronoGroupId+'/competition/stages/groupstage').once('value').then( snapshot => {
+    matchesPromise = db.ref('/'+pronoGroupId+'/pronos/'+pronoId+'/competition/stages/groupstage').once('value').then( snapshot => {
         var matches = []
         snapshot.forEach( function(group){
             group.child('matches').forEach(function(match){
@@ -229,8 +229,8 @@ function getGroupstageMatches(pronoGroupId){
 
 function getKnockoutstageTeams(pronoGroupId){
 
-    stageTeamsPromise = db.ref('/'+pronoGroupId+'/competition/matches').once('value').then(function(matchesSnapshot){
-        stageTeamsPromise = db.ref('/'+pronoGroupId+'/competition/stages').once('value').then(function(snapshot){
+    stageTeamsPromise = db.ref('/'+pronoGroupId+'/pronos/'+pronoId+'/competition/matches').once('value').then(function(matchesSnapshot){
+        stageTeamsPromise = db.ref('/'+pronoGroupId+'/pronos/'+pronoId+'/competition/stages').once('value').then(function(snapshot){
 
             var stages = []
             var stageTeams = {}
@@ -278,8 +278,8 @@ function getKnockoutstageTeams(pronoGroupId){
 }
 
 
-function setTotalGoals(pronoGroupId){
-    db.ref('/'+pronoGroupId+'/competition/matches').once('value').then( snapshot => {
+function setTotalGoals(pronoGroupId, pronoId){
+    db.ref('/'+pronoGroupId+'/pronos/'+pronoId+'/competition/matches').once('value').then( snapshot => {
         totalGoals = 0
         snapshot.forEach( match => {
             score1 = parseInt(match.child('score1').val())
@@ -288,43 +288,43 @@ function setTotalGoals(pronoGroupId){
                 totalGoals += score1 + score2
             }
         });
-        db.ref('/'+pronoGroupId+'/competition/totalgoals').set(totalGoals);
+        db.ref('/'+pronoGroupId+'/pronos/'+pronoId+'/competition/totalgoals').set(totalGoals);
     });
 }
 
 
-function getTeamResult(stageTeams, teamId){
-    var stage = null
+//function getTeamResult(stageTeams, teamId){
+//    var stage = null
+//
+//    // make a sorted list of stages
+//    var stages = []
+//    for(key in stageTeams){
+//        stages.push(key)
+//    }
+//
+//    thestage = '1'
+//    if(stageTeams[thestage].indexOf(teamId) > -1){
+//        return thestage;
+//    }
+//    thestage = stages[stages.length-1]
+//    if(stageTeams[thestage].length == parseInt(thestage) && stageTeams[thestage].indexOf(teamId) < 0){
+//        return 'groupstage';
+//    }
+//
+//    for(var i=1; i<stages.length;i++){
+//        if(stageTeams[stages[i-1]].length == parseInt(stages[i-1]) && stageTeams[stages[i]].indexOf(teamId) > -1 && stageTeams[stages[i-1]].indexOf(teamId) < 0){
+//            return stages[i];
+//        }
+//    }
+//    return stage
+//}
 
-    // make a sorted list of stages
-    var stages = []
-    for(key in stageTeams){
-        stages.push(key)
-    }
 
-    thestage = '1'
-    if(stageTeams[thestage].indexOf(teamId) > -1){
-        return thestage;
-    }
-    thestage = stages[stages.length-1]
-    if(stageTeams[thestage].length == parseInt(thestage) && stageTeams[thestage].indexOf(teamId) < 0){
-        return 'groupstage';
-    }
-
-    for(var i=1; i<stages.length;i++){
-        if(stageTeams[stages[i-1]].length == parseInt(stages[i-1]) && stageTeams[stages[i]].indexOf(teamId) > -1 && stageTeams[stages[i-1]].indexOf(teamId) < 0){
-            return stages[i];
-        }
-    }
-    return stage
-}
-
-
-function getHomeTeamResult(pronoGroupId){
-    var stagePromise = db.ref('/'+pronoGroupId+'/competition/hometeam').once('value').then(function(teamId){
-        return getTeamResult(pronoGroupId, teamId)
-    })
-}
+//function getHomeTeamResult(pronoGroupId, pronoId){
+//    var stagePromise = db.ref('/'+pronoGroupId+'/pronos/'+pronoId+'/competition/hometeam').once('value').then(function(teamId){
+//        return getTeamResult(pronoGroupId, pronoId, teamId)
+//    })
+//}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -332,56 +332,58 @@ function getHomeTeamResult(pronoGroupId){
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 const pronoGroupId = 'pronogroupid1';
+const pronoId = 'ek2021';
 
-totalGoalsChanged = db.ref(`/${pronoGroupId}/competition/totalgoals`).on("value", snapshot => {
-    admin.database().ref(`/${pronoGroupId}/users`).once('value', snapshot => {
+
+totalGoalsChanged = db.ref(`/${pronoGroupId}/pronos/${pronoId}/competition/totalgoals`).on("value", snapshot => {
+    admin.database().ref(`/${pronoGroupId}/pronos/${pronoId}/userpoints`).once('value', snapshot => {
         snapshot.forEach( user => {
-            setUserTotalGoalsPoints(pronoGroupId, user.key)
+            setUserTotalGoalsPoints(pronoGroupId, pronoId, user.key)
         });
     });
     return null;
 });
 
 
-teamPointsChanged = db.ref(`/${pronoGroupId}/competition/stages/groupstage`).on("value", (snapshot) => {
-    admin.database().ref(`/${pronoGroupId}/users`).once('value', (snapshot) => {
+teamPointsChanged = db.ref(`/${pronoGroupId}/pronos/${pronoId}/competition/stages/groupstage`).on("value", (snapshot) => {
+    admin.database().ref(`/${pronoGroupId}/pronos/${pronoId}/userpoints`).once('value', (snapshot) => {
         snapshot.forEach( user => {
-            setUserGroupWinnersPoints(pronoGroupId, user.key)
+            setUserGroupWinnersPoints(pronoGroupId, pronoId, user.key)
         });
     });
     return null;
 });
 
 
-matchChanged = db.ref(`/${pronoGroupId}/competition/matches`).on("value", (matches) => {
+matchChanged = db.ref(`/${pronoGroupId}/pronos/${pronoId}/competition/matches`).on("value", (matches) => {
 
-  admin.database().ref(`/${pronoGroupId}/users`).once('value', users => {
+  admin.database().ref(`/${pronoGroupId}/pronos/${pronoId}/userpoints`).once('value', users => {
 
     // update knockoutstage teams points
     getKnockoutstageTeams(pronoGroupId).then((stageTeams) => {
       users.forEach(user => {
-          setUserKnockoutStageTeamsPoints(pronoGroupId, user.key, stageTeams)
+          setUserKnockoutStageTeamsPoints(pronoGroupId, pronoId, user.key, stageTeams)
       });
     });
 
     // update matches points
     getGroupstageMatches(pronoGroupId).then((groupstageMatches) => {
       users.forEach((user) => {
-        setUserMatchesPoints(pronoGroupId, user.key, matches, groupstageMatches);
+        setUserMatchesPoints(pronoGroupId, pronoId, user.key, matches, groupstageMatches);
       });
     });
 
     // set total goals
-    setTotalGoals(pronoGroupId);
+    setTotalGoals(pronoGroupId, pronoId);
 
   });
 });
 
 
-homeTeamResultChanged = db.ref(`/${pronoGroupId}/competition/hometeamresult`).on('value', (snapshot) => {
-    admin.database().ref(`/${pronoGroupId}/users`).once('value', (users) => {
+homeTeamResultChanged = db.ref(`/${pronoGroupId}/pronos/${pronoId}/competition/hometeamresult`).on('value', (snapshot) => {
+    admin.database().ref(`/${pronoGroupId}/pronos/${pronoId}/userpoints`).once('value', (users) => {
         users.forEach( user => {
-            setUserHomeTeamResultPoints(pronoGroupId, user.key, snapshot.val())
+            setUserHomeTeamResultPoints(pronoGroupId, pronoId, user.key, snapshot.val())
         });
     });
     return null;
