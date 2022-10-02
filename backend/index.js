@@ -205,7 +205,7 @@ function setUserHomeTeamResultPoints(pronoGroupId, pronoId, userId, stage){
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Helpers
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-function getMatches(pronoGroupId){
+function getMatches(pronoGroupId, pronoId){
     matchesPromise = db.ref('/'+pronoGroupId+'/pronos/'+pronoId+'/competition/matches').once('value').then( snapshot => {
         return snapshot;
     });
@@ -213,7 +213,7 @@ function getMatches(pronoGroupId){
 }
 
 
-function getGroupstageMatches(pronoGroupId){
+function getGroupstageMatches(pronoGroupId, pronoId){
     matchesPromise = db.ref('/'+pronoGroupId+'/pronos/'+pronoId+'/competition/stages/groupstage').once('value').then( snapshot => {
         var matches = []
         snapshot.forEach( function(group){
@@ -227,7 +227,7 @@ function getGroupstageMatches(pronoGroupId){
 }
 
 
-function getKnockoutstageTeams(pronoGroupId){
+function getKnockoutstageTeams(pronoGroupId, pronoId){
 
     stageTeamsPromise = db.ref('/'+pronoGroupId+'/pronos/'+pronoId+'/competition/matches').once('value').then(function(matchesSnapshot){
         stageTeamsPromise = db.ref('/'+pronoGroupId+'/pronos/'+pronoId+'/competition/stages').once('value').then(function(snapshot){
@@ -331,60 +331,96 @@ function setTotalGoals(pronoGroupId, pronoId){
 // Exports
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-const pronoGroupId = 'pronogroupid1';
-const pronoId = 'ek2021';
-
-
-totalGoalsChanged = db.ref(`/${pronoGroupId}/pronos/${pronoId}/competition/totalgoals`).on("value", snapshot => {
+const totalGoalsChangedHandler = (pronoGroupId, pronoId) => {
     admin.database().ref(`/${pronoGroupId}/pronos/${pronoId}/userpoints`).once('value', snapshot => {
-        snapshot.forEach( user => {
-            setUserTotalGoalsPoints(pronoGroupId, pronoId, user.key)
-        });
+          snapshot.forEach( user => {
+              setUserTotalGoalsPoints(pronoGroupId, pronoId, user.key)
+          });
     });
-    return null;
-});
+}
 
-
-teamPointsChanged = db.ref(`/${pronoGroupId}/pronos/${pronoId}/competition/stages/groupstage`).on("value", (snapshot) => {
+const teamPointsChangedHandler = (pronoGroupId, pronoId) => {
     admin.database().ref(`/${pronoGroupId}/pronos/${pronoId}/userpoints`).once('value', (snapshot) => {
         snapshot.forEach( user => {
             setUserGroupWinnersPoints(pronoGroupId, pronoId, user.key)
         });
     });
-    return null;
-});
+}
 
 
-matchChanged = db.ref(`/${pronoGroupId}/pronos/${pronoId}/competition/matches`).on("value", (matches) => {
+matchChangedHandler = (pronoGroupId, pronoId) => {
+    admin.database().ref(`/${pronoGroupId}/pronos/${pronoId}/competition/matches`).once('value', (matches) => {
+        admin.database().ref(`/${pronoGroupId}/pronos/${pronoId}/userpoints`).once('value', users => {
 
-  admin.database().ref(`/${pronoGroupId}/pronos/${pronoId}/userpoints`).once('value', users => {
+          // update knockoutstage teams points
+          getKnockoutstageTeams(pronoGroupId, pronoId).then((stageTeams) => {
+            users.forEach(user => {
+                setUserKnockoutStageTeamsPoints(pronoGroupId, pronoId, user.key, stageTeams)
+            });
+          });
 
-    // update knockoutstage teams points
-    getKnockoutstageTeams(pronoGroupId).then((stageTeams) => {
-      users.forEach(user => {
-          setUserKnockoutStageTeamsPoints(pronoGroupId, pronoId, user.key, stageTeams)
-      });
-    });
+          // update matches points
+          getGroupstageMatches(pronoGroupId, pronoId).then((groupstageMatches) => {
+            users.forEach((user) => {
+              setUserMatchesPoints(pronoGroupId, pronoId, user.key, matches, groupstageMatches);
+            });
+          });
 
-    // update matches points
-    getGroupstageMatches(pronoGroupId).then((groupstageMatches) => {
-      users.forEach((user) => {
-        setUserMatchesPoints(pronoGroupId, pronoId, user.key, matches, groupstageMatches);
-      });
-    });
+          // set total goals
+          setTotalGoals(pronoGroupId, pronoId);
 
-    // set total goals
-    setTotalGoals(pronoGroupId, pronoId);
-
-  });
-});
-
-
-homeTeamResultChanged = db.ref(`/${pronoGroupId}/pronos/${pronoId}/competition/hometeamresult`).on('value', (snapshot) => {
-    admin.database().ref(`/${pronoGroupId}/pronos/${pronoId}/userpoints`).once('value', (users) => {
-        users.forEach( user => {
-            setUserHomeTeamResultPoints(pronoGroupId, pronoId, user.key, snapshot.val())
         });
     });
+}
+
+homeTeamResultChangedHandler = (pronoGroupId, pronoId) => {
+    admin.database().ref(`/${pronoGroupId}/pronos/${pronoId}/competition/hometeamresult`).once('value', (hometeamresult) => {
+        admin.database().ref(`/${pronoGroupId}/pronos/${pronoId}/userpoints`).once('value', (users) => {
+            users.forEach( user => {
+                setUserHomeTeamResultPoints(pronoGroupId, pronoId, user.key, hometeamresult.val())
+            });
+        });
+    });
+}
+
+
+somethingChanged = db.ref('/').on("value", snapshot => {
+    snapshot.forEach(pronoGroup => {
+        pronoGroup.child("pronos").forEach(prono => {
+
+            console.log(`updating points for ${pronoGroup.key}/${prono.key}`);
+            totalGoalsChangedHandler(pronoGroup.key, prono.key);
+            teamPointsChangedHandler(pronoGroup.key, prono.key);
+            matchChangedHandler(pronoGroup.key, prono.key);
+            homeTeamResultChangedHandler(pronoGroup.key, prono.key);
+        });
+    })
     return null;
 });
+
+
+// there are no wildcards in the nodejs api so this does not work but would be more efficient
+//const pronoGroupId = 'pronogroupid1';
+//const pronoId = 'ek2021';
+
+//totalGoalsChanged = db.ref(`/${pronoGroupId}/pronos/${pronoId}/competition/totalgoals`).on("value", snapshot => {
+//    totalGoalsChangedHandler(pronoGroupId, pronoId)
+//    return null;
+//});
+//
+//
+//teamPointsChanged = db.ref(`/${pronoGroupId}/pronos/${pronoId}/competition/stages/groupstage`).on("value", (snapshot) => {
+//    teamPointsChangedHandler(pronoGroupId, pronoId)
+//    return null;
+//});
+//
+//
+//matchChanged = db.ref(`/${pronoGroupId}/pronos/${pronoId}/competition/matches`).on("value", (matches) => {
+//  matchChangedHandler(pronoGroupId, pronoId)
+//  return null;
+//});
+//
+//
+//homeTeamResultChanged = db.ref(`/${pronoGroupId}/pronos/${pronoId}/competition/hometeamresult`).on('value', (snapshot) => {
+//    homeTeamResultChangedHandler(pronoGroupId, pronoId)
+//});
