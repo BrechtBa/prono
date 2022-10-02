@@ -39,3 +39,10 @@ Deploy to firebase:
 ```
 firebase deploy
 ```
+
+# running the backend
+
+```
+cd backend
+node index.js
+```
