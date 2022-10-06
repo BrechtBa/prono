@@ -28,6 +28,7 @@ import ViewLogin from './ViewLogin.js';
 import ViewProfile from './ViewProfile.js';
 import ViewSettings from './ViewSettings.js';
 import ViewUsers from './ViewUsers.js';
+import ViewMatches from './ViewMatches.js';
 
 import Version from './Version.js';
 
@@ -238,11 +239,9 @@ function PronoLayout(props) {
                 <Route path="/teams">
                   Users
                 </Route>
-                <Route path="/matches">
-                  Users
-                </Route>
-                <Route path="/hroupstage">
-                  hroupstage
+                <Route path="/matches"> <ViewMatches /> </Route>
+                <Route path="/groupstage">
+                  groupstage
                 </Route>
                 <Route path="/knockoutstage">
                   Users
