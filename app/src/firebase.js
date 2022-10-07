@@ -171,7 +171,8 @@ class FirebaseAPI {
           teams[snap.key] = {
             key: snap.key,
             name: val.name,
-            abbreviation: val.abr,
+            abbreviation: val.abbreviation,
+            iso_icon: val.iso_icon,
             icon: val.icon || this._get_iso_icon(val.iso_icon),
           };
         });
@@ -396,6 +397,22 @@ class FirebaseAPI {
 
   deleteGroup(prono, group) {
     this.db.ref(`${this.root}/pronos/${prono}/competition/stages/groupstage/${group.key}`).set(null);
+  }
+
+  addTeam(prono, team) {
+    this.db.ref(`${this.root}/pronos/${prono}/competition/teams`).push(team);
+  }
+
+  updateTeam(prono, team, update) {
+    var updates = {};
+    for (const [path, value] of Object.entries(update)) {
+      updates[`${this.root}/pronos/${prono}/competition/teams/${team.key}/${path}`] = value
+    }
+    return this.db.ref().update(updates)
+  }
+
+  deleteTeam(prono, team) {
+    this.db.ref(`${this.root}/pronos/${prono}/competition/teams/${team.key}`).set(null);
   }
 
   _get_iso_icon(iso_code){
