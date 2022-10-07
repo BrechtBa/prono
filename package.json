@@ -4,13 +4,17 @@
   "description": "App to bet on soccer tournaments among friends",
   "main": "",
   "dependencies": {
+    "@emotion/react": "^11.10.4",
+    "@emotion/styled": "^11.10.4",
+    "@mui/icons-material": "^5.10.6",
+    "@mui/material": "^5.10.8",
     "event-stream": "^3.3.2",
+    "firebase": "^9.11.0",
     "firebase-admin": "^5.6.0",
-    "firebase-functions": "^0.7.5",
     "gulp": "^3.9.1",
-    "gulp-vulcanize": "^6.1.0"
+    "gulp-vulcanize": "^6.1.0",
+    "react": "^18.2.0"
   },
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

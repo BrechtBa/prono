@@ -374,6 +374,14 @@ class FirebaseAPI {
     return this.db.ref(`${this.root}/pronos/${prono}/competition/hometeamresult`).set(result);
   }
 
+  addMatch(prono, match) {
+    const newMatchRef = this.db.ref(`${this.root}/pronos/${prono}/competition/matches`).push(match)
+  }
+
+  deleteMatch(prono, match) {
+    this.db.ref(`${this.root}/pronos/${prono}/competition/matches/${match.key}`).set(null)
+  }
+
   _get_iso_icon(iso_code){
     return `images/flags/${iso_code}.png`
   }
