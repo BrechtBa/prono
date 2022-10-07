@@ -100,13 +100,21 @@ class FirebaseAPI {
           const val = snap.val()
           groupstage.push({
             key: snap.key,
-            name: snap.key,
-            matches: val.matches,
-            teams: val.teams,
-            points: val.points
+            name: val.name,
+            matches: val.matches || [],
+            teams: val.teams || [],
+            points: val.points || {}
           });
         });
       }
+      groupstage.sort((a, b) => {
+        if(a.name > b.name){
+          return 1;
+        }
+        else{
+          return -1;
+        }
+      })
       callback(groupstage);
     });
   }
@@ -375,11 +383,19 @@ class FirebaseAPI {
   }
 
   addMatch(prono, match) {
-    const newMatchRef = this.db.ref(`${this.root}/pronos/${prono}/competition/matches`).push(match)
+    this.db.ref(`${this.root}/pronos/${prono}/competition/matches`).push(match);
   }
 
   deleteMatch(prono, match) {
-    this.db.ref(`${this.root}/pronos/${prono}/competition/matches/${match.key}`).set(null)
+    this.db.ref(`${this.root}/pronos/${prono}/competition/matches/${match.key}`).set(null);
+  }
+
+  addGroup(prono, group) {
+    this.db.ref(`${this.root}/pronos/${prono}/competition/stages/groupstage`).push(group);
+  }
+
+  deleteGroup(prono, group) {
+    this.db.ref(`${this.root}/pronos/${prono}/competition/stages/groupstage/${group.key}`).set(null);
   }
 
   _get_iso_icon(iso_code){

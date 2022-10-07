@@ -68,10 +68,8 @@ function Match(props) {
     const [strDate, strTime] = strDateTime.split('  ');
     const [day, month, year] = strDate.split('-');
     const [hour, minute] = strTime.split(':');
-    console.log(day, month, year, hour, minute)
 
     const date = new Date(+year, +month - 1, +day, +hour, +minute);
-    console.log(date)
     return date;
   }
 
@@ -115,40 +113,7 @@ function Match(props) {
       </Dialog>
 
     </div>
-
   )
-}
-
-function Group(props) {
-  const group = props.group;
-  const matches = props.matches;
-  const updateMatch = props.updateMatch;
-
-  const classes = useStyles();
-  const groupMatches = []
-  group.matches.forEach((key) => {
-    const match = matches[key];
-    if(match !== undefined){
-      groupMatches.push(match);
-    }
-  })
-  console.log(groupMatches)
-
-  return (
-    <div style={{height: '100%'}}>
-      <div className={classes.group}>
-        <h4 style={{color: '#ffffff'}}>Group {group.name}</h4>
-
-        {groupMatches.map((match) => (
-          <Paper style={{padding: '5px', height: '50px', marginBottom: '5px', overflowX: 'hidden'}}>
-            <Match key={match.key} match={match} updateMatch={updateMatch}/>
-          </Paper>
-        ))}
-
-      </div>
-    </div>
-  )
-
 }
 
 
