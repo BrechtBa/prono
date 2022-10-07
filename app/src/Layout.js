@@ -173,7 +173,7 @@ function PronoLayout(props) {
   const history = useHistory();
   const classes = useStyles();
   const [navigationOpen, setNavigationOpen] = useState(false);
-  const [prono, setProno] = useState('ek2021');
+  const [prono, setProno] = useState('wk2022');
 
   const toggleNavigation = (open) => (event) => {
     if(open === undefined){
