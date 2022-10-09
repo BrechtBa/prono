@@ -15,17 +15,21 @@ import PronoContext from './PronoProvider.js';
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {},
-    teamIcon: {
-      maxWidth: '30px', maxHeight: '30px'
-    },
     team: {
       display: 'flex',
       flexDirection: 'row',
+      flexWrap: 'wrap',
       alignItems: 'center'
+    },
+    teamNumber: {
+      marginRight: '10px'
     },
     teamName: {
       display: 'flex',
       flexGrow: 2,
+    },
+    teamIcon: {
+      maxWidth: '30px', maxHeight: '30px'
     }
   })
 );
@@ -33,6 +37,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 
 function Team(props) {
+  const index = props.index;
   const team = props.team;
 
   const updateTeam = props.updateTeam;
@@ -45,22 +50,28 @@ function Team(props) {
   return (
     <div style={{height: '100%'}}>
       <div className={classes.team}>
+        <div className={classes.teamNumber}>
+          {index}
+        </div>
         <div className={classes.teamIcon}>
           <TeamIcon team={team}/>
         </div>
         <div className={classes.teamName}>
-          <TextField style={{width: '80px', marginLeft: '10px', marginRight: '10px'}} inputProps={{min: 0, style: {textAlign: 'center'}}}
-           value={team.name} onChange={(event) => updateTeam(team, {number: event.target.value})}/>
+          <TextField style={{width: '150px', marginLeft: '10px', marginRight: '10px'}}
+           value={team.name} onChange={(event) => updateTeam(team, {name: event.target.value})} label="Name"/>
         </div>
         <div className={classes.teamName}>
-          <TextField style={{width: '100px', marginLeft: '10px', marginRight: '10px'}} inputProps={{min: 0, style: {textAlign: 'center'}}}
-           value={team.abbreviation} onChange={(event) => updateTeam(team, {abbreviation: event.target.value})}/>
+          <TextField style={{width: '80px', marginLeft: '10px', marginRight: '10px'}}
+           value={team.abbreviation} onChange={(event) => updateTeam(team, {abbreviation: event.target.value})}  label="Abbreviation"/>
         </div>
         <div className={classes.teamName}>
-          <TextField style={{width: '100px', marginLeft: '10px', marginRight: '10px'}} inputProps={{min: 0, style: {textAlign: 'center'}}}
-           value={team.iso_icon} onChange={(event) => updateTeam(team, {iso_icon: event.target.value})}/>
+          <TextField style={{width: '80px', marginLeft: '10px', marginRight: '10px'}}
+           value={team.iso_icon} onChange={(event) => updateTeam(team, {iso_icon: event.target.value})} label="ISO icon"/>
         </div>
-
+        <div className={classes.teamName}>
+          <TextField style={{width: '200px', marginLeft: '10px', marginRight: '10px'}}
+           value={team.icon} onChange={(event) => updateTeam(team, {icon: event.target.value})} label="Icon"/>
+        </div>
         <div>
           <Button onClick={() => setDeleteDialogOpen(true)}>Delete</Button>
         </div>
@@ -117,12 +128,12 @@ function ViewTeams(props) {
     <div className={classes.root}>
       <h2 style={{color: '#ffffff'}}>Teams</h2>
       <div>
-        {teams.map((team) => (
-           <Paper key={team.key} style={{padding: '5px', height: '50px', marginBottom: '5px', overflowX: 'hidden'}}>
-            <Team team={team} updateTeam={updateTeam} deleteTeam={deleteTeam}/>
+        {teams.map((team, index) => (
+           <Paper key={team.key} style={{padding: '5px', marginBottom: '5px'}}>
+            <Team team={team} index={index + 1} updateTeam={updateTeam} deleteTeam={deleteTeam}/>
           </Paper>
         ))}
-        <Button onClick={() => addTeam()}>Add team</Button>
+        <Button variant="contained" onClick={() => addTeam()}>Add team</Button>
       </div>
     </div>
   );

@@ -166,7 +166,7 @@ function ViewMatches(props) {
             <Match match={match} updateMatch={updateMatch} deleteMatch={deleteMatch}/>
           </Paper>
         ))}
-        <Button onClick={() => addMatch()}>Add match</Button>
+        <Button variant="contained" onClick={() => addMatch()}>Add match</Button>
       </div>
     </div>
   );

@@ -100,7 +100,7 @@ export function TeamIcon(props) {
 
   if (team !== null){
     return (
-      <img src={team.icon} style={{width: '100%'}} alt={team.name}/>
+      <img src={team.icon_url} style={{width: '100%'}} alt={team.name}/>
     )
   }
   else{
@@ -159,6 +159,52 @@ export function TeamSelect(props){
   );
 }
 
+
+export function MatchSelect(props){
+  const label = props.label;
+  const matches = props.matches;
+  const selected = props.selected;
+  const onSelect = props.onChange
+
+  const handleChange = (e) => {
+    const key = e.target.value;
+    if (key !== -1){
+      const matchesKeys = matches.map((match) => match.key)
+      const ind = matchesKeys.indexOf(key)
+      if(ind >= 0){
+        onSelect(matches[ind]);
+      }
+      else{
+        onSelect({key: -1})
+      }
+    }
+    else{
+      onSelect({key: -1})
+    }
+  }
+
+  return (
+    <div style={{width: '100%', marginBottom: '20px'}}>
+      <InputLabel id="select-label">{label}</InputLabel>
+      <Select value={selected.key} onChange={handleChange} labelId="select-label" style={{width: '100%'}}>
+        <MenuItem value={-1}></MenuItem>
+
+        {matches.map((match) => (
+          <MenuItem key={match.key} value={match.key}>
+            <div style={{display: 'flex', alignItems: 'center'}}>
+              <div style={{marginLeft: '20px'}}>
+                {match.number}
+              </div>
+              <div style={{marginLeft: '20px'}}>
+                {match.defaultteam1} - {match.defaultteam2}
+              </div>
+            </div>
+          </MenuItem>
+        ))}
+      </Select>
+    </div>
+  );
+}
 
 export function EditScoreDialog(props){
   const match = props.match;

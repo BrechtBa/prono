@@ -54,9 +54,12 @@ const getFullGroupstage = (groupstage, matches, teams, matchesProno, groupWinner
 
     if(group.teams !== undefined){
       full_group.teams = group.teams.map((team_key) => {
-        let full_team = JSON.parse(JSON.stringify(teams[team_key]));
-        full_team.points = group.points[team_key] || 0;
-        return full_team;
+        if (teams[team_key] !== undefined){
+          let full_team = JSON.parse(JSON.stringify(teams[team_key]));
+          full_team.points = group.points[team_key] || 0;
+          return full_team;
+        }
+        return {name: '', icon: '', points: 0};
       });
     }
     else{

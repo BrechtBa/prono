@@ -8,7 +8,7 @@ import Dialog from '@material-ui/core/Dialog';
 
 import APIContext from './APIProvider.js';
 import PronoContext from './PronoProvider.js';
-
+import { TeamIcon, TeamSelect, MatchSelect } from './MatchUtils.js';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -41,6 +41,19 @@ const useStyles = makeStyles((theme: Theme) =>
       width: '90px',
       textAlign: 'left',
       overflow: 'hidden'
+    },
+    team: {
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center'
+    },
+    teamName: {
+      display: 'flex',
+      flexGrow: 2,
+      marginLeft: '10px'
+    },
+    teamIcon: {
+      maxWidth: '30px', maxHeight: '30px'
     }
   })
 );
@@ -85,35 +98,107 @@ function Match(props) {
   )
 }
 
-function Group(props) {
-  const group = props.group;
-  const matches = props.matches;
-  const deleteGroup = props.deleteGroup;
+function Team(props){
+  const team = props.team;
+  const deleteTeam = props.deleteTeam;
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const classes = useStyles();
-  const groupMatches = []
+
+ return (
+    <div style={{height: '100%'}}>
+      <div className={classes.team}>
+        <div className={classes.teamIcon}>
+          <TeamIcon team={team}/>
+        </div>
+        <div className={classes.teamName}>
+          {team.name}
+        </div>
+        <div>
+          <Button onClick={() => setDeleteDialogOpen(true)}>Delete</Button>
+        </div>
+
+      </div>
+
+      <Dialog onClose={() => setDeleteDialogOpen(false)} open={deleteDialogOpen}>
+        <div style={{margin: "20px"}}>
+          <div>Do you really want to remove team {team.name} from this group?</div>
+          <div style={{marginTop: "10px"}}>
+            <Button onClick={() => deleteTeam(team)}>Delete</Button>
+            <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
+          </div>
+        </div>
+      </Dialog>
+
+    </div>
+  )
+}
+
+
+
+
+
+function Group(props) {
+  const group = props.group;
+  const matches = props.matches;
+  const teams = props.teams;
+
+  const deleteGroup = props.deleteGroup;
+  const updateGroup = props.updateGroup;
+  const addMatch = props.addMatch;
+  const addTeam = props.addTeam;
+  const deleteTeam = props.deleteTeam;
+
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
+  let groupMatches = [];
   group.matches.forEach((key) => {
     const match = matches[key];
     if(match !== undefined){
       groupMatches.push(match);
     }
   })
-  console.log(groupMatches)
+  let groupTeams = [];
+  group.teams.forEach((key) => {
+    const team = teams[key];
+    if(team !== undefined){
+      groupTeams.push(team);
+    }
+  })
+
+  const classes = useStyles();
 
   return (
     <div style={{height: '100%'}}>
       <div className={classes.group}>
-        <h4 style={{color: '#ffffff'}}>Group {group.name}</h4>
-
-        {groupMatches.map((match) => (
-          <Paper key={match.key}  style={{padding: '5px', height: '50px', marginBottom: '5px', overflowX: 'hidden'}}>
-            <Match match={match}/>
-          </Paper>
-        ))}
+        <TextField style={{width: '200px', marginLeft: '10px', marginRight: '10px'}}
+          value={group.name} onChange={(event) => updateGroup(group, {name: event.target.value})} label="Group name"/>
         <div>
-          <Button onClick={() => setDeleteDialogOpen(true)}>Delete</Button>
+          <h4>Matches</h4>
+          {groupMatches.map((match) => (
+            <Paper key={match.key}  style={{padding: '5px', marginBottom: '5px'}}>
+              <Match match={match}/>
+            </Paper>
+          ))}
+          <MatchSelect label="Add match" matches={Object.entries(matches).map(val => val[1])} selected={{key: -1}}
+            onChange={(match) => {if(match.key !== -1){addMatch(match)}}}/>
+
+        </div>
+
+        <div>
+          <h4>Teams</h4>
+          {groupTeams.map((team) => (
+            <Paper key={team.key}  style={{padding: '5px', marginBottom: '5px'}}>
+              <Team team={team} deleteTeam={deleteTeam}/>
+            </Paper>
+          ))}
+          <TeamSelect label="Add team" teams={Object.entries(teams).map(val => val[1])} selected={{key: -1}}
+            onChange={(team) => {if(team.key !== -1){addTeam(team)}}}/>
+        </div>
+
+        <div style={{display: "flex", justifyContent: 'flex-end'}}>
+          <Button variant="contained" onClick={() => setDeleteDialogOpen(true)}>Delete Group</Button>
         </div>
       </div>
 
@@ -139,16 +224,26 @@ function ViewGroupstage(props) {
 
   const [groups, setGroups] = useState([]);
   const [matches, setMatches] = useState({});
+  const [teams, setTeams] = useState({});
 
   const groupNames = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
 
   const updateGroup = (group, update) => {
 //    api.updateGroup(prono, group, update);
   }
-
   const deleteGroup = (group) => {
     api.deleteGroup(prono, group);
   }
+  const addMatchFactory = (group) => {
+    return (match) => null;
+  };
+  const addTeamFactory = (group) => {
+    return (team) => api.groupAddTeam(prono, group, team.key);
+  };
+  const deleteTeamFactory = (group) => {
+    return (team) => api.groupDeleteTeam(prono, group, team.key);
+  };
+
 
   const addGroup = () => {
     const group = {
@@ -159,6 +254,7 @@ function ViewGroupstage(props) {
     }
     api.addGroup(prono, group);
   }
+
 
   useEffect(() => {
     api.onGroupstageChanged(prono, groups => {
@@ -172,7 +268,11 @@ function ViewGroupstage(props) {
     });
   }, [api, prono]);
 
- // https://codesandbox.io/s/i0ex5?file=/src/App.js:2392-2441
+  useEffect(() => {
+    api.onTeamsChanged(prono, teams => {
+      setTeams(teams);
+    });
+  }, [api, prono]);
 
   const classes = useStyles();
 
@@ -181,9 +281,12 @@ function ViewGroupstage(props) {
       <h2 style={{color: '#ffffff'}}>Group stage</h2>
       <div>
         {groups.map((group) => (
-          <Group key={group.key} group={group} matches={matches} deleteGroup={deleteGroup}/>
+          <Paper key={group.key}  style={{padding: '5px', marginBottom: '5px'}}>
+            <Group key={group.key} group={group} matches={matches} teams={teams} deleteGroup={deleteGroup} updateGroup={updateGroup}
+              addMatch={addMatchFactory(group)} addTeam={addTeamFactory(group)} deleteTeam={deleteTeamFactory(group)}/>
+          </Paper>
         ))}
-        <Button onClick={() => addGroup()}>Add group</Button>
+        <Button variant="contained" onClick={() => addGroup()}>Add group</Button>
       </div>
     </div>
   );

@@ -37,9 +37,11 @@ const getFullGroupstage = (groupstage, matches, teams) => {
     let full_teams = [];
     if(group.teams !== undefined){
       group.teams.forEach((team_key) => {
-        let full_team = JSON.parse(JSON.stringify(teams[team_key]));
-        full_team.points = group.points[team_key] || 0;
-        full_teams.push(full_team);
+        if (teams[team_key] !== undefined){
+          let full_team = JSON.parse(JSON.stringify(teams[team_key]));
+          full_team.points = group.points[team_key] || 0;
+          full_teams.push(full_team);
+        }
       });
     }
     full_group.teams = full_teams;
