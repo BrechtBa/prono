@@ -63,6 +63,9 @@ const useStyles = makeStyles((theme: Theme) =>
 function Match(props) {
   const match = props.match;
   const date = new Date(match.date);
+  const deleteMatch = props.deleteMatch;
+
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const formatDate = (date) => {
     var hours = date.getHours();
@@ -93,7 +96,21 @@ function Match(props) {
         <div className={classes.matchTeam}>
           {match.defaultteam2}
         </div>
+        <div>
+          <Button onClick={() => setDeleteDialogOpen(true)}>Delete</Button>
+        </div>
       </div>
+
+      <Dialog onClose={() => setDeleteDialogOpen(false)} open={deleteDialogOpen}>
+        <div style={{margin: "20px"}}>
+          <div>Do you really want to delete match {match.number} from this group?</div>
+          <div style={{marginTop: "10px"}}>
+            <Button onClick={() => deleteMatch(match)}>Delete</Button>
+            <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
+          </div>
+        </div>
+      </Dialog>
+
     </div>
   )
 }
@@ -147,6 +164,7 @@ function Group(props) {
   const deleteGroup = props.deleteGroup;
   const updateGroup = props.updateGroup;
   const addMatch = props.addMatch;
+  const deleteMatch = props.deleteMatch;
   const addTeam = props.addTeam;
   const deleteTeam = props.deleteTeam;
 
@@ -178,7 +196,7 @@ function Group(props) {
           <h4>Matches</h4>
           {groupMatches.map((match) => (
             <Paper key={match.key}  style={{padding: '5px', marginBottom: '5px'}}>
-              <Match match={match}/>
+              <Match match={match} deleteMatch={deleteMatch} />
             </Paper>
           ))}
           <MatchSelect label="Add match" matches={Object.entries(matches).map(val => val[1])} selected={{key: -1}}
@@ -211,6 +229,7 @@ function Group(props) {
           </div>
         </div>
       </Dialog>
+
     </div>
   )
 
@@ -234,9 +253,7 @@ function ViewGroupstage(props) {
   const deleteGroup = (group) => {
     api.deleteGroup(prono, group);
   }
-  const addMatchFactory = (group) => {
-    return (match) => null;
-  };
+
   const addTeamFactory = (group) => {
     return (team) => api.groupAddTeam(prono, group, team.key);
   };
@@ -244,6 +261,12 @@ function ViewGroupstage(props) {
     return (team) => api.groupDeleteTeam(prono, group, team.key);
   };
 
+  const addMatchFactory = (group) => {
+    return (match) => api.groupAddMatch(prono, group, match.key);
+  };
+  const deleteMatchFactory = (group) => {
+    return (match) => api.groupDeleteMatch(prono, group, match.key);
+  };
 
   const addGroup = () => {
     const group = {
@@ -283,7 +306,7 @@ function ViewGroupstage(props) {
         {groups.map((group) => (
           <Paper key={group.key}  style={{padding: '5px', marginBottom: '5px'}}>
             <Group key={group.key} group={group} matches={matches} teams={teams} deleteGroup={deleteGroup} updateGroup={updateGroup}
-              addMatch={addMatchFactory(group)} addTeam={addTeamFactory(group)} deleteTeam={deleteTeamFactory(group)}/>
+              addMatch={addMatchFactory(group)} deleteMatch={deleteMatchFactory(group)} addTeam={addTeamFactory(group)} deleteTeam={deleteTeamFactory(group)}/>
           </Paper>
         ))}
         <Button variant="contained" onClick={() => addGroup()}>Add group</Button>

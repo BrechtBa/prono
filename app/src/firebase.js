@@ -421,6 +421,13 @@ class FirebaseAPI {
   deleteGroup(prono, group) {
     this.db.ref(`${this.tenant}/pronos/${prono}/competition/stages/groupstage/${group.key}`).set(null);
   }
+  updateGroup(prono, group, update) {
+    var updates = {};
+    for (const [path, value] of Object.entries(update)) {
+      updates[`${this.tenant}/pronos/${prono}/competition/stage/groupstage/${group.key}/${path}`] = value
+    }
+    return this.db.ref().update(updates)
+  }
 
   groupAddTeam(prono, group, teamKey) {
     let newTeams = JSON.parse(JSON.stringify(group.teams));
@@ -438,6 +445,24 @@ class FirebaseAPI {
     })
     this.db.ref(`${this.tenant}/pronos/${prono}/competition/stages/groupstage/${group.key}/teams`).set(newTeams);
     this.db.ref(`${this.tenant}/pronos/${prono}/competition/stages/groupstage/${group.key}/points/${teamKey}`).set(null);
+
+    // cascade to user prono's?
+  }
+
+  groupAddMatch(prono, group, matchKey) {
+    let newMatches = JSON.parse(JSON.stringify(group.matches));
+    newMatches.push(matchKey)
+    this.db.ref(`${this.tenant}/pronos/${prono}/competition/stages/groupstage/${group.key}/matches`).set(newMatches);
+  }
+
+  groupDeleteMatch(prono, group, matchKey) {
+    let newMatches = [];
+    group.matches.forEach((match) => {
+      if (match !== matchKey){
+        newMatches.push(match);
+      }
+    })
+    this.db.ref(`${this.tenant}/pronos/${prono}/competition/stages/groupstage/${group.key}/matches`).set(newMatches);
   }
 
   _get_iso_icon(iso_code){
