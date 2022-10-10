@@ -166,83 +166,80 @@ function ViewProno(props) {
   const [totalGoalsProno, setTotalGoalsProno] = useState(-1);
   const [teamResultProno, setTeamResultProno] = useState('-1');
 
-
-  console.log(currentStage)
-
   useEffect(() => {
     return api.onTeamsChanged(prono, val => {
       setTeams(val);
-      console.log('loaded teams', val)
+      console.debug('loaded teams', val)
     });
   }, [api, prono]);
 
   useEffect(() => {
     return api.onMatchesChanged(prono, val => {
       setMatches(val);
-      console.log('loaded matches', val)
+      console.debug('loaded matches', val)
     });
   }, [api, prono]);
 
   useEffect(() => {
     return api.onGroupstageChanged(prono, val => {
       setGroupstage(val);
-      console.log('loaded groupstage', val)
+      console.debug('loaded groupstage', val)
     });
   }, [api, prono]);
 
   useEffect(() => {
     return api.onKnockoutstageChanged(prono, val => {
       setKnockoutstages(val);
-      console.log('loaded knockoutstages', val)
+      console.debug('loaded knockoutstages', val)
     });
   }, [api, prono]);
 
   useEffect(() => {
     return api.onCurrentStageChanged(prono, val => {
       setCurrentStage(val);
-      console.log('loaded current stage', val)
+      console.debug('loaded current stage', val)
     });
   }, [api, prono]);
 
   useEffect(() => {
     return api.onUserPronoMatchesChanged(prono, pronoUser, val => {
       setMatchesProno(val);
-      console.log('loaded prono matches', val)
+      console.debug('loaded prono matches', val)
     });
   }, [api, prono, pronoUser]);
 
   useEffect(() => {
     return api.onUserPronoStageTeamsChanged(prono, pronoUser, val => {
       setStageTeamsProno(val);
-      console.log('loaded prono stage teams', val)
+      console.debug('loaded prono stage teams', val)
     });
   }, [api, prono, pronoUser]);
 
   useEffect(() => {
     return api.onUserPronoGroupWinnersChanged(prono, pronoUser, val => {
       setGroupWinnersProno(val);
-      console.log('loaded prono groupwinners', val)
+      console.debug('loaded prono groupwinners', val)
     });
   }, [api, prono, pronoUser]);
 
   useEffect(() => {
     return api.onUserPronoTotalGoalsChanged(prono, pronoUser, val => {
       setTotalGoalsProno(val);
-      console.log('loaded prono total goals', val)
+      console.debug('loaded prono total goals', val)
     });
   }, [api, prono, pronoUser]);
 
   useEffect(() => {
     return api.onUserPronoHomeTeamResultChanged(prono, pronoUser, val => {
       setTeamResultProno(val);
-      console.log('loaded prono team result', val)
+      console.debug('loaded prono team result', val)
     });
   }, [api, prono, pronoUser]);
 
   useEffect(() => {
     return api.onDeadlinesChanged(prono, val => {
       setDeadlines(val);
-      console.log('loaded deadlines', val)
+      console.debug('loaded deadlines', val)
     });
   }, [api, prono]);
 
@@ -273,7 +270,6 @@ function ViewProno(props) {
 
   const stageTeamsComplete = (stageTeams) => {
     let complete = true;
-    console.log(stageTeams)
     pronoStages.forEach((stage) => {
       if(stageTeams[stage.key] === undefined || stageTeams[stage.key].teams === undefined || stageTeams[stage.key].teams.length < parseInt(stage.key)){
         complete = false;

@@ -148,7 +148,6 @@ const getMatchColumns = (knockoutstages) => {
   });
 
   const matchColumns = matchColumnsLeft.concat(matchColumnsRight);
-  console.log(matchColumns)
   return matchColumns
 }
 
@@ -175,7 +174,6 @@ export function KnockoutStage(props) {
   const prono = useContext(PronoContext);
 
   const saveMatch = (match, score1, score2, penalty1, penalty2, team1, team2) => {
-    console.log(team1)
     api.updateMatch(prono, match, {score1: score1, score2: score2, penalty1: penalty1, penalty2: penalty2, team1: team1, team2: team2})
   }
 

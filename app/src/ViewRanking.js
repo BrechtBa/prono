@@ -114,7 +114,6 @@ function ViewRanking(props) {
   useEffect(() => {
     api.onUsersChanged(prono, users => {
       setUsers(users);
-      console.log(users)
     });
   }, [api, prono]);
 
