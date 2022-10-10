@@ -153,9 +153,6 @@ function Team(props){
 }
 
 
-
-
-
 function Group(props) {
   const group = props.group;
   const matches = props.matches;
@@ -185,6 +182,13 @@ function Group(props) {
     }
   })
 
+  const sortTeams = (a, b) => {
+    if(a.name > b.name){
+      return 1;
+    }
+    return -1;
+  }
+
   const classes = useStyles();
 
   return (
@@ -211,7 +215,7 @@ function Group(props) {
               <Team team={team} deleteTeam={deleteTeam}/>
             </Paper>
           ))}
-          <TeamSelect label="Add team" teams={Object.entries(teams).map(val => val[1])} selected={{key: -1}}
+          <TeamSelect label="Add team" teams={Object.entries(teams).map(val => val[1]).sort(sortTeams)} selected={{key: -1}}
             onChange={(team) => {if(team.key !== -1){addTeam(team)}}}/>
         </div>
 
@@ -248,7 +252,7 @@ function ViewGroupstage(props) {
   const groupNames = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
 
   const updateGroup = (group, update) => {
-//    api.updateGroup(prono, group, update);
+    api.updateGroup(prono, group, update);
   }
   const deleteGroup = (group) => {
     api.deleteGroup(prono, group);
@@ -270,7 +274,7 @@ function ViewGroupstage(props) {
 
   const addGroup = () => {
     const group = {
-      name: groupNames[groups.length + 1],
+      name: groupNames[groups.length],
       matches: {},
       points: {},
       teams: {}

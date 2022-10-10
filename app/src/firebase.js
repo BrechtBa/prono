@@ -424,7 +424,7 @@ class FirebaseAPI {
   updateGroup(prono, group, update) {
     var updates = {};
     for (const [path, value] of Object.entries(update)) {
-      updates[`${this.tenant}/pronos/${prono}/competition/stage/groupstage/${group.key}/${path}`] = value
+      updates[`${this.tenant}/pronos/${prono}/competition/stages/groupstage/${group.key}/${path}`] = value
     }
     return this.db.ref().update(updates)
   }
