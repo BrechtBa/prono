@@ -238,7 +238,7 @@ function PronoLayout(props) {
                 <Route path="/profile">  <ViewProfile/> </Route>
 
                 <Route path="/users"> <ViewUsers /> </Route>
-                <Route path="/settings"> <ViewSettings /> </Route>
+                <Route path="/settings"> <ViewSettings setProno={setProno}/> </Route>
                 <Route path="/teams"> <ViewTeams /> </Route>
                 <Route path="/matches"> <ViewMatches /> </Route>
                 <Route path="/groupstage"> <ViewGroupstage /> </Route>

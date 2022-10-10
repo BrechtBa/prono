@@ -29,9 +29,9 @@ function Rules(props) {
     return matches + winners;
   }
   const getKnockoutstagePoints = (rules, knockoutstages) => {
-    return knockoutstages.map((group) => group.matches.length * (rules.knockoutstage.result + rules.knockoutstage.score)).reduce((a, b) => a+b, 0)
+    return knockoutstages.map((stage) => stage.matches.length * (rules.knockoutstage.result + rules.knockoutstage.score)).reduce((a, b) => a+b, 0)
   }
-  const getKnockoutstageTeamsPoints = (rules) => {
+  const getKnockoutstageTeamsPoints = (rules, knockoutstages) => {
     return 8*rules.knockoutstageTeams[8] + 4*rules.knockoutstageTeams[4] + 2*rules.knockoutstageTeams[2] + 1*rules.knockoutstageTeams[1];
   }
 
@@ -57,7 +57,7 @@ function Rules(props) {
         <div>Indien je de ploegen die de halve finales halen kan voorspellen krijg je <b>{rules.knockoutstageTeams[4]} punten</b> per ploeg. </div>
         <div>Indien je de ploegen die de finale spelen kan voorspellen krijg je <b>{rules.knockoutstageTeams[2]} punten</b> per ploeg. </div>
         <div>Indien je kan voorspellen wie het toernooi wint krijg je <b>{rules.knockoutstageTeams[1]} punten</b>.</div>
-        <div>Hier zijn in totaal <b>{getKnockoutstageTeamsPoints(rules)} punten</b> te verdienen.</div>
+        <div>Hier zijn in totaal <b>{getKnockoutstageTeamsPoints(rules, knockoutstages)} punten</b> te verdienen.</div>
       </div>
       <div className={classes.paragraph}>
         <div>Probeer het totaal aantal goals gedurende het hele toernooi te raden.</div>
@@ -96,7 +96,7 @@ function Rules(props) {
       <div className={classes.paragraph}>
         <div>Na het toernooi krijgt degene met het 3e meeste punten {rules.prizes[3]}% van de inleg.</div>
         <div>Degene met het 2e meeste punten {rules.prizes[2]}% van de inleg.</div>
-        <div>Degene met het meeste punten wordt tot winnaar gekroond en krijgt {rules.prizes[1]}% van de inleg.</div>
+        <div>Degene met het meeste punten wordt tot winnaar gekroond, krijgt eeuwige roem en daarbovenop {rules.prizes[1]}% van de inleg.</div>
         <div>Bij eventuele exequo's wordt de winst verdeeld.</div>
         <div>Eventuele Server kosten worden van het bedrag voor de verdeling van de winst afgehouden.
         De verwachting is dat er geen kosten zullen zijn.</div>
@@ -137,21 +137,21 @@ function ViewRules(){
         cost: val.cost,
       };
       setRules(rules);
-      console.log('loaded rules', rules)
+      console.debug('loaded rules', rules)
     });
   }, [api, prono]);
 
   useEffect(() => {
     return api.onGroupstageChanged(prono, val => {
       setGroupstage(val);
-      console.log('loaded groupstage', val)
+      console.debug('loaded groupstage', val)
     });
   }, [api, prono]);
 
   useEffect(() => {
     return api.onKnockoutstageChanged(prono, val => {
       setKnockoutstages(val);
-      console.log('loaded knockoutstages', val)
+      console.debug('loaded knockoutstages', val)
     });
   }, [api, prono]);
 

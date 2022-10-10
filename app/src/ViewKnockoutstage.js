@@ -24,10 +24,6 @@ const useStyles = makeStyles((theme: Theme) =>
       display: 'flex',
       flexGrow: 2,
     },
-    matchStage: {
-      display: 'flex',
-      flexGrow: 4,
-    },
     matchDate: {
       display: 'flex',
       flexGrow: 4,
@@ -35,10 +31,6 @@ const useStyles = makeStyles((theme: Theme) =>
     matchTeam: {
       display: 'flex',
       flexGrow: 4,
-      justifyContent: 'flex-start',
-      width: '90px',
-      textAlign: 'left',
-      overflow: 'hidden'
     }
   })
 );
@@ -75,11 +67,7 @@ function Match(props) {
         </div>
 
         <div className={classes.matchTeam}>
-          {match.defaultteam1}
-        </div>
-        <div>-</div>
-        <div className={classes.matchTeam}>
-          {match.defaultteam2}
+          {match.defaultteam1} -  {match.defaultteam2}
         </div>
         <div>
           <Button onClick={() => setDeleteDialogOpen(true)}>Delete</Button>

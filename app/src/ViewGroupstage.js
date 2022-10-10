@@ -37,15 +37,6 @@ const useStyles = makeStyles((theme: Theme) =>
     matchTeam: {
       display: 'flex',
       flexGrow: 4,
-      justifyContent: 'flex-start',
-      width: '90px',
-      textAlign: 'left',
-      overflow: 'hidden'
-    },
-    team: {
-      display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'center'
     },
     teamName: {
       display: 'flex',
@@ -89,12 +80,8 @@ function Match(props) {
           {formatDate(date)}
         </div>
 
-        <div className={classes.team}>
-          {match.defaultteam1}
-        </div>
-        <div>-</div>
         <div className={classes.matchTeam}>
-          {match.defaultteam2}
+          {match.defaultteam1} - {match.defaultteam2}
         </div>
         <div>
           <Button onClick={() => setDeleteDialogOpen(true)}>Delete</Button>
