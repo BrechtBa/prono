@@ -1,12 +1,14 @@
 {
   "rules": {
     "pronogroupid1": {
-      ".read": "auth != null",
-      ".write": "auth != null",
-		  "userpronos": {
-        "$uid": {
-          ".read": "auth != null && auth.uid == $uid",
-          ".write": "auth != null && auth.uid == $uid"
+      "wk2022": {
+        ".read": "auth != null",
+        ".write": "auth != null",
+        "userpronos": {
+          "$uid": {
+            ".read": "auth != null && auth.uid == $uid",
+            ".write": "auth != null && auth.uid == $uid"
+          }
         }
       }
     }
