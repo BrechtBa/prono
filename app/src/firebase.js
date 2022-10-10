@@ -93,7 +93,7 @@ class FirebaseAPI {
   }
 
   onGroupstageChanged(prono, callback) {
-    return this.db.ref(`${this.tenant}/pronos/${prono}/competition/stages/groupstage`).on("value", snapshot => {
+    return this.db.ref(`${this.tenant}/pronos/${prono}/competition/groupstage`).on("value", snapshot => {
       let groupstage = [];
       if (snapshot !== undefined){
         snapshot.forEach((snap) => {
@@ -120,19 +120,17 @@ class FirebaseAPI {
   }
 
   onKnockoutstageChanged(prono, callback) {
-    return this.db.ref(`${this.tenant}/pronos/${prono}/competition/stages`).on("value", snapshot => {
+    return this.db.ref(`${this.tenant}/pronos/${prono}/competition/knockoutstage`).on("value", snapshot => {
       let knockoutstage = [];
       if (snapshot !== undefined){
         snapshot.forEach((snap) => {
           const val = snap.val()
-          if(snap.key !== 'groupstage'){
-            knockoutstage.push({
-              key: snap.key,
-              stage: snap.stage,
-              name: val.name,
-              matches: val.matches || [],
-            });
-          }
+          knockoutstage.push({
+            key: snap.key,
+            stage: snap.stage,
+            name: val.name,
+            matches: val.matches || [],
+          });
         });
       }
       callback(knockoutstage.sort((a, b) => parseInt(b.key) - parseInt(a.key)));
@@ -322,7 +320,7 @@ class FirebaseAPI {
     teams.forEach((team) => {
       points[team.key] = parseFloat(team.points);
     });
-    return this.db.ref(`${this.tenant}/pronos/${prono}/competition/stages/groupstage/${group.key}/points`).set(points)
+    return this.db.ref(`${this.tenant}/pronos/${prono}/competition/groupstage/${group.key}/points`).set(points)
   }
 
   updateMatchProno(prono, user, match, update) {
@@ -417,16 +415,16 @@ class FirebaseAPI {
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Groupstage
   addGroup(prono, group) {
-    this.db.ref(`${this.tenant}/pronos/${prono}/competition/stages/groupstage`).push(group);
+    this.db.ref(`${this.tenant}/pronos/${prono}/competition/groupstage`).push(group);
   }
 
   deleteGroup(prono, group) {
-    this.db.ref(`${this.tenant}/pronos/${prono}/competition/stages/groupstage/${group.key}`).set(null);
+    this.db.ref(`${this.tenant}/pronos/${prono}/competition/groupstage/${group.key}`).set(null);
   }
   updateGroup(prono, group, update) {
     var updates = {};
     for (const [path, value] of Object.entries(update)) {
-      updates[`${this.tenant}/pronos/${prono}/competition/stages/groupstage/${group.key}/${path}`] = value
+      updates[`${this.tenant}/pronos/${prono}/competition/groupstage/${group.key}/${path}`] = value
     }
     return this.db.ref().update(updates)
   }
@@ -434,8 +432,8 @@ class FirebaseAPI {
   groupAddTeam(prono, group, teamKey) {
     let newTeams = JSON.parse(JSON.stringify(group.teams));
     newTeams.push(teamKey)
-    this.db.ref(`${this.tenant}/pronos/${prono}/competition/stages/groupstage/${group.key}/teams`).set(newTeams);
-    this.db.ref(`${this.tenant}/pronos/${prono}/competition/stages/groupstage/${group.key}/points/${teamKey}`).set(0);
+    this.db.ref(`${this.tenant}/pronos/${prono}/competition/groupstage/${group.key}/teams`).set(newTeams);
+    this.db.ref(`${this.tenant}/pronos/${prono}/competition/groupstage/${group.key}/points/${teamKey}`).set(0);
   }
 
   groupDeleteTeam(prono, group, teamKey) {
@@ -445,8 +443,8 @@ class FirebaseAPI {
         newTeams.push(team);
       }
     })
-    this.db.ref(`${this.tenant}/pronos/${prono}/competition/stages/groupstage/${group.key}/teams`).set(newTeams);
-    this.db.ref(`${this.tenant}/pronos/${prono}/competition/stages/groupstage/${group.key}/points/${teamKey}`).set(null);
+    this.db.ref(`${this.tenant}/pronos/${prono}/competition/groupstage/${group.key}/teams`).set(newTeams);
+    this.db.ref(`${this.tenant}/pronos/${prono}/competition/groupstage/${group.key}/points/${teamKey}`).set(null);
 
     // cascade to user prono's?
   }
@@ -454,7 +452,7 @@ class FirebaseAPI {
   groupAddMatch(prono, group, matchKey) {
     let newMatches = JSON.parse(JSON.stringify(group.matches));
     newMatches.push(matchKey)
-    this.db.ref(`${this.tenant}/pronos/${prono}/competition/stages/groupstage/${group.key}/matches`).set(newMatches);
+    this.db.ref(`${this.tenant}/pronos/${prono}/competition/groupstage/${group.key}/matches`).set(newMatches);
   }
 
   groupDeleteMatch(prono, group, matchKey) {
@@ -464,23 +462,23 @@ class FirebaseAPI {
         newMatches.push(match);
       }
     })
-    this.db.ref(`${this.tenant}/pronos/${prono}/competition/stages/groupstage/${group.key}/matches`).set(newMatches);
+    this.db.ref(`${this.tenant}/pronos/${prono}/competition/groupstage/${group.key}/matches`).set(newMatches);
   }
 
 
   /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
   // Knockout Stage
   addStage(prono, stage) {
-    this.db.ref(`${this.tenant}/pronos/${prono}/competition/stages/`).push(stage);
+    this.db.ref(`${this.tenant}/pronos/${prono}/competition/knockoutstage/`).push(stage);
   }
 
   deleteStage(prono, stage) {
-    this.db.ref(`${this.tenant}/pronos/${prono}/competition/stages/${stage.key}`).set(null);
+    this.db.ref(`${this.tenant}/pronos/${prono}/competition/knockoutstage/${stage.key}`).set(null);
   }
   stageAddMatch(prono, stage, matchKey) {
     let newMatches = JSON.parse(JSON.stringify(stage.matches));
     newMatches.push(matchKey)
-    this.db.ref(`${this.tenant}/pronos/${prono}/competition/stages/${stage.key}/matches`).set(newMatches);
+    this.db.ref(`${this.tenant}/pronos/${prono}/competition/knockoutstage/${stage.key}/matches`).set(newMatches);
   }
 
   stageDeleteMatch(prono, stage, matchKey) {
@@ -490,7 +488,7 @@ class FirebaseAPI {
         newMatches.push(match);
       }
     })
-    this.db.ref(`${this.tenant}/pronos/${prono}/competition/stages/${stage.key}/matches`).set(newMatches);
+    this.db.ref(`${this.tenant}/pronos/${prono}/competition/knockoutstage/${stage.key}/matches`).set(newMatches);
   }
 
 

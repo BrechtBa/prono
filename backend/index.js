@@ -125,7 +125,7 @@ function setUserTotalGoalsPoints(tenantId, pronoId, userId){
 
 
 function setUserGroupWinnersPoints(tenantId, pronoId, userId){
-    db.ref('/'+tenantId+'/pronos/'+pronoId+'/competition/stages/groupstage').once('value').then( snapshot => {
+    db.ref('/'+tenantId+'/pronos/'+pronoId+'/competition/groupstage').once('value').then( snapshot => {
         db.ref('/'+tenantId+'/pronos/'+pronoId+'/userpronos/'+userId+'/groupwinners').once('value').then(function(pronoSnapshot){
             var points = 0;
             snapshot.forEach(function(group){
@@ -214,7 +214,7 @@ function getMatches(tenantId, pronoId){
 
 
 function getGroupstageMatches(tenantId, pronoId){
-    matchesPromise = db.ref('/'+tenantId+'/pronos/'+pronoId+'/competition/stages/groupstage').once('value').then( snapshot => {
+    matchesPromise = db.ref('/'+tenantId+'/pronos/'+pronoId+'/competition/groupstage').once('value').then( snapshot => {
         var matches = []
         snapshot.forEach( function(group){
             group.child('matches').forEach(function(match){
@@ -230,28 +230,26 @@ function getGroupstageMatches(tenantId, pronoId){
 function getKnockoutstageTeams(tenantId, pronoId){
 
     stageTeamsPromise = db.ref('/'+tenantId+'/pronos/'+pronoId+'/competition/matches').once('value').then(function(matchesSnapshot){
-        stageTeamsPromise = db.ref('/'+tenantId+'/pronos/'+pronoId+'/competition/stages').once('value').then(function(snapshot){
+        stageTeamsPromise = db.ref('/'+tenantId+'/pronos/'+pronoId+'/competition/knockoutstage').once('value').then(function(snapshot){
 
             var stages = []
             var stageTeams = {}
 
             // get the teams in all stages
             snapshot.forEach(function(stage){
-                if(stage.key != 'groupstage'){
-                    stages.push(stage.key)
-                    stageTeams[stage.key] = []
-                    Object.entries(stage.matches || {}).map(val => val[1]).forEach(function(matchid){
-                        match = matchesSnapshot.child(matchid.val())
-                        team1 = match.child('team1').val()
-                        team2 = match.child('team2').val()
-                        if(team1){
-                            stageTeams[stage.key].push(team1)
-                        }
-                        if(team2){
-                            stageTeams[stage.key].push(team2)
-                        }
-                    });
-                }
+                  stages.push(stage.key)
+                  stageTeams[stage.key] = []
+                  Object.entries(stage.matches || {}).map(val => val[1]).forEach(function(matchid){
+                      match = matchesSnapshot.child(matchid.val())
+                      team1 = match.child('team1').val()
+                      team2 = match.child('team2').val()
+                      if(team1){
+                          stageTeams[stage.key].push(team1)
+                      }
+                      if(team2){
+                          stageTeams[stage.key].push(team2)
+                      }
+                  });
             });
 
             // add the winner if available
@@ -409,7 +407,7 @@ totalGoalsChanged = db.ref(`/${tenantId}/pronos/${pronoId}/competition/totalgoal
 });
 
 
-teamPointsChanged = db.ref(`/${tenantId}/pronos/${pronoId}/competition/stages/groupstage`).on("value", (snapshot) => {
+teamPointsChanged = db.ref(`/${tenantId}/pronos/${pronoId}/competition/groupstage`).on("value", (snapshot) => {
     teamPointsChangedHandler(tenantId, pronoId)
     return null;
 });
