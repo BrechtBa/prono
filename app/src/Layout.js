@@ -29,8 +29,9 @@ import ViewProfile from './ViewProfile.js';
 import ViewSettings from './ViewSettings.js';
 import ViewUsers from './ViewUsers.js';
 import ViewMatches from './ViewMatches.js';
-import ViewGroupstage from './ViewGroupstage.js';
 import ViewTeams from './ViewTeams.js';
+import ViewGroupstage from './ViewGroupstage.js';
+import ViewKnockoutstage from './ViewKnockoutstage.js';
 
 import Version from './Version.js';
 
@@ -136,7 +137,7 @@ function Navigation(props) {
     path: 'groupstage'
   }, {
     title: 'Knockoutstage',
-    path: 'kockoutstage'
+    path: 'knockoutstage'
   }]
   const classes = useStyles();
 
@@ -241,9 +242,7 @@ function PronoLayout(props) {
                 <Route path="/teams"> <ViewTeams /> </Route>
                 <Route path="/matches"> <ViewMatches /> </Route>
                 <Route path="/groupstage"> <ViewGroupstage /> </Route>
-                <Route path="/knockoutstage">
-                  knockoutstage
-                </Route>
+                <Route path="/knockoutstage"> <ViewKnockoutstage /> </Route>
 
                 <Route path="/"> <ViewRanking/> </Route>
 

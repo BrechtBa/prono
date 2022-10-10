@@ -128,7 +128,9 @@ class FirebaseAPI {
           if(snap.key !== 'groupstage'){
             knockoutstage.push({
               key: snap.key,
-              matches: val,
+              stage: snap.stage,
+              name: val.name,
+              matches: val.matches || [],
             });
           }
         });
@@ -464,6 +466,33 @@ class FirebaseAPI {
     })
     this.db.ref(`${this.tenant}/pronos/${prono}/competition/stages/groupstage/${group.key}/matches`).set(newMatches);
   }
+
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+  // Knockout Stage
+  addStage(prono, stage) {
+    this.db.ref(`${this.tenant}/pronos/${prono}/competition/stages/`).push(stage);
+  }
+
+  deleteStage(prono, stage) {
+    this.db.ref(`${this.tenant}/pronos/${prono}/competition/stages/${stage.key}`).set(null);
+  }
+  stageAddMatch(prono, stage, matchKey) {
+    let newMatches = JSON.parse(JSON.stringify(stage.matches));
+    newMatches.push(matchKey)
+    this.db.ref(`${this.tenant}/pronos/${prono}/competition/stages/${stage.key}/matches`).set(newMatches);
+  }
+
+  stageDeleteMatch(prono, stage, matchKey) {
+    let newMatches = [];
+    stage.matches.forEach((match) => {
+      if (match !== matchKey){
+        newMatches.push(match);
+      }
+    })
+    this.db.ref(`${this.tenant}/pronos/${prono}/competition/stages/${stage.key}/matches`).set(newMatches);
+  }
+
 
   _get_iso_icon(iso_code){
     return `images/flags/${iso_code}.png`
