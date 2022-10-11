@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  prono-server:
+    build: .
+    container_name: prono
+    volumes:
+      - ./serviceaccountkey.json:/usr/src/app/serviceaccountkey.json
+    restart: always
+    network_mode: host
+    command: node /usr/src/app/index.js
