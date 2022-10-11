@@ -2,7 +2,7 @@ version: '3'
 
 services:
   prono-server:
-    build: .
+    image: brechtba/prono-backend
     container_name: prono
     volumes:
       - ./serviceaccountkey.json:/usr/src/app/serviceaccountkey.json
