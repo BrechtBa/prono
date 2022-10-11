@@ -24,7 +24,6 @@ class FirebaseAPI {
   constructor(db) {
     this.db = db;
     this.tenant = 'pronogroupid1';
-    this.prono = 'ek2021'
   }
 
   onPronoKeysChanged(callback){
