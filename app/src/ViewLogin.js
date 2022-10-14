@@ -236,25 +236,31 @@ function ViewLogin() {
   const classes = useStyles();
 
   return (
-    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%'}}>
-      <Paper style={{padding: '10px'}}>
-        <h1 style={{marginTop: 0}}>Login</h1>
+    <div style={{display: 'flex', flexDirection: 'column', width: '100%'}}>
+      <div style={{display: 'flex', flexGrow: 1, justifyContent: 'center', alignItems: 'center', width: '100%'}}>
+        <Paper style={{padding: '10px'}}>
+          <h1 style={{marginTop: 0}}>Login</h1>
 
-        {error !== null && <div className={classes.error}>{error}</div>}
+          {error !== null && <div className={classes.error}>{error}</div>}
 
-        <form style={{display: 'flex', flexDirection: 'column'}}>
-          <TextField label="Email" value={email} onChange={(event) => onEmailChangeHandler(event)} style={{marginBottom: '10px'}}/>
-          <TextField label="Password" type="password" value={password} onChange={(event) => onPasswordChangeHandler(event)} style={{marginBottom: '10px'}}/>
-          <div style={{marginTop: '20px', marginBottom: '10px'}}>
-            <Button id="signInButton" onClick={(event) => {signInWithEmailAndPasswordHandler(event, email, password)}}>
-              <span>Sign in</span>
-            </Button>
-          </div>
-        </form>
+          <form style={{display: 'flex', flexDirection: 'column'}}>
+            <TextField label="Email" value={email} onChange={(event) => onEmailChangeHandler(event)} style={{marginBottom: '10px'}}/>
+            <TextField label="Password" type="password" value={password} onChange={(event) => onPasswordChangeHandler(event)} style={{marginBottom: '10px'}}/>
+            <div style={{marginTop: '20px', marginBottom: '10px'}}>
+              <Button id="signInButton" onClick={(event) => {signInWithEmailAndPasswordHandler(event, email, password)}}>
+                <span>Sign in</span>
+              </Button>
+            </div>
+          </form>
 
-        <div>Nog geen account? <Button onClick={() => setRegisterDialogOpen(true)}>register</Button></div>
-        <div>Wachtwoord vergeten? <Button onClick={() => setResetDialogOpen(true)}>reset wachtwoord</Button></div>
-      </Paper>
+          <div>Nog geen account? <Button onClick={() => setRegisterDialogOpen(true)}>register</Button></div>
+          <div>Wachtwoord vergeten? <Button onClick={() => setResetDialogOpen(true)}>reset wachtwoord</Button></div>
+
+        </Paper>
+      </div>
+      <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%'}}>
+        <div style={{margin: '20px', textAlign: 'center', color: '#ffffff'}}>Deze app gebruikt enkel cookies noodzakelijk voor de werking van de app.</div>
+      </div>
 
       <Dialog onClose={() => setRegisterDialogOpen(false)} open={registerDialogOpen}>
         <div style={{padding: '20px', minWidth: '320px', maxWidth: '100%'}}>
@@ -267,7 +273,6 @@ function ViewLogin() {
           <ResetPassword close={() => setResetDialogOpen(false)}/>
         </div>
       </Dialog>
-
     </div>
   );
 };
