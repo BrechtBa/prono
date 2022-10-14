@@ -3,9 +3,9 @@ Prono
 
 Website/app to make predictions on soccer tournaments among friends for fun.
 
-# Prequisites
+# Prerequisites
 
-A firebase account.
+A firebase project.
 
 * firebase-cli  `npm install -g firebase-tools`
 
@@ -42,7 +42,18 @@ firebase deploy
 
 # running the backend
 
+Create a file `serviceaccountkey.json` and add firebase credentials in the backend folder.
+
+Run
+
 ```
 cd backend
 node index.js
+```
+
+or in docker
+
+```
+cd backend
+docker-compose up
 ```
