@@ -1,15 +1,68 @@
 {
   "rules": {
-    "pronogroupid1": {
-      ".read": "auth != null",
-      ".write": "auth != null",
-      "wk2022": {
-        "userpronos": {
-          "$uid": {
-            ".read": "auth != null && auth.uid == $uid",
-            ".write": "auth != null && auth.uid == $uid"
+    "$tenant": {
+      "name": {
+        ".read": "auth != null",
+        ".write": "auth != null && root.child($tenant).child('users').child(auth.uid).child('permissions').child('admin').val() === true"
+      },
+      "pronos": {
+        "$prono": {
+          "competition":{
+             ".read": "auth != null",
+             ".write": "auth != null && root.child($tenant).child('users').child(auth.uid).child('permissions').child('editor').val() === true"
+          },
+          "deadlines":{
+             ".read": "auth != null",
+             ".write": "auth != null && root.child($tenant).child('users').child(auth.uid).child('permissions').child('editor').val() === true"
+          },
+          "rules":{
+             ".read": "auth != null",
+             ".write": "auth != null && root.child($tenant).child('users').child(auth.uid).child('permissions').child('admin').val() === true"
+          },
+          "settings":{
+             ".read": "auth != null",
+             ".write": "auth != null && root.child($tenant).child('users').child(auth.uid).child('permissions').child('admin').val() === true"
+          },
+          "userpoints":{
+             ".read": "auth != null",
+             ".write": false
+          },
+          "userpronos": {
+            "$uid": {
+              "groupwinners": {
+                ".write": "auth != null && ((auth.uid == $uid && root.child($tenant).child('pronos').child($prono).child('competition').child('currentstage').val() === 'groupstage') || root.child($tenant).child('users').child(auth.uid).child('permissions').child('editor').val() === true)"
+              },
+               "hometeamresult": {
+                ".write": "auth != null && ((auth.uid == $uid && root.child($tenant).child('pronos').child($prono).child('competition').child('currentstage').val() === 'groupstage') || root.child($tenant).child('users').child(auth.uid).child('permissions').child('editor').val() === true)"
+              },
+               "knockoutstageteams": {
+                ".write": "auth != null && ((auth.uid == $uid && root.child($tenant).child('pronos').child($prono).child('competition').child('currentstage').val() === 'groupstage') || root.child($tenant).child('users').child(auth.uid).child('permissions').child('editor').val() === true)"
+              },
+               "totalgoals": {
+                ".write": "auth != null && ((auth.uid == $uid && root.child($tenant).child('pronos').child($prono).child('competition').child('currentstage').val() === 'groupstage') || root.child($tenant).child('users').child(auth.uid).child('permissions').child('editor').val() === true)"
+              },
+               "matches": {
+                ".write": "auth != null && (auth.uid == $uid || root.child($tenant).child('users').child(auth.uid).child('permissions').child('editor').val() === true)"
+              },
+              ".read": "auth != null && (auth.uid == $uid || root.child($tenant).child('users').child(auth.uid).child('permissions').child('editor').val() === true)"
+            }
           }
         }
+      },
+      "users": {
+        "$uid": {
+          "displayName":{
+            ".read": "auth != null"
+          },
+          "permissions":{
+            ".read": "auth != null && (auth.uid == $uid || root.child($tenant).child('users').child(auth.uid).child('permissions').child('admin').val() === true)"
+          },
+          "profilePicture":{
+             ".read": "auth != null"
+          },
+          ".write": "auth != null && (auth.uid == $uid || root.child($tenant).child('users').child(auth.uid).child('permissions').child('admin').val() === true)"
+        },
+        ".read": "auth != null"
       }
     }
   }
