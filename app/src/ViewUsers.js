@@ -4,7 +4,6 @@ import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Avatar from '@material-ui/core/Avatar';
 import Checkbox from '@material-ui/core/Checkbox';
-import Dialog from '@material-ui/core/Dialog';
 import Button from '@material-ui/core/Button';
 
 import APIContext from './APIProvider.js';
@@ -51,14 +50,15 @@ function User(props){
             <div><Checkbox checked={user.permissions.editor} onChange={(e) => api.updatePermissionEditor(user, !user.permissions.editor)}/> Editor</div>
           </div>
           <div style={{display: 'flex', alignItems: 'center', marginRight: '10px', marginBottom: '5px'}}>
-            <div><Button onClick={() => setPronoDialogOpen(true)}>Edit prono</Button></div>
+            <div><Button onClick={() => setPronoDialogOpen(!pronoDialogOpen)}>Edit prono</Button></div>
           </div>
         </div>
       </Paper>
 
-      <Dialog onClose={() => setPronoDialogOpen(false)} open={pronoDialogOpen} PaperProps={{style: {backgroundColor: '#DD0000'}}}>
-        <ViewProno user={user}/>
-      </Dialog>
+      <div>
+        {pronoDialogOpen && <ViewProno user={user}/>}
+      </div>
+
     </div>
   )
 
