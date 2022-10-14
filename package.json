@@ -1,9 +1,10 @@
 {
   "name": "prono",
   "version": "4.0.0",
-  "description": "App to bet on soccer tournaments among friends",
+  "description": "App to forecast soccer tournament results among friends",
   "main": "",
   "dependencies": {
+    "firebase-tools": "^11.13.0"
   },
   "scripts": {
   },
