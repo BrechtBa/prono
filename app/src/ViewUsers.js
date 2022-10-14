@@ -38,18 +38,18 @@ function User(props){
     <div style={{marginBottom: '5px'}}>
 
       <Paper style={{padding: '10px'}}>
-        <div style={{display: 'flex', alignItems: 'center', flexWrap: 'wrap'}}>
-          <div style={{display: 'flex', alignItems: 'center', marginRight: '10px', marginBottom: '5px'}}>
+        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'end', flexWrap: 'wrap'}}>
+          <div style={{display: 'flex', flexGrow: 1, alignItems: 'center', marginRight: '10px', marginBottom: '5px'}}>
             <Avatar alt={user.displayName} src={user.profilePicture} style={{height: '50px', width: '50px', marginRight: '20px'}}>{getFirstLetter(user)}</Avatar>
             <div style={{width: '150px'}}>{user.displayName}</div>
           </div>
-          <div style={{display: 'flex', alignItems: 'center', marginRight: '10px', marginBottom: '5px'}}>
+          <div style={{display: 'flex', flexGrow: 20, alignItems: 'center', marginRight: '10px', marginBottom: '5px', flexWrap: 'wrap'}}>
             <div><Checkbox checked={user.active} onChange={(e) => api.updateActive(prono, user, !user.active)}/> Active</div>
             <div><Checkbox checked={user.paid} onChange={(e) => api.updatePaid(prono, user, !user.paid)}/> Paid</div>
             <div><Checkbox checked={user.showPoints} onChange={(e) => api.updateShowPoints(prono, user, !user.showPoints)}/> Points</div>
             <div><Checkbox checked={user.permissions.editor} onChange={(e) => api.updatePermissionEditor(user, !user.permissions.editor)}/> Editor</div>
           </div>
-          <div style={{display: 'flex', alignItems: 'center', marginRight: '10px', marginBottom: '5px'}}>
+          <div style={{display: 'flex', alignItems: 'center', marginRight: '10px', marginBottom: '5px', flexWrap: 'wrap'}}>
             <div><Button onClick={() => setPronoDialogOpen(!pronoDialogOpen)}>Edit prono</Button></div>
           </div>
         </div>
