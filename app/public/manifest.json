@@ -1,7 +1,7 @@
 {
   "short_name": "Prono",
   "name": "Prono",
-  "description": "An app to bet on soccer competitions among friends.",
+  "description": "An app to forecast soccer competition results among friends.",
   "icons": [
     {
       "src": "favicon.ico",
