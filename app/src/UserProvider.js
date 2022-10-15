@@ -32,7 +32,7 @@ const makeDisplayName = (email) => {
 
 function UserProvider(props){
   const root = 'pronogroupid1'
-  const prono = 'ek2021'
+  const prono = 'wk2022'
 
   const [user, setUser] = useState(null)
 
@@ -52,8 +52,9 @@ function UserProvider(props){
             }
             db.ref(`${root}/users/${userAuth.uid}`).set(userprofile)
           }
-          const unsubscribe = db.ref(`${root}/pronos/${prono}/userpoints/${userAuth.uid}`).on("value", snapshot => {
+          const unsubscribe = db.ref(`${root}/pronodata/${prono}/userpoints/${userAuth.uid}`).on("value", snapshot => {
             let userpoints = snapshot.val()
+            console.log(userpoints)
             if(userpoints === null){
               userpoints = {
                 active: true,
@@ -61,9 +62,8 @@ function UserProvider(props){
                 showPoints: true,
                 points: {}
               }
-              db.ref(`${root}/pronos/${prono}/userpoints/${userAuth.uid}`).set(userprofile)
+              db.ref(`${root}/pronodata/${prono}/userpoints/${userAuth.uid}`).set(userprofile)
             }
-
             setUser({
               key: userAuth.uid,
               email: userAuth.email,
