@@ -1,6 +1,8 @@
 import React, { useState, useContext } from 'react';
 import { UserContext } from "./UserProvider.js";
+import APIContext from './APIProvider.js';
 import PronoContext from './PronoProvider.js';
+
 import { Switch, Route, Link, useHistory } from "react-router-dom";
 
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
@@ -17,8 +19,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
-
-import { signOut } from "./UserProvider.js";
 
 import ViewRanking from './ViewRanking.js';
 import ViewProno from './ViewProno.js';
@@ -172,6 +172,7 @@ function Navigation(props) {
 function PronoLayout(props) {
 
   const user = useContext(UserContext);
+  const api = useContext(APIContext);
 
   const history = useHistory();
   const classes = useStyles();
@@ -219,7 +220,7 @@ function PronoLayout(props) {
               <Navigation isAdmin={user.permissions.admin} onNavigation={toggleNavigation}/>
 
               <ListItem button>
-                <ListItemText primary={"Sign out"} onClick={() => signOut(() => {setNavigationOpen(false)})}/>
+                <ListItemText primary={"Sign out"} onClick={() => api.signOut(() => {setNavigationOpen(false)})}/>
               </ListItem>
 
               <Divider/>

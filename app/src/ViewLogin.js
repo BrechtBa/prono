@@ -84,7 +84,7 @@ function Register(props) {
           setPassword('');
           setPasswordRepeat('');
         }, (error) => {
-          console.log(error)
+          console.error(error)
           if(error.code === 'auth/invalid-email'){
             setError("Ongeldig email adres!");
           }
@@ -160,7 +160,7 @@ function ResetPassword(props){
       setError(null)
       setMessage('Email verstuurd, controleer je email voor een reset link.')
     }, (error) => {
-      console.log(error)
+      console.error(error)
       setMessage(null)
       if(error.code === 'auth/invalid-email'){
         setError("Ongeldig email adres!");
@@ -217,7 +217,7 @@ function ViewLogin() {
   const signInWithEmailAndPasswordHandler = (event, email, password) => {
     event.preventDefault();
     signInWithEmailAndPassword(email.trim(), password, () => {}, (error) => {
-      console.log("Error signing in with password and email", error);
+      console.error("Error signing in with password and email", error);
       if(error.code === 'auth/invalid-email'){
         setError(`Ongeldig email adres! "${email}"`);
       }

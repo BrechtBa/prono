@@ -26,8 +26,68 @@ class FirebaseAPI {
     this.tenant = 'pronogroupid1';
   }
 
-  onPronoKeysChanged(callback){
-    return this.db.ref(`${this.tenant}/pronokeys`).on("value", snapshot => {
+  onAuthStateChanged(callback) {
+    const prono = 'wk2022';
+
+    const makeDisplayName = (email) => {
+      return email.split('@')[0][0].toUpperCase() + email.split('@')[0].replace('_', ' ').replace('.', ' ').slice(1)
+    }
+
+    const unsubscribe = auth.onAuthStateChanged(async userAuth => {
+      if (userAuth) {
+        const unsubscribe = db.ref(`${this.tenant}/users/${userAuth.uid}`).on("value", snapshot => {
+
+          let userprofile = snapshot.val()
+          if(userprofile === null){
+            userprofile = {
+              displayName: makeDisplayName(userAuth.email),
+              profilePicture: '',
+              permissions: {}
+            }
+            db.ref(`${this.tenant}/users/${userAuth.uid}`).set(userprofile)
+          }
+          const unsubscribe = db.ref(`${this.tenant}/pronodata/${prono}/userpoints/${userAuth.uid}`).on("value", snapshot => {
+            let userpoints = snapshot.val()
+
+            if(userpoints === null){
+              userpoints = {
+                active: true,
+                paid: false,
+                showPoints: true,
+                points: {}
+              }
+              db.ref(`${this.tenant}/pronodata/${prono}/userpoints/${userAuth.uid}`).set(userprofile)
+            }
+            callback({
+              key: userAuth.uid,
+              email: userAuth.email,
+              displayName: userprofile.displayName || makeDisplayName(userAuth.email),
+              profilePicture: userprofile.profilePicture || '',
+              permissions: userprofile.permissions || {},
+              active: userpoints.active || true,
+              paid: userpoints.paid || false,
+              showPoints: userpoints.showPoints || true
+            })
+          })
+          return () => { unsubscribe() }
+        })
+        return () => { unsubscribe() }
+      }
+      else {
+        callback(null);
+        return () => {}
+      }
+    });
+    return () => { unsubscribe() }
+  }
+
+  signOut(callback) {
+    auth.signOut().then(callback);
+  }
+
+
+  onPronosChanged(callback) {
+    return this.db.ref(`${this.tenant}/pronos`).on("value", snapshot => {
       if (snapshot !== undefined){
         callback(snapshot.val());
       }

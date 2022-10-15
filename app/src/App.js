@@ -53,13 +53,13 @@ function App() {
   return (
     <div className="App" style={{height: '100%'}}>
       <ThemeProvider theme={redTheme}>
-        <UserProvider>
-          <APIContext.Provider value={api}>
+        <APIContext.Provider value={api}>
+          <UserProvider>
             <BrowserRouter>
               <PronoLayout/>
             </BrowserRouter>
-          </APIContext.Provider>
-        </UserProvider>
+          </UserProvider>
+        </APIContext.Provider>
       </ThemeProvider>
 
     </div>
