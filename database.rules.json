@@ -25,7 +25,7 @@
           },
           "userpoints":{
              ".read": "auth != null",
-             ".write": false
+             ".write": "auth != null && root.child($tenant).child('users').child(auth.uid).child('permissions').child('admin').val() === true"
           },
           "userpronos": {
             "$uid": {
