@@ -105,14 +105,8 @@ function User(props){
 
 
 function ViewRanking(props) {
-  console.log(PronoContext)
-  console.log(APIContext)
-  console.log(UserContext)
-
   const api = useContext(APIContext);
   const prono = useContext(PronoContext);
-  console.log(api)
-  console.log(prono)
 
   const [users, setUsers] = useState([]);
 
