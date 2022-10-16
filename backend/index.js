@@ -368,44 +368,63 @@ homeTeamResultChangedHandler = (tenantId, pronoId) => {
     });
 }
 
-// this triggers an infinite loop
-//somethingChanged = db.ref('/').on("value", snapshot => {
-//    snapshot.forEach(tenant => {
-//        tenant.child("pronos").forEach(prono => {
-//
-//            console.log(`updating points for ${pronoGroup.key}/${prono.key}`);
-//            totalGoalsChangedHandler(pronoGroup.key, prono.key);
-//            teamPointsChangedHandler(pronoGroup.key, prono.key);
-//            matchChangedHandler(pronoGroup.key, prono.key);
-//            homeTeamResultChangedHandler(pronoGroup.key, prono.key);
-//        });
-//    })
-//    return null;
-//});
 
 
 // there are no wildcards in the nodejs api so this does not work but would be more efficient
 const tenantId = 'pronogroupid1';
-const pronoId = 'wk2022';
-
-totalGoalsChanged = db.ref(`/${tenantId}/pronodata/${pronoId}/competition/totalgoals`).on("value", snapshot => {
-    totalGoalsChangedHandler(tenantId, pronoId)
-    return null;
-});
 
 
-teamPointsChanged = db.ref(`/${tenantId}/pronodata/${pronoId}/competition/groupstage`).on("value", (snapshot) => {
-    teamPointsChangedHandler(tenantId, pronoId)
-    return null;
-});
+const refs = {
+  'pronogroupid1': []
+};
 
+db.ref(`/${tenantId}/active_prono`).on("value", snapshot => {
 
-matchChanged = db.ref(`/${tenantId}/pronodata/${pronoId}/competition/matches`).on("value", (matches) => {
-  matchChangedHandler(tenantId, pronoId)
-  return null;
-});
+  if (refs[tenantId] === undefined) {
+    refs[tenantId] = [];
+  }
+  const pronoId = snapshot.val();
 
+  console.log(`active prono changed to ${pronoId}, removing old listeners`);
+  // remove old refs
+  while (refs[tenantId].length > 0){
+    let ref = refs[tenantId].pop()
+    ref.off();
+    console.log(`removed listener for ${ref}`)
+  }
 
-homeTeamResultChanged = db.ref(`/${tenantId}/pronodata/${pronoId}/competition/hometeamresult`).on('value', (snapshot) => {
-    homeTeamResultChangedHandler(tenantId, pronoId)
+  // add listeners
+  console.log(`adding listeners for ${pronoId}`);
+  // total goals
+  const totalGoalsRef = db.ref(`/${tenantId}/pronodata/${pronoId}/competition/totalgoals`);
+  totalGoalsRef.on("value", snapshot => {
+      totalGoalsChangedHandler(tenantId, pronoId)
+      return null;
+  });
+  refs[tenantId].push(totalGoalsRef);
+
+  // groupstage teams
+  const groupstageRef = db.ref(`/${tenantId}/pronodata/${pronoId}/competition/groupstage`);
+  groupstageRef.on("value", snapshot => {
+      teamPointsChangedHandler(tenantId, pronoId)
+      return null;
+  });
+  refs[tenantId].push(groupstageRef);
+
+  // matches
+  const matchesRef = db.ref(`/${tenantId}/pronodata/${pronoId}/competition/matches`);
+  matchesRef.on("value", snapshot => {
+      matchChangedHandler(tenantId, pronoId)
+      return null;
+  });
+  refs[tenantId].push(matchesRef);
+
+  // home team result
+  homeTeamRef = db.ref(`/${tenantId}/pronodata/${pronoId}/competition/hometeamresult`);
+  homeTeamRef.on("value", snapshot => {
+      homeTeamResultChangedHandler(tenantId, pronoId)
+      return null;
+  });
+  refs[tenantId].push(homeTeamRef);
+
 });
