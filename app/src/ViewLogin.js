@@ -7,8 +7,7 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import Checkbox from '@material-ui/core/Checkbox';
 
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "./UserProvider.js";
-
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "./firebase.js";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

@@ -20,6 +20,21 @@ export const db = firebase.database();
 export const storage = firebase.storage();
 
 
+export const createUserWithEmailAndPassword = (email, password, onSuccess, onError) => {
+  auth.createUserWithEmailAndPassword(email, password).then(onSuccess).catch(onError);
+};
+
+export const signInWithEmailAndPassword = (email, password, onSuccess, onError) => {
+  auth.signInWithEmailAndPassword(email, password).then(onSuccess).catch(onError);
+}
+
+export const sendPasswordResetEmail = (email, onSuccess, onError) => {
+  const actionCodeSettings = {
+    url: 'https://project-3359822390427923494.firebaseapp.com/',
+  }
+  auth.sendPasswordResetEmail(email, actionCodeSettings).then(onSuccess).catch(onError);
+}
+
 class FirebaseAPI {
   constructor(db) {
     this.db = db;
@@ -27,8 +42,6 @@ class FirebaseAPI {
   }
 
   onAuthStateChanged(callback) {
-    const prono = 'wk2022';
-
     const makeDisplayName = (email) => {
       return email.split('@')[0][0].toUpperCase() + email.split('@')[0].replace('_', ' ').replace('.', ' ').slice(1)
     }
@@ -46,28 +59,47 @@ class FirebaseAPI {
             }
             db.ref(`${this.tenant}/users/${userAuth.uid}`).set(userprofile)
           }
-          const unsubscribe = db.ref(`${this.tenant}/pronodata/${prono}/userpoints/${userAuth.uid}`).on("value", snapshot => {
-            let userpoints = snapshot.val()
 
-            if(userpoints === null){
-              userpoints = {
+          const unsubscribe = db.ref(`${this.tenant}/active_prono`).on("value", snapshot => {
+            if (snapshot !== undefined){
+              const prono = snapshot.val();
+              const unsubscribe = db.ref(`${this.tenant}/pronodata/${prono}/userpoints/${userAuth.uid}`).on("value", snapshot => {
+              let userpoints = snapshot.val()
+
+              if(userpoints === null){
+                userpoints = {
+                  active: true,
+                  paid: false,
+                  showPoints: true,
+                  points: {}
+                }
+                db.ref(`${this.tenant}/pronodata/${prono}/userpoints/${userAuth.uid}`).set(userprofile)
+              }
+              callback({
+                key: userAuth.uid,
+                email: userAuth.email,
+                displayName: userprofile.displayName || makeDisplayName(userAuth.email),
+                profilePicture: userprofile.profilePicture || '',
+                permissions: userprofile.permissions || {},
+                active: userpoints.active || true,
+                paid: userpoints.paid || false,
+                showPoints: userpoints.showPoints || true
+              })
+            })
+            return () => { unsubscribe() }
+            }
+            else {
+              callback({
+                key: userAuth.uid,
+                email: userAuth.email,
+                displayName: userprofile.displayName || makeDisplayName(userAuth.email),
+                profilePicture: userprofile.profilePicture || '',
+                permissions: userprofile.permissions || {},
                 active: true,
                 paid: false,
-                showPoints: true,
-                points: {}
-              }
-              db.ref(`${this.tenant}/pronodata/${prono}/userpoints/${userAuth.uid}`).set(userprofile)
+                showPoints: true
+              })
             }
-            callback({
-              key: userAuth.uid,
-              email: userAuth.email,
-              displayName: userprofile.displayName || makeDisplayName(userAuth.email),
-              profilePicture: userprofile.profilePicture || '',
-              permissions: userprofile.permissions || {},
-              active: userpoints.active || true,
-              paid: userpoints.paid || false,
-              showPoints: userpoints.showPoints || true
-            })
           })
           return () => { unsubscribe() }
         })
