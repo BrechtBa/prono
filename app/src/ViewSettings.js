@@ -25,6 +25,8 @@ function ViewSettings(){
   const [currentStage, setCurrentStage] = useState('finished')
   const [homeTeamResult, setHomeTeamResult] = useState('-1')
 
+  const [pronos, setPronos] = useState([])
+
   const api = useContext(APIContext);
   const prono = useContext(PronoContext);
 
@@ -38,7 +40,7 @@ function ViewSettings(){
     api.updateCurrentStage(prono, e.target.value)
   }
 
- useEffect(() => {
+  useEffect(() => {
     return api.onHomeTeamResultChanged(prono, val => {
       setHomeTeamResult(val);
     });
@@ -48,11 +50,17 @@ function ViewSettings(){
     api.updateHomeTeamResult(prono, e.target.value)
   }
 
+  useEffect(() => {
+    return api.onPronosChanged(val => {
+      setPronos(val);
+    });
+  }, [api]);
+
   const classes = useStyles();
 
   return (
     <div>
-      <h3 className={classes.header}>Settings</h3>
+      <h3 className={classes.header}>Competition Settings</h3>
 
       <Paper className={classes.paper}>
         <h3 style={{marginTop: 0}}>Tournament stages</h3>
@@ -89,8 +97,21 @@ function ViewSettings(){
         </div>
       </Paper>
 
+      <h3 className={classes.header}>Tenant Settings</h3>
+      <Paper className={classes.paper}>
+        <h3 style={{marginTop: 0}}>Active prono</h3>
+        <div style={{display: 'flex', flexDirection: 'column'}}>
+         <div>
+           <InputLabel id="select-label">Active prono</InputLabel>
+            <Select value={prono} onChange={(event) => api.updateActiveProno(event.target.value)} labelId="select-label" style={{width: '100%'}}>
+              {pronos.map((prono) => (
+                <MenuItem key={prono.key} value={prono.key}>{prono.name}</MenuItem>
+              ))}
+            </Select>
+         </div>
+        </div>
+      </Paper>
     </div>
-
   );
 
 }

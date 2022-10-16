@@ -15,8 +15,6 @@ function PronoProvider(props) {
     api.onActivePronoChanged(prono => setProno(prono));
   }, [api]);
 
-  console.log(prono)
-
   return (
     <PronoContext.Provider value={prono}>
       {props.children}

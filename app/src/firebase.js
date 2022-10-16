@@ -93,10 +93,24 @@ class FirebaseAPI {
     });
   }
 
+  updateActiveProno(value) {
+    return this.db.ref(`${this.tenant}/active_prono`).set(value)
+  }
+
   onPronosChanged(callback) {
     return this.db.ref(`${this.tenant}/pronos`).on("value", snapshot => {
       if (snapshot !== undefined){
-        callback(snapshot.val());
+        let pronos = [];
+        snapshot.forEach((snap) => {
+          const val = snap.val()
+          pronos.push({
+            key: snap.key,
+            name: val.name
+          })
+        });
+
+
+        callback(pronos);
       }
     });
   }
