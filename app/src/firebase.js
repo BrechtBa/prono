@@ -36,9 +36,9 @@ export const sendPasswordResetEmail = (email, onSuccess, onError) => {
 }
 
 class FirebaseAPI {
-  constructor(db) {
+  constructor(db, tenant) {
     this.db = db;
-    this.tenant = 'pronogroupid1';
+    this.tenant = tenant;
   }
 
   onAuthStateChanged(callback) {
@@ -638,7 +638,11 @@ class FirebaseAPI {
   _get_iso_icon(iso_code){
     return `images/flags/${iso_code}.png`
   }
-
-
 }
-export const api = new FirebaseAPI(db)
+
+export const getApi = (tenantId) => {
+  const api = new FirebaseAPI(db, tenantId);
+  return api;
+}
+
+export const api = getApi('pronogroupid1')

@@ -8,7 +8,7 @@ import PronoProvider from './PronoProvider.js';
 import UserProvider from "./UserProvider.js";
 import PronoLayout from './Layout.js';
 
-import { api } from "./firebase.js";
+import { getApi } from "./firebase.js";
 
 
 const redTheme = createMuiTheme({
@@ -51,11 +51,12 @@ const redTheme = createMuiTheme({
 
 
 function App() {
+  const tenantId = 'pronogroupid1';
 
   return (
     <div className="App" style={{height: '100%'}}>
       <ThemeProvider theme={redTheme}>
-        <APIContext.Provider value={api}>
+        <APIContext.Provider value={getApi(tenantId)}>
           <PronoProvider>
             <UserProvider>
               <BrowserRouter>
