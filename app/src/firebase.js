@@ -97,6 +97,32 @@ class FirebaseAPI {
     return this.db.ref(`${this.tenant}/active_prono`).set(value)
   }
 
+  duplicateProno(prono) {
+    const unsubscribe = this.db.ref(`${this.tenant}/pronodata/${prono.key}`).on("value", snapshot => {
+      if (snapshot !== undefined){
+        const pronodata = snapshot.val();
+        const newProno = {
+          competition: pronodata.competition,
+          deadlines: pronodata.deadlines,
+          rules: pronodata.rules,
+          settings: pronodata.settings,
+          userpoints: {},
+          userpronos: {}
+        }
+        const newName = `${prono.name} copy`;
+        console.log(newProno, newName)
+        const newRef = this.db.ref(`${this.tenant}/pronodata`).push(newProno);
+        this.db.ref(`${this.tenant}/pronos/${newRef.key}/name`).set(newName);
+      }
+    });
+    unsubscribe();
+  }
+
+  deleteProno(prono) {
+    this.db.ref(`${this.tenant}/pronodata/${prono.key}`).set(null);
+    this.db.ref(`${this.tenant}/pronos/${prono.key}`).set(null);
+  }
+
   onPronosChanged(callback) {
     return this.db.ref(`${this.tenant}/pronos`).on("value", snapshot => {
       if (snapshot !== undefined){

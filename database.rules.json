@@ -1,6 +1,10 @@
 {
   "rules": {
     "$tenant": {
+      "active_prono": {
+        ".read": "auth != null",
+        ".write": "auth != null && root.child($tenant).child('users').child(auth.uid).child('permissions').child('admin').val() === true"
+      },
       "name": {
         ".read": "auth != null",
         ".write": "auth != null && root.child($tenant).child('users').child(auth.uid).child('permissions').child('admin').val() === true"
@@ -47,7 +51,13 @@
               ".read": "auth != null && (auth.uid == $uid || root.child($tenant).child('users').child(auth.uid).child('permissions').child('editor').val() === true)"
             }
           }
-        }
+        },
+        ".read": "auth != null && root.child($tenant).child('users').child(auth.uid).child('permissions').child('editor').val() === true",
+        ".write": "auth != null && root.child($tenant).child('users').child(auth.uid).child('permissions').child('editor').val() === true"
+      },
+      "pronos":{
+        ".read": "auth != null && root.child($tenant).child('users').child(auth.uid).child('permissions').child('admin').val() === true",
+        ".write": "auth != null && root.child($tenant).child('users').child(auth.uid).child('permissions').child('admin').val() === true"
       },
       "users": {
         "$uid": {
