@@ -1,7 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { UserContext } from "./UserProvider.js";
 import APIContext from './APIProvider.js';
-import PronoContext from './PronoProvider.js';
 
 import { Switch, Route, Link, useHistory } from "react-router-dom";
 
@@ -177,7 +176,6 @@ function PronoLayout(props) {
   const history = useHistory();
   const classes = useStyles();
   const [navigationOpen, setNavigationOpen] = useState(false);
-  const [prono, setProno] = useState('wk2022');
 
   const toggleNavigation = (open) => (event) => {
     if(open === undefined){
@@ -197,7 +195,6 @@ function PronoLayout(props) {
     return (
         <div className={classes.root}>
           <CssBaseline />
-          <PronoContext.Provider value={prono}>
 
             <AppBar position="fixed" className={classes.appBar}>
               <Toolbar style={{display: "flex", paddingRight: "12px"}}>
@@ -239,7 +236,7 @@ function PronoLayout(props) {
                 <Route path="/profile">  <ViewProfile/> </Route>
 
                 <Route path="/users"> <ViewUsers /> </Route>
-                <Route path="/settings"> <ViewSettings setProno={setProno}/> </Route>
+                <Route path="/settings"> <ViewSettings /> </Route>
                 <Route path="/teams"> <ViewTeams /> </Route>
                 <Route path="/matches"> <ViewMatches /> </Route>
                 <Route path="/groupstage"> <ViewGroupstage /> </Route>
@@ -249,7 +246,7 @@ function PronoLayout(props) {
 
               </Switch>
             </main>
-          </PronoContext.Provider>
+
         </div>
     );
   }

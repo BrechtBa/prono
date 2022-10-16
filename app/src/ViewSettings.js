@@ -7,7 +7,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 
 import APIContext from './APIProvider.js';
-import PronoContext from './PronoProvider.js';
+import { PronoContext } from './PronoProvider.js';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

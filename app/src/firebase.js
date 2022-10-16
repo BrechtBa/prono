@@ -85,6 +85,13 @@ class FirebaseAPI {
     auth.signOut().then(callback);
   }
 
+  onActivePronoChanged(callback) {
+    return this.db.ref(`${this.tenant}/active_prono`).on("value", snapshot => {
+      if (snapshot !== undefined){
+        callback(snapshot.val());
+      }
+    });
+  }
 
   onPronosChanged(callback) {
     return this.db.ref(`${this.tenant}/pronos`).on("value", snapshot => {

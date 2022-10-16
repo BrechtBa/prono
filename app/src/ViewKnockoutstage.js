@@ -7,7 +7,7 @@ import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 
 import APIContext from './APIProvider.js';
-import PronoContext from './PronoProvider.js';
+import { PronoContext } from './PronoProvider.js';
 import { MatchSelect } from './MatchUtils.js';
 
 const useStyles = makeStyles((theme: Theme) =>

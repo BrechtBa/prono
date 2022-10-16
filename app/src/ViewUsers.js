@@ -7,7 +7,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 
 import APIContext from './APIProvider.js';
-import PronoContext from './PronoProvider.js';
+import { PronoContext } from './PronoProvider.js';
 import ViewProno from './ViewProno.js'
 
 

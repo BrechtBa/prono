@@ -7,7 +7,7 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 
 import APIContext from './APIProvider.js';
-import PronoContext from './PronoProvider.js';
+import { PronoContext } from './PronoProvider.js';
 import { Disabled, TeamName, TeamIcon, TeamSelect, EditScoreDialog } from './MatchUtils.js';
 
 

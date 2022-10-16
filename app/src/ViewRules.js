@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 
 import APIContext from './APIProvider.js';
-import PronoContext from './PronoProvider.js';
+import { PronoContext } from './PronoProvider.js';
 
 
 const useStyles = makeStyles((theme: Theme) =>

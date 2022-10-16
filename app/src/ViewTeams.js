@@ -9,7 +9,7 @@ import Dialog from '@material-ui/core/Dialog';
 import { TeamIcon } from './MatchUtils.js';
 
 import APIContext from './APIProvider.js';
-import PronoContext from './PronoProvider.js';
+import { PronoContext } from './PronoProvider.js';
 
 
 const useStyles = makeStyles((theme: Theme) =>

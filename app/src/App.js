@@ -3,9 +3,11 @@ import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider } from '@material-ui/core/styles';
 import { unstable_createMuiStrictModeTheme as createMuiTheme } from '@material-ui/core';
 
-import PronoLayout from './Layout.js';
-import UserProvider from "./UserProvider.js";
 import APIContext from "./APIProvider.js";
+import PronoProvider from './PronoProvider.js';
+import UserProvider from "./UserProvider.js";
+import PronoLayout from './Layout.js';
+
 import { api } from "./firebase.js";
 
 
@@ -54,11 +56,13 @@ function App() {
     <div className="App" style={{height: '100%'}}>
       <ThemeProvider theme={redTheme}>
         <APIContext.Provider value={api}>
-          <UserProvider>
-            <BrowserRouter>
-              <PronoLayout/>
-            </BrowserRouter>
-          </UserProvider>
+          <PronoProvider>
+            <UserProvider>
+              <BrowserRouter>
+                <PronoLayout />
+              </BrowserRouter>
+            </UserProvider>
+          </PronoProvider>
         </APIContext.Provider>
       </ThemeProvider>
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 
 
 import APIContext from './APIProvider.js';
-import PronoContext from './PronoProvider.js';
+import { PronoContext } from './PronoProvider.js';
 import { UserContext } from "./UserProvider.js";
 import { GroupStage } from './GroupStage.js';
 import { KnockoutStage } from './KnockoutStage.js';

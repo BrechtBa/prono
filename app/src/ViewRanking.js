@@ -8,7 +8,7 @@ import Divider from '@material-ui/core/Divider';
 
 import { UserContext } from "./UserProvider.js";
 import APIContext from './APIProvider.js';
-import PronoContext from './PronoProvider.js';
+import { PronoContext } from './PronoProvider.js';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -105,9 +105,14 @@ function User(props){
 
 
 function ViewRanking(props) {
+  console.log(PronoContext)
+  console.log(APIContext)
+  console.log(UserContext)
 
   const api = useContext(APIContext);
   const prono = useContext(PronoContext);
+  console.log(api)
+  console.log(prono)
 
   const [users, setUsers] = useState([]);
 

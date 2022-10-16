@@ -4,7 +4,7 @@ import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 
 import APIContext from './APIProvider.js';
-import PronoContext from './PronoProvider.js';
+import { PronoContext } from './PronoProvider.js';
 
 import { TeamName, TeamIcon, EditScoreDialog, Disabled } from './MatchUtils.js';
 
