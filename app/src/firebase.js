@@ -122,7 +122,13 @@ class FirebaseAPI {
     this.db.ref(`${this.tenant}/pronodata/${prono.key}`).set(null);
     this.db.ref(`${this.tenant}/pronos/${prono.key}`).set(null);
   }
-
+  updateProno(prono, update) {
+    var updates = {};
+    for (const [path, value] of Object.entries(update)) {
+      updates[`${this.tenant}/pronos/${prono.key}/${path}`] = value
+    }
+    return this.db.ref().update(updates)
+  }
   onPronosChanged(callback) {
     return this.db.ref(`${this.tenant}/pronos`).on("value", snapshot => {
       if (snapshot !== undefined){

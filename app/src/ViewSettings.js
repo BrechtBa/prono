@@ -7,6 +7,7 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Dialog from '@material-ui/core/Dialog';
 import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
 
 import APIContext from './APIProvider.js';
 import { PronoContext } from './PronoProvider.js';
@@ -28,6 +29,7 @@ function Prono(props) {
   const prono = props.prono;
   const active = props.active;
   const deleteProno = props.deleteProno;
+  const updateProno = props.updateProno;
   const duplicateProno = props.duplicateProno;
   const setActiveProno = props.setActiveProno;
 
@@ -36,7 +38,9 @@ function Prono(props) {
   return (
     <div>
       <div style={{display: 'flex', flexDirection: 'row'}}>
-        <div style={{margin: '5px', flexGrow: 1}}>{prono.name}</div>
+        <div style={{margin: '5px', flexGrow: 1}}>
+          <TextField style={{width: '150px'}} value={prono.name} onChange={(event) => updateProno(prono, {name: event.target.value})} label="Name"/>
+        </div>
         <div style={{margin: '5px'}}><Button variant="contained" onClick={() => setActiveProno(prono)} disabled={active}>{active ? 'Active' : 'Activate'}</Button></div>
         <div style={{margin: '5px'}}><Button variant="contained" onClick={() => duplicateProno(prono)}>Duplicate</Button></div>
         <div style={{margin: '5px'}}><Button variant="contained" onClick={() => setDeleteDialogOpen(true)} disabled={active}>Delete</Button></div>
@@ -78,6 +82,10 @@ function TenantSettings() {
     api.deleteProno(prono);
   }
 
+  const updateProno = (prono, update) => {
+    api.updateProno(prono, update);
+  }
+
   const setActiveProno = (prono) => {
     api.updateActiveProno(prono.key);
   }
@@ -91,7 +99,7 @@ function TenantSettings() {
       <div style={{display: 'flex', flexDirection: 'column'}}>
         {pronos.map((prono) => (
           <Paper key={prono.key} className={classes.paper}>
-            <Prono prono={prono} deleteProno={deleteProno} duplicateProno={duplicateProno} setActiveProno={setActiveProno} active={prono.key === activeProno} />
+            <Prono prono={prono} deleteProno={deleteProno} updateProno={updateProno} duplicateProno={duplicateProno} setActiveProno={setActiveProno} active={prono.key === activeProno} />
           </Paper>
         ))}
       </div>
