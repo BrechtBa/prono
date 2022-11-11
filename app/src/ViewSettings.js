@@ -9,6 +9,7 @@ import Dialog from '@material-ui/core/Dialog';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 
+
 import APIContext from './APIProvider.js';
 import { PronoContext } from './PronoProvider.js';
 
@@ -112,6 +113,7 @@ function TenantSettings() {
 function ViewSettings(){
   const [currentStage, setCurrentStage] = useState('finished')
   const [homeTeamResult, setHomeTeamResult] = useState('-1')
+  const [deadlines, setDeadlines] = useState({})
 
   const api = useContext(APIContext);
   const prono = useContext(PronoContext);
@@ -132,8 +134,37 @@ function ViewSettings(){
     });
   }, [api, prono]);
 
-  const handleHomeTeamResultChange = (e) =>{
+  useEffect(() => {
+    return api.onDeadlinesChanged(prono, val => {
+      setDeadlines(val);
+    });
+  }, [api, prono]);
+
+  const handleHomeTeamResultChange = (e) => {
     api.updateHomeTeamResult(prono, e.target.value)
+  }
+
+  const formatDate = (dt) => {
+    if (dt === undefined) {
+      return '';
+    }
+    if(dt instanceof Date && !isNaN(dt)){
+      return dt.toISOString();
+    }
+    return dt;
+  }
+
+  const handleDealineChange = (stage, str) => {
+    const dt = new Date(str);
+
+    if(dt instanceof Date && !isNaN(dt)){
+      let update = {}
+      update[stage] = dt.getTime()
+      api.updateDeadlines(prono, update)
+    }
+    else {
+      setDeadlines({...deadlines, [stage]: str});
+    }
   }
 
   const classes = useStyles();
@@ -173,6 +204,27 @@ function ViewSettings(){
               <MenuItem value="2">Eliminated in the Final</MenuItem>
               <MenuItem value="1">Winner</MenuItem>
             </Select>
+          </div>
+        </div>
+      </Paper>
+
+      <Paper className={classes.paper}>
+        <h3 style={{marginTop: 0}}>Deadlines</h3>
+        <div style={{display: 'flex', flexDirection: 'column'}}>
+          <div>
+            <TextField style={{width: '400px'}} value={formatDate(deadlines['groupstage'])} onChange={(e) => handleDealineChange('groupstage', e.target.value)} label="Groupstage"/>
+          </div>
+          <div>
+            <TextField style={{width: '400px'}} value={formatDate(deadlines['16'])} onChange={(e) => handleDealineChange('16', e.target.value)} label="Round of 16"/>
+          </div>
+          <div>
+            <TextField style={{width: '400px'}} value={formatDate(deadlines['8'])} onChange={(e) => handleDealineChange('8', e.target.value)} label="Quarter finals"/>
+          </div>
+          <div>
+            <TextField style={{width: '400px'}} value={formatDate(deadlines['4'])} onChange={(e) => handleDealineChange('4', e.target.value)} label="Semi finals"/>
+          </div>
+          <div>
+            <TextField style={{width: '400px'}} value={formatDate(deadlines['2'])} onChange={(e) => handleDealineChange('2', e.target.value)} label="Final"/>
           </div>
         </div>
       </Paper>

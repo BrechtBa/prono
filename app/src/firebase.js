@@ -443,11 +443,23 @@ class FirebaseAPI {
         '2': Date.now()-100000,
       }
       if (snapshot !== undefined){
-        const val = snapshot.val()
-        deadlines['groupstage'] = new Date(val['groupstage'])
+        const val = snapshot.val();
+        deadlines['groupstage'] = new Date(val['groupstage']);
+        deadlines['16'] = new Date(val['16']);
+        deadlines['8'] = new Date(val['8']);
+        deadlines['4'] = new Date(val['4']);
+        deadlines['2'] = new Date(val['2']);
       }
       callback(deadlines);
     });
+  }
+
+  updateDeadlines(prono, update) {
+    var updates = {};
+    for (const [path, value] of Object.entries(update)) {
+      updates[`${this.tenant}/pronodata/${prono}/deadlines/${path}`] = value
+    }
+    return this.db.ref().update(updates)
   }
 
   updateMatch(prono, match, update) {
