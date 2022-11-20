@@ -73,7 +73,7 @@ class FirebaseAPI {
                   showPoints: true,
                   points: {}
                 }
-                db.ref(`${this.tenant}/pronodata/${prono}/userpoints/${userAuth.uid}`).set(userprofile)
+                db.ref(`${this.tenant}/pronodata/${prono}/userpoints/${userAuth.uid}`).set(userpoints)
               }
               callback({
                 key: userAuth.uid,
@@ -97,7 +97,8 @@ class FirebaseAPI {
                 permissions: userprofile.permissions || {},
                 active: true,
                 paid: false,
-                showPoints: true
+                showPoints: true,
+                editOverride: false,
               })
             }
           })
@@ -215,7 +216,7 @@ class FirebaseAPI {
                 points: val.points,
                 displayName: userProfiles[snap.key] === undefined ? '' : userProfiles[snap.key].displayName,
                 permissions: userProfiles[snap.key] === undefined ? {} : userProfiles[snap.key].permissions,
-                profilePicture: userProfiles[snap.key] === undefined ? undefined : userProfiles[snap.key].profilePicture,
+                profilePicture: userProfiles[snap.key] === undefined ? undefined : userProfiles[snap.key].profilePicture
               });
             });
           }

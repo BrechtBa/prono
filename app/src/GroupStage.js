@@ -291,6 +291,8 @@ function GroupstagePronoGroup(props) {
 
   const classes = useStyles();
 
+  const editable = (currentStage === 'groupstage' || user.permissions.editDisabledProno);
+
   return (
     <div style={{position: 'relative',  width: '100%', maxWidth: '400px', margin: '5px'}}>
       <Paper className={classes.group} style={{position: 'relative'}}>
@@ -298,7 +300,7 @@ function GroupstagePronoGroup(props) {
 
         <div>
           {group.matches.map((match) => (
-           <Match key={match.key} match={match} onSave={saveMatch} showPenaltyEdit={false} editable={currentStage === 'groupstage'} editTeams={false}/>
+           <Match key={match.key} match={match} onSave={saveMatch} showPenaltyEdit={false} editable={editable} editTeams={false}/>
           ))}
         </div>
 
@@ -327,7 +329,7 @@ function GroupstagePronoGroup(props) {
           </div>
         </div>
 
-        <Disabled disabled={currentStage !== 'groupstage'}/>
+        <Disabled disabled={!editable}/>
       </Paper>
       <GroupwinnersDialog open={groupwinnersDialogOpen} group={group} setOpen={setGroupwinnersDialogOpen} onSave={saveGroupwinners}/>
     </div>
