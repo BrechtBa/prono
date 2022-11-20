@@ -137,6 +137,7 @@ function KnockoutStageTeamsPronoStage(props) {
     api.updateStageTeamsProno(prono, user, pronoStage, selectedTeams)
   }
 
+  const editable = (currentStage === 'groupstage' || user.permissions.editDisabledProno);
 
   const classes = useStyles();
 
@@ -158,7 +159,7 @@ function KnockoutStageTeamsPronoStage(props) {
             ))}
           </div>
         </div>
-        <Disabled disabled={currentStage !== 'groupstage'}/>
+        <Disabled disabled={!editable}/>
       </Paper>
 
       <StageTeamPronoSelectDialog open={editTeamsDialogOpen} setOpen={setEditTeamsDialogOpen} teams={teams} selectedTeams={selectedTeams}

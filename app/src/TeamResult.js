@@ -59,6 +59,8 @@ export function TeamResultProno(props) {
     }
   }
 
+  const editable = (currentStage === 'groupstage' || user.permissions.editDisabledProno);
+
   return (
     <div style={{width: '100%', marginBottom: '10px'}}>
       <Paper style={{padding: '10px', position: 'relative'}}>
@@ -76,7 +78,7 @@ export function TeamResultProno(props) {
             </div>
           </div>
         </div>
-        <Disabled disabled={currentStage !== 'groupstage'}/>
+        <Disabled disabled={!editable}/>
       </Paper>
 
       <Dialog onClose={() => setDialogOpen(false)} open={dialogOpen}>

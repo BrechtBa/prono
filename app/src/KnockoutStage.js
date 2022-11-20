@@ -242,6 +242,8 @@ export function KnockoutStageProno(props) {
     api.updateMatchProno(prono, user, match, {score1: score1, score2: score2, penalty1: penalty1, penalty2: penalty2})
   }
 
+  const getEditable  = (stage) => (currentStage === stage || user.permissions.editDisabledProno);
+
   return (
     <div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', width: '100%'}}>
       {columns.map( (column) => (
@@ -253,9 +255,9 @@ export function KnockoutStageProno(props) {
               {(column.key === 'R4' && matchIndex === 0)  && (<div style={{height: '80px'}}></div>)}
 
               <Paper style={{padding: '5px', height: '160px', marginTop: '5px', marginBottom: '5px', overflowX: 'hidden', position: 'relative'}}>
-                <Match match={match} showPenaltyEdit={false} onSave={saveMatch} editable={currentStage === column.stage}
+                <Match match={match} showPenaltyEdit={false} onSave={saveMatch} editable={getEditable(column.stage)}
                   editTeams={false} teams={[]}/>
-                <Disabled disabled={currentStage !== column.stage}/>
+                <Disabled disabled={!getEditable(column.stage)}/>
               </Paper>
 
               {(column.key === 'L4' && matchIndex === 0)  && (<div style={{height: '80px'}}></div>)}
