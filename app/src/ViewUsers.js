@@ -47,7 +47,8 @@ function User(props){
             <div><Checkbox checked={user.active} onChange={(e) => api.updateActive(prono, user, !user.active)}/> Active</div>
             <div><Checkbox checked={user.paid} onChange={(e) => api.updatePaid(prono, user, !user.paid)}/> Paid</div>
             <div><Checkbox checked={user.showPoints} onChange={(e) => api.updateShowPoints(prono, user, !user.showPoints)}/> Points</div>
-            <div><Checkbox checked={user.permissions.editor} onChange={(e) => api.updatePermissionEditor(user, !user.permissions.editor)}/> Editor</div>
+            <div><Checkbox checked={user.permissions.editor || false} onChange={(e) => api.updatePermissionEditor(user, !user.permissions.editor)}/> Editor</div>
+            <div><Checkbox checked={user.permissions.editDisabledProno || false} onChange={(e) => api.updatePermissionEditDisabledProno(user, !user.permissions.editDisabledProno)}/> editDisabledProno</div>
           </div>
           <div style={{display: 'flex', alignItems: 'center', marginRight: '10px', marginBottom: '5px', flexWrap: 'wrap'}}>
             <div><Button onClick={() => setPronoDialogOpen(!pronoDialogOpen)}>Edit prono</Button></div>

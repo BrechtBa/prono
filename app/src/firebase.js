@@ -520,6 +520,9 @@ class FirebaseAPI {
   updatePermissionEditor(user, editor) {
     return this.db.ref(`${this.tenant}/users/${user.key}/permissions/editor`).set(editor)
   }
+  updatePermissionEditDisabledProno(user, val) {
+    return this.db.ref(`${this.tenant}/users/${user.key}/permissions/editDisabledProno`).set(val)
+  }
 
   updateProfilePicture(user, image) {
     var ref = storage.ref(`users/${user.key}/profilePicture`);
