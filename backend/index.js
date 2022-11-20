@@ -378,12 +378,16 @@ const refs = {
   'pronogroupid1': []
 };
 
+console.log('Start listening for active prono');
+
 db.ref(`/${tenantId}/active_prono`).on("value", snapshot => {
 
   if (refs[tenantId] === undefined) {
     refs[tenantId] = [];
   }
   const pronoId = snapshot.val();
+
+  console.log(`Listening for changes in ${pronoId}`);
 
   console.log(`active prono changed to ${pronoId}, removing old listeners`);
   // remove old refs
