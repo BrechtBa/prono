@@ -34,21 +34,21 @@
           "userpronos": {
             "$uid": {
               "groupwinners": {
-                ".write": "auth != null && ((auth.uid == $uid && root.child($tenant).child('pronodata').child($prono).child('competition').child('currentstage').val() === 'groupstage') || root.child($tenant).child('users').child(auth.uid).child('permissions').child('editor').val() === true)"
+                ".write": "auth != null && ((auth.uid == $uid && root.child($tenant).child('pronodata').child($prono).child('competition').child('currentstage').val() === 'groupstage') || root.child($tenant).child('users').child(auth.uid).child('permissions').child('editor').val() === true || root.child($tenant).child('users').child(auth.uid).child('permissions').child('editDisabledProno').val() === true)"
               },
                "hometeamresult": {
-                ".write": "auth != null && ((auth.uid == $uid && root.child($tenant).child('pronodata').child($prono).child('competition').child('currentstage').val() === 'groupstage') || root.child($tenant).child('users').child(auth.uid).child('permissions').child('editor').val() === true)"
+                ".write": "auth != null && ((auth.uid == $uid && root.child($tenant).child('pronodata').child($prono).child('competition').child('currentstage').val() === 'groupstage') || root.child($tenant).child('users').child(auth.uid).child('permissions').child('editor').val() === true || root.child($tenant).child('users').child(auth.uid).child('permissions').child('editDisabledProno').val() === true)"
               },
                "knockoutstageteams": {
-                ".write": "auth != null && ((auth.uid == $uid && root.child($tenant).child('pronodata').child($prono).child('competition').child('currentstage').val() === 'groupstage') || root.child($tenant).child('users').child(auth.uid).child('permissions').child('editor').val() === true)"
+                ".write": "auth != null && ((auth.uid == $uid && root.child($tenant).child('pronodata').child($prono).child('competition').child('currentstage').val() === 'groupstage') || root.child($tenant).child('users').child(auth.uid).child('permissions').child('editor').val() === true || root.child($tenant).child('users').child(auth.uid).child('permissions').child('editDisabledProno').val() === true)"
               },
                "totalgoals": {
-                ".write": "auth != null && ((auth.uid == $uid && root.child($tenant).child('pronodata').child($prono).child('competition').child('currentstage').val() === 'groupstage') || root.child($tenant).child('users').child(auth.uid).child('permissions').child('editor').val() === true)"
+                ".write": "auth != null && ((auth.uid == $uid && root.child($tenant).child('pronodata').child($prono).child('competition').child('currentstage').val() === 'groupstage') || root.child($tenant).child('users').child(auth.uid).child('permissions').child('editor').val() === true || root.child($tenant).child('users').child(auth.uid).child('permissions').child('editDisabledProno').val() === true)"
               },
                "matches": {
-                ".write": "auth != null && (auth.uid == $uid || root.child($tenant).child('users').child(auth.uid).child('permissions').child('editor').val() === true)"
+                ".write": "auth != null && (auth.uid == $uid || root.child($tenant).child('users').child(auth.uid).child('permissions').child('editor').val() === true || root.child($tenant).child('users').child(auth.uid).child('permissions').child('editDisabledProno').val() === true)"
               },
-              ".read": "auth != null && (auth.uid == $uid || root.child($tenant).child('users').child(auth.uid).child('permissions').child('editor').val() === true)"
+              ".read": "auth != null && (auth.uid == $uid || root.child($tenant).child('users').child(auth.uid).child('permissions').child('editor').val() === true || root.child($tenant).child('users').child(auth.uid).child('permissions').child('editDisabledProno').val() === true)"
             }
           }
         },
