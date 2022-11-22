@@ -81,9 +81,9 @@ class FirebaseAPI {
                 displayName: userprofile.displayName || makeDisplayName(userAuth.email),
                 profilePicture: userprofile.profilePicture || '',
                 permissions: userprofile.permissions || {},
-                active: userpoints.active || true,
-                paid: userpoints.paid || false,
-                showPoints: userpoints.showPoints || true
+                active: (userpoints.active === undefined) ? true: userpoints.active,
+                paid: (userpoints.paid === undefined) ? false: userpoints.paid,
+                showPoints: (userpoints.showPoints === undefined) ? true: userpoints.showPoints,
               })
             })
             return () => { unsubscribe() }

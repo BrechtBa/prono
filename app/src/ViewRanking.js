@@ -77,7 +77,7 @@ function User(props){
       </Paper>
 
       <Dialog onClose={() => setDialogOpen(false)} open={dialogOpen}>
-        {user.paid ? (
+        {user.showPoints ? (
           <div style={{display: 'flex', flexDirection: 'column', padding: '20px'}}>
             {getRankingUserPointsDetail(rankingUser).map((val) => (
               <div key={val.key} style={{display: 'flex'}}>
