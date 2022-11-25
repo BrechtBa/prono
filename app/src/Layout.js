@@ -1,6 +1,5 @@
 import React, { useState, useContext } from 'react';
 import { UserContext } from "./UserProvider.js";
-import APIContext from './APIProvider.js';
 
 import { Switch, Route, Link, useHistory } from "react-router-dom";
 
@@ -169,9 +168,8 @@ function Navigation(props) {
 
 
 function PronoLayout(props) {
-
+  const api = props.api;
   const user = useContext(UserContext);
-  const api = useContext(APIContext);
 
   const history = useHistory();
   const classes = useStyles();
@@ -236,7 +234,7 @@ function PronoLayout(props) {
                 <Route path="/profile">  <ViewProfile/> </Route>
 
                 <Route path="/users"> <ViewUsers /> </Route>
-                <Route path="/settings"> <ViewSettings /> </Route>
+                <Route path="/settings"> <ViewSettings api={api}/> </Route>
                 <Route path="/teams"> <ViewTeams /> </Route>
                 <Route path="/matches"> <ViewMatches /> </Route>
                 <Route path="/groupstage"> <ViewGroupstage /> </Route>

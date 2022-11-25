@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 
 import Paper from '@material-ui/core/Paper';
@@ -10,7 +10,6 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 
 
-import APIContext from './APIProvider.js';
 import { PronoContext } from './PronoProvider.js';
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -62,18 +61,11 @@ function Prono(props) {
 }
 
 
-function TenantSettings() {
-  const [pronos, setPronos] = useState([]);
+function TenantSettings(props) {
+  const api = props.api;
 
-  const api = useContext(APIContext);
   const activeProno = useContext(PronoContext);
-
-  useEffect(() => {
-    return api.onPronosChanged(val => {
-      setPronos(val);
-    });
-  }, [api]);
-
+  const pronos = api.usePronos([]);
 
   const duplicateProno = (prono) => {
     api.duplicateProno(prono);
@@ -110,35 +102,18 @@ function TenantSettings() {
 
 
 
-function ViewSettings(){
-  const [currentStage, setCurrentStage] = useState('finished')
-  const [homeTeamResult, setHomeTeamResult] = useState('-1')
-  const [deadlines, setDeadlines] = useState({})
+function ViewSettings(props){
+  const api = props.api;
 
-  const api = useContext(APIContext);
   const prono = useContext(PronoContext);
 
-  useEffect(() => {
-    return api.onCurrentStageChanged(prono, val => {
-      setCurrentStage(val);
-    });
-  }, [api, prono]);
+  const currentStage = api.useCurrentStage(prono, 'finished');
+  const homeTeamResult = api.useHomeTeamResult(prono, '-1');
+  const deadlines = api.useDeadlines(prono, {});
 
   const handleCurrentStageChange = (e) =>{
     api.updateCurrentStage(prono, e.target.value)
   }
-
-  useEffect(() => {
-    return api.onHomeTeamResultChanged(prono, val => {
-      setHomeTeamResult(val);
-    });
-  }, [api, prono]);
-
-  useEffect(() => {
-    return api.onDeadlinesChanged(prono, val => {
-      setDeadlines(val);
-    });
-  }, [api, prono]);
 
   const handleHomeTeamResultChange = (e) => {
     api.updateHomeTeamResult(prono, e.target.value)
@@ -161,9 +136,6 @@ function ViewSettings(){
       let update = {}
       update[stage] = dt.getTime()
       api.updateDeadlines(prono, update)
-    }
-    else {
-      setDeadlines({...deadlines, [stage]: str});
     }
   }
 
@@ -229,7 +201,7 @@ function ViewSettings(){
         </div>
       </Paper>
 
-      <TenantSettings />
+      <TenantSettings api={api}/>
     </div>
   );
 

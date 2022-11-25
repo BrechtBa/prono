@@ -1,19 +1,11 @@
-import React, { createContext, useState, useEffect, useContext } from "react";
-
-import APIContext from './APIProvider.js';
-
+import React, { createContext } from "react";
 
 export const UserContext = createContext(null);
 
 
 function UserProvider(props){
-  const api = useContext(APIContext);
-
-  const [user, setUser] = useState(null)
-
-  useEffect(() => {
-    api.onAuthStateChanged( user => setUser(user));
-  }, [api]);
+  const api = props.api;
+  const user = api.useAuthUser(null)
 
   return (
     <UserContext.Provider value={user}>
