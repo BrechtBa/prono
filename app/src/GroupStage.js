@@ -57,6 +57,42 @@ const useStyles = makeStyles((theme: Theme) =>
 );
 
 
+function calculateGroupStagePoints(teams, matches) {
+
+  const points = teams.reduce((o, team) => ({ ...o, [team.key]: 0}), {})
+  const goalSaldo = teams.reduce((o, team) => ({ ...o, [team.key]: 0}), {})
+  const goalsScored = teams.reduce((o, team) => ({ ...o, [team.key]: 0}), {})
+
+  matches.forEach( (match) => {
+    if (match.score1 >= 0 && match.score2 >= 0) {
+      if ( match.score1 > match.score2){
+        points[match.team1.key] += 3;
+      }
+      else if ( match.score2 > match.score1){
+        points[match.team2.key] += 3;
+      }
+      else {
+        points[match.team1.key] += 1;
+        points[match.team2.key] += 1;
+      }
+      goalSaldo[match.team1.key] += match.score1 - match.score2
+      points[match.team1.key] += (match.score1 - match.score2) * 0.01
+      goalSaldo[match.team2.key] += match.score2 - match.score1
+      points[match.team2.key] += (match.score2 - match.score1) * 0.01
+
+      goalsScored[match.team1.key] += match.score1
+      points[match.team1.key] += match.score1 * 0.0001
+      goalsScored[match.team2.key] += match.score2
+      points[match.team2.key] += match.score2 * 0.0001
+
+    }
+  });
+
+  return points
+}
+
+
+
 export function Match(props) {
   const match = props.match;
   const onSave = props.onSave;
@@ -113,7 +149,15 @@ function GroupPointsDialog(props) {
   const [teams, setTeams] = useState([])
 
   useEffect(() => {
-    setTeams(JSON.parse(JSON.stringify(group.teams)));
+
+    const newTeams = JSON.parse(JSON.stringify(group.teams))
+    const calculatedTeamPoints = calculateGroupStagePoints(newTeams, group.matches);
+
+    newTeams.forEach((team) => {
+      team.points = calculatedTeamPoints[team.key];
+    });
+
+    setTeams(newTeams);
   }, [group]);
 
   const handleSave = () => {

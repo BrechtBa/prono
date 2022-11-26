@@ -170,7 +170,6 @@ function firebaseApi(auth, db, storage, tenant) {
             competition: pronodata.competition,
             deadlines: pronodata.deadlines,
             rules: pronodata.rules,
-            settings: pronodata.settings,
             userpoints: {},
             userpronos: {}
           }
