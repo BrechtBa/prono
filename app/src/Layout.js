@@ -233,12 +233,12 @@ function PronoLayout(props) {
                 <Route path="/rules">  <ViewRules api={api}/> </Route>
                 <Route path="/profile">  <ViewProfile/> </Route>
 
-                <Route path="/users"> <ViewUsers /> </Route>
+                <Route path="/users"> <ViewUsers api={api}/> </Route>
                 <Route path="/settings"> <ViewSettings api={api}/> </Route>
-                <Route path="/teams"> <ViewTeams /> </Route>
-                <Route path="/matches"> <ViewMatches /> </Route>
-                <Route path="/groupstage"> <ViewGroupstage /> </Route>
-                <Route path="/knockoutstage"> <ViewKnockoutstage /> </Route>
+                <Route path="/teams"> <ViewTeams api={api}/> </Route>
+                <Route path="/matches"> <ViewMatches api={api}/> </Route>
+                <Route path="/groupstage"> <ViewGroupstage api={api}/> </Route>
+                <Route path="/knockoutstage"> <ViewKnockoutstage api={api}/> </Route>
 
                 <Route path="/"> <ViewRanking/> </Route>
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 
 import Paper from '@material-ui/core/Paper';
@@ -6,7 +6,6 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 
-import APIContext from './APIProvider.js';
 import { PronoContext } from './PronoProvider.js';
 
 
@@ -119,10 +118,11 @@ function Match(props) {
 
 function ViewMatches(props) {
 
-  const api = useContext(APIContext);
+  const api = props.api;
   const prono = useContext(PronoContext);
 
-  const [matches, setMatches] = useState([]);
+  const matchesObject = api.useMatches(prono);
+  const matches = Object.entries(matchesObject).map(val => val[1])
 
   const updateMatch = (match, update) => {
     api.updateMatch(prono, match, update);
@@ -148,12 +148,6 @@ function ViewMatches(props) {
     }
     api.addMatch(prono, match);
   }
-
-  useEffect(() => {
-    api.onMatchesChanged(prono, matches => {
-      setMatches(Object.entries(matches).map(val => val[1]));
-    });
-  }, [api, prono]);
 
   const classes = useStyles();
 

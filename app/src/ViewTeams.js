@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 
 import Paper from '@material-ui/core/Paper';
@@ -8,7 +8,6 @@ import Dialog from '@material-ui/core/Dialog';
 
 import { TeamIcon } from './MatchUtils.js';
 
-import APIContext from './APIProvider.js';
 import { PronoContext } from './PronoProvider.js';
 
 
@@ -93,11 +92,12 @@ function Team(props) {
 
 
 function ViewTeams(props) {
-
-  const api = useContext(APIContext);
+  const api = props.api;
   const prono = useContext(PronoContext);
 
-  const [teams, setTeams] = useState([]);
+  const teamsObject = api.useTeams(prono);
+  // convert to list
+  const teams = Object.entries(teamsObject).map(val => val[1]);
 
   const updateTeam = (team, update) => {
     api.updateTeam(prono, team, update);
@@ -115,12 +115,6 @@ function ViewTeams(props) {
     }
     api.addTeam(prono, team);
   }
-
-  useEffect(() => {
-    api.onTeamsChanged(prono, teams => {
-      setTeams(Object.entries(teams).map(val => val[1]));
-    });
-  }, [api, prono]);
 
   const classes = useStyles();
 

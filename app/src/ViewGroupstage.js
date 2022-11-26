@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 
 import Paper from '@material-ui/core/Paper';
@@ -6,7 +6,6 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 
-import APIContext from './APIProvider.js';
 import { PronoContext } from './PronoProvider.js';
 import { TeamIcon, TeamSelect, MatchSelect } from './MatchUtils.js';
 
@@ -229,12 +228,12 @@ function Group(props) {
 
 function ViewGroupstage(props) {
 
-  const api = useContext(APIContext);
+  const api = props.api;
   const prono = useContext(PronoContext);
 
-  const [groups, setGroups] = useState([]);
-  const [matches, setMatches] = useState({});
-  const [teams, setTeams] = useState({});
+  const groups = api.useGroupStage(prono);
+  const matches = api.useMatches(prono);
+  const teams = api.useTeams(prono);
 
   const groupNames = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
 
@@ -268,25 +267,6 @@ function ViewGroupstage(props) {
     }
     api.addGroup(prono, group);
   }
-
-
-  useEffect(() => {
-    api.onGroupstageChanged(prono, groups => {
-      setGroups(groups);
-    });
-  }, [api, prono]);
-
-  useEffect(() => {
-    api.onMatchesChanged(prono, matches => {
-      setMatches(matches);
-    });
-  }, [api, prono]);
-
-  useEffect(() => {
-    api.onTeamsChanged(prono, teams => {
-      setTeams(teams);
-    });
-  }, [api, prono]);
 
   const classes = useStyles();
 

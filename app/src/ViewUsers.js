@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 
 import Paper from '@material-ui/core/Paper';
@@ -6,7 +6,6 @@ import Avatar from '@material-ui/core/Avatar';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 
-import APIContext from './APIProvider.js';
 import { PronoContext } from './PronoProvider.js';
 import ViewProno from './ViewProno.js'
 
@@ -21,8 +20,8 @@ const useStyles = makeStyles((theme: Theme) =>
 function User(props){
 
   const user = props.user;
+  const api = props.api;
 
-  const api = useContext(APIContext);
   const prono = useContext(PronoContext);
 
   const [pronoDialogOpen, setPronoDialogOpen] = useState(false);
@@ -57,7 +56,7 @@ function User(props){
       </Paper>
 
       <div>
-        {pronoDialogOpen && <ViewProno user={user}/>}
+        {pronoDialogOpen && <ViewProno user={user} api={api}/>}
       </div>
 
     </div>
@@ -68,17 +67,11 @@ function User(props){
 
 function ViewUsers(props) {
 
-  const api = useContext(APIContext);
+  const api = props.api;
   const prono = useContext(PronoContext);
 
-  const [users, setUsers] = useState([]);
+  const users = api.useUsers(prono)
   const [filterActive, setFilterActive] = useState(true);
-
-  useEffect(() => {
-    api.onUsersChanged(prono, users => {
-      setUsers(users);
-    });
-  }, [api, prono]);
 
   const classes = useStyles();
 
@@ -90,7 +83,7 @@ function ViewUsers(props) {
 
       <div>
         {users.filter((user) => !filterActive || user.active).map((user) => (
-          <User key={user.key} user={user} ranking={user.rank}/>
+          <User key={user.key} user={user} api={api}/>
         ))}
       </div>
     </div>

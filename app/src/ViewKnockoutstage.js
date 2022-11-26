@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 
 import Paper from '@material-ui/core/Paper';
@@ -6,7 +6,6 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 
-import APIContext from './APIProvider.js';
 import { PronoContext } from './PronoProvider.js';
 import { MatchSelect } from './MatchUtils.js';
 
@@ -150,11 +149,11 @@ function Stage(props) {
 
 function ViewKnockoutstage(props) {
 
-  const api = useContext(APIContext);
+  const api = props.api;
   const prono = useContext(PronoContext);
 
-  const [stages, setStages] = useState([]);
-  const [matches, setMatches] = useState({});
+  const stages = api.useKnockoutStage(prono);
+  const matches = api.useMatches(prono);
 
   const stageKeys = [2, 4, 6, 8, 16, 32]
   //  const stageNames = {
@@ -190,23 +189,11 @@ function ViewKnockoutstage(props) {
     api.addStage(prono, stage);
   }
 
-  useEffect(() => {
-    api.onKnockoutstageChanged(prono, stages => {
-      setStages(stages.sort((a, b) => a.key - b.key));
-    });
-  }, [api, prono]);
-
-  useEffect(() => {
-    api.onMatchesChanged(prono, matches => {
-      setMatches(matches);
-    });
-  }, [api, prono]);
-
   const classes = useStyles();
 
   return (
     <div className={classes.root}>
-      <h2 style={{color: '#ffffff'}}>Group stage</h2>
+      <h2 style={{color: '#ffffff'}}>Knockout stage</h2>
       <div>
         {stages.map((stage) => (
           <Paper key={stage.key}  style={{padding: '5px', marginBottom: '5px'}}>
