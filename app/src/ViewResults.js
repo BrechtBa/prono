@@ -1,7 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 
-
-import APIContext from './APIProvider.js';
 import { PronoContext } from './PronoProvider.js';
 import { UserContext } from "./UserProvider.js";
 import { GroupStage } from './GroupStage.js';
@@ -83,43 +81,14 @@ const getFullKnockoutStages = (knockoutstages, matches, teams) => {
 
 function ViewResults(props) {
 
-  const api = useContext(APIContext);
+  const api = props.api;
   const user = useContext(UserContext);
   const prono = useContext(PronoContext);
 
-  const [teams, setTeams] = useState({});
-  const [matches, setMatches] = useState({});
-  const [groupstage, setGroupstage] = useState([]);
-  const [knockoutstages, setKnockoutstages] = useState([]);
-
-  useEffect(() => {
-    return api.onTeamsChanged(prono, val => {
-      setTeams(val);
-      console.log('loaded teams', val)
-    });
-  }, [api, prono]);
-
-  useEffect(() => {
-    return api.onMatchesChanged(prono, val => {
-      setMatches(val);
-      console.log('loaded matches', val)
-    });
-  }, [api, prono]);
-
-  useEffect(() => {
-    return api.onGroupstageChanged(prono, val => {
-      setGroupstage(val);
-      console.log('loaded groupstage', val)
-    });
-  }, [api, prono]);
-
-  useEffect(() => {
-    return api.onKnockoutstageChanged(prono, val => {
-      setKnockoutstages(val);
-      console.log('loaded knockoutstages', val)
-    });
-  }, [api, prono]);
-
+  const teams = api.useTeams(prono);
+  const matches = api.useMatches(prono);
+  const groupstage = api.useGroupStage(prono);
+  const knockoutstages = api.useKnockoutStage(prono);
 
   const groups = getFullGroupstage(groupstage, matches, teams);
   console.log(groups)
@@ -130,7 +99,7 @@ function ViewResults(props) {
   return (
     <div>
       <h2 style={{color: '#ffffff'}}>Groepsfase</h2>
-      <GroupStage groups={groups} editable={user.permissions.editor || false} />
+      <GroupStage groups={groups} editable={user.permissions.editor || false} api={api}/>
 
       <h2 style={{color: '#ffffff'}}>Knockout fase</h2>
       <KnockoutStage stages={stages} editable={user.permissions.editor || false} teams={user.permissions.editor ? Object.keys(teams).map(key => teams[key]) : [] }/>

@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 
-import APIContext from './APIProvider.js';
 import { PronoContext } from './PronoProvider.js';
 import { UserContext } from "./UserProvider.js";
 import { GroupstageProno } from './GroupStage.js';
@@ -147,101 +146,25 @@ const getFullStageTeams = (teams, stageTeamsProno) => {
 
 
 function ViewProno(props) {
+  const api = props.api;
+
   const user = useContext(UserContext);
-  const api = useContext(APIContext);
   const prono = useContext(PronoContext);
 
-  const [teams, setTeams] = useState({});
-  const [matches, setMatches] = useState({});
-  const [groupstage, setGroupstage] = useState([]);
-  const [knockoutstages, setKnockoutstages] = useState([]);
-  const [deadlines, setDeadlines] = useState({});
+  const teams = api.useTeams(prono);
+  const matches = api.useMatches(prono);
+  const groupstage = api.useGroupStage(prono);
+  const knockoutstages = api.useKnockoutStage(prono);
+  const deadlines = api.useDeadlines(prono, {});
+  const currentStage = api.useCurrentStage(prono, 'finished');
 
   const pronoUser = props.user || user;
-  const [currentStage, setCurrentStage] = useState('finished');
 
-  const [matchesProno, setMatchesProno] = useState({});
-  const [groupWinnersProno, setGroupWinnersProno] = useState({});
-  const [stageTeamsProno, setStageTeamsProno] = useState({});
-  const [totalGoalsProno, setTotalGoalsProno] = useState(-1);
-  const [teamResultProno, setTeamResultProno] = useState('-1');
-
-  useEffect(() => {
-    return api.onTeamsChanged(prono, val => {
-      setTeams(val);
-      console.debug('loaded teams', val)
-    });
-  }, [api, prono]);
-
-  useEffect(() => {
-    return api.onMatchesChanged(prono, val => {
-      setMatches(val);
-      console.debug('loaded matches', val)
-    });
-  }, [api, prono]);
-
-  useEffect(() => {
-    return api.onGroupstageChanged(prono, val => {
-      setGroupstage(val);
-      console.debug('loaded groupstage', val)
-    });
-  }, [api, prono]);
-
-  useEffect(() => {
-    return api.onKnockoutstageChanged(prono, val => {
-      setKnockoutstages(val);
-      console.debug('loaded knockoutstages', val)
-    });
-  }, [api, prono]);
-
-  useEffect(() => {
-    return api.onCurrentStageChanged(prono, val => {
-      setCurrentStage(val);
-      console.debug('loaded current stage', val)
-    });
-  }, [api, prono]);
-
-  useEffect(() => {
-    return api.onUserPronoMatchesChanged(prono, pronoUser, val => {
-      setMatchesProno(val);
-      console.debug('loaded prono matches', val)
-    });
-  }, [api, prono, pronoUser]);
-
-  useEffect(() => {
-    return api.onUserPronoStageTeamsChanged(prono, pronoUser, val => {
-      setStageTeamsProno(val);
-      console.debug('loaded prono stage teams', val)
-    });
-  }, [api, prono, pronoUser]);
-
-  useEffect(() => {
-    return api.onUserPronoGroupWinnersChanged(prono, pronoUser, val => {
-      setGroupWinnersProno(val);
-      console.debug('loaded prono groupwinners', val)
-    });
-  }, [api, prono, pronoUser]);
-
-  useEffect(() => {
-    return api.onUserPronoTotalGoalsChanged(prono, pronoUser, val => {
-      setTotalGoalsProno(val);
-      console.debug('loaded prono total goals', val)
-    });
-  }, [api, prono, pronoUser]);
-
-  useEffect(() => {
-    return api.onUserPronoHomeTeamResultChanged(prono, pronoUser, val => {
-      setTeamResultProno(val);
-      console.debug('loaded prono team result', val)
-    });
-  }, [api, prono, pronoUser]);
-
-  useEffect(() => {
-    return api.onDeadlinesChanged(prono, val => {
-      setDeadlines(val);
-      console.debug('loaded deadlines', val)
-    });
-  }, [api, prono]);
+  const matchesProno = api.useUserPronoMatches(prono, pronoUser);
+  const groupWinnersProno = api.useUserPronoGroupWinners(prono, pronoUser);
+  const stageTeamsProno = api.useUserPronoStageTeams(prono, pronoUser);
+  const totalGoalsProno = api.useUserPronoTotalGoals(prono, pronoUser);
+  const teamResultProno = api.useUserPronoHomeTeamResult(prono, pronoUser);
 
   const groups = getFullGroupstage(groupstage, matches, teams, matchesProno, groupWinnersProno);
   const stages = getFullKnockoutStages(knockoutstages, matches, teams, matchesProno);

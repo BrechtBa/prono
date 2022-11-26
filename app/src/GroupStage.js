@@ -6,7 +6,6 @@ import Dialog from '@material-ui/core/Dialog';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 
-import APIContext from './APIProvider.js';
 import { PronoContext } from './PronoProvider.js';
 import { Disabled, TeamName, TeamIcon, TeamSelect, EditScoreDialog } from './MatchUtils.js';
 
@@ -168,10 +167,10 @@ function GroupStageGroup(props) {
   const group = props.group;
   const editable = props.editable;
   const editTeams = props.editTeams;
+  const api = props.api;
 
   const [groupPointsDialogOpen, setGroupPointsDialogOpen] = useState(false)
 
-  const api = useContext(APIContext);
   const prono = useContext(PronoContext);
 
   const saveMatch = (match, score1, score2, penalty1, penalty2, team1, team2) => {
@@ -216,6 +215,7 @@ function GroupStageGroup(props) {
 
 
 export function GroupStage(props) {
+  const api = props.api;
   const groups = props.groups;
   const editable = props.editable;
   const editTeams = props.editable;
@@ -223,7 +223,7 @@ export function GroupStage(props) {
   return (
     <div style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center'}}>
       {groups.map((group) => (
-        <GroupStageGroup key={group.key} group={group} editable={editable} editTeams={editTeams}/>
+        <GroupStageGroup key={group.key} group={group} editable={editable} editTeams={editTeams} api={api}/>
       ))}
     </div>
   );
@@ -273,13 +273,13 @@ function GroupwinnersDialog(props) {
 
 
 function GroupstagePronoGroup(props) {
+  const api = props.api;
   const currentStage = props.currentStage;
   const group = props.group;
   const user = props.user;
 
   const [groupwinnersDialogOpen, setGroupwinnersDialogOpen] = useState(false)
 
-  const api = useContext(APIContext);
   const prono = useContext(PronoContext);
 
   const saveMatch = (match, score1, score2, penalty1, penalty2) => {

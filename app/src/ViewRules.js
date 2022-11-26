@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 
-import APIContext from './APIProvider.js';
 import { PronoContext } from './PronoProvider.js';
 
 
@@ -107,8 +106,11 @@ function Rules(props) {
 }
 
 
-function ViewRules(){
-  const [rules, setRules] = useState({
+function ViewRules(props){
+  const api = props.api;
+  const prono = useContext(PronoContext);
+
+  const rules = api.useRules(prono, {
     groupstage: {},
     groupstageWinners: {},
     knockoutstageTeams: {},
@@ -118,42 +120,8 @@ function ViewRules(){
     prizes: {},
     cost: 10,
   })
-  const [groupstage, setGroupstage] = useState([]);
-  const [knockoutstages, setKnockoutstages] = useState([]);
-
-  const api = useContext(APIContext);
-  const prono = useContext(PronoContext);
-
-  useEffect(() => {
-    return api.onRulesChanged(prono, val => {
-      const rules = {
-        groupstage: val.groupstage || {},
-        groupstageWinners: val.groupstagewinners || {},
-        knockoutstageTeams: val.knockoutstageteams || {},
-        homeTeamTesult: val.hometeamresult || {},
-        knockoutstage: val.knockoutstage || {},
-        totalGoals: val.totalgoals || {},
-        prizes: val.prizes || {},
-        cost: val.cost,
-      };
-      setRules(rules);
-      console.debug('loaded rules', rules)
-    });
-  }, [api, prono]);
-
-  useEffect(() => {
-    return api.onGroupstageChanged(prono, val => {
-      setGroupstage(val);
-      console.debug('loaded groupstage', val)
-    });
-  }, [api, prono]);
-
-  useEffect(() => {
-    return api.onKnockoutstageChanged(prono, val => {
-      setKnockoutstages(val);
-      console.debug('loaded knockoutstages', val)
-    });
-  }, [api, prono]);
+  const groupstage = api.useGroupStage(prono)
+  const knockoutstages = api.useKnockoutStage(prono)
 
   const classes = useStyles();
 

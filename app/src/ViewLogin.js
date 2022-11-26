@@ -7,8 +7,6 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import Checkbox from '@material-ui/core/Checkbox';
 
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "./firebase.js";
-
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     error: {
@@ -53,6 +51,7 @@ function Terms(){
 
 
 function Register(props) {
+  const api = props.api;
   const close = props.close;
 
   const [email, setEmail] = useState("");
@@ -78,7 +77,7 @@ function Register(props) {
   const register = () => {
     if(termsChecked){
       if(password === passwordRepeat){
-        createUserWithEmailAndPassword(email.trim(), password, () => {
+        api.createUserWithEmailAndPassword(email.trim(), password, () => {
           setEmail('');
           setPassword('');
           setPasswordRepeat('');
@@ -149,13 +148,14 @@ function Register(props) {
 
 
 function ResetPassword(props){
+  const api = props.api;
   const [email, setEmail] = useState('');
   const [error, setError] = useState(null);
   const [message, setMessage] = useState(null);
   const close = props.close;
 
   const reset = () => {
-    sendPasswordResetEmail(email.trim(), () => {
+    api.sendPasswordResetEmail(email.trim(), () => {
       setError(null)
       setMessage('Email verstuurd, controleer je email voor een reset link.')
     }, (error) => {
@@ -197,7 +197,8 @@ function ResetPassword(props){
 }
 
 
-function ViewLogin() {
+function ViewLogin(props) {
+  const api = props.api;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
@@ -215,7 +216,7 @@ function ViewLogin() {
 
   const signInWithEmailAndPasswordHandler = (event, email, password) => {
     event.preventDefault();
-    signInWithEmailAndPassword(email.trim(), password, () => {}, (error) => {
+    api.signInWithEmailAndPassword(email.trim(), password, () => {}, (error) => {
       console.error("Error signing in with password and email", error);
       if(error.code === 'auth/invalid-email'){
         setError(`Ongeldig email adres! "${email}"`);
@@ -263,13 +264,13 @@ function ViewLogin() {
 
       <Dialog onClose={() => setRegisterDialogOpen(false)} open={registerDialogOpen}>
         <div style={{padding: '20px', minWidth: '320px', maxWidth: '100%'}}>
-          <Register close={() => setRegisterDialogOpen(false)}/>
+          <Register close={() => setRegisterDialogOpen(false)} api={api}/>
         </div>
       </Dialog>
 
       <Dialog onClose={() => setResetDialogOpen(false)} open={resetDialogOpen}>
         <div style={{padding: '20px', minWidth: '320px', maxWidth: '100%'}}>
-          <ResetPassword close={() => setResetDialogOpen(false)}/>
+          <ResetPassword close={() => setResetDialogOpen(false)} api={api}/>
         </div>
       </Dialog>
     </div>

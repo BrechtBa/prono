@@ -13,7 +13,7 @@ const firebaseConfig = {
   appId: "1:365760395874:web:b534013572afab7af0ef3b"
 };
 
-firebase.initializeApp(firebaseConfig);
+//firebase.initializeApp(firebaseConfig);
 
 export const auth = firebase.auth();
 export const db = firebase.database();
@@ -661,4 +661,4 @@ export const getApi = (tenantId) => {
   return api;
 }
 
-export const api = getApi('pronogroupid1')
+//export const api = getApi('pronogroupid1')

@@ -3,7 +3,6 @@ import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 
 import Paper from '@material-ui/core/Paper';
 
-import APIContext from './APIProvider.js';
 import { PronoContext } from './PronoProvider.js';
 
 import { TeamName, TeamIcon, EditScoreDialog, Disabled } from './MatchUtils.js';
@@ -156,6 +155,7 @@ export function KnockoutStage(props) {
   const editable = props.editable;
   const editTeams = true;
   const teams = props.teams;
+  const api = props.api;
 
   const [openStage, setOpenStage] = useState('16')
 
@@ -178,7 +178,6 @@ export function KnockoutStage(props) {
     }
   }
 
-  const api = useContext(APIContext);
   const prono = useContext(PronoContext);
 
   const saveMatch = (match, score1, score2, penalty1, penalty2, team1, team2) => {
@@ -215,7 +214,7 @@ export function KnockoutStageProno(props) {
   const currentStage = props.currentStage;
   const stages = props.stages;
   const columns = getMatchColumns(stages);
-
+  const api = props.api;
   const [openStage, setOpenStage] = useState('16')
 
   const getStageGrow = (stage, openStage) => {
@@ -235,7 +234,6 @@ export function KnockoutStageProno(props) {
     }
   }
 
-  const api = useContext(APIContext);
   const prono = useContext(PronoContext);
 
   const saveMatch = (match, score1, score2, penalty1, penalty2) => {

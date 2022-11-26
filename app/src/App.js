@@ -8,7 +8,6 @@ import PronoProvider from './PronoProvider.js';
 import UserProvider from "./UserProvider.js";
 import PronoLayout from './Layout.js';
 
-import { getApi } from "./firebase.js";
 import { getFirebaseApi } from './firebase-hooks.js';
 
 const redTheme = createMuiTheme({
@@ -50,14 +49,15 @@ const redTheme = createMuiTheme({
 });
 
 
+const tenantId = 'pronogroupid1';
+const api = getFirebaseApi(tenantId);
+
 function App() {
-  const tenantId = 'pronogroupid1';
-  const api = getFirebaseApi(tenantId);
 
   return (
     <div className="App" style={{height: '100%'}}>
       <ThemeProvider theme={redTheme}>
-        <APIContext.Provider value={getApi(tenantId)}>
+        <APIContext.Provider value={api}>
           <PronoProvider api={api}>
             <UserProvider api={api}>
               <BrowserRouter>

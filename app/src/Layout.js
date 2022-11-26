@@ -227,10 +227,10 @@ function PronoLayout(props) {
             <main className={classes.content}>
               <Toolbar />
               <Switch>
-                <Route path="/ranking"> <ViewRanking/> </Route>
-                <Route path="/prono"> <ViewProno/> </Route>
-                <Route path="/results"> <ViewResults/> </Route>
-                <Route path="/rules">  <ViewRules/> </Route>
+                <Route path="/ranking"> <ViewRanking api={api}/> </Route>
+                <Route path="/prono"> <ViewProno api={api}/> </Route>
+                <Route path="/results"> <ViewResults api={api}/> </Route>
+                <Route path="/rules">  <ViewRules api={api}/> </Route>
                 <Route path="/profile">  <ViewProfile/> </Route>
 
                 <Route path="/users"> <ViewUsers /> </Route>
@@ -251,7 +251,7 @@ function PronoLayout(props) {
   else {
     return (
       <div className={classes.root}>
-        <ViewLogin />
+        <ViewLogin api={api}/>
       </div>
     )
   }
