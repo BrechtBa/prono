@@ -7,7 +7,6 @@ import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 
-import APIContext from './APIProvider.js';
 import { PronoContext } from './PronoProvider.js';
 
 import { TeamName, TeamIcon, Disabled } from './MatchUtils.js';
@@ -127,10 +126,10 @@ function KnockoutStageTeamsPronoStage(props) {
   const pronoStage = props.pronoStage;
   const selectedTeams = props.selectedTeams;
   const teams = props.teams;
+  const api = props.api;
 
   const [editTeamsDialogOpen, setEditTeamsDialogOpen] = useState(false)
 
-  const api = useContext(APIContext);
   const prono = useContext(PronoContext);
 
   const saveStageTeams = (selectedTeams) => {

@@ -3,12 +3,11 @@ import { BrowserRouter } from "react-router-dom";
 import { ThemeProvider } from '@material-ui/core/styles';
 import { unstable_createMuiStrictModeTheme as createMuiTheme } from '@material-ui/core';
 
-import APIContext from "./APIProvider.js";
 import PronoProvider from './PronoProvider.js';
 import UserProvider from "./UserProvider.js";
 import PronoLayout from './Layout.js';
 
-import { getFirebaseApi } from './firebase-hooks.js';
+import { getApi } from './firebase.js';
 
 const redTheme = createMuiTheme({
   palette: {
@@ -50,14 +49,13 @@ const redTheme = createMuiTheme({
 
 
 const tenantId = 'pronogroupid1';
-const api = getFirebaseApi(tenantId);
+const api = getApi(tenantId);
 
 function App() {
 
   return (
     <div className="App" style={{height: '100%'}}>
       <ThemeProvider theme={redTheme}>
-        <APIContext.Provider value={api}>
           <PronoProvider api={api}>
             <UserProvider api={api}>
               <BrowserRouter>
@@ -65,7 +63,6 @@ function App() {
               </BrowserRouter>
             </UserProvider>
           </PronoProvider>
-        </APIContext.Provider>
       </ThemeProvider>
 
     </div>

@@ -7,7 +7,6 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import TextField from '@material-ui/core/TextField';
 
-import APIContext from './APIProvider.js';
 import { UserContext } from "./UserProvider.js";
 
 
@@ -27,9 +26,9 @@ const resizeFile = (file) =>
     );
   });
 
-function ViewProfile(){
+function ViewProfile(props){
+  const api = props.api;
 
-  const api = useContext(APIContext);
   const user = useContext(UserContext);
   const [editDisplayNameOpen, setEditDisplayNameOpen] = useState(false)
   const [newDisplayName, setNewDisplayName] = useState('')

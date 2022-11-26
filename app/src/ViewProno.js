@@ -214,21 +214,21 @@ function ViewProno(props) {
     <div>
       <h2 style={{color: '#ffffff'}}>Groepsfase</h2>
       <DeadlineMessage deadline={deadlines['groupstage']} complete={groupstageComplete(groups)} active={currentStage === 'groupstage'}/>
-      <GroupstageProno groups={groups} user={pronoUser} currentStage={currentStage} />
+      <GroupstageProno groups={groups} user={pronoUser} currentStage={currentStage}  api={api}/>
 
       <h2 style={{color: '#ffffff'}}>Teams in elke eliminatie fase</h2>
       <DeadlineMessage deadline={deadlines['groupstage']} complete={stageTeamsComplete(stageTeams)} active={currentStage === 'groupstage'}/>
-      <KnockoutStageTeamsProno stageTeams={stageTeams} teams={teams} user={pronoUser} currentStage={currentStage}/>
+      <KnockoutStageTeamsProno stageTeams={stageTeams} teams={teams} user={pronoUser} currentStage={currentStage} api={api} />
 
       <h2 style={{color: '#ffffff'}}>Extra punten</h2>
       <DeadlineMessage deadline={deadlines['groupstage']} complete={totalGoalsComplete(totalGoalsProno)} active={currentStage === 'groupstage'}/>
-      <TotalGoalsProno goals={totalGoalsProno} user={pronoUser} currentStage={currentStage}/>
+      <TotalGoalsProno goals={totalGoalsProno} user={pronoUser} currentStage={currentStage} api={api} />
 
       <DeadlineMessage deadline={deadlines['groupstage']} complete={teamResultPronoComplete(teamResultProno)} active={currentStage === 'groupstage'}/>
-      <TeamResultProno stage={teamResultProno} user={pronoUser} team={{abbreviation: "BEL", icon: "images/flags/BE.png", name: "België"}} currentStage={currentStage}/>
+      <TeamResultProno stage={teamResultProno} user={pronoUser} team={{abbreviation: "BEL", icon: "images/flags/BE.png", name: "België"}} currentStage={currentStage} api={api} />
 
       <h2 style={{color: '#ffffff'}}>Knockout fase</h2>
-      <KnockoutStageProno stages={stages} user={pronoUser} currentStage={currentStage}/>
+      <KnockoutStageProno stages={stages} user={pronoUser} currentStage={currentStage} api={api} />
 
     </div>
   );

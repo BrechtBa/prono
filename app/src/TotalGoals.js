@@ -5,7 +5,6 @@ import Dialog from '@material-ui/core/Dialog';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 
-import APIContext from './APIProvider.js';
 import { PronoContext } from './PronoProvider.js';
 import { Disabled } from './MatchUtils.js';
 
@@ -14,6 +13,9 @@ export function TotalGoalsProno(props) {
   const user = props.user;
   const currentStage = props.currentStage;
   const goals = props.goals;
+  const api = props.api;
+
+  const prono = useContext(PronoContext);
 
   const [dialogGoals, setDialogGoals] = useState('')
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -21,9 +23,6 @@ export function TotalGoalsProno(props) {
   useEffect(() => {
     setDialogGoals(goals)
   }, [user, goals]);
-
-  const api = useContext(APIContext);
-  const prono = useContext(PronoContext);
 
   const validateGoals = (goals) => {
     return (goals === '') || (parseInt(goals) >= 0);

@@ -7,7 +7,6 @@ import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
 import Button from '@material-ui/core/Button';
 
-import APIContext from './APIProvider.js';
 import { PronoContext } from './PronoProvider.js';
 
 import { Disabled, TeamName, TeamIcon } from './MatchUtils.js';
@@ -28,6 +27,7 @@ export function TeamResultProno(props) {
   const team = props.team;
   const currentStage = props.currentStage;
   const stage = props.stage;
+  const api = props.api;
 
   const [dialogStage, setDialogStage] = useState('-1')
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -36,7 +36,6 @@ export function TeamResultProno(props) {
     setDialogStage(stage || '-1')
   }, [user, stage]);
 
-  const api = useContext(APIContext);
   const prono = useContext(PronoContext);
 
   const handleChange = (e) => {

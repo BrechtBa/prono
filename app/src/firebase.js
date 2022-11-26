@@ -534,6 +534,19 @@ function firebaseApi(auth, db, storage, tenant) {
       return db.ref(`${tenant}/pronodata/${prono}/userpronos/${user.key}/groupwinners/${group.key}`).set(obj)
     },
 
+    updateStageTeamsProno: (prono, user, stage, teams) => {
+      const teamKeys = teams.map((team) => {return team.key;})
+      return db.ref(`${tenant}/pronodata/${prono}/userpronos/${user.key}/knockoutstageteams/${stage.key}`).set(teamKeys)
+    },
+
+    updateTotalGoalsProno: (prono, user, goals) => {
+      return db.ref(`${tenant}/pronodata/${prono}/userpronos/${user.key}/totalgoals`).set(goals)
+    },
+
+    updateTeamResultProno: (prono, user, stage) => {
+      return db.ref(`${tenant}/pronodata/${prono}/userpronos/${user.key}/hometeamresult`).set(stage)
+    },
+
     useUserPronoMatches: (prono, user) => {
       const [value, setValue] = useState({});
       useEffect(() => {
@@ -707,7 +720,7 @@ function firebaseApi(auth, db, storage, tenant) {
 }
 
 
-export function getFirebaseApi(tenant){
+export function getApi(tenant){
 
   const firebaseConfig = {
     apiKey: "AIzaSyCa8aBURSPVw6ayEYpZBdlhiA0DCv1LH5A",
