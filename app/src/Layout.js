@@ -240,7 +240,7 @@ function PronoLayout(props) {
                 <Route path="/groupstage"> <ViewGroupstage api={api}/> </Route>
                 <Route path="/knockoutstage"> <ViewKnockoutstage api={api}/> </Route>
 
-                <Route path="/"> <ViewRanking/> </Route>
+                <Route path="/"> <ViewRanking api={api}/> </Route>
 
               </Switch>
             </main>

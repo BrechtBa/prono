@@ -246,7 +246,7 @@ function GroupStageGroup(props) {
               <div className={classes.team1} style={{marginLeft: '15px'}}>
                 <TeamName className={classes.TeamName} team={team}/>
               </div>
-              <div style={{width: '50px'}}>{Math.floor(team.points)}</div>
+              <div style={{width: '50px'}}>{Math.round(team.points)}</div>
             </div>
           ))}
         </div>
