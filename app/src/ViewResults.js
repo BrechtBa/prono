@@ -102,7 +102,7 @@ function ViewResults(props) {
       <GroupStage groups={groups} editable={user.permissions.editor || false} api={api}/>
 
       <h2 style={{color: '#ffffff'}}>Knockout fase</h2>
-      <KnockoutStage stages={stages} editable={user.permissions.editor || false} teams={user.permissions.editor ? Object.keys(teams).map(key => teams[key]) : [] }/>
+      <KnockoutStage stages={stages} editable={user.permissions.editor || false} teams={user.permissions.editor ? Object.keys(teams).map(key => teams[key]) : [] } api={api}/>
 
     </div>
   );
