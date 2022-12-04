@@ -226,8 +226,9 @@ function getKnockoutstageTeams(tenantId, pronoId){
             snapshot.forEach(function(stage){
                   stages.push(stage.key)
                   stageTeams[stage.key] = []
-                  Object.entries(stage.matches || {}).map(val => val[1]).forEach(function(matchid){
-                      match = matchesSnapshot.child(matchid.val())
+                  console.log(stage.val().matches)
+                  Object.entries(stage.val().matches || {}).map(val => val[1]).forEach(function(matchid){
+                      match = matchesSnapshot.child(matchid)
                       team1 = match.child('team1').val()
                       team2 = match.child('team2').val()
                       if(team1){
