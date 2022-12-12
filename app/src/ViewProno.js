@@ -4,10 +4,10 @@ import { PronoContext } from './PronoProvider.js';
 import { UserContext } from "./UserProvider.js";
 import { GroupstageProno } from './GroupStage.js';
 import { KnockoutStageProno } from './KnockoutStage.js';
-import { KnockoutStageTeamsProno, pronoStages } from './KnockoutStageTeams.js';
-import { TotalGoalsProno } from './TotalGoals.js'
-import { TeamResultProno } from './TeamResult.js'
-import { DeadlineMessage } from './MatchUtils.js'
+import { KnockoutStageTeamsProno, pronoStages } from './prono/KnockoutStageTeams.js';
+import { TotalGoalsProno } from './prono/TotalGoals.js'
+import { TeamResultProno } from './prono/TeamResult.js'
+import { DeadlineMessage } from './prono/PronoUtils.js'
 
 
 const getFullGroupstage = (groupstage, matches, teams, matchesProno, groupWinnersProno) => {

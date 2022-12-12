@@ -5,8 +5,8 @@ import Dialog from '@material-ui/core/Dialog';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 
-import { PronoContext } from './PronoProvider.js';
-import { Disabled } from './MatchUtils.js';
+import { PronoContext } from '../PronoProvider.js';
+import { Disabled } from './PronoUtils.js';
 
 
 export function TotalGoalsProno(props) {

@@ -7,7 +7,8 @@ import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 
 import { PronoContext } from './PronoProvider.js';
-import { Disabled, TeamName, TeamIcon, TeamSelect, EditScoreDialog } from './MatchUtils.js';
+import { Disabled } from './prono/PronoUtils.js';
+import { TeamName, TeamIcon, TeamSelect, EditScoreDialog } from './MatchUtils.js';
 
 
 const useStyles = makeStyles((theme: Theme) =>

@@ -7,9 +7,9 @@ import Button from '@material-ui/core/Button';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 
-import { PronoContext } from './PronoProvider.js';
-
-import { TeamName, TeamIcon, Disabled } from './MatchUtils.js';
+import { PronoContext } from '../PronoProvider.js';
+import { TeamName, TeamIcon } from '../MatchUtils.js';
+import { Disabled } from './PronoUtils.js';
 
 
 const useStyles = makeStyles((theme: Theme) =>

@@ -7,9 +7,9 @@ import MenuItem from '@material-ui/core/MenuItem';
 import InputLabel from '@material-ui/core/InputLabel';
 import Button from '@material-ui/core/Button';
 
-import { PronoContext } from './PronoProvider.js';
-
-import { Disabled, TeamName, TeamIcon } from './MatchUtils.js';
+import { PronoContext } from '../PronoProvider.js';
+import { Disabled } from './PronoUtils.js';
+import { TeamName, TeamIcon } from '../MatchUtils.js';
 
 
 const stageResultText = [

@@ -4,8 +4,8 @@ import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 
 import { PronoContext } from './PronoProvider.js';
-
-import { TeamName, TeamIcon, EditScoreDialog, Disabled } from './MatchUtils.js';
+import { Disabled } from './prono/PronoUtils.js';
+import { TeamName, TeamIcon, EditScoreDialog } from './MatchUtils.js';
 
 
 const useStyles = makeStyles((theme: Theme) =>
