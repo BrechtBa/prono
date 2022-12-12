@@ -8,7 +8,7 @@ import { Disabled } from './prono/PronoUtils.js';
 import { TeamName, TeamIcon, EditScoreDialog } from './MatchUtils.js';
 
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     group: {
       position: 'relative',

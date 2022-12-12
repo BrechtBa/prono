@@ -36,7 +36,7 @@ import Version from './Version.js';
 const drawerWidth = 280;
 
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     root: {
       display: 'flex',

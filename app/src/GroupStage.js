@@ -11,7 +11,7 @@ import { Disabled } from './prono/PronoUtils.js';
 import { TeamName, TeamIcon, TeamSelect, EditScoreDialog } from './MatchUtils.js';
 
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     group: {
       width: '100%',

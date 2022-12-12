@@ -12,7 +12,7 @@ import { TeamName, TeamIcon } from '../MatchUtils.js';
 import { Disabled } from './PronoUtils.js';
 
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     teamIcon: {
       maxWidth: '30px', maxHeight: '30px'
