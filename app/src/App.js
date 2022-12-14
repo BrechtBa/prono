@@ -7,7 +7,7 @@ import PronoProvider from './PronoProvider.js';
 import UserProvider from "./UserProvider.js";
 import PronoLayout from './Layout.js';
 
-import { getApi } from './firebase.js';
+import { getApi } from './repository/firebase.js';
 
 const redTheme = createMuiTheme({
   palette: {
