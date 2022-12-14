@@ -223,21 +223,27 @@ function getKnockoutstageTeams(tenantId, pronoId){
             var stageTeams = {}
 
             // get the teams in all stages
-            snapshot.forEach(function(stage){
-                  stages.push(stage.key)
-                  stageTeams[stage.key] = []
-                  console.log(stage.val().matches)
-                  Object.entries(stage.val().matches || {}).map(val => val[1]).forEach(function(matchid){
-                      match = matchesSnapshot.child(matchid)
-                      team1 = match.child('team1').val()
-                      team2 = match.child('team2').val()
-                      if(team1){
-                          stageTeams[stage.key].push(team1)
-                      }
-                      if(team2){
-                          stageTeams[stage.key].push(team2)
-                      }
-                  });
+            snapshot.forEach((stage) => {
+                stages.push(stage.key)
+                stageTeams[stage.key] = []
+
+                Object.entries(stage.val().matches || {}).forEach(([key, matchid]) => {
+                    // avoid counting teams in the 3rd place match
+                    if(key < stage.key / 2) {
+                    match = matchesSnapshot.child(matchid)
+                    team1 = match.child('team1').val()
+                    team2 = match.child('team2').val()
+                    if(team1){
+                        stageTeams[stage.key].push(team1)
+                    }
+                    if(team2){
+                        stageTeams[stage.key].push(team2)
+                    }
+
+
+                    }
+                    
+                });
             });
 
             // add the winner if available
