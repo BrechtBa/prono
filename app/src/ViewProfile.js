@@ -69,6 +69,7 @@ function ViewProfile(props){
           </div>
         </div>
       </Paper>
+
       <Dialog onClose={() => setEditDisplayNameOpen(false)} open={editDisplayNameOpen}>
         <div style={{padding: '20px'}}>
           <form>
@@ -81,6 +82,7 @@ function ViewProfile(props){
           </form>
         </div>
       </Dialog>
+      
     </div>
 
   );

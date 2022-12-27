@@ -11,10 +11,11 @@ import { getApi } from './repository/firebase.js';
 
 import { PronoWrapper } from './Layout.js';
 import ViewRanking from './ViewRanking.js';
+import ViewProfile from './ViewProfile.js';
 // import ViewProno from './ViewProno.js';
 // import ViewResults from './ViewResults.js';
 // import ViewRules from './ViewRules.js';
-// import ViewProfile from './ViewProfile.js';
+
 // import ViewSettings from './ViewSettings.js';
 // import ViewUsers from './ViewUsers.js';
 // import ViewMatches from './ViewMatches.js';
@@ -72,7 +73,6 @@ function App() {
                   <Route path="/:squad/prono"> <ViewProno api={api}/> </Route>
                   <Route path="/:squad/results"> <ViewResults api={api}/> </Route>
                   <Route path="/:squad/rules">  <ViewRules api={api}/> </Route>
-                  <Route path="/:squad/profile">  <ViewProfile/> </Route>
 
                   <Route path="/users"> <ViewUsers api={api}/> </Route>
                   <Route path="/settings"> <ViewSettings api={api}/> </Route>
@@ -82,6 +82,7 @@ function App() {
                   <Route path="/knockoutstage"> <ViewKnockoutstage api={api}/> </Route>*/}
                   <Route path="/:squad" element={ <PronoWrapper api={api}/> } > 
 
+                    <Route path="profile" element={ <ViewProfile api={api}/> } /> 
                     <Route path="ranking" element={ <ViewRanking api={api}/> } /> 
                     {/* <Route path="prono" element={ <ViewProno api={api}/> } /> */}
                     <Route path="" element={ <ViewRanking api={api}/> } /> 

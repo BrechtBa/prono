@@ -19,12 +19,10 @@ body {
   background: linear-gradient(#DD0000, #440000);
 }
 
-.MenuLink {
-  color: #333333;
-  text-decoration: none;
-}
-
 .MenuUser {
   background-color: #ab0000; 
   color: #ffffff;
+}
+Button {
+  color: #333333;
 }

@@ -18,6 +18,7 @@ import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 
+import { useTheme } from '@mui/material/styles';
 
 import ViewLogin from './ViewLogin.js';
 
@@ -80,9 +81,11 @@ function Navigation(props) {
     path: 'knockoutstage'
   }]
 
+  const theme = useTheme();
+
   const navigationItem = (link, index) => {
     return (
-      <Link key={index} to={link.path} style={{width: 'auto'}} className="MenuLink" onClick={onNavigation()}>
+      <Link key={index} to={link.path} style={{width: 'auto', textDecoration: 'none', color: theme.palette.text.primary}} onClick={onNavigation()}>
         <ListItemButton key={link.title}>
           <ListItemText primary={link.title} />
         </ListItemButton>
@@ -115,6 +118,8 @@ export function PronoWrapper(props) {
   
   const user = useContext(UserContext);
 
+  const theme = useTheme();
+
   if(squadName !== null){
 
     if(user !== null){
@@ -124,7 +129,7 @@ export function PronoWrapper(props) {
     }
     else {
       return (
-        <div style={{display: 'flex', minHeight: '100%'}} className="MainWrapper">
+        <div style={{display: 'flex', minHeight: '100%', background: theme.palette.background.gradient}}>
           <ViewLogin api={api}/> 
         </div>
       );
@@ -132,7 +137,7 @@ export function PronoWrapper(props) {
   }
   else {
     return (
-      <div style={{display: 'flex', minHeight: '100%'}} className="MainWrapper">
+      <div style={{display: 'flex', minHeight: '100%', background: theme.palette.background.gradient}} className="MainWrapper">
         no squad selected
       </div>
     );
@@ -159,11 +164,13 @@ export function PronoLayout(props) {
 
   const showProfilePage = () => {
     setNavigationOpen(false);
-    navigate('/profile');
+    navigate('profile');
   }
 
+  const theme = useTheme();
+
   return (
-    <div style={{display: 'flex', minHeight: '100%'}} className="MainWrapper">
+    <div style={{display: 'flex', minHeight: '100%', background: theme.palette.background.gradient}}>
       <CssBaseline />
 
       <AppBar position="fixed">
