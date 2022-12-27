@@ -1,6 +1,5 @@
 import React, { useContext } from 'react';
 
-import { PronoContext } from './PronoProvider.js';
 import { UserContext } from "./UserProvider.js";
 import { GroupstageProno } from './GroupStage.js';
 import { KnockoutStageProno } from './KnockoutStage.js';
@@ -149,8 +148,8 @@ function ViewProno(props) {
   const api = props.api;
 
   const user = useContext(UserContext);
-  const prono = useContext(PronoContext);
 
+  const prono = api.useProno();
   const teams = api.useTeams(prono);
   const matches = api.useMatches(prono);
   const groupstage = api.useGroupStage(prono);

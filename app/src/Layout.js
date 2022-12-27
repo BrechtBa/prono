@@ -1,92 +1,34 @@
 import React, { useState, useContext } from 'react';
 import { UserContext } from "./UserProvider.js";
 
-import { Switch, Route, Link, useHistory } from "react-router-dom";
+import { Link, useNavigate, Outlet, useParams } from "react-router-dom";
 
-import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
-import SwipeableDrawer from '@material-ui/core/SwipeableDrawer';
-import AppBar from '@material-ui/core/AppBar';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Toolbar from '@material-ui/core/Toolbar';
+import SwipeableDrawer from '@mui/material/SwipeableDrawer';
+import AppBar from '@mui/material/AppBar';
+import CssBaseline from '@mui/material/CssBaseline';
+import Toolbar from '@mui/material/Toolbar';
 
-import Typography from '@material-ui/core/Typography';
-import Avatar from '@material-ui/core/Avatar';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
+import Typography from '@mui/material/Typography';
+import Avatar from '@mui/material/Avatar';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemText from '@mui/material/ListItemText';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
 
-import ViewRanking from './ViewRanking.js';
-import ViewProno from './ViewProno.js';
-import ViewResults from './ViewResults.js';
-import ViewRules from './ViewRules.js';
+
 import ViewLogin from './ViewLogin.js';
-import ViewProfile from './ViewProfile.js';
-import ViewSettings from './ViewSettings.js';
-import ViewUsers from './ViewUsers.js';
-import ViewMatches from './ViewMatches.js';
-import ViewTeams from './ViewTeams.js';
-import ViewGroupstage from './ViewGroupstage.js';
-import ViewKnockoutstage from './ViewKnockoutstage.js';
 
 import Version from './Version.js';
-
-const drawerWidth = 280;
-
-
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    root: {
-      display: 'flex',
-      minHeight: '100%',
-      background: theme.palette.background.gradient,
-    },
-
-    drawer: {
-      width: drawerWidth,
-      flexShrink: 0,
-    },
-
-    drawerPaper: {
-      width: drawerWidth,
-    },
-
-    content: {
-      flexGrow: 1,
-      padding: theme.spacing(3),
-    },
-
-    user: {
-      backgroundColor: theme.palette.background.default,
-      color: theme.palette.text.headers,
-      cursor: 'pointer',
-    },
-
-    navigationItem: {
-      textDecoration: 'none',
-      color: theme.palette.primary.contrastText,
-      width: 'auto',
-    },
-
-    version: {
-      marginLeft: '10px',
-      marginTop: '30px'
-    },
-  }),
-
-
-);
 
 
 function User(props) {
   const user = props.user
 
-  const classes = useStyles();
-
   return (
-    <div className={classes.user}>
+    <div style={{cursor: 'pointer'}} className="MenuUser">
       <div style={{display: 'flex', justifyContent:'center', paddingTop: '10px'}}>
         <Avatar alt={user.displayName} src={user.profilePicture} style={{width: '120px', height: '120px'}}/>
       </div>
@@ -137,14 +79,13 @@ function Navigation(props) {
     title: 'Knockoutstage',
     path: 'knockoutstage'
   }]
-  const classes = useStyles();
 
   const navigationItem = (link, index) => {
     return (
-      <Link key={index} to={link.path} className={classes.navigationItem} onClick={onNavigation()}>
-        <ListItem button key={link.title}>
+      <Link key={index} to={link.path} style={{width: 'auto'}} className="MenuLink" onClick={onNavigation()}>
+        <ListItemButton key={link.title}>
           <ListItemText primary={link.title} />
-        </ListItem>
+        </ListItemButton>
       </Link>
     );
   }
@@ -166,13 +107,45 @@ function Navigation(props) {
   );
 }
 
+export function PronoWrapper(props) {
 
-function PronoLayout(props) {
   const api = props.api;
+  const { squad } = useParams();
+  const squadName = api.useSquadName(squad);
+  
   const user = useContext(UserContext);
 
-  const history = useHistory();
-  const classes = useStyles();
+  if(squadName !== null){
+
+    if(user !== null){
+      return (
+        <PronoLayout api={api} user={user} squad={squad} squadName={squadName} />
+      );
+    }
+    else {
+      return (
+        <div style={{display: 'flex', minHeight: '100%'}} className="MainWrapper">
+          <ViewLogin api={api}/> 
+        </div>
+      );
+    }
+  }
+  else {
+    return (
+      <div style={{display: 'flex', minHeight: '100%'}} className="MainWrapper">
+        no squad selected
+      </div>
+    );
+  }
+}
+
+export function PronoLayout(props) {
+  const api = props.api;
+  const user = props.user;
+  const squadName = props.squadName;
+  
+  const navigate = useNavigate();
+
   const [navigationOpen, setNavigationOpen] = useState(false);
 
   const toggleNavigation = (open) => (event) => {
@@ -184,78 +157,50 @@ function PronoLayout(props) {
     }
   }
 
-  const showProfilePage = (history) => {
+  const showProfilePage = () => {
     setNavigationOpen(false);
-    history.push('/profile');
+    navigate('/profile');
   }
 
-  if(user !== null){
-    return (
-        <div className={classes.root}>
-          <CssBaseline />
+  return (
+    <div style={{display: 'flex', minHeight: '100%'}} className="MainWrapper">
+      <CssBaseline />
 
-            <AppBar position="fixed" className={classes.appBar}>
-              <Toolbar style={{display: "flex", paddingRight: "12px"}}>
+      <AppBar position="fixed">
+        <Toolbar style={{display: "flex", paddingRight: "12px"}}>
 
-                  <IconButton edge="start" color="inherit" aria-label="open drawer" onClick={toggleNavigation()}>
-                    <MenuIcon/>
-                  </IconButton>
+            <IconButton edge="start" color="inherit" aria-label="open drawer" onClick={toggleNavigation()}>
+              <MenuIcon/>
+            </IconButton>
 
-                <Typography variant="h6" style={{flexGrow: 1}}  noWrap>
-                    Prono
-                </Typography>
-              </Toolbar>
-            </AppBar>
+          <Typography variant="h6" style={{flexGrow: 1}}  noWrap>
+              {squadName}
+          </Typography>
+        </Toolbar>
+      </AppBar>
 
-            <SwipeableDrawer anchor="left" className={classes.drawer} classes={{paper: classes.drawerPaper}}
-             open={navigationOpen} onClose={toggleNavigation(false)} onOpen={toggleNavigation(true)}>
-              <div onClick={(e) => showProfilePage(history)}>
-                <User user={user}/>
-              </div>
-              <Navigation isAdmin={user.permissions.admin} onNavigation={toggleNavigation}/>
-
-              <ListItem button>
-                <ListItemText primary={"Sign out"} onClick={() => api.signOut(() => {setNavigationOpen(false)})}/>
-              </ListItem>
-
-              <Divider/>
-              <div className={classes.version}>
-                <Version/>
-              </div>
-            </SwipeableDrawer>
-
-            <main className={classes.content}>
-              <Toolbar />
-              <Switch>
-                <Route path="/ranking"> <ViewRanking api={api}/> </Route>
-                <Route path="/prono"> <ViewProno api={api}/> </Route>
-                <Route path="/results"> <ViewResults api={api}/> </Route>
-                <Route path="/rules">  <ViewRules api={api}/> </Route>
-                <Route path="/profile">  <ViewProfile/> </Route>
-
-                <Route path="/users"> <ViewUsers api={api}/> </Route>
-                <Route path="/settings"> <ViewSettings api={api}/> </Route>
-                <Route path="/teams"> <ViewTeams api={api}/> </Route>
-                <Route path="/matches"> <ViewMatches api={api}/> </Route>
-                <Route path="/groupstage"> <ViewGroupstage api={api}/> </Route>
-                <Route path="/knockoutstage"> <ViewKnockoutstage api={api}/> </Route>
-
-                <Route path="/"> <ViewRanking api={api}/> </Route>
-
-              </Switch>
-            </main>
-
+      <SwipeableDrawer anchor="left" style={{flexShrink: 0}}
+      open={navigationOpen} onClose={toggleNavigation(false)} onOpen={toggleNavigation(true)}>
+        <div onClick={(e) => showProfilePage()}>
+          <User user={user}/>
         </div>
-    );
-  }
-  else {
-    return (
-      <div className={classes.root}>
-        <ViewLogin api={api}/>
-      </div>
-    )
-  }
+        <Navigation isAdmin={user.permissions.admin} onNavigation={toggleNavigation}/>
 
+        <ListItem button>
+          <ListItemText primary={"Sign out"} onClick={() => api.signOut(() => {setNavigationOpen(false)})}/>
+        </ListItem>
+
+        <Divider/>
+        <div style={{marginLeft: '10px', marginTop: '30px'}}>
+          <Version/>
+        </div>
+      </SwipeableDrawer>
+
+      <main style={{flexGrow: 1, padding: "1em"}}>
+        <Toolbar /> {/* Placeholder for the real toolbar */}
+        <Outlet />
+      </main>
+
+    </div>
+  );
 }
-
-export default PronoLayout;

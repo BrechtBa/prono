@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles } from '@mui/material/styles';
 
-import Paper from '@material-ui/core/Paper';
-import Dialog from '@material-ui/core/Dialog';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
+import Paper from '@mui/material/Paper';
+import Dialog from '@mui/material/Dialog';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
 
 import { PronoContext } from './PronoProvider.js';
 import { Disabled } from './prono/PronoUtils.js';

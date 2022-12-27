@@ -1,10 +1,10 @@
 import React, { useContext } from 'react';
-import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles } from '@mui/material/styles';
 
 import { PronoContext } from './PronoProvider.js';
 
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     root: {
       color: theme.palette.text.headers,
@@ -87,19 +87,7 @@ function Rules(props) {
       <div className={classes.paragraph}>
         <div>Pronostieken kunnen telkens ingegeven worden tot één uur voor de eerste wedstrijd van een fase.</div>
       </div>
-
-      <h3>Winnaar</h3>
-      <div className={classes.paragraph}>
-        <div>Elke deelnemer legt {rules.cost} euro in de pot. Let op, je punten worden pas berekend vanaf je betaald hebt.</div>
-      </div>
-      <div className={classes.paragraph}>
-        <div>Na het toernooi krijgt degene met het 3e meeste punten {rules.prizes[3]}% van de inleg.</div>
-        <div>Degene met het 2e meeste punten {rules.prizes[2]}% van de inleg.</div>
-        <div>Degene met het meeste punten wordt tot winnaar gekroond, krijgt eeuwige roem en daarbovenop {rules.prizes[1]}% van de inleg.</div>
-        <div>Bij eventuele exequo's wordt de winst verdeeld.</div>
-        <div>Eventuele Server kosten worden van het bedrag voor de verdeling van de winst afgehouden.
-        De verwachting is dat er geen kosten zullen zijn.</div>
-      </div>
+      
     </div>
   );
 

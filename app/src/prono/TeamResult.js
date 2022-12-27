@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useContext } from 'react';
 
-import Paper from '@material-ui/core/Paper';
-import Dialog from '@material-ui/core/Dialog';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import InputLabel from '@material-ui/core/InputLabel';
-import Button from '@material-ui/core/Button';
+import Paper from '@mui/material/Paper';
+import Dialog from '@mui/material/Dialog';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import InputLabel from '@mui/material/InputLabel';
+import Button from '@mui/material/Button';
 
 import { PronoContext } from '../PronoProvider.js';
 import { Disabled } from './PronoUtils.js';

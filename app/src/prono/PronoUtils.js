@@ -1,14 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
-
-
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    header: {
-      color: theme.palette.text.headers
-    }
-  })
-);
 
 
 export function Disabled(props) {
@@ -62,10 +52,8 @@ export function DeadlineMessage(props){
       return () => clearTimeout(timer);
     });
   
-    const classes = useStyles();
-  
     return (
-      <div className={classes.header} style={{textAlign: 'right'}}>
+      <div className="Header" style={{textAlign: 'right'}}>
         {active && timeLeft !== '0'  && complete && (
           <div>Dit deel is compleet.</div>
         )}

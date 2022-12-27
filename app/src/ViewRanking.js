@@ -1,19 +1,13 @@
 import React, { useState, useContext } from 'react';
-import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
 
-import Paper from '@material-ui/core/Paper';
-import Dialog from '@material-ui/core/Dialog';
-import Avatar from '@material-ui/core/Avatar';
-import Divider from '@material-ui/core/Divider';
+import { useParams } from "react-router-dom";
+
+import Paper from '@mui/material/Paper';
+import Dialog from '@mui/material/Dialog';
+import Avatar from '@mui/material/Avatar';
+import Divider from '@mui/material/Divider';
 
 import { UserContext } from "./UserProvider.js";
-import { PronoContext } from './PronoProvider.js';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    root: {}
-  })
-);
 
 
 const getPoints = (user) => {
@@ -105,9 +99,10 @@ function User(props){
 
 function ViewRanking(props) {
   const api = props.api;
-  const prono = useContext(PronoContext);
+  const prono = api.useActiveProno();
+  const { squad } = useParams();
 
-  const users = api.useUsers(prono)
+  const users = api.useSquadUsers(prono, squad);
 
   const getRankedUsers = (users) => {
     let sortedUsers = JSON.parse(JSON.stringify(users.filter(user => user.active).sort((a, b) => getPoints(b) - getPoints(a))))
@@ -130,12 +125,9 @@ function ViewRanking(props) {
     return sortedUsers;
   }
 
-
-  const classes = useStyles();
-
   return (
-    <div className={classes.root}>
-      <h2 style={{color: '#ffffff'}}>Rangschikking</h2>
+    <div>
+      <h1 className="Header">Rangschikking</h1>
 
       {getRankedUsers(users).map((user) => (
         <User key={user.key} user={user} ranking={user.rank}/>

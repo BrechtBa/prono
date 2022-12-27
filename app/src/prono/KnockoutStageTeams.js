@@ -1,11 +1,11 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles } from '@mui/material/styles';
 
-import Paper from '@material-ui/core/Paper';
-import Dialog from '@material-ui/core/Dialog';
-import Button from '@material-ui/core/Button';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
+import Paper from '@mui/material/Paper';
+import Dialog from '@mui/material/Dialog';
+import Button from '@mui/material/Button';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
 
 import { PronoContext } from '../PronoProvider.js';
 import { TeamName, TeamIcon } from '../MatchUtils.js';

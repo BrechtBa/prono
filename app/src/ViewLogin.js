@@ -1,35 +1,20 @@
 import React, {useState} from "react";
 
-import { createStyles, Theme, makeStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import Checkbox from '@material-ui/core/Checkbox';
-
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    error: {
-      marginBottom: '10px',
-      color: '#ff0000'
-    },
-    message: {
-      marginBottom: '10px',
-    },
-    paragraph: {
-      marginBottom: '10px',
-    },
-    link: {
-      textDecoration: 'underline',
-      color: '#0000ff',
-      cursor: 'pointer'
-    }
-  })
-);
+import Paper from '@mui/material/Paper';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import Checkbox from '@mui/material/Checkbox';
 
 
 function Terms(){
-  const classes = useStyles();
+
+  const classes = {
+    paragraph: {
+      marginBottom: '10px',
+    }
+  };
+
   return (
     <div>
       <div className={classes.paragraph}>
@@ -108,7 +93,12 @@ function Register(props) {
     }
   }
 
-  const classes = useStyles();
+  const classes = {
+    error: {
+      marginBottom: '10px',
+      color: '#ff0000'
+    }
+  };
 
   return (
     <div>
@@ -172,7 +162,16 @@ function ResetPassword(props){
       }
     })
   }
-  const classes = useStyles();
+
+  const classes = {
+    error: {
+      marginBottom: '10px',
+      color: '#ff0000'
+    },
+    message: {
+      marginBottom: '10px',
+    }
+  };
 
   return (
     <div>
@@ -233,7 +232,23 @@ function ViewLogin(props) {
     });
   };
 
-  const classes = useStyles();
+  const classes = {
+    error: {
+      marginBottom: '10px',
+      color: '#ff0000'
+    },
+    message: {
+      marginBottom: '10px',
+    },
+    paragraph: {
+      marginBottom: '10px',
+    },
+    link: {
+      textDecoration: 'underline',
+      color: '#0000ff',
+      cursor: 'pointer'
+    }
+  };
 
   return (
     <div style={{display: 'flex', flexDirection: 'column', width: '100%'}}>
