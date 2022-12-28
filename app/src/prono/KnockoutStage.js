@@ -3,9 +3,9 @@ import { createStyles, makeStyles } from '@mui/material/styles';
 
 import Paper from '@mui/material/Paper';
 
-import { PronoContext } from './PronoProvider.js';
-import { Disabled } from './prono/PronoUtils.js';
-import { TeamName, TeamIcon, EditScoreDialog } from './MatchUtils.js';
+import { PronoContext } from '../PronoProvider.js';
+import { Disabled } from './PronoUtils.js';
+import { TeamName, TeamIcon, EditScoreDialog } from '../MatchUtils.js';
 
 
 const useStyles = makeStyles((theme) =>

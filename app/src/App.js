@@ -12,7 +12,7 @@ import { getApi } from './repository/firebase.js';
 import { PronoWrapper } from './Layout.js';
 import ViewRanking from './ViewRanking.js';
 import ViewProfile from './ViewProfile.js';
-// import ViewProno from './ViewProno.js';
+import ViewProno from './ViewProno.js';
 // import ViewResults from './ViewResults.js';
 import ViewRules from './ViewRules.js';
 
@@ -96,6 +96,8 @@ function App() {
                   <Route path="/ranking/:squad" element={ <PronoWrapper api={api} content={ <ViewRanking api={api}/> }/> } />
                   <Route path="/ranking" element={ <PronoWrapper api={api} content={ <ViewRanking api={api}/> }/> } /> 
                   <Route path="/profile" element={ <PronoWrapper api={api} content={ <ViewProfile api={api}/> }/> } />
+                  <Route path="/prono" element={ <PronoWrapper api={api} content={ <ViewProno api={api}/> }/> } />
+
 
                   <Route path="/rules" element={ <PronoWrapper api={api} content={ <ViewRules api={api}/> }/> } />
                   <Route path="/:squad" element={ <PronoWrapper api={api} content={ <ViewRanking api={api}/> }/> } /> 

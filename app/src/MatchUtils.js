@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { createStyles, makeStyles } from '@mui/material/styles';
 
 import Dialog from '@mui/material/Dialog';
 import TextField from '@mui/material/TextField';
@@ -7,59 +6,6 @@ import Button from '@mui/material/Button';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import Select from '@mui/material/Select';
-
-
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    group: {
-      position: 'relative',
-      width: '100%',
-      maxWidth: '400px',
-      padding: '10px',
-      margin: '5px'
-    },
-    matchHorizontal: {
-      display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'center'
-    },
-    matchVertical: {
-      display: 'flex',
-      flexDirection: 'col',
-      justifyContent: 'center'
-    },
-    team1: {
-      display: 'flex',
-      flexGrow: 4,
-      justifyContent: 'flex-start',
-      width: '110px',
-      textAlign: 'left',
-    },
-    team2: {
-      display: 'flex',
-      flexGrow: 4,
-      justifyContent: 'flex-end',
-      width: '110px',
-      textAlign: 'right'
-    },
-    teamIcon: {
-      maxWidth: '30px', maxHeight: '30px'
-    },
-    score: {
-      width: '60px',
-      display:'flex',
-      flexDirection: 'row',
-      justifyContent: 'center'
-    },
-    scoreRegular: {
-    },
-    scorePenalty: {
-    },
-    header: {
-      color: theme.palette.text.headers
-    }
-  })
-);
 
 
 export function TeamName(props) {
@@ -119,7 +65,12 @@ export function TeamSelect(props){
     }
   }
 
-  const classes = useStyles();
+  const styles = {
+    teamIcon: {
+      maxWidth: '30px', 
+      maxHeight: '30px'
+    }
+  }
 
   return (
     <div style={{width: '100%', marginBottom: '20px'}}>
@@ -130,7 +81,7 @@ export function TeamSelect(props){
         {teams.map((team) => (
           <MenuItem key={team.key} value={team.key}>
             <div style={{display: 'flex', alignItems: 'center'}}>
-              <div className={classes.teamIcon}>
+              <div style={styles.teamIcon}>
                 <TeamIcon team={team}/>
               </div>
               <div style={{marginLeft: '20px'}}>
@@ -230,52 +181,82 @@ export function EditScoreDialog(props){
     setOpen(false)
   }
 
-  const classes = useStyles();
+  const styles = {
+    matchHorizontal: {
+      display: 'flex',
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: '10px'
+    },
+    team1: {
+      display: 'flex',
+      flexGrow: 4,
+      justifyContent: 'flex-start',
+      width: '110px',
+      textAlign: 'left',
+    },
+    team2: {
+      display: 'flex',
+      flexGrow: 4,
+      justifyContent: 'flex-end',
+      width: '110px',
+      textAlign: 'right'
+    },
+    teamIcon: {
+      maxWidth: '30px', maxHeight: '30px'
+    },
+    score: {
+      width: '60px',
+      display:'flex',
+      flexDirection: 'row',
+      justifyContent: 'center'
+    },
 
+  }
   return (
     <Dialog onClose={() => setOpen(false)} open={open}>
       <form>
         <div style={{display: 'flex', flexDirection: 'column', padding: '20px'}}>
           {!editTeams && (
-            <div className={classes.matchHorizontal} style={{marginBottom: '10px'}}>
-              <div className={classes.team1}>
+            <div style={styles.matchHorizontal}>
+              <div style={styles.team1}>
                 <TeamName team={team1} def={match.defaultteam1} />
               </div>
 
                -
-              <div className={classes.team2}>
+              <div style={styles.team2}>
                 <TeamName team={team2} def={match.defaultteam2} />
               </div>
             </div>
           )}
           {editTeams && (
-            <div className={classes.matchHorizontal} style={{marginBottom: '10px'}}>
-              <div className={classes.team1}>
+            <div style={styles.matchHorizontal}>
+              <div style={styles.team1}>
                 <TeamSelect label="Team 1" selected={team1} teams={teams} onChange={(t) => setTeam1(t)}/>
               </div>
 
                -
-              <div className={classes.team2}>
+              <div style={styles.team2}>
                 <TeamSelect  label="Team 2" selected={team2} teams={teams} onChange={(t) => setTeam2(t)}/>
               </div>
             </div>
           )}
-          <div className={classes.matchHorizontal} style={{marginBottom: '10px'}}>
-            <div className={classes.teamIcon}>
+          <div style={styles.matchHorizontal}>
+            <div style={styles.teamIcon}>
               <TeamIcon team={team1}/>
             </div>
-            <div style={{width: '100px', display: 'flex', flexGrow: 2, justifyContent: 'center', alignItems: 'center'}}>
+            <div style={{styles: '100px', display: 'flex', flexGrow: 2, justifyContent: 'center', alignItems: 'center'}}>
               <TextField style={{width: '80px', marginLeft: '10px', marginRight: '10px'}} inputProps={{min: 0, style: {textAlign: 'center'}}} value={score1} onChange={(event) => setScore1(event.currentTarget.value)} error={!validateScore(score1)}/>
                -
               <TextField style={{width: '80px', marginLeft: '10px', marginRight: '10px'}} inputProps={{min: 0, style: {textAlign: 'center'}}} value={score2} onChange={(event) => setScore2(event.currentTarget.value)} error={!validateScore(score1)}/>
             </div>
-            <div className={classes.teamIcon}>
+            <div style={styles.teamIcon}>
               <TeamIcon team={team2} />
             </div>
           </div>
 
           {editPenalties && (
-            <div className={classes.matchHorizontal} style={{marginBottom: '10px'}}>
+            <div style={styles.matchHorizontal}>
               <div style={{width: '100px', display: 'flex', flexGrow: 2, justifyContent: 'center', alignItems: 'center'}}>
                 (<TextField style={{width: '80px'}} inputProps={{min: 0, style: { textAlign: 'center' }}} value={penalty1} onChange={(event) => setPenalty1(event.currentTarget.value)} error={!validateScore(penalty1)}/>)
                  -

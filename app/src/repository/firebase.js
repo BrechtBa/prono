@@ -151,8 +151,8 @@ function firebaseApi(auth, db, storage, tenant) {
     /* Active Prono                                                          */
     /*************************************************************************/
 
-    useActiveProno: (initialActiveProno) => {
-        const [activeProno, setActiveProno] = useState(initialActiveProno);
+    useActiveProno: () => {
+        const [activeProno, setActiveProno] = useState(null);
 
         useEffect(() => {
           onValue(ref(db, `${tenant}/activeProno`), (snapshot) => {
@@ -166,13 +166,13 @@ function firebaseApi(auth, db, storage, tenant) {
     },
 
     updateActiveProno: (value) => {
-      return ref(db, `${tenant}/activeProno`).set(value)
+      set(ref(db, `${tenant}/activeProno`), value)
     },
 
     usePronos: () => {
         const [pronos, setPronos] = useState([]);
         useEffect(() => {
-          return ref(db, `${tenant}/pronos`).on("value", snapshot => {
+          onValue(ref(db, `${tenant}/pronos`), (snapshot) => {
             if (snapshot !== undefined){
               let pronos = [];
               snapshot.forEach((snap) => {
@@ -198,8 +198,8 @@ function firebaseApi(auth, db, storage, tenant) {
     },
 
     deleteProno: (prono) => {
-      ref(db, `${tenant}/pronoData/${prono.key}`).set(null);
-      ref(db, `${tenant}/pronos/${prono.key}`).set(null);
+      set(ref(db, `${tenant}/pronoData/${prono.key}`), null);
+      set(ref(db, `${tenant}/pronos/${prono.key}`), null);
     },
 
     duplicateProno: (prono) => {
@@ -316,11 +316,14 @@ function firebaseApi(auth, db, storage, tenant) {
       return users;
     },
 
+    /*************************************************************************/
+    /* PronoData                                                             */
+    /*************************************************************************/
 
     useCurrentStage: (prono, initialCurrentStage) => {
       const [currentStage, setCurrentStage] = useState(initialCurrentStage);
       useEffect(() => {
-        ref(db, `${tenant}/pronoData/${prono}/competition/currentstage`).on("value", snapshot => {
+        onValue(ref(db, `${tenant}/pronoData/${prono}/competition/currentStage`), (snapshot) => {
           if(snapshot !== undefined){
             setCurrentStage(snapshot.val());
           }
@@ -330,13 +333,13 @@ function firebaseApi(auth, db, storage, tenant) {
     },
 
     updateCurrentStage: (prono, value) => {
-      return ref(db, `${tenant}/pronoData/${prono}/competition/currentstage`).set(value);
+      return set(ref(db, `${tenant}/pronoData/${prono}/competition/currentStage`), value);
     },
 
     useHomeTeamResult: (prono, initialValue) => {
       const [homeTeamResult, setHomeTeamResult] = useState(initialValue)
       useEffect(() => {
-        return ref(db, `${tenant}/pronoData/${prono}/competition/hometeamresult`).on("value", snapshot => {
+        onValue(ref(db, `${tenant}/pronoData/${prono}/competition/homeTeamResult`), (snapshot) => {
           let stage = '-1'
           if (snapshot !== undefined){
             stage = snapshot.val()
@@ -348,23 +351,23 @@ function firebaseApi(auth, db, storage, tenant) {
     },
 
     updateHomeTeamResult: (prono, result) => {
-      return ref(db, `${tenant}/pronoData/${prono}/competition/hometeamresult`).set(result);
+      set(ref(db, `${tenant}/pronoData/${prono}/competition/homeTeamResult`), result);
     },
 
     useDeadlines: (prono, initialValue) => {
       const [deadlines, setDeadlines] = useState(initialValue);
       useEffect(() => {
-        return ref(db, `${tenant}/pronoData/${prono}/deadlines`).on("value", snapshot => {
+        onValue(ref(db, `${tenant}/pronoData/${prono}/deadlines`), (snapshot) => {
           let deadlines = {
-            'groupstage': Date.now()-100000,
+            'groupStage': Date.now()-100000,
             '16': Date.now()-100000,
             '8': Date.now()-100000,
             '4': Date.now()-100000,
             '2': Date.now()-100000,
           }
-          if (snapshot !== undefined){
-            const val = snapshot.val();
-            deadlines['groupstage'] = new Date(val['groupstage']);
+          const val = snapshot.val();
+          if (val !== null){
+            deadlines['groupStage'] = new Date(val['groupStage']);
             deadlines['16'] = new Date(val['16']);
             deadlines['8'] = new Date(val['8']);
             deadlines['4'] = new Date(val['4']);
@@ -409,11 +412,14 @@ function firebaseApi(auth, db, storage, tenant) {
       return rules;
     },
 
-    useGroupStage: (prono) => {
+    /*************************************************************************/
+    /* GroupStage                                                            */
+    /*************************************************************************/
 
+    useGroupStage: (prono) => {
       const [groupstage, setGroupstage] = useState([]);
       useEffect(() => {
-        onValue(ref(db, `${tenant}/pronoData/${prono}/competition/groupstage`), (snapshot) => {
+        onValue(ref(db, `${tenant}/pronoData/${prono}/competition/groupStage`), (snapshot) => {
           let groupstage = [];
           if (snapshot !== undefined){
             snapshot.forEach((snap) => {
@@ -442,11 +448,11 @@ function firebaseApi(auth, db, storage, tenant) {
     },
 
     addGroup: (prono, group) => {
-      ref(db, `${tenant}/pronoData/${prono}/competition/groupstage`).push(group);
+      ref(db, `${tenant}/pronoData/${prono}/competition/groupStage`).push(group);
     },
 
     deleteGroup: (prono, group) => {
-      ref(db, `${tenant}/pronoData/${prono}/competition/groupStage/${group.key}`).set(null);
+      set(ref(db, `${tenant}/pronoData/${prono}/competition/groupStage/${group.key}`), null);
     },
 
     updateGroup: (prono, group, update) => {
@@ -460,8 +466,8 @@ function firebaseApi(auth, db, storage, tenant) {
     groupAddTeam: (prono, group, teamKey) => {
       let newTeams = JSON.parse(JSON.stringify(group.teams));
       newTeams.push(teamKey)
-      ref(db, `${tenant}/pronoData/${prono}/competition/groupStage/${group.key}/teams`).set(newTeams);
-      ref(db, `${tenant}/pronoData/${prono}/competition/groupStage/${group.key}/points/${teamKey}`).set(0);
+      set(ref(db, `${tenant}/pronoData/${prono}/competition/groupStage/${group.key}/teams`), newTeams);
+      set(ref(db, `${tenant}/pronoData/${prono}/competition/groupStage/${group.key}/points/${teamKey}`), 0);
     },
 
     groupDeleteTeam: (prono, group, teamKey) => {
@@ -471,8 +477,8 @@ function firebaseApi(auth, db, storage, tenant) {
           newTeams.push(team);
         }
       })
-      ref(db, `${tenant}/pronoData/${prono}/competition/groupStage/${group.key}/teams`).set(newTeams);
-      ref(db, `${tenant}/pronoData/${prono}/competition/groupStage/${group.key}/points/${teamKey}`).set(null);
+      set(ref(db, `${tenant}/pronoData/${prono}/competition/groupStage/${group.key}/teams`), newTeams);
+      set(ref(db, `${tenant}/pronoData/${prono}/competition/groupStage/${group.key}/points/${teamKey}`), null);
 
       // cascade to user prono's?
     },
@@ -480,7 +486,7 @@ function firebaseApi(auth, db, storage, tenant) {
     groupAddMatch: (prono, group, matchKey) => {
       let newMatches = JSON.parse(JSON.stringify(group.matches));
       newMatches.push(matchKey)
-      ref(db, `${tenant}/pronoData/${prono}/competition/groupStage/${group.key}/matches`).set(newMatches);
+      set(ref(db, `${tenant}/pronoData/${prono}/competition/groupStage/${group.key}/matches`), newMatches);
     },
 
     groupDeleteMatch: (prono, group, matchKey) => {
@@ -490,8 +496,12 @@ function firebaseApi(auth, db, storage, tenant) {
           newMatches.push(match);
         }
       })
-      ref(db, `${tenant}/pronoData/${prono}/competition/groupStage/${group.key}/matches`).set(newMatches);
+      set(ref(db, `${tenant}/pronoData/${prono}/competition/groupStage/${group.key}/matches`), newMatches);
     },
+
+    /*************************************************************************/
+    /* KnockoutStage                                                         */
+    /*************************************************************************/
 
     useKnockoutStage: (prono) => {
       const [knockoutStages, setKnockoutstages] = useState([]);
@@ -518,7 +528,7 @@ function firebaseApi(auth, db, storage, tenant) {
     useTeams: (prono) => {
       const [teams, setTeams] = useState({});
       useEffect(() => {
-        return ref(db, `${tenant}/pronoData/${prono}/competition/teams`).on("value", snapshot => {
+        onValue(ref(db, `${tenant}/pronoData/${prono}/competition/teams`), (snapshot) => {
           let teams = {};
           if (snapshot !== undefined){
             snapshot.forEach((snap) => {
@@ -553,13 +563,13 @@ function firebaseApi(auth, db, storage, tenant) {
     },
 
     deleteTeam: (prono, team) => {
-      ref(db, `${tenant}/pronoData/${prono}/competition/teams/${team.key}`).set(null);
+      set(ref(db, `${tenant}/pronoData/${prono}/competition/teams/${team.key}`), null);
     },
 
     useMatches: (prono) => {
       const [matches, setMatches] = useState({});
       useEffect(() => {
-        return ref(db, `${tenant}/pronoData/${prono}/competition/matches`).on("value", snapshot => {
+        onValue(ref(db, `${tenant}/pronoData/${prono}/competition/matches`), (snapshot) => {
           let matches = {};
           if (snapshot !== undefined){
             snapshot.forEach((snap) => {
@@ -599,7 +609,7 @@ function firebaseApi(auth, db, storage, tenant) {
     },
 
     deleteMatch: (prono, match) => {
-      ref(db, `${tenant}/pronoData/${prono}/competition/matches/${match.key}`).set(null);
+      set(ref(db, `${tenant}/pronoData/${prono}/competition/matches/${match.key}`), null);
     },
 
     updateGroupPoints: (prono, group, teams) => {
@@ -607,7 +617,7 @@ function firebaseApi(auth, db, storage, tenant) {
       teams.forEach((team) => {
         points[team.key] = parseFloat(team.points);
       });
-      return ref(db, `${tenant}/pronoData/${prono}/competition/groupStage/${group.key}/points`).set(points)
+      set(ref(db, `${tenant}/pronoData/${prono}/competition/groupStage/${group.key}/points`), points)
     },
 
     updateMatchProno: (prono, user, match, update) => {
@@ -620,27 +630,27 @@ function firebaseApi(auth, db, storage, tenant) {
 
     updateGroupWinnersProno: (prono, user, group, groupwinners) => {
       const obj = {1: groupwinners[1].key, 2: groupwinners[2].key}
-      return ref(db, `${tenant}/pronoData/${prono}/userPronos/${user.key}/groupwinners/${group.key}`).set(obj)
+      set(ref(db, `${tenant}/pronoData/${prono}/userPronos/${user.key}/groupWinners/${group.key}`), obj)
     },
 
     updateStageTeamsProno: (prono, user, stage, teams) => {
       const teamKeys = teams.map((team) => {return team.key;})
-      return ref(db, `${tenant}/pronoData/${prono}/userPronos/${user.key}/knockoutStageTeams/${stage.key}`).set(teamKeys)
+      set(ref(db, `${tenant}/pronoData/${prono}/userPronos/${user.key}/knockoutStageTeams/${stage.key}`), teamKeys)
     },
 
     updateTotalGoalsProno: (prono, user, goals) => {
-      return ref(db, `${tenant}/pronoData/${prono}/userPronos/${user.key}/totalgoals`).set(goals)
+      set(ref(db, `${tenant}/pronoData/${prono}/userPronos/${user.key}/totalGoals`), goals)
     },
 
     updateTeamResultProno: (prono, user, stage) => {
-      return ref(db, `${tenant}/pronoData/${prono}/userPronos/${user.key}/hometeamresult`).set(stage)
+      set(ref(db, `${tenant}/pronoData/${prono}/userPronos/${user.key}/homeTeamResult`), stage)
     },
 
     useUserPronoMatches: (prono, user) => {
       const [value, setValue] = useState({});
       useEffect(() => {
         if (user !== undefined){
-          return ref(db, `${tenant}/pronoData/${prono}/userPronos/${user.key}/matches`).on("value", snapshot => {
+          onValue(ref(db, `${tenant}/pronoData/${prono}/userPronos/${user.key}/matches`), (snapshot) => {
             let matches = {};
             if (snapshot !== undefined){
               snapshot.forEach((snap) => {
@@ -666,7 +676,7 @@ function firebaseApi(auth, db, storage, tenant) {
       const [value, setValue] = useState({});
       useEffect(() => {
         if (user !== undefined){
-          return ref(db, `${tenant}/pronoData/${prono}/userPronos/${user.key}/groupwinners`).on("value", snapshot => {
+          onValue(ref(db, `${tenant}/pronoData/${prono}/userPronos/${user.key}/groupWinners`), (snapshot) => {
             let groupWinners = {};
             if (snapshot !== undefined){
               snapshot.forEach((snap) => {
@@ -692,7 +702,7 @@ function firebaseApi(auth, db, storage, tenant) {
       const [value, setValue] = useState({});
       useEffect(() => {
         if (user !== undefined){
-          return ref(db, `${tenant}/pronoData/${prono}/userPronos/${user.key}/knockoutStageTeams`).on("value", snapshot => {
+          onValue(ref(db, `${tenant}/pronoData/${prono}/userPronos/${user.key}/knockoutStageTeams`), (snapshot) => {
             let stageTeams = {};
             if (snapshot !== undefined){
               snapshot.forEach((snap) => {
@@ -717,7 +727,7 @@ function firebaseApi(auth, db, storage, tenant) {
       const [value, setValue] = useState(-1);
       useEffect(() => {
         if (user !== undefined){
-          return ref(db, `${tenant}/pronoData/${prono}/userPronos/${user.key}/totalgoals`).on("value", snapshot => {
+          onValue(ref(db, `${tenant}/pronoData/${prono}/userPronos/${user.key}/totalGoals`), (snapshot) => {
             let goals = -1
             if (snapshot !== undefined){
               goals = snapshot.val()
@@ -737,7 +747,7 @@ function firebaseApi(auth, db, storage, tenant) {
       const [value, setValue] = useState({});
       useEffect(() => {
         if (user !== undefined){
-          return ref(db, `${tenant}/pronoData/${prono}/userPronos/${user.key}/hometeamresult`).on("value", snapshot => {
+          onValue(ref(db, `${tenant}/pronoData/${prono}/userPronos/${user.key}/homeTeamResult`), (snapshot) => {
             let stage = '-1'
             if (snapshot !== undefined){
               stage = snapshot.val()
@@ -753,33 +763,33 @@ function firebaseApi(auth, db, storage, tenant) {
     },
 
     updatePaid: (prono, user, paid) => {
-      return ref(db, `${tenant}/pronoData/${prono}/userpoints/${user.key}/paid`).set(paid)
+      set(ref(db, `${tenant}/pronoData/${prono}/userpoints/${user.key}/paid`), paid)
     },
     updateActive: (prono, user, active) => {
-      return ref(db, `${tenant}/pronoData/${prono}/userpoints/${user.key}/active`).set(active)
+      set(ref(db, `${tenant}/pronoData/${prono}/userpoints/${user.key}/active`), active)
     },
     updateShowPoints: (prono, user, showPoints) => {
-      return ref(db, `${tenant}/pronoData/${prono}/userpoints/${user.key}/showPoints`).set(showPoints)
+      set(ref(db, `${tenant}/pronoData/${prono}/userpoints/${user.key}/showPoints`), showPoints)
     },
     updatePermissionEditor: (user, editor) => {
-      return ref(db, `${tenant}/users/${user.key}/permissions/editor`).set(editor)
+      set(ref(db, `${tenant}/users/${user.key}/permissions/editor`), editor)
     },
     updatePermissionEditDisabledProno: (user, val) => {
-      return ref(db, `${tenant}/users/${user.key}/permissions/editDisabledProno`).set(val)
+      set(ref(db, `${tenant}/users/${user.key}/permissions/editDisabledProno`), val)
     },
 
     addStage: (prono, stage) => {
-      ref(db, `${tenant}/pronoData/${prono}/competition/knockoutStage/`).push(stage);
+      ref(db, `${tenant}/pronoData/${prono}/competition/knockoutStage`).push(stage);
     },
 
     deleteStage: (prono, stage) => {
-      ref(db, `${tenant}/pronoData/${prono}/competition/knockoutStage/${stage.key}`).set(null);
+      set(ref(db, `${tenant}/pronoData/${prono}/competition/knockoutStage/${stage.key}`), null);
     },
 
     stageAddMatch: (prono, stage, matchKey) => {
       let newMatches = JSON.parse(JSON.stringify(stage.matches));
       newMatches.push(matchKey)
-      ref(db, `${tenant}/pronoData/${prono}/competition/knockoutStage/${stage.key}/matches`).set(newMatches);
+      set(ref(db, `${tenant}/pronoData/${prono}/competition/knockoutStage/${stage.key}/matches`), newMatches);
     },
 
     stageDeleteMatch: (prono, stage, matchKey) => {
@@ -789,7 +799,7 @@ function firebaseApi(auth, db, storage, tenant) {
           newMatches.push(match);
         }
       })
-      ref(db, `${tenant}/pronoData/${prono}/competition/knockoutStage/${stage.key}/matches`).set(newMatches);
+      set(ref(db, `${tenant}/pronoData/${prono}/competition/knockoutStage/${stage.key}/matches`), newMatches);
     },
   }
 }

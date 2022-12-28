@@ -8,6 +8,7 @@ import Avatar from '@mui/material/Avatar';
 import Divider from '@mui/material/Divider';
 
 import { UserContext } from "./UserProvider.js";
+import { PronoContext } from './PronoProvider.js';
 
 
 const getPoints = (user) => {
@@ -99,6 +100,8 @@ function RankingUser(props){
 function ViewRanking(props) {
   const api = props.api;
   const authUser = useContext(UserContext);
+  const prono = useContext(PronoContext);
+  
   let { squad } = useParams();
 
   if(squad === undefined){
@@ -108,7 +111,7 @@ function ViewRanking(props) {
     console.log('you do not have a squad')
   }
 
-  const prono = api.useActiveProno();
+  
   const users = api.useSquadUsers(prono, squad);
 
   const getRankedUsers = (users) => {
