@@ -51,7 +51,18 @@ const redTheme = createTheme({
       hint: "#333333",
       headers: "#ffffff",
     },
+  },
+
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          color: "#333333",
+        }
+      }
+    }
   }
+
 });
 
 
@@ -80,15 +91,13 @@ function App() {
                   <Route path="/matches"> <ViewMatches api={api}/> </Route>
                   <Route path="/groupstage"> <ViewGroupstage api={api}/> </Route>
                   <Route path="/knockoutstage"> <ViewKnockoutstage api={api}/> </Route>*/}
-                  <Route path="/:squad" element={ <PronoWrapper api={api}/> } > 
 
-                    <Route path="profile" element={ <ViewProfile api={api}/> } /> 
-                    <Route path="ranking" element={ <ViewRanking api={api}/> } /> 
-                    {/* <Route path="prono" element={ <ViewProno api={api}/> } /> */}
-                    <Route path="" element={ <ViewRanking api={api}/> } /> 
 
-                  </Route>
-                  <Route path="/" element={ <PronoWrapper api={api}/> } /> 
+                  <Route path="/ranking/:squad" element={ <PronoWrapper api={api} content={ <ViewRanking api={api}/> }/> } />
+                  <Route path="/ranking" element={ <PronoWrapper api={api} content={ <ViewRanking api={api}/> }/> } /> 
+                  <Route path="/profile" element={ <PronoWrapper api={api} content={ <ViewProfile api={api}/> }/> } />
+                  <Route path="/:squad" element={ <PronoWrapper api={api} content={ <ViewRanking api={api}/> }/> } /> 
+                  <Route path="/" element={ <PronoWrapper api={api} content={ <ViewRanking api={api}/> }/> } /> 
 
                 </Routes>
 

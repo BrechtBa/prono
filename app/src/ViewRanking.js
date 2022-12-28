@@ -29,13 +29,12 @@ const pointDetailKeys = [
 ]
 
 
-function User(props){
+function RankingUser(props){
 
 
   const ranking = props.ranking;
   const rankingUser = props.user;
-
-  const user = useContext(UserContext);
+  const authUser = props.authUser;
 
   const [dialogOpen, setDialogOpen] = useState(false)
 
@@ -60,7 +59,7 @@ function User(props){
   return (
     <div style={{marginBottom: '5px'}}>
 
-      <Paper style={{padding: '10px', marginLeft: (rankingUser.key === user.key ? '10px' : 0)}} onClick={() => setDialogOpen(true)}>
+      <Paper style={{padding: '10px', marginLeft: (rankingUser.key === authUser.key ? '10px' : 0)}} onClick={() => setDialogOpen(true)}>
         <div style={{display: 'flex', alignItems: 'center'}}>
           <div style={{width: '30px', fontWeight: 600}}>{ranking}</div>
           <Avatar alt={rankingUser.displayName} src={rankingUser.profilePicture} style={{height: '50px', width: '50px', marginRight: '20px'}}>{getFirstLetter(rankingUser)}</Avatar>
@@ -70,7 +69,7 @@ function User(props){
       </Paper>
 
       <Dialog onClose={() => setDialogOpen(false)} open={dialogOpen}>
-        {user.showPoints ? (
+        {authUser.showPoints ? (
           <div style={{display: 'flex', flexDirection: 'column', padding: '20px'}}>
             {getRankingUserPointsDetail(rankingUser).map((val) => (
               <div key={val.key} style={{display: 'flex'}}>
@@ -86,7 +85,7 @@ function User(props){
           </div>
         ) : (
           <div style={{display: 'flex', flexDirection: 'column', padding: '20px'}}>
-            Eerst betalen aub.
+            Score nog niet vrijgegeven
           </div>
         )}
       </Dialog>
@@ -99,13 +98,21 @@ function User(props){
 
 function ViewRanking(props) {
   const api = props.api;
-  const prono = api.useActiveProno();
-  const { squad } = useParams();
+  const authUser = useContext(UserContext);
+  let { squad } = useParams();
 
+  if(squad === undefined){
+    squad = Object.keys(authUser.squads).find(k => authUser.squads[k])
+  }
+  if(squad === undefined){
+    console.log('you do not have a squad')
+  }
+
+  const prono = api.useActiveProno();
   const users = api.useSquadUsers(prono, squad);
 
   const getRankedUsers = (users) => {
-    let sortedUsers = JSON.parse(JSON.stringify(users.filter(user => user.active).sort((a, b) => getPoints(b) - getPoints(a))))
+    let sortedUsers = JSON.parse(JSON.stringify(users.sort((a, b) => getPoints(b) - getPoints(a))));
     var rank = 1;
     var skip = 1;
     var points = -1;
@@ -130,7 +137,7 @@ function ViewRanking(props) {
       <h1 className="Header">Rangschikking</h1>
 
       {getRankedUsers(users).map((user) => (
-        <User key={user.key} user={user} ranking={user.rank}/>
+        <RankingUser key={user.key} user={user} authUser={authUser} ranking={user.rank}/>
       ))}
 
     </div>

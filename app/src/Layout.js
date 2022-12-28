@@ -1,7 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { UserContext } from "./UserProvider.js";
 
-import { Link, useNavigate, Outlet, useParams } from "react-router-dom";
+import { Link, useNavigate} from "react-router-dom";
 
 import SwipeableDrawer from '@mui/material/SwipeableDrawer';
 import AppBar from '@mui/material/AppBar';
@@ -113,32 +113,21 @@ function Navigation(props) {
 export function PronoWrapper(props) {
 
   const api = props.api;
-  const { squad } = useParams();
-  const squadName = api.useSquadName(squad);
-  
-  const user = useContext(UserContext);
+  const content = props.content;
 
+  const user = useContext(UserContext);
   const theme = useTheme();
 
-  if(squadName !== null){
 
-    if(user !== null){
+  if(user !== null){
       return (
-        <PronoLayout api={api} user={user} squad={squad} squadName={squadName} />
+        <PronoLayout api={api} user={user} content={content}/>
       );
-    }
-    else {
-      return (
-        <div style={{display: 'flex', minHeight: '100%', background: theme.palette.background.gradient}}>
-          <ViewLogin api={api}/> 
-        </div>
-      );
-    }
   }
   else {
     return (
-      <div style={{display: 'flex', minHeight: '100%', background: theme.palette.background.gradient}} className="MainWrapper">
-        no squad selected
+      <div style={{display: 'flex', minHeight: '100%', background: theme.palette.background.gradient}}>
+        <ViewLogin api={api}/> 
       </div>
     );
   }
@@ -147,7 +136,7 @@ export function PronoWrapper(props) {
 export function PronoLayout(props) {
   const api = props.api;
   const user = props.user;
-  const squadName = props.squadName;
+  const content = props.content;
   
   const navigate = useNavigate();
 
@@ -181,7 +170,7 @@ export function PronoLayout(props) {
             </IconButton>
 
           <Typography variant="h6" style={{flexGrow: 1}}  noWrap>
-              {squadName}
+              Pronostiek
           </Typography>
         </Toolbar>
       </AppBar>
@@ -205,7 +194,7 @@ export function PronoLayout(props) {
 
       <main style={{flexGrow: 1, padding: "1em"}}>
         <Toolbar /> {/* Placeholder for the real toolbar */}
-        <Outlet />
+        { content }
       </main>
 
     </div>

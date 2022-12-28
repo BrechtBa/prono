@@ -60,6 +60,9 @@ function firebaseApi(auth, db, storage, tenant) {
               if(userprofile.permissions === undefined){
                 userprofile.permissions = {};
               }
+              if(userprofile.squads === undefined){
+                userprofile.squads = {};
+              }
 
               // get(ref(db, `${tenant}/activeProno`)).then((snapshot) => {
               //   if (snapshot !== undefined){
@@ -110,6 +113,7 @@ function firebaseApi(auth, db, storage, tenant) {
                 displayName: userprofile.displayName,
                 profilePicture: userprofile.profilePicture,
                 permissions: userprofile.permissions,
+                squads: userprofile.squads,
                 active: true,
                 paid: false,
                 showPoints: true,
@@ -225,36 +229,32 @@ function firebaseApi(auth, db, storage, tenant) {
       const [squadUsers, setSquadUsers] = useState([]);
 
       useEffect(() => {
-        onValue(ref(db, `${tenant}/pronoData/${prono}/userPoints`), (snapshot) => {
-          if (snapshot !== undefined) {
-            onValue(ref(db, `${tenant}/squads/${squad}/users`), (squadSnapshot) => {
-              if (squadSnapshot !== undefined) {
+        onValue(ref(db, `${tenant}/pronoData/${prono}/userPoints`), (pointsSnapshot) => {
+          if (pointsSnapshot !== undefined) {
 
-                const squadUserData = squadSnapshot.val();
+            onValue(ref(db, `${tenant}/users`), (profileSnapshot) => {
+              const userProfiles = profileSnapshot.val()
 
-                onValue(ref(db, `${tenant}/users`), (profileSnapshot) => {
-                  const userProfiles = profileSnapshot.val()
+              if(profileSnapshot !== undefined) {
+                let users = [];
+                pointsSnapshot.forEach((snap) => {
+                  const userSquads = userProfiles[snap.key].squads || {};
 
-                  if(profileSnapshot !== undefined) {
-                    let users = [];
-                    snapshot.forEach((snap) => {
-                      if (squadUserData !== null && squadUserData[snap.key] !== undefined && squadUserData[snap.key].active) {
-                        users.push({
-                          key: snap.key,
-                          showPoints: squadUserData[snap.key] === undefined ? true : squadUserData[snap.key].showPoints,
-                          active: squadUserData[snap.key] === undefined ? true : squadUserData[snap.key].active,
-                          points: snap.val(),
-                          displayName: userProfiles[snap.key] === undefined ? '' : userProfiles[snap.key].displayName,
-                          permissions: userProfiles[snap.key] === undefined ? {} : userProfiles[snap.key].permissions,
-                          profilePicture: userProfiles[snap.key] === undefined ? undefined : userProfiles[snap.key].profilePicture
-                        });
-                      }
+                  if (Object.keys(userSquads).find(k => userSquads[k] && k === squad)) {
+                    users.push({
+                      key: snap.key,
+                      showPoints: snap.val().showPoints === undefined ? true : snap.val().showPoints,
+                      points: snap.val(),
+                      displayName: userProfiles[snap.key] === undefined ? '' : userProfiles[snap.key].displayName,
+                      permissions: userProfiles[snap.key] === undefined ? {} : userProfiles[snap.key].permissions,
+                      profilePicture: userProfiles[snap.key] === undefined ? undefined : userProfiles[snap.key].profilePicture
                     });
-                    setSquadUsers(users)
                   }
                 });
+                setSquadUsers(users)
               }
             });
+  
           }
         });
       }, [prono, squad]);
