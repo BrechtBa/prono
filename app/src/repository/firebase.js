@@ -3,8 +3,8 @@ import { useState, useEffect } from 'react';
 import { initializeApp } from "firebase/app";
 
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged } from "firebase/auth";
-import { getDatabase, ref, onValue, get, set} from "firebase/database";
-import { getStorage} from "firebase/storage";
+import { getDatabase, ref, onValue, set} from "firebase/database";
+import { getStorage, ref as storageRef, uploadString} from "firebase/storage";
 
 
 const makeDisplayName = (email) => {
@@ -47,7 +47,7 @@ function firebaseApi(auth, db, storage, tenant) {
           if (userAuth) {
 
             // get the userProfile
-            get(ref(db, `${tenant}/users/${userAuth.uid}`)).then((snapshot) => {
+            onValue(ref(db, `${tenant}/users/${userAuth.uid}`), (snapshot) => {
               let userprofile = snapshot.val() || {}
 
               if(userprofile.displayName === undefined){
@@ -132,6 +132,19 @@ function firebaseApi(auth, db, storage, tenant) {
 
     signOut: (callback) => {
       signOut(auth).then(callback);
+    },
+
+    updateDisplayName: (user, displayName) => {
+      return set(ref(db, `${tenant}/users/${user.key}/displayName`), displayName)
+    },
+
+    updateProfilePicture: (user, image) => {
+      var ref = storageRef(storage, `users/${user.key}/profilePicture`);
+      uploadString(ref, image, 'data_url').then((snapshot) => {
+        snapshot.ref.getDownloadURL().then((downloadURL) => {
+          set(ref(db, `${tenant}/users/${user.key}/profilePicture`), downloadURL)
+        });
+      })
     },
     
     /*************************************************************************/
@@ -742,9 +755,6 @@ function firebaseApi(auth, db, storage, tenant) {
       return value;
     },
 
-    updateDisplayName: (user, displayName) => {
-      return ref(db, `${tenant}/users/${user.key}/displayName`).set(displayName)
-    },
     updatePaid: (prono, user, paid) => {
       return ref(db, `${tenant}/pronodata/${prono}/userpoints/${user.key}/paid`).set(paid)
     },
@@ -759,17 +769,6 @@ function firebaseApi(auth, db, storage, tenant) {
     },
     updatePermissionEditDisabledProno: (user, val) => {
       return ref(db, `${tenant}/users/${user.key}/permissions/editDisabledProno`).set(val)
-    },
-
-    updateProfilePicture: (user, image) => {
-      var ref = storage.ref(db, `users/${user.key}/profilePicture`);
-      var uploadTask = ref.putString(image, 'data_url');
-      uploadTask.on('state_changed',
-        (snapshot) => {}, (error) => {}, () => {
-          uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
-            return ref(db, `${tenant}/users/${user.key}/profilePicture`).set(downloadURL)
-          });
-      });
     },
 
     addStage: (prono, stage) => {

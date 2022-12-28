@@ -49,36 +49,36 @@ function Navigation(props) {
 
   const links = [{
     title: 'Rangschikking',
-    path: 'ranking'
+    path: '/ranking'
   }, {
     title: 'Prono',
-    path: 'prono'
+    path: '/prono'
   }, {
     title: 'Resultaten',
-    path: 'results'
+    path: '/results'
   }, {
     title: 'Regels',
-    path: 'rules'
+    path: '/rules'
   }]
 
   const adminLinks = [{
     title: 'Users',
-    path: 'users'
+    path: '/users'
   }, {
     title: 'Settings',
-    path: 'settings'
+    path: '/settings'
   }, {
     title: 'Teams',
-    path: 'teams'
+    path: '/teams'
   }, {
     title: 'Matches',
-    path: 'matches'
+    path: '/matches'
   }, {
     title: 'Groupstage',
-    path: 'groupstage'
+    path: '/groupstage'
   }, {
     title: 'Knockoutstage',
-    path: 'knockoutstage'
+    path: '/knockoutstage'
   }]
 
   const theme = useTheme();
@@ -153,7 +153,7 @@ export function PronoLayout(props) {
 
   const showProfilePage = () => {
     setNavigationOpen(false);
-    navigate('profile');
+    navigate('/profile');
   }
 
   const theme = useTheme();
