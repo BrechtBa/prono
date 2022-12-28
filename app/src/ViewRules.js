@@ -15,7 +15,6 @@ function Rules(props) {
     return matches + winners;
   }
   const getKnockoutStagePoints = (rules, knockoutStages) => {
-    console.log(knockoutStages)
     return knockoutStages.map((stage) => stage.matches.length * (rules.knockoutStage.result + rules.knockoutStage.score)).reduce((a, b) => a+b, 0)
   }
   const getKnockoutstageTeamsPoints = (rules, knockoutStages) => {
@@ -110,7 +109,6 @@ function ViewRules(props){
       <Rules rules={rules} groupStage={groupStage} knockoutStages={knockoutStages}/>
     </div>
   );
-
 }
 
 export default ViewRules;

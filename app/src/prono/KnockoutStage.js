@@ -1,5 +1,4 @@
 import React, { useState, useContext } from 'react';
-import { createStyles, makeStyles } from '@mui/material/styles';
 
 import Paper from '@mui/material/Paper';
 
@@ -8,15 +7,31 @@ import { Disabled } from './PronoUtils.js';
 import { TeamName, TeamIcon, EditScoreDialog } from '../MatchUtils.js';
 
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    group: {
-      position: 'relative',
-      width: '100%',
-      maxWidth: '400px',
-      padding: '10px',
-      margin: '5px'
-    },
+function Match(props) {
+  const match = props.match;
+  const editPenalties = props.showPenaltyEdit;
+  const collapsed = props.collapsed;
+  const onSave = props.onSave
+  const editable = props.editable;
+  const editTeams = props.editTeams;
+  const teams = props.teams;
+
+  const [editScoreDialogOpen, setEditScoreDialogOpen] = useState(false)
+
+  const formatScore = (score) => {
+    if(score >= 0){
+      return score
+    }
+    else{
+      return ''
+    }
+  }
+
+  const showPenalty = (penalty1, penalty2, collapsed) => {
+    return (!collapsed && penalty1 > -1 && penalty2 >-1);
+  }
+
+  const styles = {
     match: {
       display: 'flex',
       flexDirection: 'column',
@@ -53,56 +68,28 @@ const useStyles = makeStyles((theme) =>
       width: '40px',
       textAlign: 'center'
     }
-  })
-);
-
-
-function Match(props) {
-  const match = props.match;
-  const editPenalties = props.showPenaltyEdit;
-  const collapsed = props.collapsed;
-  const onSave = props.onSave
-  const editable = props.editable;
-  const editTeams = props.editTeams;
-  const teams = props.teams;
-
-  const [editScoreDialogOpen, setEditScoreDialogOpen] = useState(false)
-
-  const formatScore = (score) => {
-    if(score >= 0){
-      return score
-    }
-    else{
-      return ''
-    }
-  }
-
-  const showPenalty = (penalty1, penalty2, collapsed) => {
-    return (!collapsed && penalty1 > -1 && penalty2 >-1);
-  }
-
-  const classes = useStyles();
+  };
 
   return (
     <div style={{height: '100%'}}>
-      <div className={classes.match} onClick={() => editable && setEditScoreDialogOpen(true)}>
-        <div className={classes.team1}>
+      <div style={styles.match} onClick={() => editable && setEditScoreDialogOpen(true)}>
+        <div style={styles.team1}>
           <TeamName team={match.team1} def={match.defaultteam1} />
         </div>
-        <div className={classes.teamIcon}>
+        <div style={styles.teamIcon}>
             <TeamIcon team={match.team1} />
         </div>
-        <div className={classes.score}>
-          <div className={classes.scoreRegular}>{formatScore(match.score1)} - {formatScore(match.score2)}</div>
+        <div style={styles.score}>
+          <div style={styles.scoreRegular}>{formatScore(match.score1)} - {formatScore(match.score2)}</div>
 
           {showPenalty(match.penalty1, match.penalty2, collapsed) &&
-            <div className={classes.scorePenalty}>({formatScore(match.penalty1)} - {formatScore(match.penalty2)})</div>
+            <div style={styles.scorePenalty}>({formatScore(match.penalty1)} - {formatScore(match.penalty2)})</div>
           }
         </div>
-        <div className={classes.teamIcon}>
+        <div style={styles.teamIcon}>
             <TeamIcon team={match.team2} />
         </div>
-        <div className={classes.team2}>
+        <div style={styles.team2}>
             <TeamName team={match.team2} def={match.defaultteam2} />
         </div>
       </div>

@@ -1,5 +1,4 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { createStyles, makeStyles } from '@mui/material/styles';
 
 import Paper from '@mui/material/Paper';
 import Dialog from '@mui/material/Dialog';
@@ -10,15 +9,6 @@ import ListItem from '@mui/material/ListItem';
 import { PronoContext } from '../PronoProvider.js';
 import { TeamName, TeamIcon } from '../MatchUtils.js';
 import { Disabled } from './PronoUtils.js';
-
-
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    teamIcon: {
-      maxWidth: '30px', maxHeight: '30px'
-    }
-  })
-);
 
 
 function StageTeamPronoSelectDialog(props){
@@ -89,7 +79,12 @@ function StageTeamPronoSelectDialog(props){
     setOpen(false)
   }
 
-  const classes = useStyles();
+  const styles = {
+    teamIcon: {
+      maxWidth: '30px', 
+      maxHeight: '30px'
+    }
+  }
 
   return (
     <Dialog onClose={() => setOpen(false)} open={open} style={{padding: '10px'}}>
@@ -101,7 +96,7 @@ function StageTeamPronoSelectDialog(props){
           <List style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center'}}>
             {selectedTeams.map((team) => (
               <ListItem key={team.team.key} button style={getStyle(team.selected)} onClick={() => toggleTeam(team)}>
-                <div className={classes.teamIcon}>
+                <div style={styles.teamIcon}>
                   <TeamIcon team={team.team} />
                 </div>
                 <div style={{marginLeft: '10px'}}>
@@ -138,7 +133,12 @@ function KnockoutStageTeamsPronoStage(props) {
 
   const editable = (currentStage === 'groupstage' || user.permissions.editDisabledProno);
 
-  const classes = useStyles();
+  const styles = {
+    teamIcon: {
+      maxWidth: '30px', 
+      maxHeight: '30px'
+    }
+  }
 
   return (
     <div>
@@ -148,7 +148,7 @@ function KnockoutStageTeamsPronoStage(props) {
           <div style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center'}}>
             {selectedTeams.map((team) => (
               <div key={team.key} style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', margin: '10px', flexGrow: 1, width: '125px'}}>
-                <div className={classes.teamIcon}>
+                <div style={styles.teamIcon}>
                   <TeamIcon team={team} />
                 </div>
                 <div style={{marginLeft: '10px'}}>

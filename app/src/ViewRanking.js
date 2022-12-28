@@ -6,6 +6,7 @@ import Paper from '@mui/material/Paper';
 import Dialog from '@mui/material/Dialog';
 import Avatar from '@mui/material/Avatar';
 import Divider from '@mui/material/Divider';
+import { useTheme } from '@mui/material/styles';
 
 import { UserContext } from "./UserProvider.js";
 import { PronoContext } from './PronoProvider.js';
@@ -135,9 +136,11 @@ function ViewRanking(props) {
     return sortedUsers;
   }
 
+  const theme = useTheme();
+
   return (
     <div>
-      <h1 className="Header">Rangschikking</h1>
+      <h2 style={{color: theme.palette.text.headers}}>Rangschikking</h2>
 
       {getRankedUsers(users).map((user) => (
         <RankingUser key={user.key} user={user} authUser={authUser} ranking={user.rank}/>

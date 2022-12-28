@@ -1,13 +1,14 @@
 import React, { useContext } from 'react';
+import { useTheme } from '@mui/material/styles';
 
 import { UserContext } from "./UserProvider.js";
 import { PronoContext } from "./PronoProvider.js";
 
 import { GroupstageProno } from './prono/GroupStage.js';
-// import { KnockoutStageProno } from './prono/KnockoutStage.js';
-// import { KnockoutStageTeamsProno, pronoStages } from './prono/KnockoutStageTeams.js';
-// import { TotalGoalsProno } from './prono/TotalGoals.js'
-// import { TeamResultProno } from './prono/TeamResult.js'
+import { KnockoutStageProno } from './prono/KnockoutStage.js';
+import { KnockoutStageTeamsProno } from './prono/KnockoutStageTeams.js';
+import { TotalGoalsProno } from './prono/TotalGoals.js'
+import { TeamResultProno } from './prono/TeamResult.js'
 import { DeadlineMessage } from './prono/PronoUtils.js'
 
 
@@ -171,8 +172,6 @@ function ViewProno(props) {
   const stages = getFullKnockoutStages(knockoutstages, matches, teams, matchesProno);
   const stageTeams = getFullStageTeams(teams, stageTeamsProno);
 
-  console.log(groups)
-  
   const groupstageComplete = (groups) => {
     let complete = true;
     groups.forEach((group) => {
@@ -213,25 +212,27 @@ function ViewProno(props) {
     return teamResultProno !== undefined && teamResultProno >= 0;
   }
 
+  const theme = useTheme();
+
   return (
     <div>
-      <h2 style={{color: '#ffffff'}}>Groepsfase</h2>
+      <h2 style={{color: theme.palette.text.headers}}>Groepsfase</h2>
       <DeadlineMessage deadline={deadlines['groupstage']} complete={groupstageComplete(groups)} active={currentStage === 'groupstage'}/>
       <GroupstageProno groups={groups} user={pronoUser} currentStage={currentStage}  api={api}/>
 
-      <h2 style={{color: '#ffffff'}}>Teams in elke eliminatie fase</h2>
+      <h2 style={{color: theme.palette.text.headers}}>Teams in elke eliminatie fase</h2>
       <DeadlineMessage deadline={deadlines['groupstage']} complete={stageTeamsComplete(stageTeams)} active={currentStage === 'groupstage'}/>
-      {/* <KnockoutStageTeamsProno stageTeams={stageTeams} teams={teams} user={pronoUser} currentStage={currentStage} api={api} /> */}
+      <KnockoutStageTeamsProno stageTeams={stageTeams} teams={teams} user={pronoUser} currentStage={currentStage} api={api} />
 
-      <h2 style={{color: '#ffffff'}}>Extra punten</h2>
+      <h2 style={{color: theme.palette.text.headers}}>Extra punten</h2>
       <DeadlineMessage deadline={deadlines['groupstage']} complete={totalGoalsComplete(totalGoalsProno)} active={currentStage === 'groupstage'}/>
-      {/* <TotalGoalsProno goals={totalGoalsProno} user={pronoUser} currentStage={currentStage} api={api} /> */}
+      <TotalGoalsProno goals={totalGoalsProno} user={pronoUser} currentStage={currentStage} api={api} />
 
       <DeadlineMessage deadline={deadlines['groupstage']} complete={teamResultPronoComplete(teamResultProno)} active={currentStage === 'groupstage'}/>
-      {/* <TeamResultProno stage={teamResultProno} user={pronoUser} team={{abbreviation: "BEL", icon: "images/flags/BE.png", name: "België"}} currentStage={currentStage} api={api} /> */}
+      <TeamResultProno stage={teamResultProno} user={pronoUser} team={{abbreviation: "BEL", icon_url: "images/flags/BE.png", name: "België"}} currentStage={currentStage} api={api} />
 
-      <h2 style={{color: '#ffffff'}}>Knockout fase</h2>
-      {/* <KnockoutStageProno stages={stages} user={pronoUser} currentStage={currentStage} api={api} /> */}
+      <h2 style={{color: theme.palette.text.headers}}>Knockout fase</h2>
+      <KnockoutStageProno stages={stages} user={pronoUser} currentStage={currentStage} api={api} />
 
     </div>
   );
