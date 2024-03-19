@@ -1,7 +1,5 @@
 import React, { useState, useContext } from 'react';
 
-import { useParams } from "react-router-dom";
-
 import Paper from '@mui/material/Paper';
 import Dialog from '@mui/material/Dialog';
 import Avatar from '@mui/material/Avatar';
@@ -10,6 +8,7 @@ import { useTheme } from '@mui/material/styles';
 
 import { UserContext } from "./UserProvider.js";
 import { PronoContext } from './PronoProvider.js';
+import { SquadContext } from './SquadProvider.js';
 
 
 const getPoints = (user) => {
@@ -32,7 +31,6 @@ const pointDetailKeys = [
 
 
 function RankingUser(props){
-
 
   const ranking = props.ranking;
   const rankingUser = props.user;
@@ -101,25 +99,17 @@ function RankingUser(props){
 function ViewRanking(props) {
   const api = props.api;
   const authUser = useContext(UserContext);
+  const {squad} = useContext(SquadContext);
+
   const prono = useContext(PronoContext);
-  
-  let { squad } = useParams();
-
-  if(squad === undefined){
-    squad = Object.keys(authUser.squads).find(k => authUser.squads[k])
-  }
-  if(squad === undefined){
-    console.log('you do not have a squad')
-  }
-
   
   const users = api.useSquadUsers(prono, squad);
 
   const getRankedUsers = (users) => {
     let sortedUsers = JSON.parse(JSON.stringify(users.sort((a, b) => getPoints(b) - getPoints(a))));
-    var rank = 1;
-    var skip = 1;
-    var points = -1;
+    let rank = 1;
+    let skip = 1;
+    let points = -1;
     sortedUsers.forEach((user) => {
       const userPoints = getPoints(user);
       if(userPoints < points){

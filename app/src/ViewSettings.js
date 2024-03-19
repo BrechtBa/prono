@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { createStyles, makeStyles } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 
 import Paper from '@mui/material/Paper';
 import Select from '@mui/material/Select';
@@ -11,18 +11,6 @@ import TextField from '@mui/material/TextField';
 
 
 import { PronoContext } from './PronoProvider.js';
-
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    header: {
-      color: theme.palette.text.headers,
-    },
-    paper: {
-      marginBottom: '10px',
-      padding: '10px',
-    },
-  })
-);
 
 
 function Prono(props) {
@@ -83,15 +71,15 @@ function TenantSettings(props) {
     api.updateActiveProno(prono.key);
   }
 
-  const classes = useStyles();
+  const theme = useTheme();
 
   return (
     <div>
-      <h3 className={classes.header}>Pronos</h3>
+      <h3 style={{color: theme.palette.text.headers}}>Pronos</h3>
 
       <div style={{display: 'flex', flexDirection: 'column'}}>
         {pronos.map((prono) => (
-          <Paper key={prono.key} className={classes.paper}>
+          <Paper key={prono.key}>
             <Prono prono={prono} deleteProno={deleteProno} updateProno={updateProno} duplicateProno={duplicateProno} setActiveProno={setActiveProno} active={prono.key === activeProno} />
           </Paper>
         ))}
@@ -139,13 +127,19 @@ function ViewSettings(props){
     }
   }
 
-  const classes = useStyles();
+  const theme = useTheme();
+  const styles = {
+    paper: {
+      padding: '10px',
+      margin: '5px'
+    }
+  }
 
   return (
     <div>
-      <h3 className={classes.header}>Competition Settings</h3>
+      <h3 style={{color: theme.palette.text.headers}}>Competition Settings</h3>
 
-      <Paper className={classes.paper}>
+      <Paper style={styles.paper}>
         <h3 style={{marginTop: 0}}>Tournament stages</h3>
         <div style={{display: 'flex', flexDirection: 'column'}}>
           <div>
@@ -162,7 +156,7 @@ function ViewSettings(props){
         </div>
       </Paper>
 
-      <Paper className={classes.paper}>
+      <Paper style={styles.paper}>
         <h3 style={{marginTop: 0}}>Home team</h3>
         <div style={{display: 'flex', flexDirection: 'column'}}>
           <div>
@@ -180,7 +174,7 @@ function ViewSettings(props){
         </div>
       </Paper>
 
-      <Paper className={classes.paper}>
+      <Paper style={styles.paper}>
         <h3 style={{marginTop: 0}}>Deadlines</h3>
         <div style={{display: 'flex', flexDirection: 'column'}}>
           <div>

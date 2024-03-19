@@ -6,8 +6,11 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import TextField from '@mui/material/TextField';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 
 import { UserContext } from "./UserProvider.js";
+import { SquadContext } from "./SquadProvider.js";
 
 
 const resizeFile = (file) =>
@@ -30,6 +33,9 @@ function ViewProfile(props){
   const api = props.api;
 
   const user = useContext(UserContext);
+  const {squad, setSquad} = useContext(SquadContext);
+  console.log(squad, setSquad)
+
   const [editDisplayNameOpen, setEditDisplayNameOpen] = useState(false)
   const [newDisplayName, setNewDisplayName] = useState('')
 
@@ -54,6 +60,13 @@ function ViewProfile(props){
     }
   };
 
+  const getSquads = (user, api) => {
+    if(user === null || api === null){
+      return []
+    }
+    return Object.keys(user.squads);
+  }
+
   return (
     <div>
       <Paper>
@@ -67,6 +80,15 @@ function ViewProfile(props){
             <div>{user.displayName}</div>
             <Button style={{marginTop: '10px'}} onClick={(e) => {setNewDisplayName(user.displayName); setEditDisplayNameOpen(true);}}>Verander naam</Button>
           </div>
+
+          <div style={{marginRight: '20px', marginTop: '20px'}}>
+            <Select value={squad || ""} label="Squad" onChange={(e) => setSquad(e.target.value)} >
+              {getSquads(user, api).map(s => (
+                <MenuItem key={s} value={s}>{s}</MenuItem>
+              ))}
+            </Select>
+          </div>
+
         </div>
       </Paper>
 
@@ -82,7 +104,7 @@ function ViewProfile(props){
           </form>
         </div>
       </Dialog>
-      
+
     </div>
 
   );

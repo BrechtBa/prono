@@ -1,6 +1,6 @@
 function Version() {
   return (
-    <div>v6.0.0</div>
+    <div>v7.0.0</div>
    )
 }
 

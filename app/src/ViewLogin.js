@@ -1,5 +1,7 @@
 import React, {useState} from "react";
 
+import { useParams } from "react-router-dom";
+
 import Paper from '@mui/material/Paper';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
@@ -37,6 +39,7 @@ function Terms(){
 
 function Register(props) {
   const api = props.api;
+  const squad = props.squad;
   const close = props.close;
 
   const [email, setEmail] = useState("");
@@ -62,7 +65,7 @@ function Register(props) {
   const register = () => {
     if(termsChecked){
       if(password === passwordRepeat){
-        api.createUserWithEmailAndPassword(email.trim(), password, () => {
+        api.createUserWithEmailAndPassword(email.trim(), password, squad, () => {
           setEmail('');
           setPassword('');
           setPasswordRepeat('');
@@ -202,6 +205,8 @@ function ViewLogin(props) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
 
+  const { squad } = useParams();
+
   const [registerDialogOpen, setRegisterDialogOpen] = useState(false)
   const [resetDialogOpen, setResetDialogOpen] = useState(false)
 
@@ -279,7 +284,7 @@ function ViewLogin(props) {
 
       <Dialog onClose={() => setRegisterDialogOpen(false)} open={registerDialogOpen}>
         <div style={{padding: '20px', minWidth: '320px', maxWidth: '100%'}}>
-          <Register close={() => setRegisterDialogOpen(false)} api={api}/>
+          <Register close={() => setRegisterDialogOpen(false)} api={api} squad={squad}/>
         </div>
       </Dialog>
 

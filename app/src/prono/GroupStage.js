@@ -8,6 +8,7 @@ import TextField from '@mui/material/TextField';
 import { PronoContext } from '../PronoProvider.js';
 import { Disabled } from './PronoUtils.js';
 import { TeamName, TeamIcon, TeamSelect, EditScoreDialog } from '../MatchUtils.js';
+import {Stages} from '../domain.js'
 
 
 function calculateGroupStagePoints(teams, matches) {
@@ -45,15 +46,17 @@ function calculateGroupStagePoints(teams, matches) {
 }
 
 
-
-export function Match(props) {
+export function GroupStageMatch(props) {
   const match = props.match;
+  const showResults = props.showResults;
+  const matchProno = props.matchProno;
   const onSave = props.onSave;
   const editable = props.editable;
   const editTeams = props.editTeams;
   const teams = props.teams;
 
   const [editScoreDialogOpen, setEditScoreDialogOpen] = useState(false)
+  const [showProno, setShowProno] = useState(false)
 
   const formatScore = (score) => {
     if(score >= 0){
@@ -79,23 +82,45 @@ export function Match(props) {
       width: '60px',
       display:'flex',
       flexDirection: 'row',
-      justifyContent: 'center'
+      justifyContent: 'center',
+      position: 'relative'
     },
     scoreRegular: {}
   }
 
   return (
     <div>
-      <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}} onClick={() => editable && setEditScoreDialogOpen(true)}>
+
+      <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}} 
+           onClick={() => editable && setEditScoreDialogOpen(true)}
+           onMouseOver={() => showResults && setShowProno(true)} onMouseOut={() => showResults && setShowProno(false)}>
+
         <div style={{...styles.team, justifyContent: 'flex-start', textAlign: 'left'}}>
           <TeamName team={match.team1} def={match.defaultteam1} />
         </div>
         <div style={styles.teamIcon}>
             <TeamIcon team={match.team1} />
         </div>
+
         <div style={styles.score}>
-          <div style={styles.scoreRegular}>{formatScore(match.score1)} - {formatScore(match.score2)}</div>
+          {!showResults && (
+            <div style={styles.scoreRegular}>
+              {formatScore(match.score1)} - {formatScore(match.score2)}
+            </div>
+
+          )}
+          {showResults && (
+            <div style={styles.scoreRegular}>
+              {formatScore(match.score1)} - {formatScore(match.score2)}
+            </div>
+          )}
+          {showProno && (
+            <div style={{position: 'absolute', top: '-10px', right: '2px', backgroundColor: 'rgba(255,255,255,0.8)'}}>
+              {formatScore(matchProno.score1)} - {formatScore(matchProno.score2)}
+            </div>
+          )}
         </div>
+
         <div style={styles.teamIcon}>
             <TeamIcon team={match.team2} />
         </div>
@@ -109,6 +134,7 @@ export function Match(props) {
     </div>
   )
 }
+
 
 function GroupPointsDialog(props) {
   const group = props.group;
@@ -191,92 +217,10 @@ function GroupPointsDialog(props) {
 
 }
 
-function GroupStageGroup(props) {
-  const group = props.group;
-  const editable = props.editable;
-  const editTeams = props.editTeams;
-  const api = props.api;
-
-  const [groupPointsDialogOpen, setGroupPointsDialogOpen] = useState(false)
-
-  const prono = useContext(PronoContext);
-
-  const saveMatch = (match, score1, score2, penalty1, penalty2, team1, team2) => {
-    api.updateMatch(prono, match, {score1: score1, score2: score2, penalty1: penalty1, penalty2: penalty2, team1: team1, team2: team2})
-  }
-  const saveGroupPoints = (teams) => {
-    api.updateGroupPoints(prono, group, teams)
-  }
-
-  const styles = {
-    group: {
-      width: '100%',
-      maxWidth: '400px',
-      padding: '10px',
-      margin: '5px'
-    },
-    team: {
-      display: 'flex', 
-      flexGrow: 4,
-      width: '90px',  
-      overflow: 'hidden',
-      marginLeft: '15px'
-    },
-    teamIcon: {
-      maxWidth: '30px', 
-      maxHeight: '30px'
-    }
-  }
-  return (
-    <div style={{position: 'relative',  width: '100%', maxWidth: '400px', margin: '5px'}}>
-      <Paper key={group.key} style={styles.group}>
-        <h3 style={{marginTop: 0}}>Groep {group.name}</h3>
-
-        <div>
-          {group.matches.map((match) => (
-           <Match key={match.key} match={match} onSave={saveMatch} editable={editable} editTeams={editTeams} teams={group.teams}/>
-          ))}
-        </div>
-
-        <div style={{marginTop: '10px'}} onClick={() => editable && setGroupPointsDialogOpen(true)}>
-          {group.teams.sort((a, b) => b.points-a.points).map((team) => (
-            <div key={team.key} style={{display: 'flex', flexDirection: 'row', alignItems: 'center', width: '100%'}}>
-              <div style={styles.teamIcon}>
-                <TeamIcon team={team} />
-              </div>
-              <div style={styles.team}>
-                <TeamName team={team}/>
-              </div>
-              <div style={{width: '50px'}}>{Math.round(team.points)}</div>
-            </div>
-          ))}
-        </div>
-      </Paper>
-
-      <GroupPointsDialog open={groupPointsDialogOpen} group={group} setOpen={setGroupPointsDialogOpen} onSave={saveGroupPoints}/>
-    </div>
-  );
-}
-
-
-export function GroupStage(props) {
-  const api = props.api;
-  const groups = props.groups;
-  const editable = props.editable;
-  const editTeams = props.editable;
-
-  return (
-    <div style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center'}}>
-      {groups.map((group) => (
-        <GroupStageGroup key={group.key} group={group} editable={editable} editTeams={editTeams} api={api}/>
-      ))}
-    </div>
-  );
-};
-
 
 function GroupwinnersDialog(props) {
   const group = props.group;
+  const groupWinnersProno = props.groupWinnersProno;
 
   const open = props.open;
   const setOpen = props.setOpen;
@@ -286,9 +230,11 @@ function GroupwinnersDialog(props) {
   const [groupsecond, setGroupsecond] = useState(-1)
 
   useEffect(() => {
-    setGroupwinner(group.winners[1])
-    setGroupsecond(group.winners[2])
-  }, [group]);
+    if(groupWinnersProno !== undefined){
+      setGroupwinner(groupWinnersProno[1]);
+      setGroupsecond(groupWinnersProno[2]);
+    }
+  }, [group, groupWinnersProno]);
 
 
   const handleSave = () => {
@@ -317,24 +263,50 @@ function GroupwinnersDialog(props) {
 }
 
 
-function GroupstagePronoGroup(props) {
+function GroupStagePronoGroup(props) {
+  const showResults = props.showResults;
   const api = props.api;
   const currentStage = props.currentStage;
   const group = props.group;
+  const matchesProno = props.matchesProno;
+  const groupWinnersProno = props.groupWinnersProno;
   const user = props.user;
 
   const [groupwinnersDialogOpen, setGroupwinnersDialogOpen] = useState(false)
+  const [groupPointsDialogOpen, setGroupPointsDialogOpen] = useState(false)
+
+  const editable = showResults || (currentStage === Stages.groupstage || user.permissions.editDisabledProno);
+
+  let winnerPronoTeam = null;
+  let secondPronoTeam = null;
+
+  const teamsObject = group.teams.reduce(function(acc, t) {
+    acc[t.key] = t;
+    return acc;
+  }, {});
+
+  if(groupWinnersProno !== undefined) {
+    winnerPronoTeam = teamsObject[groupWinnersProno[1]]
+    secondPronoTeam = teamsObject[groupWinnersProno[2]]
+  }
 
   const prono = useContext(PronoContext);
 
-  const saveMatch = (match, score1, score2, penalty1, penalty2) => {
-    api.updateMatchProno(prono, user, match, {score1: score1, score2: score2})
+  const saveMatch = (match, score1, score2, penalty1, penalty2, team1, team2) => {
+    if (showResults) {
+      api.updateMatch(prono, match, {score1: score1, score2: score2, penalty1: penalty1, penalty2: penalty2, team1: team1, team2: team2})
+    }
+    else {
+      api.updateMatchProno(prono, user, match, {score1: score1, score2: score2})
+    }
   }
-  const saveGroupwinners = (groupwinners) => {
+  const saveGroupPoints = (teams) => {
+    api.updateGroupPoints(prono, group, teams)
+  }
+  const saveGroupWinners = (groupwinners) => {
     api.updateGroupWinnersProno(prono, user, group, groupwinners)
   }
 
-  const editable = (currentStage === 'groupstage' || user.permissions.editDisabledProno);
   const styles = {
     group: {
       position: 'relative',
@@ -355,7 +327,7 @@ function GroupstagePronoGroup(props) {
       maxHeight: '30px'
     }
   }
-
+  
   return (
     <div style={{position: 'relative',  width: '100%', maxWidth: '400px', margin: '5px'}}>
       <Paper style={styles.group}>
@@ -363,51 +335,78 @@ function GroupstagePronoGroup(props) {
 
         <div>
           {group.matches.map((match) => (
-           <Match key={match.key} match={match} onSave={saveMatch} showPenaltyEdit={false} editable={editable} editTeams={false}/>
+           <GroupStageMatch key={match.key} match={match} showResults={showResults} matchProno={matchesProno[match.key]} onSave={saveMatch} showPenaltyEdit={false} editable={editable} editTeams={false}/>
           ))}
         </div>
 
-        <div style={{marginTop: '20px'}} onClick={() => setGroupwinnersDialogOpen(true)}>
-          <div style={{height: '36px', display: 'flex', alignItems: 'center'}}>
-            <div style={{width: '30%'}}>Winnaar: </div>
-            <div style={{display: 'flex', alignItems: 'center'}}>
+        {showResults && (
+          <div style={{marginTop: '10px'}} onClick={() => editable && setGroupPointsDialogOpen(true)}>
+          {group.teams.sort((a, b) => b.points-a.points).map((team) => (
+            <div key={team.key} style={{display: 'flex', flexDirection: 'row', alignItems: 'center', width: '100%'}}>
               <div style={styles.teamIcon}>
-                <TeamIcon team={group.winners[1]}/>
+                <TeamIcon team={team} />
               </div>
-              <div style={{marginLeft: '20px'}}>
-                <TeamName team={group.winners[1]} def=""/>
+              <div style={styles.team}>
+                <TeamName team={team}/>
+              </div>
+              <div style={{width: '50px'}}>{Math.round(team.points)}</div>
+            </div>
+          ))}
+          </div>
+        )}
+
+        {!showResults && (
+          <div style={{marginTop: '20px'}} onClick={() => setGroupwinnersDialogOpen(true)}>
+            
+            <div style={{height: '36px', display: 'flex', alignItems: 'center'}}>
+              <div style={{width: '30%'}}>Winnaar: </div>
+              <div style={{display: 'flex', alignItems: 'center'}}>
+                <div style={styles.teamIcon}>
+                  <TeamIcon team={winnerPronoTeam}/>
+                </div>
+                <div style={{marginLeft: '20px'}}>
+                  <TeamName team={winnerPronoTeam} def=""/>
+                </div>
               </div>
             </div>
-          </div>
-          <div style={{height: '36px', display: 'flex', alignItems: 'center'}}>
-            <div style={{width: '30%'}}>Tweede: </div>
-            <div style={{display: 'flex', alignItems: 'center'}}>
-              <div style={styles.teamIcon}>
-                <TeamIcon team={group.winners[2]}/>
-              </div>
-              <div style={{marginLeft: '20px'}}>
-                <TeamName team={group.winners[2]} def=""/>
+
+            <div style={{height: '36px', display: 'flex', alignItems: 'center'}}>
+              <div style={{width: '30%'}}>Tweede: </div>
+              <div style={{display: 'flex', alignItems: 'center'}}>
+                <div style={styles.teamIcon}>
+                  <TeamIcon team={secondPronoTeam}/>
+                </div>
+                <div style={{marginLeft: '20px'}}>
+                  <TeamName team={secondPronoTeam} def=""/>
+                </div>
               </div>
             </div>
+
           </div>
-        </div>
+        )}
 
         <Disabled disabled={!editable}/>
       </Paper>
-      <GroupwinnersDialog open={groupwinnersDialogOpen} group={group} setOpen={setGroupwinnersDialogOpen} onSave={saveGroupwinners}/>
+
+      <GroupPointsDialog open={groupPointsDialogOpen} group={group} setOpen={setGroupPointsDialogOpen} onSave={saveGroupPoints}/>
+      <GroupwinnersDialog open={groupwinnersDialogOpen} group={group} groupWinnersProno={groupWinnersProno} setOpen={setGroupwinnersDialogOpen} onSave={saveGroupWinners}/>
     </div>
   )
 }
 
-export function GroupstageProno(props) {
-  const groups = props.groups;
+export function GroupStageProno(props) {
+  const api = props.api;
+  const showResults = props.showResults;
+  const groupStage = props.groupStage;
+  const matchesProno = props.matchesProno;
+  const groupWinnersProno = props.groupWinnersProno;
   const user = props.user;
   const currentStage = props.currentStage;
 
   return (
     <div style={{display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center'}}>
-      {groups.map((group) => (
-        <GroupstagePronoGroup key={group.key} group={group} user={user} currentStage={currentStage}/>
+      {groupStage.groups.map((group) => (
+        <GroupStagePronoGroup key={group.key} api={api} group={group} showResults={showResults} matchesProno={matchesProno} groupWinnersProno={groupWinnersProno!==undefined ? groupWinnersProno[group.key] : undefined} user={user} currentStage={currentStage}/>
       ))}
     </div>
   );

@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { initializeApp } from "firebase/app";
 
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged } from "firebase/auth";
-import { getDatabase, ref, onValue, set, get, push} from "firebase/database";
+import { getDatabase, ref, onValue, set, get, push, update} from "firebase/database";
 import { getStorage, ref as storageRef, uploadString} from "firebase/storage";
 
 
@@ -16,6 +16,36 @@ const get_iso_icon = (iso_code) => {
 }
 
 
+const initializeUser = (db, tenant, squad, userAuth) => {
+  console.log(userAuth)
+  // initialize user profile
+  set(ref(db, `${tenant}/users/${userAuth.uid}/displayName`), makeDisplayName(userAuth.email));
+
+  set(ref(db, `${tenant}/users/${userAuth.uid}/squads`), {[squad]: true});
+
+  // initialize user prono
+  get(ref(db, `${tenant}/activeProno`)).then((snapshot) => {
+    if (snapshot !== undefined){
+
+      const prono = snapshot.val();
+
+      // points
+      set(ref(db, `${tenant}/pronoData/${prono}/userPoints/${userAuth.uid}`), {
+        groupStage: 0,
+        groupWinners: 0,
+        homeTeamResult: 0,
+        knockoutStage: 0,
+        knockoutStageTeams: 0,
+        totalGoals: 0
+      });
+    }
+    else {
+      console.error("no active prono")
+    }
+  });
+
+}
+
 function firebaseApi(auth, db, storage, tenant) {
 
   return {
@@ -24,8 +54,18 @@ function firebaseApi(auth, db, storage, tenant) {
     /* User login logout register                                            */
     /*************************************************************************/
 
-    createUserWithEmailAndPassword: (email, password, onSuccess, onError) => {
-      createUserWithEmailAndPassword(auth, email, password).then(onSuccess).catch(onError);
+    createUserWithEmailAndPassword: (email, password, squad, onSuccess, onError) => {
+      if(squad !== undefined){
+        createUserWithEmailAndPassword(auth, email, password).then((e) => {
+          // setup user
+          initializeUser(db, tenant, squad, e.user)
+
+          onSuccess()
+        }).catch(onError);
+      }
+      else {
+        onError({code: 'no-squad'});
+      }
     },
 
     signInWithEmailAndPassword: (email, password, onSuccess, onError) => {
@@ -52,7 +92,6 @@ function firebaseApi(auth, db, storage, tenant) {
 
               if(userprofile.displayName === undefined){
                 userprofile.displayName = makeDisplayName(userAuth.email);
-                set(ref(db, `${tenant}/users/${userAuth.uid}/displayName`), userprofile.displayName);
               }
               if(userprofile.profilePicture === undefined){
                 userprofile.profilePicture = null;
@@ -64,49 +103,6 @@ function firebaseApi(auth, db, storage, tenant) {
                 userprofile.squads = {};
               }
 
-              // get(ref(db, `${tenant}/activeProno`)).then((snapshot) => {
-              //   if (snapshot !== undefined){
-
-              //     const prono = snapshot.val();
-              //     get(ref(db, `${tenant}/pronoData/${prono}/userpoints/${userAuth.uid}`)).then((snapshot) => {
-              //       let userpoints = snapshot.val()
-
-              //       if(userpoints === null){
-              //         userpoints = {
-              //           active: true,
-              //           paid: false,
-              //           showPoints: true,
-              //           points: {}
-              //         }
-              //         set(ref(db, `${tenant}/pronoData/${prono}/userpoints/${userAuth.uid}`), userpoints)
-              //       }
-              //       setUser({
-              //         key: userAuth.uid,
-              //         email: userAuth.email,
-              //         displayName: userprofile.displayName || makeDisplayName(userAuth.email),
-              //         profilePicture: userprofile.profilePicture || '',
-              //         permissions: userprofile.permissions || {},
-              //         active: (userpoints.active === undefined) ? true: userpoints.active,
-              //         paid: (userpoints.paid === undefined) ? false: userpoints.paid,
-              //         showPoints: (userpoints.showPoints === undefined) ? true: userpoints.showPoints,
-              //       })
-              //     });
-
-              //   }
-              //   else {
-              //     setUser({
-              //       key: userAuth.uid,
-              //       email: userAuth.email,
-              //       displayName: userprofile.displayName || makeDisplayName(userAuth.email),
-              //       profilePicture: userprofile.profilePicture || '',
-              //       permissions: userprofile.permissions || {},
-              //       active: true,
-              //       paid: false,
-              //       showPoints: true,
-              //       editOverride: false,
-              //     })
-              //   }
-              // });
               setUser({
                 key: userAuth.uid,
                 email: userAuth.email,
@@ -189,12 +185,12 @@ function firebaseApi(auth, db, storage, tenant) {
         return pronos;
     },
 
-    updateProno: (prono, update) => {
+    updateProno: (prono, updateData) => {
       var updates = {};
-      for (const [path, value] of Object.entries(update)) {
+      for (const [path, value] of Object.entries(updateData)) {
         updates[`${tenant}/pronos/${prono.key}/${path}`] = value
       }
-      return ref().update(updates)
+      return update(ref(db), updates)
     },
 
     deleteProno: (prono) => {
@@ -379,12 +375,12 @@ function firebaseApi(auth, db, storage, tenant) {
       return deadlines;
     },
 
-    updateDeadlines: (prono, update) => {
+    updateDeadlines: (prono, updateData) => {
       var updates = {};
-      for (const [path, value] of Object.entries(update)) {
+      for (const [path, value] of Object.entries(updateData)) {
         updates[`${tenant}/pronoData/${prono}/deadlines/${path}`] = value
       }
-      return ref().update(updates)
+      return update(ref(db), updates)
     },
 
     useRules: (prono, initialValue) => {
@@ -455,12 +451,12 @@ function firebaseApi(auth, db, storage, tenant) {
       set(ref(db, `${tenant}/pronoData/${prono}/competition/groupStage/${group.key}`), null);
     },
 
-    updateGroup: (prono, group, update) => {
+    updateGroup: (prono, group, updateData) => {
       var updates = {};
-      for (const [path, value] of Object.entries(update)) {
+      for (const [path, value] of Object.entries(updateData)) {
         updates[`${tenant}/pronoData/${prono}/competition/groupStage/${group.key}/${path}`] = value
       }
-      return ref().update(updates)
+      return update(ref(db), updates)
     },
 
     groupAddTeam: (prono, group, teamKey) => {
@@ -554,12 +550,12 @@ function firebaseApi(auth, db, storage, tenant) {
       ref(db, `${tenant}/pronoData/${prono}/competition/teams`).push(team);
     },
 
-    updateTeam: (prono, team, update) => {
+    updateTeam: (prono, team, updateData) => {
       var updates = {};
-      for (const [path, value] of Object.entries(update)) {
+      for (const [path, value] of Object.entries(updateData)) {
         updates[`${tenant}/pronoData/${prono}/competition/teams/${team.key}/${path}`] = value
       }
-      return ref().update(updates)
+      return update(ref(db), updates)
     },
 
     deleteTeam: (prono, team) => {
@@ -596,12 +592,12 @@ function firebaseApi(auth, db, storage, tenant) {
       return matches;
     },
 
-    updateMatch: (prono, match, update) => {
+    updateMatch: (prono, match, updateData) => {
       var updates = {};
-      for (const [path, value] of Object.entries(update)) {
+      for (const [path, value] of Object.entries(updateData)) {
         updates[`${tenant}/pronoData/${prono}/competition/matches/${match.key}/${path}`] = value
       }
-      return ref().update(updates)
+      return update(ref(db), updates)
     },
 
     addMatch: (prono, match) => {
@@ -620,12 +616,12 @@ function firebaseApi(auth, db, storage, tenant) {
       set(ref(db, `${tenant}/pronoData/${prono}/competition/groupStage/${group.key}/points`), points)
     },
 
-    updateMatchProno: (prono, user, match, update) => {
+    updateMatchProno: (prono, user, match, updateData) => {
       var updates = {};
-      for (const [path, value] of Object.entries(update)) {
+      for (const [path, value] of Object.entries(updateData)) {
         updates[`${tenant}/pronoData/${prono}/userPronos/${user.key}/matches/${match.key}/${path}`] = value
       }
-      return ref().update(updates)
+      return update(ref(db), updates)
     },
 
     updateGroupWinnersProno: (prono, user, group, groupwinners) => {
