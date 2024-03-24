@@ -142,7 +142,15 @@ function firebaseApi(auth, db, storage, tenant) {
         });
       })
     },
-    
+
+    updateSquads: (user, squads) => {
+      const obj = squads.reduce((acc, s) => {
+        acc[s] = true;
+        return acc;
+      }, {})
+      return set(ref(db, `${tenant}/users/${user.key}/squads`), obj)
+    },
+
     /*************************************************************************/
     /* Active Prono                                                          */
     /*************************************************************************/
@@ -232,6 +240,18 @@ function firebaseApi(auth, db, storage, tenant) {
     /* Squads                                                                */
     /*************************************************************************/
 
+    useSquads: () => {
+      const [squads, setSquads] = useState({});
+      useEffect(() => {
+        onValue(ref(db, `${tenant}/squads`), (snapshot) => {
+          if (snapshot !== undefined) {
+            setSquads(snapshot.val());
+          }
+        });
+      }, [])
+      return squads;
+    },
+
     useSquadName: (squad) => {
       const [squadName, setSquadName] = useState(null);
       useEffect(() => {
@@ -305,6 +325,7 @@ function firebaseApi(auth, db, storage, tenant) {
                   displayName: val.displayName,
                   permissions: val.permissions || {},
                   profilePicture: val.profilePicture,
+                  squads: val.squads || {},
                 }
               });
 
@@ -319,7 +340,8 @@ function firebaseApi(auth, db, storage, tenant) {
                     points: val,
                     displayName: userProfiles[snap.key] === undefined ? '' : userProfiles[snap.key].displayName,
                     permissions: userProfiles[snap.key] === undefined ? {} : userProfiles[snap.key].permissions,
-                    profilePicture: userProfiles[snap.key] === undefined ? undefined : userProfiles[snap.key].profilePicture
+                    profilePicture: userProfiles[snap.key] === undefined ? undefined : userProfiles[snap.key].profilePicture,
+                    squads: userProfiles[snap.key] === undefined ? {} : userProfiles[snap.key].squads,
                   });
                 });
               }
@@ -778,13 +800,13 @@ function firebaseApi(auth, db, storage, tenant) {
     },
 
     updatePaid: (prono, user, paid) => {
-      set(ref(db, `${tenant}/pronoData/${prono}/userpoints/${user.key}/paid`), paid)
+      set(ref(db, `${tenant}/pronoData/${prono}/userPoints/${user.key}/paid`), paid)
     },
     updateActive: (prono, user, active) => {
-      set(ref(db, `${tenant}/pronoData/${prono}/userpoints/${user.key}/active`), active)
+      set(ref(db, `${tenant}/pronoData/${prono}/userPoints/${user.key}/active`), active)
     },
     updateShowPoints: (prono, user, showPoints) => {
-      set(ref(db, `${tenant}/pronoData/${prono}/userpoints/${user.key}/showPoints`), showPoints)
+      set(ref(db, `${tenant}/pronoData/${prono}/userPoints/${user.key}/showPoints`), showPoints)
     },
     updatePermissionEditor: (user, editor) => {
       set(ref(db, `${tenant}/users/${user.key}/permissions/editor`), editor)

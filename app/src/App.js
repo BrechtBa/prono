@@ -20,7 +20,7 @@ import ViewResults from './ViewResults.js';
 import ViewRules from './ViewRules.js';
 
 import ViewSettings from './ViewSettings.js';
-// import ViewUsers from './ViewUsers.js';
+ import ViewUsers from './ViewUsers.js';
 // import ViewMatches from './ViewMatches.js';
 // import ViewTeams from './ViewTeams.js';
 // import ViewGroupstage from './ViewGroupstage.js';
@@ -98,7 +98,7 @@ function App() {
                   <Route path="/:squad/results"> <ViewResults api={api}/> </Route>
                   <Route path="/:squad/rules">  <ViewRules api={api}/> </Route>
 
-                  <Route path="/users"> <ViewUsers api={api}/> </Route>
+
                   <Route path="/settings"> <ViewSettings api={api}/> </Route>
                   <Route path="/teams"> <ViewTeams api={api}/> </Route>
                   <Route path="/matches"> <ViewMatches api={api}/> </Route>
@@ -112,6 +112,9 @@ function App() {
                   <Route path="/prono" element={ <PronoWrapper api={api} content={ <ViewProno api={api}/> }/> } />
                   <Route path="/rules" element={ <PronoWrapper api={api} content={ <ViewRules api={api}/> }/> } />
                   <Route path="/settings" element={ <PronoWrapper api={api} content={ <ViewSettings api={api}/> }/> } />
+
+                  <Route path="/users" element={ <PronoWrapper api={api} content={ <ViewUsers api={api}/> }/> } />
+
 
                   <Route path="/:squad" element={ <PronoWrapper api={api}/>} />
                   <Route path="/" element={ <PronoWrapper api={api} content={ <ViewRanking api={api}/> }/> } />
