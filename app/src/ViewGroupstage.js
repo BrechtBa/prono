@@ -1,5 +1,4 @@
 import React, { useState, useContext } from 'react';
-import { createStyles, makeStyles } from '@mui/material/styles';
 
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
@@ -9,44 +8,46 @@ import Dialog from '@mui/material/Dialog';
 import { PronoContext } from './PronoProvider.js';
 import { TeamIcon, TeamSelect, MatchSelect } from './MatchUtils.js';
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    root: {},
-    stage: {
-    },
-    group: {
-    },
-    match: {
-      display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'center'
-    },
-    matchNumber: {
-      display: 'flex',
-      flexGrow: 2,
-    },
-    matchStage: {
-      display: 'flex',
-      flexGrow: 4,
-    },
-    matchDate: {
-      display: 'flex',
-      flexGrow: 4,
-    },
-    matchTeam: {
-      display: 'flex',
-      flexGrow: 4,
-    },
-    teamName: {
-      display: 'flex',
-      flexGrow: 2,
-      marginLeft: '10px'
-    },
-    teamIcon: {
-      maxWidth: '30px', maxHeight: '30px'
-    }
-  })
-);
+const styles = {
+  stage: {
+  },
+  group: {
+  },
+  team: {
+    display: "flex",
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  match: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  matchNumber: {
+    display: 'flex',
+    flexGrow: 2,
+  },
+  matchStage: {
+    display: 'flex',
+    flexGrow: 4,
+  },
+  matchDate: {
+    display: 'flex',
+    flexGrow: 4,
+  },
+  matchTeam: {
+    display: 'flex',
+    flexGrow: 4,
+  },
+  teamName: {
+    display: 'flex',
+    flexGrow: 2,
+    marginLeft: '10px'
+  },
+  teamIcon: {
+    maxWidth: '30px', maxHeight: '30px'
+  }
+};
 
 
 
@@ -66,21 +67,19 @@ function Match(props) {
     return date.getDate() + "-" + (date.getMonth()+1) + "-" + date.getFullYear() + "  " + strTime;
   }
 
-  const classes = useStyles();
-
   return (
     <div style={{height: '100%'}}>
-      <div className={classes.match}>
-        <div className={classes.matchNumber}>
+      <div style={styles.match}>
+        <div style={styles.matchNumber}>
           {match.number}
         </div>
 
-        <div className={classes.matchDate}>
+        <div style={styles.matchDate}>
           {formatDate(date)}
         </div>
 
-        <div className={classes.matchTeam}>
-          {match.defaultteam1} - {match.defaultteam2}
+        <div style={styles.matchTeam}>
+          {match.defaultTeam1} - {match.defaultTeam2}
         </div>
         <div>
           <Button onClick={() => setDeleteDialogOpen(true)}>Delete</Button>
@@ -107,15 +106,13 @@ function Team(props){
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  const classes = useStyles();
-
  return (
     <div style={{height: '100%'}}>
-      <div className={classes.team}>
-        <div className={classes.teamIcon}>
+      <div style={styles.team}>
+        <div style={styles.teamIcon}>
           <TeamIcon team={team}/>
         </div>
-        <div className={classes.teamName}>
+        <div style={styles.teamName}>
           {team.name}
         </div>
         <div>
@@ -175,12 +172,10 @@ function Group(props) {
     return -1;
   }
 
-  const classes = useStyles();
-
   return (
     <div style={{height: '100%'}}>
-      <div className={classes.group}>
-        <TextField style={{width: '200px', marginLeft: '10px', marginRight: '10px'}}
+      <div style={styles.group}>
+        <TextField style={{width: '200px', marginLeft: '10px', marginRight: '10px', marginTop: "0.5em"}}
           value={group.name} onChange={(event) => updateGroup(group, {name: event.target.value})} label="Group name"/>
         <div>
           <h4>Matches</h4>
@@ -268,10 +263,8 @@ function ViewGroupstage(props) {
     api.addGroup(prono, group);
   }
 
-  const classes = useStyles();
-
   return (
-    <div className={classes.root}>
+    <div>
       <h2 style={{color: '#ffffff'}}>Group stage</h2>
       <div>
         {groups.map((group) => (

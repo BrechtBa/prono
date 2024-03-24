@@ -1,5 +1,4 @@
 import React, { useState, useContext } from 'react';
-import { createStyles, makeStyles } from '@mui/material/styles';
 
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
@@ -9,31 +8,27 @@ import Dialog from '@mui/material/Dialog';
 import { PronoContext } from './PronoProvider.js';
 import { MatchSelect } from './MatchUtils.js';
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    root: {},
-    stage: {
-    },
-    match: {
-      display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'center'
-    },
-    matchNumber: {
-      display: 'flex',
-      flexGrow: 2,
-    },
-    matchDate: {
-      display: 'flex',
-      flexGrow: 4,
-    },
-    matchTeam: {
-      display: 'flex',
-      flexGrow: 4,
-    }
-  })
-);
-
+const styles = {
+  stage: {
+  },
+  match: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  matchNumber: {
+    display: 'flex',
+    flexGrow: 2,
+  },
+  matchDate: {
+    display: 'flex',
+    flexGrow: 4,
+  },
+  matchTeam: {
+    display: 'flex',
+    flexGrow: 4,
+  }
+};
 
 
 function Match(props) {
@@ -52,20 +47,18 @@ function Match(props) {
     return date.getDate() + "-" + (date.getMonth()+1) + "-" + date.getFullYear() + "  " + strTime;
   }
 
-  const classes = useStyles();
-
   return (
     <div style={{height: '100%'}}>
-      <div className={classes.match}>
-        <div className={classes.matchNumber}>
+      <div style={styles.match}>
+        <div style={styles.matchNumber}>
           {match.number}
         </div>
 
-        <div className={classes.matchDate}>
+        <div style={styles.matchDate}>
           {formatDate(date)}
         </div>
 
-        <div className={classes.matchTeam}>
+        <div style={styles.matchTeam}>
           {match.defaultteam1} -  {match.defaultteam2}
         </div>
         <div>
@@ -107,12 +100,10 @@ function Stage(props) {
     }
   });
 
-  const classes = useStyles();
-
   return (
     <div style={{height: '100%'}}>
-      <div className={classes.stage}>
-        <TextField style={{width: '200px', marginLeft: '10px', marginRight: '10px'}}
+      <div style={styles.stage}>
+        <TextField style={{width: '200px', marginLeft: '10px', marginRight: '10px', marginTop: "0.5em"}}
           value={stage.name} onChange={(event) => updateStage(stage, {name: event.target.value})} label="Stage name"/>
         <div>
           <h4>Matches</h4>
@@ -189,10 +180,8 @@ function ViewKnockoutstage(props) {
     api.addStage(prono, stage);
   }
 
-  const classes = useStyles();
-
   return (
-    <div className={classes.root}>
+    <div>
       <h2 style={{color: '#ffffff'}}>Knockout stage</h2>
       <div>
         {stages.map((stage) => (

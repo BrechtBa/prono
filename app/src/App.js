@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, Routes, Route  } from "react-router-dom";
 
 import { ThemeProvider } from '@mui/material/styles';
 import { createTheme } from '@mui/material';
@@ -7,8 +7,6 @@ import { createTheme } from '@mui/material';
 import PronoProvider from './PronoProvider.js';
 import UserProvider from "./UserProvider.js";
 import SquadProvider from "./SquadProvider.js";
-
-import { Routes, Route } from "react-router-dom";
 
 import { getApi } from './repository/firebase.js';
 
@@ -23,9 +21,8 @@ import ViewSettings from './ViewSettings.js';
  import ViewUsers from './ViewUsers.js';
  import ViewMatches from './ViewMatches.js';
  import ViewTeams from './ViewTeams.js';
-// import ViewGroupstage from './ViewGroupstage.js';
-// import ViewKnockoutstage from './ViewKnockoutstage.js';
-
+ import ViewGroupstage from './ViewGroupstage.js';
+ import ViewKnockoutstage from './ViewKnockoutstage.js';
 
 
 const redTheme = createTheme({
@@ -93,19 +90,6 @@ function App() {
 
                 <Routes>
 
-                  {/*
-                  <Route path="/:squad/prono"> <ViewProno api={api}/> </Route>
-                  <Route path="/:squad/results"> <ViewResults api={api}/> </Route>
-                  <Route path="/:squad/rules">  <ViewRules api={api}/> </Route>
-
-
-                  <Route path="/settings"> <ViewSettings api={api}/> </Route>
-                  <Route path="/teams"> <ViewTeams api={api}/> </Route>
-                  <Route path="/matches"> <ViewMatches api={api}/> </Route>
-                  <Route path="/groupstage"> <ViewGroupstage api={api}/> </Route>
-                  <Route path="/knockoutstage"> <ViewKnockoutstage api={api}/> </Route>*/}
-
-
                   <Route path="/ranking" element={ <PronoWrapper api={api} content={ <ViewRanking api={api}/> }/> } />
                   <Route path="/profile" element={ <PronoWrapper api={api} content={ <ViewProfile api={api}/> }/> } />
                   <Route path="/results" element={ <PronoWrapper api={api} content={ <ViewResults api={api}/> }/> } />
@@ -116,7 +100,8 @@ function App() {
                   <Route path="/users" element={ <PronoWrapper api={api} content={ <ViewUsers api={api}/> }/> } />
                   <Route path="/teams" element={ <PronoWrapper api={api} content={ <ViewTeams api={api}/> }/> } />
                   <Route path="/matches" element={ <PronoWrapper api={api} content={ <ViewMatches api={api}/> }/> } />
-
+                  <Route path="/groupstage" element={ <PronoWrapper api={api} content={ <ViewGroupstage api={api}/> }/> } />
+                  <Route path="/knockoutstage" element={ <PronoWrapper api={api} content={ <ViewKnockoutstage api={api}/> }/> } />
 
                   <Route path="/:squad" element={ <PronoWrapper api={api} content={ <ViewRanking api={api}/> }/> } />
                   <Route path="/" element={ <PronoWrapper api={api} content={ <ViewRanking api={api}/> }/> } />
