@@ -202,11 +202,23 @@ function firebaseApi(auth, db, storage, tenant) {
       get(ref(db, `${tenant}/pronoData/${prono.key}`)).then( (snapshot) => {
         if (snapshot !== undefined){
           const pronodata = snapshot.val();
+          const userPoints = Object.keys(pronodata.userPoints).reduce((acc, key) => {
+            acc[key] = {
+              groupStage: 0,
+              groupWinners: 0,
+              homeTeamResult: 0,
+              knockoutStage: 0,
+              knockoutStageTeams: 0,
+              totalGoals: 0,
+            };
+            return acc
+          }, {});
+
           const newProno = {
             competition: pronodata.competition,
             deadlines: pronodata.deadlines,
             rules: pronodata.rules,
-            userPoints: {},
+            userPoints: userPoints,
             userPronos: {}
           }
           const newName = `${prono.name} copy`;
