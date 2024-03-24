@@ -21,7 +21,7 @@ import ViewRules from './ViewRules.js';
 
 import ViewSettings from './ViewSettings.js';
  import ViewUsers from './ViewUsers.js';
-// import ViewMatches from './ViewMatches.js';
+ import ViewMatches from './ViewMatches.js';
  import ViewTeams from './ViewTeams.js';
 // import ViewGroupstage from './ViewGroupstage.js';
 // import ViewKnockoutstage from './ViewKnockoutstage.js';
@@ -115,9 +115,10 @@ function App() {
 
                   <Route path="/users" element={ <PronoWrapper api={api} content={ <ViewUsers api={api}/> }/> } />
                   <Route path="/teams" element={ <PronoWrapper api={api} content={ <ViewTeams api={api}/> }/> } />
+                  <Route path="/matches" element={ <PronoWrapper api={api} content={ <ViewMatches api={api}/> }/> } />
 
 
-                  <Route path="/:squad" element={ <PronoWrapper api={api}/>} />
+                  <Route path="/:squad" element={ <PronoWrapper api={api} content={ <ViewRanking api={api}/> }/> } />
                   <Route path="/" element={ <PronoWrapper api={api} content={ <ViewRanking api={api}/> }/> } />
 
                 </Routes>

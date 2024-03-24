@@ -1,5 +1,4 @@
 import React, { useState, useContext } from 'react';
-import { createStyles, makeStyles } from '@mui/material/styles';
 
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
@@ -9,40 +8,31 @@ import Dialog from '@mui/material/Dialog';
 import { PronoContext } from './PronoProvider.js';
 
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    root: {},
-    stage: {
-    },
-    group: {
-    },
-    match: {
-      display: 'flex',
-      flexDirection: 'row',
-      alignItems: 'center'
-    },
-    matchNumber: {
-      display: 'flex',
-      flexGrow: 2,
-    },
-    matchStage: {
-      display: 'flex',
-      flexGrow: 4,
-    },
-    matchDate: {
-      display: 'flex',
-      flexGrow: 4,
-    },
-    matchTeam: {
-      display: 'flex',
-      flexGrow: 4,
-      justifyContent: 'flex-start',
-      width: '90px',
-      textAlign: 'left',
-      overflow: 'hidden'
-    }
-  })
-);
+const styles = {
+  match: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  matchNumber: {
+    display: 'flex',
+    flexGrow: 2,
+    marginTop: "0.5em",
+  },
+  matchDate: {
+    display: 'flex',
+    flexGrow: 4,
+    marginTop: "0.5em",
+  },
+  matchTeam: {
+    display: 'flex',
+    flexGrow: 4,
+    justifyContent: 'flex-start',
+    width: '90px',
+    textAlign: 'left',
+    marginTop: "0.5em",
+  }
+}
 
 
 
@@ -55,11 +45,11 @@ function Match(props) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const formatDate = (date) => {
-    var hours = date.getHours();
-    var minutes = date.getMinutes();
+    let hours = date.getHours();
+    let minutes = date.getMinutes();
     hours = hours < 10 ? '0'+hours : hours;
     minutes = minutes < 10 ? '0'+minutes : minutes;
-    var strTime = hours + ':' + minutes;
+    let strTime = hours + ':' + minutes;
     return date.getDate() + "-" + (date.getMonth()+1) + "-" + date.getFullYear() + "  " + strTime;
   }
 
@@ -71,29 +61,28 @@ function Match(props) {
     const date = new Date(+year, +month - 1, +day, +hour, +minute);
     return date;
   }
-
-  const classes = useStyles();
+  console.log(match)
 
   return (
     <div style={{height: '100%'}}>
-      <div className={classes.match}>
-        <div className={classes.matchNumber}>
+      <div style={styles.match}>
+        <div style={styles.matchNumber}>
           <TextField style={{width: '80px', marginLeft: '10px', marginRight: '10px'}} inputProps={{min: 0, style: {textAlign: 'center'}}}
-           value={match.number} onChange={(event) => updateMatch(match, {number: event.target.value})}/>
+           value={match.number} onChange={(event) => updateMatch(match, {number: event.target.value})} label="Number"/>
         </div>
 
-        <div className={classes.matchDate}>
+        <div style={styles.matchDate}>
           <TextField style={{width: '200px', marginLeft: '10px', marginRight: '10px'}} inputProps={{min: 0, style: {textAlign: 'center'}}}
-           value={formatDate(date)} onChange={(event) => updateMatch(match, {date: parseDate(event.target.value).getTime()})}/>
+           value={formatDate(date)} onChange={(event) => updateMatch(match, {date: parseDate(event.target.value).getTime()})} label="Date"/>
         </div>
 
-        <div className={classes.team}>
+        <div style={styles.matchTeam}>
           <TextField style={{width: '100px', marginLeft: '10px', marginRight: '10px'}} inputProps={{min: 0, style: {textAlign: 'center'}}}
-           value={match.defaultteam1} onChange={(event) => updateMatch(match, {defaultteam1: event.target.value})}/>
+           value={match.defaultTeam1} onChange={(event) => updateMatch(match, {defaultTeam1: event.target.value})} label="Team 1"/>
         </div>
-        <div className={classes.matchTeam}>
+        <div style={styles.matchTeam}>
           <TextField style={{width: '100px', marginLeft: '10px', marginRight: '10px'}} inputProps={{min: 0, style: {textAlign: 'center'}}}
-           value={match.defaultteam2} onChange={(event) => updateMatch(match, {defaultteam2: event.target.value})}/>
+           value={match.defaultTeam2} onChange={(event) => updateMatch(match, {defaultTeam2: event.target.value})} label="Team 2"/>
         </div>
 
         <div>
@@ -149,14 +138,12 @@ function ViewMatches(props) {
     api.addMatch(prono, match);
   }
 
-  const classes = useStyles();
-
   return (
-    <div className={classes.root}>
+    <div>
       <h2 style={{color: '#ffffff'}}>Matches</h2>
       <div>
         {matches.map((match) => (
-           <Paper key={match.key} style={{padding: '5px', height: '50px', marginBottom: '5px', overflowX: 'hidden'}}>
+           <Paper key={match.key} style={{padding: '5px', marginBottom: '5px', overflowX: 'hidden'}}>
             <Match match={match} updateMatch={updateMatch} deleteMatch={deleteMatch}/>
           </Paper>
         ))}
