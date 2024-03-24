@@ -4,7 +4,7 @@ import { initializeApp } from "firebase/app";
 
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged } from "firebase/auth";
 import { getDatabase, ref, onValue, set, get, push, update} from "firebase/database";
-import { getStorage, ref as storageRef, uploadString} from "firebase/storage";
+import { getStorage, ref as storageRef, uploadString, getDownloadURL} from "firebase/storage";
 
 
 const makeDisplayName = (email) => {
@@ -135,9 +135,9 @@ function firebaseApi(auth, db, storage, tenant) {
     },
 
     updateProfilePicture: (user, image) => {
-      var ref = storageRef(storage, `users/${user.key}/profilePicture`);
-      uploadString(ref, image, 'data_url').then((snapshot) => {
-        snapshot.ref.getDownloadURL().then((downloadURL) => {
+      const sref = storageRef(storage, `users/${user.key}/profilePicture`);
+      uploadString(sref, image, 'data_url').then((snapshot) => {
+        getDownloadURL(snapshot.ref).then((downloadURL) => {
           set(ref(db, `${tenant}/users/${user.key}/profilePicture`), downloadURL)
         });
       })
