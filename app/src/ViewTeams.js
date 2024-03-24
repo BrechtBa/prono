@@ -1,5 +1,4 @@
 import React, { useState, useContext } from 'react';
-import { createStyles, makeStyles } from '@mui/material/styles';
 
 import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
@@ -11,28 +10,26 @@ import { TeamIcon } from './MatchUtils.js';
 import { PronoContext } from './PronoProvider.js';
 
 
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    root: {},
-    team: {
-      display: 'flex',
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      alignItems: 'center'
-    },
-    teamNumber: {
-      marginRight: '10px'
-    },
-    teamName: {
-      display: 'flex',
-      flexGrow: 2,
-    },
-    teamIcon: {
-      maxWidth: '30px', maxHeight: '30px'
-    }
-  })
-);
-
+const styles = {
+  root: {},
+  team: {
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center'
+  },
+  teamNumber: {
+    marginRight: '10px'
+  },
+  teamName: {
+    display: 'flex',
+    flexGrow: 2,
+    marginTop: "0.5em"
+  },
+  teamIcon: {
+    maxWidth: '30px', maxHeight: '30px'
+  }
+}
 
 
 function Team(props) {
@@ -44,30 +41,28 @@ function Team(props) {
 
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  const classes = useStyles();
-
   return (
     <div style={{height: '100%'}}>
-      <div className={classes.team}>
-        <div className={classes.teamNumber}>
+      <div style={styles.team}>
+        <div style={styles.teamNumber}>
           {index}
         </div>
-        <div className={classes.teamIcon}>
+        <div style={styles.teamIcon}>
           <TeamIcon team={team}/>
         </div>
-        <div className={classes.teamName}>
-          <TextField style={{width: '150px', marginLeft: '10px', marginRight: '10px'}}
+        <div style={styles.teamName}>
+          <TextField style={{width: '200px', marginLeft: '10px', marginRight: '10px'}}
            value={team.name} onChange={(event) => updateTeam(team, {name: event.target.value})} label="Name"/>
         </div>
-        <div className={classes.teamName}>
-          <TextField style={{width: '80px', marginLeft: '10px', marginRight: '10px'}}
+        <div style={styles.teamName}>
+          <TextField style={{width: '100px', marginLeft: '10px', marginRight: '10px'}}
            value={team.abbreviation} onChange={(event) => updateTeam(team, {abbreviation: event.target.value})}  label="Abbreviation"/>
         </div>
-        <div className={classes.teamName}>
-          <TextField style={{width: '80px', marginLeft: '10px', marginRight: '10px'}}
+        <div style={styles.teamName}>
+          <TextField style={{width: '100px', marginLeft: '10px', marginRight: '10px'}}
            value={team.iso_icon} onChange={(event) => updateTeam(team, {iso_icon: event.target.value})} label="ISO icon"/>
         </div>
-        <div className={classes.teamName}>
+        <div style={styles.teamName}>
           <TextField style={{width: '200px', marginLeft: '10px', marginRight: '10px'}}
            value={team.icon} onChange={(event) => updateTeam(team, {icon: event.target.value})} label="Icon"/>
         </div>
@@ -116,10 +111,8 @@ function ViewTeams(props) {
     api.addTeam(prono, team);
   }
 
-  const classes = useStyles();
-
   return (
-    <div className={classes.root}>
+    <div style={styles.root}>
       <h2 style={{color: '#ffffff'}}>Teams</h2>
       <div>
         {teams.map((team, index) => (
