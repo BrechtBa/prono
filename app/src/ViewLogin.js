@@ -273,8 +273,9 @@ function ViewLogin(props) {
             </div>
           </form>
 
-          <div>Nog geen account? <Button onClick={() => setRegisterDialogOpen(true)}>register</Button></div>
+          {squad !== undefined && (<div>Nog geen account? <Button onClick={() => setRegisterDialogOpen(true)}>register</Button></div>)}
           <div>Wachtwoord vergeten? <Button onClick={() => setResetDialogOpen(true)}>reset wachtwoord</Button></div>
+          {squad === undefined && (<div>Nog geen account? <br/>Vraag je admin om een registratie url.</div>)}
 
         </Paper>
       </div>

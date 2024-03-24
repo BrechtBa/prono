@@ -245,7 +245,14 @@ function firebaseApi(auth, db, storage, tenant) {
               if(profileSnapshot !== undefined) {
                 let users = [];
                 pointsSnapshot.forEach((snap) => {
-                  const userSquads = userProfiles[snap.key].squads || {};
+
+                  let userSquads = {}
+                  if(userProfiles[snap.key] !== undefined){
+                    userSquads = userProfiles[snap.key].squads || {};
+                  }
+                  else{
+                    console.error(snap.key, "has no userprofile")
+                  }
 
                   if (Object.keys(userSquads).find(k => userSquads[k] && k === squad)) {
                     users.push({

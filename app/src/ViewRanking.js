@@ -99,7 +99,7 @@ function RankingUser(props){
 function ViewRanking(props) {
   const api = props.api;
   const authUser = useContext(UserContext);
-  const {squad} = useContext(SquadContext);
+  const {squad, setSquad} = useContext(SquadContext);
 
   const prono = useContext(PronoContext);
   

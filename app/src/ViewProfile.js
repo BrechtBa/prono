@@ -84,7 +84,7 @@ function ViewProfile(props){
           <div style={{marginRight: '20px', marginTop: '20px'}}>
             <Select value={squad || ""} label="Squad" onChange={(e) => setSquad(e.target.value)} >
               {getSquads(user, api).map(s => (
-                <MenuItem key={s} value={s}>{s}</MenuItem>
+                <MenuItem key={s} value={s}>{api.useSquadName(s)}</MenuItem>
               ))}
             </Select>
           </div>
