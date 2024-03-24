@@ -61,7 +61,6 @@ function Match(props) {
     const date = new Date(+year, +month - 1, +day, +hour, +minute);
     return date;
   }
-  console.log(match)
 
   return (
     <div style={{height: '100%'}}>

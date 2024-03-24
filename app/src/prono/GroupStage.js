@@ -178,11 +178,12 @@ function GroupPointsDialog(props) {
       display: 'flex', 
       flexGrow: 4,
       width: '90px',  
-      overflow: 'hidden'
+      overflow: 'hidden',
+      marginLeft: '15px'
     },
     teamIcon: {
       maxWidth: '30px', 
-      maxHeight: '30px'
+      maxHeight: '30px',
     },
   }
 
@@ -193,13 +194,13 @@ function GroupPointsDialog(props) {
           <div>
             {teams.map((team) => (
               <div key={team.key} style={{display: 'flex', flexDirection: 'row', alignItems: 'center', width: '100%'}}>
-                <div styles={styles.teamIcon}>
+                <div style={styles.teamIcon}>
                   <TeamIcon team={team} />
                 </div>
-                <div styles={styles.team} style={{marginLeft: '15px'}}>
+                <div style={styles.team}>
                   <TeamName team={team}/>
                 </div>
-                <div style={{width: '50px'}}>
+                <div style={{width: '80px'}}>
                   <TextField value={team.points} onChange={(e) => handlePointsChange(team, e)}/>
                 </div>
               </div>

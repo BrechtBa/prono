@@ -20,8 +20,10 @@ function ViewResults(props) {
   const groupstage = api.useGroupStage(prono);
   const knockoutstages = api.useKnockoutStage(prono);
 
-  const matchesProno = api.useUserPronoMatches(prono, pronoUser);
-  
+  const matchesProno = api.useUserPronoMatches(prono, user);
+  const groupWinnersProno = {}
+  const currentStage = ""
+
   const fullGroupStage = getFullGroupStage(groupstage, matches, teams);
 
   const stages = getFullKnockoutStages(knockoutstages, matches, teams);
@@ -29,7 +31,7 @@ function ViewResults(props) {
   return (
     <div>
       <h2 style={{color: '#ffffff'}}>Groepsfase</h2>
-      <GroupStageProno showResults={true} groupStage={fullGroupStage} matchesProno={matchesProno} groupWinnersProno={groupWinnersProno} user={pronoUser} currentStage={currentStage} api={api}/>
+      <GroupStageProno showResults={true} groupStage={fullGroupStage} matchesProno={matchesProno} groupWinnersProno={groupWinnersProno} user={user} currentStage={currentStage} api={api}/>
 
       <h2 style={{color: '#ffffff'}}>Knockout fase</h2>
       <KnockoutStage stages={stages} editable={user.permissions.editor || false} teams={user.permissions.editor ? Object.keys(teams).map(key => teams[key]) : [] } api={api}/>
