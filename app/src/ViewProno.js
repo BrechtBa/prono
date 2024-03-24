@@ -90,6 +90,7 @@ function ViewProno(props) {
   const pronoUser = props.user || user;
 
   const matchesProno = api.useUserPronoMatches(prono, pronoUser);
+
   const groupWinnersProno = api.useUserPronoGroupWinners(prono, pronoUser);
   const stageTeamsProno = api.useUserPronoStageTeams(prono, pronoUser);
   const totalGoalsProno = api.useUserPronoTotalGoals(prono, pronoUser);

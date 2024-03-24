@@ -74,7 +74,7 @@ function Match(props) {
     <div style={{height: '100%'}}>
       <div style={styles.match} onClick={() => editable && setEditScoreDialogOpen(true)}>
         <div style={styles.team1}>
-          <TeamName team={match.team1} def={match.defaultteam1} />
+          <TeamName team={match.team1} def={match.defaultTeam1} />
         </div>
         <div style={styles.teamIcon}>
             <TeamIcon team={match.team1} />
@@ -90,7 +90,7 @@ function Match(props) {
             <TeamIcon team={match.team2} />
         </div>
         <div style={styles.team2}>
-            <TeamName team={match.team2} def={match.defaultteam2} />
+            <TeamName team={match.team2} def={match.defaultTeam2} />
         </div>
       </div>
 
@@ -140,9 +140,9 @@ export function KnockoutStage(props) {
   const stages = props.stages;
   const columns = getMatchColumns(stages);
   const editable = props.editable;
-  const editTeams = true;
   const teams = props.teams;
   const api = props.api;
+  const editTeams = true;  // FIXME
 
   const [openStage, setOpenStage] = useState('16')
 

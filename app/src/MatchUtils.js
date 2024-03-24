@@ -132,7 +132,7 @@ export function MatchSelect(props){
                 {match.number}
               </div>
               <div style={{marginLeft: '20px'}}>
-                {match.defaultteam1} - {match.defaultteam2}
+                {match.defaultTeam1} - {match.defaultTeam2}
               </div>
             </div>
           </MenuItem>
@@ -147,7 +147,6 @@ export function EditScoreDialog(props){
   const editPenalties = props.editPenalties;
   const editTeams = props.editTeams;
   const teams = props.teams;
-
   const open = props.open;
   const setOpen = props.setOpen;
   const onSave = props.onSave;
@@ -220,12 +219,12 @@ export function EditScoreDialog(props){
           {!editTeams && (
             <div style={styles.matchHorizontal}>
               <div style={styles.team1}>
-                <TeamName team={team1} def={match.defaultteam1} />
+                <TeamName team={team1} def={match.defaultTeam1} />
               </div>
 
                -
               <div style={styles.team2}>
-                <TeamName team={team2} def={match.defaultteam2} />
+                <TeamName team={team2} def={match.defaultTeam2} />
               </div>
             </div>
           )}

@@ -18,7 +18,7 @@ function calculateGroupStagePoints(teams, matches) {
   const goalsScored = teams.reduce((o, team) => ({ ...o, [team.key]: 0}), {})
 
   matches.forEach( (match) => {
-    if (match.score1 >= 0 && match.score2 >= 0) {
+    if (match.score1 >= 0 && match.score2 >= 0 && match.team1 !== null && match.team2 !== null ) {
       if ( match.score1 > match.score2){
         points[match.team1.key] += 3;
       }
@@ -87,16 +87,34 @@ export function GroupStageMatch(props) {
     },
     scoreRegular: {}
   }
+  const getEditScoreDialogMatch = (match, matchProno, showResults) => {
+    if(showResults) {
+      return match;
+    }
+    else {
+      return {
+        key: match.key,
+        number: match.number,
+        date: match.date,
+        team1: match.team1,
+        team2: match.team2,
+        score1: matchProno !== undefined ? matchProno.score1 : -1,
+        score2: matchProno !== undefined ? matchProno.score2 : -1,
+        penalty1: -1,
+        penalty2: -1,
+      }
+    }
+  }
 
   return (
     <div>
 
-      <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}} 
+      <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center', cursor: "pointer"}}
            onClick={() => editable && setEditScoreDialogOpen(true)}
            onMouseOver={() => showResults && setShowProno(true)} onMouseOut={() => showResults && setShowProno(false)}>
 
         <div style={{...styles.team, justifyContent: 'flex-start', textAlign: 'left'}}>
-          <TeamName team={match.team1} def={match.defaultteam1} />
+          <TeamName team={match.team1} def={match.defaultTeam1} />
         </div>
         <div style={styles.teamIcon}>
             <TeamIcon team={match.team1} />
@@ -105,7 +123,7 @@ export function GroupStageMatch(props) {
         <div style={styles.score}>
           {!showResults && (
             <div style={styles.scoreRegular}>
-              {formatScore(match.score1)} - {formatScore(match.score2)}
+              {matchProno !== undefined && formatScore(matchProno.score1)} - {matchProno !== undefined && formatScore(matchProno.score2)}
             </div>
 
           )}
@@ -114,7 +132,7 @@ export function GroupStageMatch(props) {
               {formatScore(match.score1)} - {formatScore(match.score2)}
             </div>
           )}
-          {showProno && (
+          {showProno && matchProno !== undefined && (
             <div style={{position: 'absolute', top: '-10px', right: '2px', backgroundColor: 'rgba(255,255,255,0.8)'}}>
               {formatScore(matchProno.score1)} - {formatScore(matchProno.score2)}
             </div>
@@ -125,11 +143,11 @@ export function GroupStageMatch(props) {
             <TeamIcon team={match.team2} />
         </div>
         <div style={{...styles.team, justifyContent: 'flex-end', textAlign: 'right'}}>
-            <TeamName team={match.team2} def={match.defaultteam2} />
+            <TeamName team={match.team2} def={match.defaultTeam2} />
         </div>
       </div>
 
-      <EditScoreDialog match={match} open={editScoreDialogOpen} setOpen={setEditScoreDialogOpen} onSave={onSave} editPenalties={false}
+      <EditScoreDialog match={getEditScoreDialogMatch(match, matchProno, showResults)} open={editScoreDialogOpen} setOpen={setEditScoreDialogOpen} onSave={onSave} editPenalties={false}
         editTeams={editTeams} teams={teams}/>
     </div>
   )
@@ -272,6 +290,7 @@ function GroupStagePronoGroup(props) {
   const matchesProno = props.matchesProno;
   const groupWinnersProno = props.groupWinnersProno;
   const user = props.user;
+  const editTeams = true;  // FIXME
 
   const [groupwinnersDialogOpen, setGroupwinnersDialogOpen] = useState(false)
   const [groupPointsDialogOpen, setGroupPointsDialogOpen] = useState(false)
@@ -336,7 +355,7 @@ function GroupStagePronoGroup(props) {
 
         <div>
           {group.matches.map((match) => (
-           <GroupStageMatch key={match.key} match={match} showResults={showResults} matchProno={matchesProno[match.key]} onSave={saveMatch} showPenaltyEdit={false} editable={editable} editTeams={false}/>
+           <GroupStageMatch key={match.key} match={match} showResults={showResults} matchProno={matchesProno[match.key]} onSave={saveMatch} showPenaltyEdit={false} editable={editable} editTeams={editTeams} teams={group.teams}/>
           ))}
         </div>
 

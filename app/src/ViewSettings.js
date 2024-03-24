@@ -178,7 +178,7 @@ function ViewSettings(props){
         <h3 style={{marginTop: 0}}>Deadlines</h3>
         <div style={{display: 'flex', flexDirection: 'column'}}>
           <div>
-            <TextField style={{width: '400px'}} value={formatDate(deadlines['groupstage'])} onChange={(e) => handleDealineChange('groupstage', e.target.value)} label="Groupstage"/>
+            <TextField style={{width: '400px'}} value={formatDate(deadlines['groupStage'])} onChange={(e) => handleDealineChange('groupStage', e.target.value)} label="Groupstage"/>
           </div>
           <div>
             <TextField style={{width: '400px'}} value={formatDate(deadlines['16'])} onChange={(e) => handleDealineChange('16', e.target.value)} label="Round of 16"/>

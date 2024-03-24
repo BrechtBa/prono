@@ -59,7 +59,7 @@ function Match(props) {
         </div>
 
         <div style={styles.matchTeam}>
-          {match.defaultteam1} -  {match.defaultteam2}
+          {match.defaultTeam1} -  {match.defaultTeam2}
         </div>
         <div>
           <Button onClick={() => setDeleteDialogOpen(true)}>Delete</Button>
@@ -97,6 +97,9 @@ function Stage(props) {
     const match = matches[key];
     if(match !== undefined){
       stageMatches.push(match);
+    }
+    else{
+      stageMatches.push({key: key});
     }
   });
 

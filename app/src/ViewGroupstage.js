@@ -81,6 +81,7 @@ function Match(props) {
         <div style={styles.matchTeam}>
           {match.defaultTeam1} - {match.defaultTeam2}
         </div>
+
         <div>
           <Button onClick={() => setDeleteDialogOpen(true)}>Delete</Button>
         </div>
@@ -156,6 +157,9 @@ function Group(props) {
     if(match !== undefined){
       groupMatches.push(match);
     }
+    else {
+      groupMatches.push({key: key})
+    }
   })
   let groupTeams = [];
   group.teams.forEach((key) => {
@@ -229,7 +233,6 @@ function ViewGroupstage(props) {
   const groups = api.useGroupStage(prono);
   const matches = api.useMatches(prono);
   const teams = api.useTeams(prono);
-
   const groupNames = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
 
   const updateGroup = (group, update) => {
